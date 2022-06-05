@@ -3,8 +3,8 @@
 // For use by HEngine applications
 
 #include <stdio.h>
-#include "Core/Application.h"
+#include "Core/Application.hpp"
 
 // ---Entry Point--------------------
-#include "Core/EntryPoint.h"
+#include "Core/EntryPoint.hpp"
 
