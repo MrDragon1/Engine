@@ -1,5 +1,8 @@
 #pragma once
 
+#include "Utils.hpp"
+#include "Event/Event.hpp"
+
 namespace Engine
 {
 	class Application

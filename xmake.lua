@@ -2,7 +2,7 @@ add_rules("mode.debug", "mode.release")
 add_requires("spdlog")
 
 set_toolchains("clang")
-set_languages("c++20")
+set_languages("c99","c++20")
 set_optimize("fastest")
 add_defines("ENGINE_PLATFORM_LINUX")
 
