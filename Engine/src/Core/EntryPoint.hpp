@@ -1,12 +1,14 @@
 #pragma once
 
+
 #ifdef ENGINE_PLATFORM_LINUX
 
 extern Engine::Application* Engine::CreateApplication();
 
 int main(int argc, char** argv)
 {
-	printf("Engine Start!\n");
+    Engine::Log::Init();
+    ENGINE_CORE_WARN("Log Initialized!\n");
 	auto app = Engine::CreateApplication();
 	app->Run();
 	delete app;

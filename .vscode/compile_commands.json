@@ -1,11 +1,11 @@
 [
 {
   "directory": "/home/mrdragon/Code/Engine",
-  "arguments": ["/usr/bin/clang", "-c", "-Qunused-arguments", "-m64", "-O3", "-std=c++20", "-IEngine/src", "-DENGINE_PLATFORM_LINUX", "-o", "build/.objs/Engine/linux/x86_64/release/Engine/src/Core/Application.cpp.o", "Engine/src/Core/Application.cpp"],
+  "arguments": ["/usr/bin/clang", "-c", "-Qunused-arguments", "-m64", "-O3", "-std=c++20", "-IEngine/src", "-DENGINE_PLATFORM_LINUX", "-I", "/home/mrdragon/.xmake/packages/s/spdlog/v1.10.0/0818d513c1834671bef47fb088dd4b86/include", "-o", "build/.objs/Engine/linux/x86_64/release/Engine/src/Core/Application.cpp.o", "Engine/src/Core/Application.cpp"],
   "file": "Engine/src/Core/Application.cpp"
 },
 {
   "directory": "/home/mrdragon/Code/Engine",
-  "arguments": ["/usr/bin/clang", "-c", "-Qunused-arguments", "-m64", "-O3", "-std=c++20", "-IEngine/src", "-DENGINE_PLATFORM_LINUX", "-o", "build/.objs/Sandbox/linux/x86_64/release/Sandbox/src/Sandbox.cpp.o", "Sandbox/src/Sandbox.cpp"],
+  "arguments": ["/usr/bin/clang", "-c", "-Qunused-arguments", "-m64", "-O3", "-std=c++20", "-IEngine/src", "-DENGINE_PLATFORM_LINUX", "-I", "/home/mrdragon/.xmake/packages/s/spdlog/v1.10.0/0818d513c1834671bef47fb088dd4b86/include", "-o", "build/.objs/Sandbox/linux/x86_64/release/Sandbox/src/Sandbox.cpp.o", "Sandbox/src/Sandbox.cpp"],
   "file": "Sandbox/src/Sandbox.cpp"
 }]
