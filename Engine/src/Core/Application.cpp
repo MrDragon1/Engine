@@ -1,8 +1,8 @@
+#include "pch.hpp"
 #include "Application.hpp"
 #include "Core/Log.hpp"
 #include "Event/ApplicationEvent.hpp"
-#include "pch.hpp"
-
+#include "Core/Input.hpp"
 
 namespace Engine
 {
@@ -54,6 +54,8 @@ namespace Engine
             for (Layer* layer : m_LayerStack)
 				layer->OnUpdate();
 
+            auto [x, y] = Input::GetMousePosition();
+			ENGINE_CORE_TRACE("{0}, {1}", x, y);
             m_Window->OnUpdate();
         }
 	}
