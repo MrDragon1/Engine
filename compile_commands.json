@@ -1,16 +1,31 @@
 [
 {
   "directory": "/home/mrdragon/Code/Engine",
-  "arguments": ["/usr/bin/clang", "-c", "-Qunused-arguments", "-m64", "-fvisibility=hidden", "-fvisibility-inlines-hidden", "-O3", "-std=c++20", "-IEngine/src", "-DENGINE_PLATFORM_LINUX", "-I", "/home/mrdragon/.xmake/packages/s/spdlog/v1.10.0/0818d513c1834671bef47fb088dd4b86/include", "-DNDEBUG", "-o", "build/.objs/Engine/linux/x86_64/release/Engine/src/Core/Log.cpp.o", "Engine/src/Core/Log.cpp"],
+  "arguments": ["/usr/bin/clang", "-c", "-Qunused-arguments", "-m64", "-fvisibility=hidden", "-fvisibility-inlines-hidden", "-O3", "-std=c++20", "-IEngine/src", "-DENGINE_PLATFORM_LINUX", "-DENGINE_ENABLE_ASSERTS", "-I", "/home/mrdragon/.xmake/packages/s/spdlog/v1.10.0/0818d513c1834671bef47fb088dd4b86/include", "-I", "/home/mrdragon/.xmake/packages/g/glad/v0.1.36/04aa651acd9f4283bb49733e324b0330/include", "-I", "/home/mrdragon/.xmake/packages/o/openssl/1.1.1o/bfb505f2aa044e09a4c042283fd15d00/include", "-DNDEBUG", "-o", "build/.objs/Sandbox/linux/x86_64/release/Sandbox/src/Sandbox.cpp.o", "Sandbox/src/Sandbox.cpp"],
+  "file": "Sandbox/src/Sandbox.cpp"
+},
+{
+  "directory": "/home/mrdragon/Code/Engine",
+  "arguments": ["/usr/bin/clang", "-c", "-Qunused-arguments", "-m64", "-fvisibility=hidden", "-fvisibility-inlines-hidden", "-O3", "-std=c++20", "-IEngine/src", "-DENGINE_PLATFORM_LINUX", "-DENGINE_ENABLE_ASSERTS", "-I", "/home/mrdragon/.xmake/packages/s/spdlog/v1.10.0/0818d513c1834671bef47fb088dd4b86/include", "-I", "/home/mrdragon/.xmake/packages/g/glad/v0.1.36/04aa651acd9f4283bb49733e324b0330/include", "-I", "/home/mrdragon/.xmake/packages/o/openssl/1.1.1o/bfb505f2aa044e09a4c042283fd15d00/include", "-DNDEBUG", "-o", "build/.objs/Engine/linux/x86_64/release/Engine/src/Core/Log.cpp.o", "Engine/src/Core/Log.cpp"],
   "file": "Engine/src/Core/Log.cpp"
 },
 {
   "directory": "/home/mrdragon/Code/Engine",
-  "arguments": ["/usr/bin/clang", "-c", "-Qunused-arguments", "-m64", "-fvisibility=hidden", "-fvisibility-inlines-hidden", "-O3", "-std=c++20", "-IEngine/src", "-DENGINE_PLATFORM_LINUX", "-I", "/home/mrdragon/.xmake/packages/s/spdlog/v1.10.0/0818d513c1834671bef47fb088dd4b86/include", "-DNDEBUG", "-o", "build/.objs/Engine/linux/x86_64/release/Engine/src/Core/Application.cpp.o", "Engine/src/Core/Application.cpp"],
+  "arguments": ["/usr/bin/clang", "-c", "-Qunused-arguments", "-m64", "-fvisibility=hidden", "-fvisibility-inlines-hidden", "-O3", "-std=c++20", "-IEngine/src", "-DENGINE_PLATFORM_LINUX", "-DENGINE_ENABLE_ASSERTS", "-I", "/home/mrdragon/.xmake/packages/s/spdlog/v1.10.0/0818d513c1834671bef47fb088dd4b86/include", "-I", "/home/mrdragon/.xmake/packages/g/glad/v0.1.36/04aa651acd9f4283bb49733e324b0330/include", "-I", "/home/mrdragon/.xmake/packages/o/openssl/1.1.1o/bfb505f2aa044e09a4c042283fd15d00/include", "-DNDEBUG", "-o", "build/.objs/Engine/linux/x86_64/release/Engine/src/Core/LayerStack.cpp.o", "Engine/src/Core/LayerStack.cpp"],
+  "file": "Engine/src/Core/LayerStack.cpp"
+},
+{
+  "directory": "/home/mrdragon/Code/Engine",
+  "arguments": ["/usr/bin/clang", "-c", "-Qunused-arguments", "-m64", "-fvisibility=hidden", "-fvisibility-inlines-hidden", "-O3", "-std=c++20", "-IEngine/src", "-DENGINE_PLATFORM_LINUX", "-DENGINE_ENABLE_ASSERTS", "-I", "/home/mrdragon/.xmake/packages/s/spdlog/v1.10.0/0818d513c1834671bef47fb088dd4b86/include", "-I", "/home/mrdragon/.xmake/packages/g/glad/v0.1.36/04aa651acd9f4283bb49733e324b0330/include", "-I", "/home/mrdragon/.xmake/packages/o/openssl/1.1.1o/bfb505f2aa044e09a4c042283fd15d00/include", "-DNDEBUG", "-o", "build/.objs/Engine/linux/x86_64/release/Engine/src/Core/Layer.cpp.o", "Engine/src/Core/Layer.cpp"],
+  "file": "Engine/src/Core/Layer.cpp"
+},
+{
+  "directory": "/home/mrdragon/Code/Engine",
+  "arguments": ["/usr/bin/clang", "-c", "-Qunused-arguments", "-m64", "-fvisibility=hidden", "-fvisibility-inlines-hidden", "-O3", "-std=c++20", "-IEngine/src", "-DENGINE_PLATFORM_LINUX", "-DENGINE_ENABLE_ASSERTS", "-I", "/home/mrdragon/.xmake/packages/s/spdlog/v1.10.0/0818d513c1834671bef47fb088dd4b86/include", "-I", "/home/mrdragon/.xmake/packages/g/glad/v0.1.36/04aa651acd9f4283bb49733e324b0330/include", "-I", "/home/mrdragon/.xmake/packages/o/openssl/1.1.1o/bfb505f2aa044e09a4c042283fd15d00/include", "-DNDEBUG", "-o", "build/.objs/Engine/linux/x86_64/release/Engine/src/Core/Application.cpp.o", "Engine/src/Core/Application.cpp"],
   "file": "Engine/src/Core/Application.cpp"
 },
 {
   "directory": "/home/mrdragon/Code/Engine",
-  "arguments": ["/usr/bin/clang", "-c", "-Qunused-arguments", "-m64", "-fvisibility=hidden", "-fvisibility-inlines-hidden", "-O3", "-std=c++20", "-IEngine/src", "-DENGINE_PLATFORM_LINUX", "-I", "/home/mrdragon/.xmake/packages/s/spdlog/v1.10.0/0818d513c1834671bef47fb088dd4b86/include", "-DNDEBUG", "-o", "build/.objs/Sandbox/linux/x86_64/release/Sandbox/src/Sandbox.cpp.o", "Sandbox/src/Sandbox.cpp"],
-  "file": "Sandbox/src/Sandbox.cpp"
+  "arguments": ["/usr/bin/clang", "-c", "-Qunused-arguments", "-m64", "-fvisibility=hidden", "-fvisibility-inlines-hidden", "-O3", "-std=c++20", "-IEngine/src", "-DENGINE_PLATFORM_LINUX", "-DENGINE_ENABLE_ASSERTS", "-I", "/home/mrdragon/.xmake/packages/s/spdlog/v1.10.0/0818d513c1834671bef47fb088dd4b86/include", "-I", "/home/mrdragon/.xmake/packages/g/glad/v0.1.36/04aa651acd9f4283bb49733e324b0330/include", "-I", "/home/mrdragon/.xmake/packages/o/openssl/1.1.1o/bfb505f2aa044e09a4c042283fd15d00/include", "-DNDEBUG", "-o", "build/.objs/Engine/linux/x86_64/release/Engine/src/Platform/Linux/LinuxWindow.cpp.o", "Engine/src/Platform/Linux/LinuxWindow.cpp"],
+  "file": "Engine/src/Platform/Linux/LinuxWindow.cpp"
 }]

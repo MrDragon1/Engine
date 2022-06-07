@@ -13,3 +13,5 @@
 
 
 #include "Core/Log.hpp"
+
+#include "glad/glad.h"

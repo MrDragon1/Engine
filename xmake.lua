@@ -1,12 +1,12 @@
 add_rules("mode.debug", "mode.release")
-add_requires("spdlog","glfw")
+add_requires("spdlog","glad","glfw") -- glad must before glfw
 
 set_toolchains("clang")
 set_languages("c++20")
 set_optimize("fastest")
 add_defines("ENGINE_PLATFORM_LINUX","ENGINE_ENABLE_ASSERTS")
 
-add_packages("spdlog","glfw")
+add_packages("spdlog","glad","glfw")
 
 
 target("Engine")
@@ -14,7 +14,6 @@ target("Engine")
     set_pcheader("Engine/src/pch.hpp")
     add_files("Engine/src/**.cpp")
     add_includedirs("Engine/src")
-    
     
 target("Sandbox")
     add_deps("Engine")

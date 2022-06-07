@@ -3,7 +3,6 @@
 #include "Event/ApplicationEvent.hpp"
 #include "pch.hpp"
 
-#include "GLFW/glfw3.h"
 
 namespace Engine
 {
