@@ -12,7 +12,6 @@
 // ---Entry Point--------------------
 #include "Core/EntryPoint.hpp"
 
-
 // ---KeyCodes--------------------------
 #include "Core/KeyCodes.hpp"
 #include "Core/MouseButtonCodes.hpp"

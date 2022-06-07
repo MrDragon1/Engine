@@ -11,7 +11,6 @@
 #include <unordered_map>
 #include <unordered_set>
 
-
 #include "Core/Log.hpp"
 
 #include "glad/glad.h"

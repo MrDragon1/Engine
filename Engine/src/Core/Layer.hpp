@@ -3,24 +3,23 @@
 #include "Core/Utils.hpp"
 #include "Core/Event/Event.hpp"
 
-namespace Engine
-{
+namespace Engine {
 
-	class Layer
-	{
-	public:
-		Layer(const std::string& name = "Layer");
-		virtual ~Layer();
+class Layer {
+  public:
+    Layer(const std::string& name = "Layer");
+    virtual ~Layer();
 
-		virtual void OnAttach() {}
-		virtual void OnDetach() {}
-		virtual void OnUpdate() {}
-        virtual void OnImGuiRender() {}
-		virtual void OnEvent(Event& event) {}
+    virtual void OnAttach() {}
+    virtual void OnDetach() {}
+    virtual void OnUpdate() {}
+    virtual void OnImGuiRender() {}
+    virtual void OnEvent(Event& event) {}
 
-		inline const std::string& GetName() const { return m_DebugName; }
-	protected:
-		std::string m_DebugName;
-	};
+    inline const std::string& GetName() const { return m_DebugName; }
 
-} 
+  protected:
+    std::string m_DebugName;
+};
+
+}  // namespace Engine

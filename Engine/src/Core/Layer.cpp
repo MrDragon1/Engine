@@ -1,17 +1,10 @@
 #include "pch.hpp"
 #include "Layer.hpp"
 
-namespace Engine
-{
+namespace Engine {
 
-	Layer::Layer(const std::string& debugName)
-		: m_DebugName(debugName)
-	{
-	}
+Layer::Layer(const std::string& debugName) : m_DebugName(debugName) {}
 
-	Layer::~Layer()
-	{
+Layer::~Layer() {}
 
-	}
-
-}
+}  // namespace Engine

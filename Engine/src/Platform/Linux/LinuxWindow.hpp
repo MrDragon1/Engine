@@ -2,10 +2,10 @@
 
 #include "Core/Window.hpp"
 #include "GLFW/glfw3.h"
-namespace Engine {
-    class LinuxWindow : public Window
-    {
-    public:
+namespace Engine
+{
+    class LinuxWindow : public Window {
+      public:
         LinuxWindow(const WindowProps& props);
         virtual ~LinuxWindow();
 
@@ -19,17 +19,16 @@ namespace Engine {
         void SetVSync(bool enabled) override;
         bool IsVSync() const override;
 
-        inline virtual void* GetNativeWindow() const override  { return m_Window; }
+        inline virtual void* GetNativeWindow() const override { return m_Window; }
 
-    private:
+      private:
         virtual void Init(const WindowProps& props);
         virtual void Shutdown();
 
-    private:
+      private:
         GLFWwindow* m_Window;
 
-        struct WindowData
-        {
+        struct WindowData {
             std::string Title;
             unsigned int Width, Height;
             bool VSync;
@@ -37,6 +36,5 @@ namespace Engine {
         };
 
         WindowData m_Data;
-
     };
-}
+}  // namespace Engine

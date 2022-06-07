@@ -1,0 +1,21 @@
+BasedOnStyle: Google
+IndentWidth: 4
+Language: Cpp
+ColumnLimit: 0
+SortIncludes:	false
+
+AccessModifierOffset:	-2
+MaxEmptyLinesToKeep: 1
+
+BreakBeforeBraces: Custom
+BraceWrapping:
+    AfterEnum: true
+    AfterStruct: false
+    AfterFunction: false
+    AfterNamespace: true
+    AfterUnion: true
+    IndentBraces: true
+
+IndentWrappedFunctionNames: true
+
+NamespaceIndentation: All
