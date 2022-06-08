@@ -1,4 +1,5 @@
 #include "Application.hpp"
+#include <GLFW/glfw3.h>
 
 #include "Core/Input.hpp"
 #include "Core/Log.hpp"
@@ -10,7 +11,7 @@ namespace Engine
 {
     Application* Application::s_Instance = nullptr;
 
-    Application::Application(){
+    Application::Application() {
         ENGINE_CORE_ASSERT(!s_Instance, "Application already exists!")
         s_Instance = this;
         m_Window = std::unique_ptr<Window>(Window::Create());
@@ -45,8 +46,11 @@ namespace Engine
 
     void Application::Run() {
             while (m_Running) {
-                Renderer::EndScene();
-                for (Layer* layer : m_LayerStack) layer->OnUpdate();
+                float time = (float)glfwGetTime();
+                Timestep timestep = time - m_LastFrameTime;
+                m_LastFrameTime = time;
+
+                for (Layer* layer : m_LayerStack) layer->OnUpdate(timestep);
 
                 m_ImGuiLayer->Begin();
                 for (Layer* layer : m_LayerStack) layer->OnImGuiRender();

@@ -2,7 +2,7 @@
 
 #include "Core/Utils.hpp"
 #include "Core/Event/Event.hpp"
-
+#include "Core/Timestep.hpp"
 namespace Engine {
 
 class Layer {
@@ -12,7 +12,7 @@ class Layer {
 
     virtual void OnAttach() {}
     virtual void OnDetach() {}
-    virtual void OnUpdate() {}
+    virtual void OnUpdate(Timestep ts) {}
     virtual void OnImGuiRender() {}
     virtual void OnEvent(Event& event) {}
 

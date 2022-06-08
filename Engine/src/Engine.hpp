@@ -17,7 +17,7 @@
 #include "Core/Renderer/Shader.hpp"
 #include "Core/Renderer/OrthographicCamera.hpp"
 
-
+#include "Core/Timestep.hpp"
 // ---Entry Point--------------------
 #include "Core/EntryPoint.hpp"
 

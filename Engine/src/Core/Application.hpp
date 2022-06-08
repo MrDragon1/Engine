@@ -8,7 +8,6 @@
 #include "Event/Event.hpp"
 #include "Utils.hpp"
 
-
 namespace Engine
 {
     class Application {
@@ -30,6 +29,10 @@ namespace Engine
         bool m_Running = true;
         ImGuiLayer* m_ImGuiLayer;
         LayerStack m_LayerStack;
+
+      private:
+        // Timestep m_Timestep;
+        float m_LastFrameTime = 0.0f;
 
       private:
         static Application* s_Instance;
