@@ -7,6 +7,8 @@
 #include "Core/Window.hpp"
 #include "Event/Event.hpp"
 #include "Utils.hpp"
+#include "Core/Renderer/Shader.hpp"
+
 namespace Engine {
 class Application {
    public:
@@ -30,6 +32,7 @@ class Application {
 
     unsigned int m_VertexArray, m_VertexBuffer, m_IndexBuffer;
 
+    std::unique_ptr<Shader> m_Shader;
    private:
     static Application* s_Instance;
 };
