@@ -7,10 +7,6 @@
 #include "Core/Window.hpp"
 #include "Event/Event.hpp"
 #include "Utils.hpp"
-#include "Core/Renderer/Shader.hpp"
-#include "Core/Renderer/Buffer.hpp"
-#include "Core/Renderer/VertexArray.hpp"
-#include "Core/Renderer/OrthographicCamera.hpp"
 
 
 namespace Engine
@@ -34,14 +30,6 @@ namespace Engine
         bool m_Running = true;
         ImGuiLayer* m_ImGuiLayer;
         LayerStack m_LayerStack;
-
-		std::shared_ptr<Shader> m_Shader;
-		std::shared_ptr<VertexArray> m_VertexArray;
-
-		std::shared_ptr<Shader> m_BlueShader;
-		std::shared_ptr<VertexArray> m_SquareVA;
-
-        OrthographicCamera m_Camera;
 
       private:
         static Application* s_Instance;

@@ -9,6 +9,15 @@
 #include "Core/ImGui/ImGuiLayer.hpp"
 #include "Core/Input.hpp"
 
+
+#include "Core/Renderer/Renderer.hpp"
+#include "Core/Renderer/RenderCommand.hpp"
+#include "Core/Renderer/Buffer.hpp"
+#include "Core/Renderer/VertexArray.hpp"
+#include "Core/Renderer/Shader.hpp"
+#include "Core/Renderer/OrthographicCamera.hpp"
+
+
 // ---Entry Point--------------------
 #include "Core/EntryPoint.hpp"
 
