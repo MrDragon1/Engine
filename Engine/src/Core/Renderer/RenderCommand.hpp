@@ -4,24 +4,25 @@
 
 namespace Engine
 {
-    class RenderCommand
-    {
-    public:
-        inline static void SetClearColor(const glm::vec4& color)
-        {
+    class RenderCommand {
+      public:
+        inline static void Init() {
+            s_RendererAPI->Init();
+        }
+
+        inline static void SetClearColor(const glm::vec4& color) {
             s_RendererAPI->SetClearColor(color);
         }
 
-        inline static void Clear()
-        {
+        inline static void Clear() {
             s_RendererAPI->Clear();
         }
 
-        inline static void DrawIndexed(const Ref<VertexArray>& vertexArray)
-        {
+        inline static void DrawIndexed(const Ref<VertexArray>& vertexArray) {
             s_RendererAPI->DrawIndexed(vertexArray);
         }
-    private:
+
+      private:
         static RendererAPI* s_RendererAPI;
     };
-}
+}  // namespace Engine
