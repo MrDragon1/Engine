@@ -16,6 +16,7 @@
 #include "Core/Renderer/VertexArray.hpp"
 #include "Core/Renderer/Shader.hpp"
 #include "Core/Renderer/OrthographicCamera.hpp"
+#include "Core/Renderer/Texture.hpp"
 
 #include "Core/Timestep.hpp"
 // ---Entry Point--------------------

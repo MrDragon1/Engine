@@ -14,8 +14,9 @@ add_packages("spdlog","glad","glfw","glm")
 target("Engine")
     set_kind("static")
     set_pcheader("Engine/src/pch.hpp")
-    add_files("Engine/src/**.cpp")
-    add_includedirs("Engine/src")
+    add_files("Engine/src/**.cpp","Engine/vendor/**.cpp")
+    add_includedirs("Engine/src","Engine/vendor")
+
     
 target("Sandbox")
     add_deps("Engine")
