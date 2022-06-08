@@ -4,7 +4,6 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "Platform/Linux/OpenGL/OpenGLShader.hpp"
 #include "imgui.h"
-
 class ExampleLayer : public Engine::Layer {
   public:
     ExampleLayer() : Layer("Example"), m_Camera(-1.6f, 1.6f, -0.9f, 0.9f), m_CameraPosition(0.0f) {
@@ -77,7 +76,7 @@ class ExampleLayer : public Engine::Layer {
 			}
 		)";
 
-        m_Shader.reset(Engine::Shader::Create(vertexSrc, fragmentSrc));
+        m_Shader = Engine::Shader::Create("VertexPosColor", vertexSrc, fragmentSrc);
 
         std::string flatColorShaderVertexSrc = R"(
 			#version 330 core
@@ -103,13 +102,13 @@ class ExampleLayer : public Engine::Layer {
 			}
 		)";
 
-        m_FlatColorShader.reset(Engine::Shader::Create(flatColorShaderVertexSrc, flatColorShaderFragmentSrc));
+        m_FlatColorShader = Engine::Shader::Create("FlatColor", flatColorShaderVertexSrc, flatColorShaderFragmentSrc);
 
-        m_TextureShader.reset(Engine::Shader::Create("../../../../Sandbox/assets/shaders/Texture.glsl"));
+        auto textureShader = m_ShaderLibrary.Load("../../../../Sandbox/assets/shaders/Texture.glsl");
         m_Texture = Engine::Texture2D::Create("../../../../Sandbox/assets/textures/Checkerboard.png");
 
-        std::dynamic_pointer_cast<Engine::OpenGLShader>(m_TextureShader)->Bind();
-        std::dynamic_pointer_cast<Engine::OpenGLShader>(m_TextureShader)->UploadUniformInt("u_Texture", 0);
+        std::dynamic_pointer_cast<Engine::OpenGLShader>(textureShader)->Bind();
+        std::dynamic_pointer_cast<Engine::OpenGLShader>(textureShader)->UploadUniformInt("u_Texture", 0);
     }
 
     void OnUpdate(Engine::Timestep ts) override {
@@ -150,8 +149,10 @@ class ExampleLayer : public Engine::Layer {
 
         // Engine::Renderer::Submit(m_Shader, m_VertexArray);
 
+        auto textureShader = m_ShaderLibrary.Get("Texture");
         m_Texture->Bind();
-        Engine::Renderer::Submit(m_TextureShader, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
+
+        Engine::Renderer::Submit(textureShader, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
 
         Engine::Renderer::EndScene();
     }
@@ -166,10 +167,11 @@ class ExampleLayer : public Engine::Layer {
     }
 
   private:
+    Engine::ShaderLibrary m_ShaderLibrary;
     Engine::Ref<Engine::Shader> m_Shader;
     Engine::Ref<Engine::VertexArray> m_VertexArray;
 
-    Engine::Ref<Engine::Shader> m_FlatColorShader, m_TextureShader;
+    Engine::Ref<Engine::Shader> m_FlatColorShader;
     Engine::Ref<Engine::VertexArray> m_SquareVA;
 
     Engine::Ref<Engine::Texture2D> m_Texture;
