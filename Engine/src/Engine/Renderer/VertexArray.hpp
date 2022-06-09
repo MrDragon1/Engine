@@ -1,7 +1,7 @@
 #pragma once
 
 #include <memory>
-#include "Core/Renderer/Buffer.hpp"
+#include "Engine/Renderer/Buffer.hpp"
 
 namespace Engine
 {

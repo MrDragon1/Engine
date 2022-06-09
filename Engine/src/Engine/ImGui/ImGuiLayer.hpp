@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Core/Layer.hpp"
+#include "Engine/Core/Layer.hpp"
 
-#include "Core/Event/ApplicationEvent.hpp"
-#include "Core/Event/KeyEvent.hpp"
-#include "Core/Event/MouseEvent.hpp"
+#include "Engine/Event/ApplicationEvent.hpp"
+#include "Engine/Event/KeyEvent.hpp"
+#include "Engine/Event/MouseEvent.hpp"
 
 namespace Engine {
 class ImGuiLayer : public Layer {

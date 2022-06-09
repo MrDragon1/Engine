@@ -1,7 +1,7 @@
 #include "pch.hpp"
 #include "Shader.hpp"
 
-#include "Core/Renderer/Renderer.hpp"
+#include "Engine/Renderer/Renderer.hpp"
 #include "Platform/Linux/OpenGL/OpenGLShader.hpp"
 namespace Engine
 {

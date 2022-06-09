@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cstdint>
-#include "Core/Utils.hpp"
+#include "Engine/Core/Utils.hpp"
 namespace Engine
 {
     enum class ShaderDataType

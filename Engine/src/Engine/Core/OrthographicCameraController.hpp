@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Core/Renderer/OrthographicCamera.hpp"
-#include "Core/Timestep.hpp"
+#include "Engine/Renderer/OrthographicCamera.hpp"
+#include "Engine/Core/Timestep.hpp"
 
-#include "Core/Event/ApplicationEvent.hpp"
-#include "Core/Event/MouseEvent.hpp"
+#include "Engine/Event/ApplicationEvent.hpp"
+#include "Engine/Event/MouseEvent.hpp"
 
 namespace Engine
 {

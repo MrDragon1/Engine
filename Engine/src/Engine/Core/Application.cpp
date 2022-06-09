@@ -1,12 +1,12 @@
 #include "Application.hpp"
 #include <GLFW/glfw3.h>
 
-#include "Core/Input.hpp"
-#include "Core/Log.hpp"
-#include "Event/ApplicationEvent.hpp"
+#include "Engine/Core/Input.hpp"
+#include "Engine/Core/Log.hpp"
+#include "Engine/Event/ApplicationEvent.hpp"
 #include "pch.hpp"
 
-#include "Renderer/Renderer.hpp"
+#include "Engine/Renderer/Renderer.hpp"
 namespace Engine
 {
     Application* Application::s_Instance = nullptr;

@@ -1,9 +1,9 @@
 #include "pch.hpp"
 #include "LinuxWindow.hpp"
 
-#include "Core/Event/ApplicationEvent.hpp"
-#include "Core/Event/KeyEvent.hpp"
-#include "Core/Event/MouseEvent.hpp"
+#include "Engine/Event/ApplicationEvent.hpp"
+#include "Engine/Event/KeyEvent.hpp"
+#include "Engine/Event/MouseEvent.hpp"
 #include "glad/glad.h"
 
 namespace Engine

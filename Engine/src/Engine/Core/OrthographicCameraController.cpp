@@ -1,8 +1,8 @@
 #include "pch.hpp"
 #include "OrthographicCameraController.hpp"
 
-#include "Core/Input.hpp"
-#include "Core/KeyCodes.hpp"
+#include "Engine/Core/Input.hpp"
+#include "Engine/Core/KeyCodes.hpp"
 
 namespace Engine
 {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Core/Renderer/Shader.hpp"
+#include "Engine/Renderer/Shader.hpp"
 #include <glm/glm.hpp>
 #include <unordered_map>
 

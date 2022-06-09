@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Core/Utils.hpp"
-#include "Core/Event/Event.hpp"
-#include "Core/Timestep.hpp"
+#include "Engine/Core/Utils.hpp"
+#include "Engine/Event/Event.hpp"
+#include "Engine/Core/Timestep.hpp"
 namespace Engine {
 
 class Layer {

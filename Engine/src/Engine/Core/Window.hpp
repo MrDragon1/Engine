@@ -2,8 +2,8 @@
 
 #include "pch.hpp"
 
-#include "Utils.hpp"
-#include "Event/Event.hpp"
+#include "Engine/Core/Utils.hpp"
+#include "Engine/Event/Event.hpp"
 
 namespace Engine {
 

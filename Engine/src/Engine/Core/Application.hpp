@@ -1,11 +1,11 @@
 #pragma once
 
-#include "Core/Event/ApplicationEvent.hpp"
-#include "Core/ImGui/ImGuiLayer.hpp"
-#include "Core/Layer.hpp"
-#include "Core/LayerStack.hpp"
-#include "Core/Window.hpp"
-#include "Event/Event.hpp"
+#include "Engine/Event/ApplicationEvent.hpp"
+#include "Engine/ImGui/ImGuiLayer.hpp"
+#include "Engine/Core/Layer.hpp"
+#include "Engine/Core/LayerStack.hpp"
+#include "Engine/Core/Window.hpp"
+#include "Engine/Event/Event.hpp"
 #include "Utils.hpp"
 
 namespace Engine

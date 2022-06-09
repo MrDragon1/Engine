@@ -3,7 +3,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include "Core/Utils.hpp"
+#include "Engine/Core/Utils.hpp"
 #include "pch.hpp"
 
 namespace Engine {
