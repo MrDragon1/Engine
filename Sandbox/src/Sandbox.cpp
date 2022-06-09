@@ -1,13 +1,17 @@
 #include "Engine.hpp"
+#include <Engine/Core/EntryPoint.hpp>
 
 #include "glm/gtc/matrix_transform.hpp"
 #include <glm/gtc/type_ptr.hpp>
+
+#include "Sandbox2D.hpp"
 #include "Platform/Linux/OpenGL/OpenGLShader.hpp"
+
 #include "imgui.h"
 class ExampleLayer : public Engine::Layer {
   public:
     ExampleLayer() : Layer("Example"), m_CameraController(1280.0f / 720.0f) {
-        m_VertexArray.reset(Engine::VertexArray::Create());
+        m_VertexArray = Engine::VertexArray::Create();
 
         float vertices[3 * 7] = {
             -0.5f, -0.5f, 0.0f, 0.8f, 0.2f, 0.8f, 1.0f,
@@ -27,7 +31,7 @@ class ExampleLayer : public Engine::Layer {
         indexBuffer.reset(Engine::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
         m_VertexArray->SetIndexBuffer(indexBuffer);
 
-        m_SquareVA.reset(Engine::VertexArray::Create());
+        m_SquareVA = Engine::VertexArray::Create();
 
         float squareVertices[5 * 4] = {
             -0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
@@ -123,13 +127,13 @@ class ExampleLayer : public Engine::Layer {
         std::dynamic_pointer_cast<Engine::OpenGLShader>(m_FlatColorShader)->Bind();
         std::dynamic_pointer_cast<Engine::OpenGLShader>(m_FlatColorShader)->UploadUniformFloat3("u_Color", m_SquareColor);
 
-            for (int y = 0; y < 20; y++) {
-                    for (int x = 0; x < 20; x++) {
-                        glm::vec3 pos(x * 0.11f, y * 0.11f, 0.0f);
-                        glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos) * scale;
-                        Engine::Renderer::Submit(m_FlatColorShader, m_SquareVA, transform);
-                    }
+        for (int y = 0; y < 20; y++) {
+            for (int x = 0; x < 20; x++) {
+                glm::vec3 pos(x * 0.11f, y * 0.11f, 0.0f);
+                glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos) * scale;
+                Engine::Renderer::Submit(m_FlatColorShader, m_SquareVA, transform);
             }
+        }
 
         // Engine::Renderer::Submit(m_Shader, m_VertexArray);
 
@@ -167,7 +171,10 @@ class ExampleLayer : public Engine::Layer {
 };
 class Sandbox : public Engine::Application {
   public:
-    Sandbox() { PushLayer(new ExampleLayer()); }
+    Sandbox() {
+        // PushLayer(new ExampleLayer());
+        PushLayer(new Sandbox2D());
+    }
 
     ~Sandbox() {}
 };

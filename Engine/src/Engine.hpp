@@ -22,9 +22,6 @@
 #include "Engine/Core/OrthographicCameraController.hpp"
 #include "Engine/Core/Timestep.hpp"
 
-// ---Entry Point--------------------
-#include "Engine/Core/EntryPoint.hpp"
-
 // ---KeyCodes--------------------------
 #include "Engine/Core/KeyCodes.hpp"
 #include "Engine/Core/MouseButtonCodes.hpp"
