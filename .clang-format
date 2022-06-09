@@ -14,7 +14,7 @@ BraceWrapping:
     AfterFunction: false
     AfterNamespace: true
     AfterUnion: true
-    IndentBraces: true
+    IndentBraces: false
 
 IndentWrappedFunctionNames: true
 

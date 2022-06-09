@@ -25,13 +25,14 @@ namespace Engine
 
       private:
         bool OnWindowClose(WindowCloseEvent& e);
-        std::unique_ptr<Window> m_Window;
-        bool m_Running = true;
-        ImGuiLayer* m_ImGuiLayer;
-        LayerStack m_LayerStack;
+        bool OnWindowResize(WindowResizeEvent& e);
 
       private:
-        // Timestep m_Timestep;
+        std::unique_ptr<Window> m_Window;
+        bool m_Running = true;
+        bool m_Minimized = false;
+        ImGuiLayer* m_ImGuiLayer;
+        LayerStack m_LayerStack;
         float m_LastFrameTime = 0.0f;
 
       private:
