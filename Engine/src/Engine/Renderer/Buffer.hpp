@@ -21,30 +21,30 @@ namespace Engine
     };
 
     static uint32_t ShaderDataTypeSize(ShaderDataType type) {
-            switch (type) {
-                case Engine::ShaderDataType::Float:
-                    return 4;
-                case Engine::ShaderDataType::Float2:
-                    return 4 * 2;
-                case Engine::ShaderDataType::Float3:
-                    return 4 * 3;
-                case Engine::ShaderDataType::Float4:
-                    return 4 * 4;
-                case Engine::ShaderDataType::Mat3:
-                    return 4 * 3 * 3;
-                case Engine::ShaderDataType::Mat4:
-                    return 4 * 4 * 4;
-                case Engine::ShaderDataType::Int:
-                    return 4;
-                case Engine::ShaderDataType::Int2:
-                    return 4 * 2;
-                case Engine::ShaderDataType::Int3:
-                    return 4 * 3;
-                case Engine::ShaderDataType::Int4:
-                    return 4 * 4;
-                case Engine::ShaderDataType::Bool:
-                    return 1;
-            }
+        switch (type) {
+            case Engine::ShaderDataType::Float:
+                return 4;
+            case Engine::ShaderDataType::Float2:
+                return 4 * 2;
+            case Engine::ShaderDataType::Float3:
+                return 4 * 3;
+            case Engine::ShaderDataType::Float4:
+                return 4 * 4;
+            case Engine::ShaderDataType::Mat3:
+                return 4 * 3 * 3;
+            case Engine::ShaderDataType::Mat4:
+                return 4 * 4 * 4;
+            case Engine::ShaderDataType::Int:
+                return 4;
+            case Engine::ShaderDataType::Int2:
+                return 4 * 2;
+            case Engine::ShaderDataType::Int3:
+                return 4 * 3;
+            case Engine::ShaderDataType::Int4:
+                return 4 * 4;
+            case Engine::ShaderDataType::Bool:
+                return 1;
+        }
 
         ENGINE_CORE_ASSERT(false, "Unknown ShaderDataType!");
         return 0;
@@ -64,30 +64,30 @@ namespace Engine
         }
 
         uint32_t GetComponentCount() const {
-                switch (Type) {
-                    case Engine::ShaderDataType::Float:
-                        return 1;
-                    case Engine::ShaderDataType::Float2:
-                        return 2;
-                    case Engine::ShaderDataType::Float3:
-                        return 3;
-                    case Engine::ShaderDataType::Float4:
-                        return 4;
-                    case Engine::ShaderDataType::Mat3:
-                        return 3 * 3;
-                    case Engine::ShaderDataType::Mat4:
-                        return 4 * 4;
-                    case Engine::ShaderDataType::Int:
-                        return 1;
-                    case Engine::ShaderDataType::Int2:
-                        return 2;
-                    case Engine::ShaderDataType::Int3:
-                        return 3;
-                    case Engine::ShaderDataType::Int4:
-                        return 4;
-                    case Engine::ShaderDataType::Bool:
-                        return 1;
-                }
+            switch (Type) {
+                case Engine::ShaderDataType::Float:
+                    return 1;
+                case Engine::ShaderDataType::Float2:
+                    return 2;
+                case Engine::ShaderDataType::Float3:
+                    return 3;
+                case Engine::ShaderDataType::Float4:
+                    return 4;
+                case Engine::ShaderDataType::Mat3:
+                    return 3 * 3;
+                case Engine::ShaderDataType::Mat4:
+                    return 4 * 4;
+                case Engine::ShaderDataType::Int:
+                    return 1;
+                case Engine::ShaderDataType::Int2:
+                    return 2;
+                case Engine::ShaderDataType::Int3:
+                    return 3;
+                case Engine::ShaderDataType::Int4:
+                    return 4;
+                case Engine::ShaderDataType::Bool:
+                    return 1;
+            }
 
             ENGINE_CORE_ASSERT(false, "Unknown ShaderDataType!");
             return 0;
@@ -115,11 +115,11 @@ namespace Engine
         void CalculateOffsetsAndStride() {
             uint32_t offset = 0;
             m_Stride = 0;
-                for (auto& element : m_Elements) {
-                    element.Offset = offset;
-                    offset += element.Size;
-                    m_Stride += element.Size;
-                }
+            for (auto& element : m_Elements) {
+                element.Offset = offset;
+                offset += element.Size;
+                m_Stride += element.Size;
+            }
         }
 
       private:
@@ -134,9 +134,12 @@ namespace Engine
         virtual void Bind() const = 0;
         virtual void Unbind() const = 0;
 
-        static VertexBuffer* Create(float* vertices, uint32_t size);
+        virtual void SetData(const void* data, uint32_t size) = 0;
 
-         virtual const BufferLayout& GetLayout() const = 0;
+        static Ref<VertexBuffer> Create(uint32_t size);
+        static Ref<VertexBuffer> Create(float* vertices, uint32_t size);
+
+        virtual const BufferLayout& GetLayout() const = 0;
         virtual void SetLayout(const BufferLayout& layout) = 0;
     };
 
@@ -149,6 +152,6 @@ namespace Engine
 
         virtual uint32_t GetCount() const = 0;
 
-        static IndexBuffer* Create(uint32_t* indices, uint32_t size);
+        static Ref<IndexBuffer> Create(uint32_t* indices, uint32_t size);
     };
 }  // namespace Engine

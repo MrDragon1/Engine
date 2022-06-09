@@ -19,7 +19,7 @@ class ExampleLayer : public Engine::Layer {
             0.0f, 0.5f, 0.0f, 0.8f, 0.8f, 0.2f, 1.0f};
 
         Engine::Ref<Engine::VertexBuffer> vertexBuffer;
-        vertexBuffer.reset(Engine::VertexBuffer::Create(vertices, sizeof(vertices)));
+        vertexBuffer = Engine::VertexBuffer::Create(vertices, sizeof(vertices));
         vertexBuffer->SetLayout({
             {Engine::ShaderDataType::Float3, "a_Position"},
             {Engine::ShaderDataType::Float4, "a_Color"},
@@ -28,7 +28,7 @@ class ExampleLayer : public Engine::Layer {
 
         uint32_t indices[3] = {0, 1, 2};
         Engine::Ref<Engine::IndexBuffer> indexBuffer;
-        indexBuffer.reset(Engine::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
+        indexBuffer = Engine::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t));
         m_VertexArray->SetIndexBuffer(indexBuffer);
 
         m_SquareVA = Engine::VertexArray::Create();
@@ -40,7 +40,7 @@ class ExampleLayer : public Engine::Layer {
             -0.5f, 0.5f, 0.0f, 0.0f, 1.0f};
 
         Engine::Ref<Engine::VertexBuffer> squareVB;
-        squareVB.reset(Engine::VertexBuffer::Create(squareVertices, sizeof(squareVertices)));
+        squareVB = Engine::VertexBuffer::Create(squareVertices, sizeof(squareVertices));
         squareVB->SetLayout({
             {Engine::ShaderDataType::Float3, "a_Position"},
             {Engine::ShaderDataType::Float2, "a_TexCoord"},
@@ -49,7 +49,7 @@ class ExampleLayer : public Engine::Layer {
 
         uint32_t squareIndices[6] = {0, 1, 2, 2, 3, 0};
         Engine::Ref<Engine::IndexBuffer> squareIB;
-        squareIB.reset(Engine::IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t)));
+        squareIB = Engine::IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t));
         m_SquareVA->SetIndexBuffer(squareIB);
 
         std::string vertexSrc = R"(
