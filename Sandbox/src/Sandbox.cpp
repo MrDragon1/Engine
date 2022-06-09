@@ -6,7 +6,7 @@
 #include "imgui.h"
 class ExampleLayer : public Engine::Layer {
   public:
-    ExampleLayer() : Layer("Example"), m_Camera(-1.6f, 1.6f, -0.9f, 0.9f), m_CameraPosition(0.0f) {
+    ExampleLayer() : Layer("Example"), m_CameraController(1280.0f / 720.0f) {
         m_VertexArray.reset(Engine::VertexArray::Create());
 
         float vertices[3 * 7] = {
@@ -104,36 +104,20 @@ class ExampleLayer : public Engine::Layer {
 
         m_FlatColorShader = Engine::Shader::Create("FlatColor", flatColorShaderVertexSrc, flatColorShaderFragmentSrc);
 
-        auto textureShader = m_ShaderLibrary.Load("../../../../Sandbox/assets/shaders/Texture.glsl");
-        m_Texture = Engine::Texture2D::Create("../../../../Sandbox/assets/textures/Checkerboard.png");
+        auto textureShader = m_ShaderLibrary.Load("assets/shaders/Texture.glsl");
+        m_Texture = Engine::Texture2D::Create("assets/textures/Checkerboard.png");
 
         std::dynamic_pointer_cast<Engine::OpenGLShader>(textureShader)->Bind();
         std::dynamic_pointer_cast<Engine::OpenGLShader>(textureShader)->UploadUniformInt("u_Texture", 0);
     }
 
     void OnUpdate(Engine::Timestep ts) override {
-        if (Engine::Input::IsKeyPressed(ENGINE_KEY_LEFT))
-            m_CameraPosition.x -= m_CameraMoveSpeed * ts;
-        else if (Engine::Input::IsKeyPressed(ENGINE_KEY_RIGHT))
-            m_CameraPosition.x += m_CameraMoveSpeed * ts;
-
-        if (Engine::Input::IsKeyPressed(ENGINE_KEY_UP))
-            m_CameraPosition.y += m_CameraMoveSpeed * ts;
-        else if (Engine::Input::IsKeyPressed(ENGINE_KEY_DOWN))
-            m_CameraPosition.y -= m_CameraMoveSpeed * ts;
-
-        if (Engine::Input::IsKeyPressed(ENGINE_KEY_A))
-            m_CameraRotation += m_CameraRotationSpeed * ts;
-        else if (Engine::Input::IsKeyPressed(ENGINE_KEY_D))
-            m_CameraRotation -= m_CameraRotationSpeed * ts;
+        m_CameraController.OnUpdate(ts);
 
         Engine::RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1});
         Engine::RenderCommand::Clear();
 
-        m_Camera.SetPosition(m_CameraPosition);
-        m_Camera.SetRotation(m_CameraRotation);
-
-        Engine::Renderer::BeginScene(m_Camera);
+        Engine::Renderer::BeginScene(m_CameraController.GetCamera());
 
         glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
         std::dynamic_pointer_cast<Engine::OpenGLShader>(m_FlatColorShader)->Bind();
@@ -158,6 +142,7 @@ class ExampleLayer : public Engine::Layer {
     }
 
     void OnEvent(Engine::Event& event) override {
+        m_CameraController.OnEvent(event);
     }
 
     void OnImGuiRender() override {
@@ -176,12 +161,7 @@ class ExampleLayer : public Engine::Layer {
 
     Engine::Ref<Engine::Texture2D> m_Texture;
 
-    Engine::OrthographicCamera m_Camera;
-    glm::vec3 m_CameraPosition;
-    float m_CameraMoveSpeed = 1.0f;
-
-    float m_CameraRotation = 0.0f;
-    float m_CameraRotationSpeed = 180.0f;
+    Engine::OrthographicCameraController m_CameraController;
 
     glm::vec3 m_SquareColor = {0.2f, 0.3f, 0.8f};
 };
