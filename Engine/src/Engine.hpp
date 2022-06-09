@@ -11,6 +11,7 @@
 #include "Engine/ImGui/ImGuiLayer.hpp"
 
 #include "Engine/Renderer/Renderer.hpp"
+#include "Engine/Renderer/Renderer2D.hpp"
 #include "Engine/Renderer/RenderCommand.hpp"
 #include "Engine/Renderer/Buffer.hpp"
 #include "Engine/Renderer/VertexArray.hpp"

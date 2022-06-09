@@ -16,6 +16,7 @@ public:
     void OnEvent(Engine::Event& e) override;
 private:
     Engine::OrthographicCameraController m_CameraController;
+    Engine::Ref<Engine::Texture2D> m_CheckerboardTexture;
 
     // Temp
     Engine::Ref<Engine::VertexArray> m_SquareVA;
