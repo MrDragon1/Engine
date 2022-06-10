@@ -19,6 +19,8 @@
 #include "Engine/Renderer/OrthographicCamera.hpp"
 #include "Engine/Renderer/Texture.hpp"
 #include "Engine/Renderer/SubTexture.hpp"
+#include "Engine/Renderer/Framebuffer.hpp"
+
 
 #include "Engine/Core/OrthographicCameraController.hpp"
 #include "Engine/Core/Timestep.hpp"
