@@ -23,3 +23,10 @@ target("Sandbox")
     set_kind("binary")
     add_files("Sandbox/src/**.cpp")
     add_includedirs("Engine/src")
+
+target("Editor")
+    add_deps("Engine")
+    set_kind("binary")
+    add_files("Editor/src/**.cpp")
+    add_includedirs("Engine/src")
+

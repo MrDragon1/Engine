@@ -14,8 +14,8 @@ namespace Engine
         ENGINE_ERROR("GLFW Error ({0}): {1}", error, description);
     }
 
-    Window* Window::Create(const WindowProps& props) {
-        return new LinuxWindow(props);
+    Scope<Window>Window::Create(const WindowProps& props) {
+        return CreateScope<LinuxWindow>(props);
     }
 
     LinuxWindow::LinuxWindow(const WindowProps& props) {

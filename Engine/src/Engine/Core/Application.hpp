@@ -12,7 +12,7 @@ namespace Engine
 {
     class Application {
       public:
-        Application();
+        Application(const std::string& name = "Engine");
         ~Application();
 
         void Run();

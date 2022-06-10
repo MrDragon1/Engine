@@ -22,6 +22,5 @@ class Sandbox2D : public Engine::Layer {
     Engine::Ref<Engine::VertexArray> m_SquareVA;
     Engine::Ref<Engine::Shader> m_FlatColorShader;
 
-    Engine::Ref<Engine::Framebuffer> m_Framebuffer;
     glm::vec4 m_SquareColor = {0.2f, 0.3f, 0.8f, 1.0f};
 };
