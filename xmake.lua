@@ -3,7 +3,10 @@ add_rules("mode.debug", "mode.release")
 add_requires("imgui v1.87-docking", {configs = {glfw_opengl3 = true}})
 add_requires("spdlog","glad","glfw","glm") -- glad must before glfw
 
-set_toolchains("clang")
+if (is_plat("linux")) then
+   set_toolchains("clang")
+end
+
 set_languages("c++20")
 set_optimize("fastest")
 add_defines("ENGINE_PLATFORM_LINUX","ENGINE_ENABLE_ASSERTS")
@@ -13,7 +16,7 @@ add_packages("spdlog","glad","glfw","glm")
 
 target("Engine")
     set_kind("static")
-    set_pcheader("Engine/src/pch.hpp")
+    set_pcxxheader("Engine/src/pch.hpp")
     add_files("Engine/src/**.cpp","Engine/vendor/**.cpp")
     add_includedirs("Engine/src","Engine/vendor")
 
