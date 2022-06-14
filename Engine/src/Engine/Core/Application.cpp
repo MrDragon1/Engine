@@ -40,9 +40,10 @@ namespace Engine
         dispatcher.Dispatch<WindowCloseEvent>(ENGINE_BIND_EVENT_FN(Application::OnWindowClose));
         dispatcher.Dispatch<WindowResizeEvent>(ENGINE_BIND_EVENT_FN(Application::OnWindowResize));
 
-        for (auto it = m_LayerStack.end(); it != m_LayerStack.begin();) {
-            (*--it)->OnEvent(e);
-            if (e.Handled) break;
+        for (auto it = m_LayerStack.rbegin(); it != m_LayerStack.rend(); ++it) {
+            if (e.Handled)
+                break;
+            (*it)->OnEvent(e);
         }
     }
 
