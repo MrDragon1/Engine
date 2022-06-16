@@ -1,9 +1,17 @@
 #pragma once
 
 #include <glm/glm.hpp>
-
+#include <string>
 namespace Engine
 {
+    struct TagComponent {
+        std::string Tag;
+
+        TagComponent() = default;
+        TagComponent(const TagComponent&) = default;
+        TagComponent(const std::string& tag)
+            : Tag(tag) {}
+    };
     struct TransformComponent {
         glm::mat4 Transform{1.0f};
 
@@ -16,7 +24,7 @@ namespace Engine
     };
 
     struct SpriteRendererComponent {
-        glm::vec4 Color{1.0f,1.0f,0.0f,1.0f};
+        glm::vec4 Color{1.0f, 1.0f, 0.0f, 1.0f};
 
         SpriteRendererComponent() = default;
         SpriteRendererComponent(const SpriteRendererComponent&) = default;

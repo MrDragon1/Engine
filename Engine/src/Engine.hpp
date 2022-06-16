@@ -28,6 +28,7 @@
 // ---Scene----------------------------
 #include "Engine/Scene/Scene.hpp"
 #include "Engine/Scene/Components.hpp"
+#include "Engine/Scene/Entity.hpp"
 
 // ---KeyCodes-------------------------
 #include "Engine/Core/KeyCodes.hpp"

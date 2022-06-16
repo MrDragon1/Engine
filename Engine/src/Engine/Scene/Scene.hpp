@@ -6,6 +6,7 @@
 
 namespace Engine
 {
+    class Entity;
     class Scene {
       public:
         Scene();
@@ -14,8 +15,10 @@ namespace Engine
         void OnUpdate(Timestep ts);
 
         entt::registry& Reg() { return m_Registry; }
-        entt::entity CreateEntity();
+        Entity CreateEntity(const std::string& name = std::string());
+
       private:
         entt::registry m_Registry;
+        friend class Entity;
     };
 }  // namespace Engine
