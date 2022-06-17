@@ -3,6 +3,7 @@
 #include "Entity.hpp"
 #include "Components.hpp"
 #include "Engine/Renderer/Renderer2D.hpp"
+
 namespace Engine
 {
     Scene::Scene() {
@@ -12,10 +13,31 @@ namespace Engine
     }
 
     void Scene::OnUpdate(Timestep ts) {
-        auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
-        for (auto entity : group) {
-            const auto& [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
-            Renderer2D::DrawQuad(transform.Transform, sprite.Color);
+        Camera* mainCamera = nullptr;
+        glm::mat4* cameraTransform = nullptr;
+        {
+            auto group = m_Registry.view<TransformComponent, CameraComponent>();
+            for (auto entity : group) {
+                const auto& [transform, camera] = group.get<TransformComponent, CameraComponent>(entity);
+                if (camera.Primary) {
+                    //ENGINE_CORE_INFO("Found primary camera " + m_Registry.get<TagComponent>(entity).Tag);
+                    mainCamera = &camera.Camera;
+                    cameraTransform = &transform.Transform;
+                    break;
+                }
+            }
+        }
+
+        if (mainCamera) {
+            Renderer2D::BeginScene(mainCamera->GetProjection(), *cameraTransform);
+
+            auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
+            for (auto entity : group) {
+                const auto& [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
+                Renderer2D::DrawQuad(transform, sprite.Color);
+            }
+
+            Renderer2D::EndScene();
         }
     }
 

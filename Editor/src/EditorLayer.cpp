@@ -25,6 +25,13 @@ namespace Engine
         auto square = m_Scene->CreateEntity("Green Square");
         square.AddComponent<SpriteRendererComponent>(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
         m_SquareEntity = square;
+
+        m_CameraEntity = m_Scene->CreateEntity("Main Camera");
+        auto& cc = m_CameraEntity.AddComponent<CameraComponent>(glm::ortho(-16.0f, 16.0f, -9.0f, 9.0f, -1.0f, 1.0f));
+        cc.Primary = false;
+
+        m_SecondCamera = m_Scene->CreateEntity("Clip-Space Camera");
+        m_SecondCamera.AddComponent<CameraComponent>(glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f));
     }
 
     void EditorLayer::OnDetach() {
@@ -32,9 +39,9 @@ namespace Engine
 
     void EditorLayer::OnUpdate(Timestep ts) {
         // Update
-        if (m_ViewportFocused) {
-            m_CameraController.OnUpdate(ts);
-        }
+        // if (m_ViewportFocused) {
+        //     m_CameraController.OnUpdate(ts);
+        // }
 
         // Render
         Renderer2D::ResetStats();
@@ -43,25 +50,8 @@ namespace Engine
         RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1});
         RenderCommand::Clear();
 
-        static float rotation = 0.0f;
-        rotation += ts * 50.0f;
-        // Renderer2D::BeginScene(m_CameraController.GetCamera());
-        // Renderer2D::DrawRotatedQuad({1.0f, 0.0f}, {0.8f, 0.8f}, glm::radians(-45.0f), {0.8f, 0.2f, 0.3f, 1.0f});
-        // Renderer2D::DrawQuad({-1.0f, 0.0f}, {0.8f, 0.8f}, {0.8f, 0.2f, 0.3f, 1.0f});
-        // Renderer2D::DrawQuad({0.5f, -0.5f}, {0.5f, 0.75f}, {0.2f, 0.3f, 0.8f, 1.0f});
-        // Renderer2D::DrawQuad({0.0f, 0.0f, -0.1f}, {20.0f, 20.0f}, m_CheckerboardTexture, 10.0f);
-        // Renderer2D::DrawRotatedQuad({-2.0f, 0.0f, 0.0f}, {1.0f, 1.0f}, glm::radians(rotation), m_CheckerboardTexture, 20.0f);
-        // Renderer2D::EndScene();
-
-        Renderer2D::BeginScene(m_CameraController.GetCamera());
-        // for (float y = -5.0f; y < 5.0f; y += 0.5f) {
-        //     for (float x = -5.0f; x < 5.0f; x += 0.5f) {
-        //         glm::vec4 color = {(x + 5.0f) / 10.0f, 0.4f, (y + 5.0f) / 10.0f, 0.7f};
-        //         Renderer2D::DrawQuad({x, y}, {0.45f, 0.45f}, color);
-        //     }
-        // }
         m_Scene->OnUpdate(ts);
-        Renderer2D::EndScene();
+
         m_Framebuffer->Unbind();
     }
 
@@ -139,6 +129,14 @@ namespace Engine
             auto& squareColor = m_SquareEntity.GetComponent<SpriteRendererComponent>().Color;
             ImGui::ColorEdit4("Square Color", glm::value_ptr(squareColor));
             ImGui::Separator();
+        }
+
+        ImGui::DragFloat3("Camera Transform",
+                          glm::value_ptr(m_CameraEntity.GetComponent<TransformComponent>().Transform[3]));
+
+        if (ImGui::Checkbox("Camera A", &m_PrimaryCamera)) {
+            m_CameraEntity.GetComponent<CameraComponent>().Primary = m_PrimaryCamera;
+            m_SecondCamera.GetComponent<CameraComponent>().Primary = !m_PrimaryCamera;
         }
 
         ImGui::End();

@@ -24,7 +24,7 @@ namespace Engine
 
         template <typename T>
         bool HasComponent() {
-            return m_Scene->m_Registry.all_of<T>(m_Entity);
+            return m_Scene->m_Registry.any_of<T>(m_Entity);
         }
 
         template <typename T>

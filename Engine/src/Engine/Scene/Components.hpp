@@ -2,6 +2,7 @@
 
 #include <glm/glm.hpp>
 #include <string>
+#include "Engine/Renderer/Camera.hpp"
 namespace Engine
 {
     struct TagComponent {
@@ -29,6 +30,16 @@ namespace Engine
         SpriteRendererComponent() = default;
         SpriteRendererComponent(const SpriteRendererComponent&) = default;
         SpriteRendererComponent(const glm::vec4& color) : Color(color) {}
+    };
+
+    struct CameraComponent{
+        Engine::Camera Camera;
+        bool Primary = true;
+
+        CameraComponent() = default;
+        CameraComponent(const CameraComponent&) = default;
+        CameraComponent(const glm::mat4 projection)
+            : Camera(projection) {}
     };
 
 }  // namespace Engine

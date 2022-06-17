@@ -3,6 +3,7 @@
 #include "OrthographicCamera.hpp"
 #include "Texture.hpp"
 #include "SubTexture.hpp"
+#include "Camera.hpp"
 #include "glm/fwd.hpp"
 namespace Engine
 {
@@ -12,6 +13,7 @@ namespace Engine
         static void Shutdown();
 
         static void BeginScene(const OrthographicCamera& camera);
+        static void BeginScene(const Camera& camera, const glm::mat4& transform);
         static void EndScene();
         static void Flush();
 
