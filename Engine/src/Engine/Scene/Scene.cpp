@@ -13,6 +13,22 @@ namespace Engine
     }
 
     void Scene::OnUpdate(Timestep ts) {
+        // Update Scripts
+        {
+            m_Registry.view<NativeScriptComponent>().each([=](auto entity, auto& scriptable) {
+                if (!scriptable.Instance) {
+                    scriptable.InstantiateFunction();
+                    scriptable.Instance->m_Entity = Entity{entity, this};
+
+                    if (scriptable.OnCreateFunction)
+                        scriptable.OnCreateFunction(scriptable.Instance);
+                }
+
+                if (scriptable.OnUpdateFunction)
+                    scriptable.OnUpdateFunction(scriptable.Instance, ts);
+            });
+        }
+
         Camera* mainCamera = nullptr;
         glm::mat4* cameraTransform = nullptr;
         {
