@@ -16,11 +16,11 @@ namespace Engine
         Camera* mainCamera = nullptr;
         glm::mat4* cameraTransform = nullptr;
         {
-            auto group = m_Registry.view<TransformComponent, CameraComponent>();
-            for (auto entity : group) {
-                const auto& [transform, camera] = group.get<TransformComponent, CameraComponent>(entity);
+            auto view = m_Registry.view<TransformComponent, CameraComponent>();
+            for (auto entity : view) {
+                const auto& [transform, camera] = view.get<TransformComponent, CameraComponent>(entity);
                 if (camera.Primary) {
-                    //ENGINE_CORE_INFO("Found primary camera " + m_Registry.get<TagComponent>(entity).Tag);
+                    // ENGINE_CORE_INFO("Found primary camera " + m_Registry.get<TagComponent>(entity).Tag);
                     mainCamera = &camera.Camera;
                     cameraTransform = &transform.Transform;
                     break;
@@ -47,6 +47,19 @@ namespace Engine
         auto& tag = entity.AddComponent<TagComponent>();
         tag.Tag = name.empty() ? "DefaultEntity" : name;
         return entity;
+    }
+
+    void Scene::OnViewportResize(uint32_t width, uint32_t height) {
+        m_ViewportWidth = width;
+        m_ViewportHeight = height;
+
+        // Resize our non-FixedAspectRatio cameras
+        auto view = m_Registry.view<CameraComponent>();
+        for (auto entity : view) {
+            auto& cameraComponent = view.get<CameraComponent>(entity);
+            if (!cameraComponent.FixedAspectRatio)
+                cameraComponent.Camera.SetViewportSize(width, height);
+        }
     }
 
 }  // namespace Engine

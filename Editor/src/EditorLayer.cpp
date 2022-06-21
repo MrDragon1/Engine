@@ -27,11 +27,11 @@ namespace Engine
         m_SquareEntity = square;
 
         m_CameraEntity = m_Scene->CreateEntity("Main Camera");
-        auto& cc = m_CameraEntity.AddComponent<CameraComponent>(glm::ortho(-16.0f, 16.0f, -9.0f, 9.0f, -1.0f, 1.0f));
+        auto& cc = m_CameraEntity.AddComponent<CameraComponent>();
         cc.Primary = false;
 
         m_SecondCamera = m_Scene->CreateEntity("Clip-Space Camera");
-        m_SecondCamera.AddComponent<CameraComponent>(glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f));
+        m_SecondCamera.AddComponent<CameraComponent>();
     }
 
     void EditorLayer::OnDetach() {
@@ -139,6 +139,13 @@ namespace Engine
             m_SecondCamera.GetComponent<CameraComponent>().Primary = !m_PrimaryCamera;
         }
 
+        {
+            auto& camera = m_SecondCamera.GetComponent<CameraComponent>().Camera;
+            float orthoSize = camera.GetOrthographicSize();
+            if (ImGui::DragFloat("Second Camera Ortho Size", &orthoSize))
+                camera.SetOrthographicSize(orthoSize);
+        }
+
         ImGui::End();
 
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
@@ -154,6 +161,8 @@ namespace Engine
             m_ViewportSize = {viewportPanelSize.x, viewportPanelSize.y};
 
             m_CameraController.OnResize(viewportPanelSize.x, viewportPanelSize.y);
+
+            m_Scene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
         }
         uint32_t textureID = m_Framebuffer->GetColorAttachmentRendererID();
         ImGui::Image((void*)textureID, ImVec2{m_ViewportSize.x, m_ViewportSize.y}, ImVec2{0, 1}, ImVec2{1, 0});

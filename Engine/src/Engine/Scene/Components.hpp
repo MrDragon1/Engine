@@ -2,7 +2,7 @@
 
 #include <glm/glm.hpp>
 #include <string>
-#include "Engine/Renderer/Camera.hpp"
+#include "Engine/Renderer/SceneCamera.hpp"
 namespace Engine
 {
     struct TagComponent {
@@ -33,13 +33,13 @@ namespace Engine
     };
 
     struct CameraComponent{
-        Engine::Camera Camera;
+        SceneCamera Camera;
         bool Primary = true;
+        bool FixedAspectRatio = false;
 
         CameraComponent() = default;
         CameraComponent(const CameraComponent&) = default;
-        CameraComponent(const glm::mat4 projection)
-            : Camera(projection) {}
+
     };
 
 }  // namespace Engine
