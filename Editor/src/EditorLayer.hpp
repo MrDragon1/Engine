@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Engine.hpp"
-
+#include "Panels/SceneHierarchyPanel.hpp"
 namespace Engine
 {
     class EditorLayer : public Layer {
@@ -36,5 +36,7 @@ namespace Engine
 
         glm::vec2 m_ViewportSize = {0.0f, 0.0f};
         bool m_ViewportFocused = false, m_ViewportHovered = false;
+
+        SceneHierarchyPanel m_SceneHierarchyPanel;
     };
 }  // namespace Engine

@@ -59,7 +59,7 @@ namespace Engine
         };
 
         m_CameraEntity.AddComponent<NativeScriptComponent>().Bind<CameraController>();
-        m_SecondCamera.AddComponent<NativeScriptComponent>().Bind<CameraController>();
+        m_SceneHierarchyPanel.SetContext(m_Scene);
     }
 
     void EditorLayer::OnDetach() {
@@ -139,6 +139,8 @@ namespace Engine
 
             ImGui::EndMenuBar();
         }
+
+        m_SceneHierarchyPanel.OnImguiRender();
 
         ImGui::Begin("Settings");
 
