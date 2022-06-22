@@ -19,13 +19,9 @@ namespace Engine
                 if (!scriptable.Instance) {
                     scriptable.InstantiateFunction();
                     scriptable.Instance->m_Entity = Entity{entity, this};
-
-                    if (scriptable.OnCreateFunction)
-                        scriptable.OnCreateFunction(scriptable.Instance);
+                    scriptable.Instance->OnCreate();
                 }
-
-                if (scriptable.OnUpdateFunction)
-                    scriptable.OnUpdateFunction(scriptable.Instance, ts);
+                scriptable.Instance->OnUpdate(ts);
             });
         }
 
@@ -34,7 +30,7 @@ namespace Engine
         {
             auto view = m_Registry.view<TransformComponent, CameraComponent>();
             for (auto entity : view) {
-                const auto& [transform, camera] = view.get<TransformComponent, CameraComponent>(entity);
+                const auto [transform, camera] = view.get<TransformComponent, CameraComponent>(entity);
                 if (camera.Primary) {
                     // ENGINE_CORE_INFO("Found primary camera " + m_Registry.get<TagComponent>(entity).Tag);
                     mainCamera = &camera.Camera;
@@ -49,7 +45,7 @@ namespace Engine
 
             auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
             for (auto entity : group) {
-                const auto& [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
+                const auto [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
                 Renderer2D::DrawQuad(transform, sprite.Color);
             }
 
