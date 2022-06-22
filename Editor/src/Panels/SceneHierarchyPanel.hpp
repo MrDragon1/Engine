@@ -11,8 +11,10 @@ namespace Engine
         void SetContext(const Ref<Scene>& scene);
         void OnImguiRender();
 
-        private:
+      private:
         void DrawEntityNode(Entity entity);
+        void DrawComponents(Entity entity);
+
       private:
         Ref<Scene> m_Context;
         Entity m_SelectionContext;
