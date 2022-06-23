@@ -26,8 +26,8 @@ namespace Engine
         square.AddComponent<SpriteRendererComponent>(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
         m_SquareEntity = square;
 
-        // auto redSquare = m_Scene->CreateEntity("Red Square");
-        // redSquare.AddComponent<SpriteRendererComponent>(glm::vec4{1.0f, 0.0f, 0.0f, 1.0f});
+        auto redSquare = m_Scene->CreateEntity("Red Square");
+        redSquare.AddComponent<SpriteRendererComponent>(glm::vec4{1.0f, 0.0f, 0.0f, 1.0f});
 
         m_CameraEntity = m_Scene->CreateEntity("Camera Entity");
         m_CameraEntity.AddComponent<CameraComponent>();
