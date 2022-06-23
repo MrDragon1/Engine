@@ -26,12 +26,15 @@ namespace Engine
         square.AddComponent<SpriteRendererComponent>(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
         m_SquareEntity = square;
 
-        m_CameraEntity = m_Scene->CreateEntity("Main Camera");
-        auto& cc = m_CameraEntity.AddComponent<CameraComponent>();
-        cc.Primary = false;
+        // auto redSquare = m_Scene->CreateEntity("Red Square");
+        // redSquare.AddComponent<SpriteRendererComponent>(glm::vec4{1.0f, 0.0f, 0.0f, 1.0f});
 
-        m_SecondCamera = m_Scene->CreateEntity("Clip-Space Camera");
-        m_SecondCamera.AddComponent<CameraComponent>();
+        m_CameraEntity = m_Scene->CreateEntity("Camera Entity");
+        m_CameraEntity.AddComponent<CameraComponent>();
+
+        m_SecondCamera = m_Scene->CreateEntity("Clip-Space Entity");
+        auto& cc = m_SecondCamera.AddComponent<CameraComponent>();
+        cc.Primary = false;
 
         class CameraController : public ScriptableEntity {
           public:
