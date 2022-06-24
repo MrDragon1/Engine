@@ -26,7 +26,7 @@ namespace Engine
         }
 
         Camera* mainCamera = nullptr;
-        glm::mat4* cameraTransform = nullptr;
+        glm::mat4 cameraTransform = glm::mat4(1.0f);
         {
             auto view = m_Registry.view<TransformComponent, CameraComponent>();
             for (auto entity : view) {
@@ -34,19 +34,19 @@ namespace Engine
                 if (camera.Primary) {
                     // ENGINE_CORE_INFO("Found primary camera " + m_Registry.get<TagComponent>(entity).Tag);
                     mainCamera = &camera.Camera;
-                    cameraTransform = &transform.Transform;
+                    cameraTransform = transform.GetTransform();
                     break;
                 }
             }
         }
 
         if (mainCamera) {
-            Renderer2D::BeginScene(mainCamera->GetProjection(), *cameraTransform);
+            Renderer2D::BeginScene(mainCamera->GetProjection(), cameraTransform);
 
             auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
             for (auto entity : group) {
                 const auto [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
-                Renderer2D::DrawQuad(transform, sprite.Color);
+                Renderer2D::DrawQuad(transform.GetTransform(), sprite.Color);
             }
 
             Renderer2D::EndScene();

@@ -11,6 +11,13 @@ add_defines("ENGINE_PLATFORM_LINUX","ENGINE_ENABLE_ASSERTS")
 add_packages("imgui")
 add_packages("spdlog","glad","glfw","glm","entt")
 
+target("Editor")
+    set_toolchains("clang")
+    add_deps("Engine")
+    set_kind("binary")
+    add_files("Editor/src/**.cpp")
+    add_includedirs("Engine/src")
+
 target("Engine")
     set_toolchains("clang")
     set_kind("static")
@@ -26,10 +33,5 @@ target("Sandbox")
     add_files("Sandbox/src/**.cpp")
     add_includedirs("Engine/src")
 
-target("Editor")
-    set_toolchains("clang")
-    add_deps("Engine")
-    set_kind("binary")
-    add_files("Editor/src/**.cpp")
-    add_includedirs("Engine/src")
+
 

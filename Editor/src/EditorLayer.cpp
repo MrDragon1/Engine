@@ -8,9 +8,7 @@
 
 namespace Engine
 {
-    EditorLayer::EditorLayer()
-        : Layer("EditorLayer"), m_CameraController(1280.0f / 720.0f) {
-    }
+    EditorLayer::EditorLayer() : Layer("EditorLayer"), m_CameraController(1280.0f / 720.0f) {}
 
     void EditorLayer::OnAttach() {
         m_CheckerboardTexture = Texture2D::Create("assets/textures/Checkerboard.png");
@@ -39,25 +37,20 @@ namespace Engine
         class CameraController : public ScriptableEntity {
           public:
             void OnCreate() {
-                auto& transform = GetComponent<TransformComponent>().Transform;
-                transform[3][0] = rand() % 10 - 5.0f;
+                auto& translation = GetComponent<TransformComponent>().Translation;
+                translation.x = rand() % 10 - 5.0f;
             }
 
-            void OnDestroy() {
-            }
+            void OnDestroy() {}
 
             void OnUpdate(Timestep ts) {
-                auto& transform = GetComponent<TransformComponent>().Transform;
+                auto& translation = GetComponent<TransformComponent>().Translation;
                 float speed = 5.0f;
 
-                if (Input::IsKeyPressed(KeyCode::A))
-                    transform[3][0] -= speed * ts;
-                if (Input::IsKeyPressed(KeyCode::D))
-                    transform[3][0] += speed * ts;
-                if (Input::IsKeyPressed(KeyCode::W))
-                    transform[3][1] += speed * ts;
-                if (Input::IsKeyPressed(KeyCode::S))
-                    transform[3][1] -= speed * ts;
+                if (Input::IsKeyPressed(KeyCode::A)) translation.x -= speed * ts;
+                if (Input::IsKeyPressed(KeyCode::D)) translation.x += speed * ts;
+                if (Input::IsKeyPressed(KeyCode::W)) translation.y += speed * ts;
+                if (Input::IsKeyPressed(KeyCode::S)) translation.y -= speed * ts;
             }
         };
 
@@ -65,8 +58,7 @@ namespace Engine
         m_SceneHierarchyPanel.SetContext(m_Scene);
     }
 
-    void EditorLayer::OnDetach() {
-    }
+    void EditorLayer::OnDetach() {}
 
     void EditorLayer::OnUpdate(Timestep ts) {
         // Update
@@ -107,9 +99,9 @@ namespace Engine
             window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
         }
 
-        // When using ImGuiDockNodeFlags_PassthruCentralNode, DockSpace() will render our background and handle the pass-thru hole, so we ask Begin() to not render a background.
-        if (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode)
-            window_flags |= ImGuiWindowFlags_NoBackground;
+        // When using ImGuiDockNodeFlags_PassthruCentralNode, DockSpace() will render our background and handle the pass-thru hole, so we ask Begin()
+        // to not render a background.
+        if (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode) window_flags |= ImGuiWindowFlags_NoBackground;
 
         // Important: note that we proceed even if Begin() returns false (aka window is collapsed).
         // This is because we want to keep our DockSpace() active. If a DockSpace() is inactive,
@@ -120,8 +112,7 @@ namespace Engine
         ImGui::Begin("DockSpace Demo", &dockspaceOpen, window_flags);
         ImGui::PopStyleVar();
 
-        if (opt_fullscreen)
-            ImGui::PopStyleVar(2);
+        if (opt_fullscreen) ImGui::PopStyleVar(2);
 
         // DockSpace
         ImGuiIO& io = ImGui::GetIO();
@@ -145,7 +136,7 @@ namespace Engine
 
         m_SceneHierarchyPanel.OnImguiRender();
 
-        ImGui::Begin("Settings");
+        ImGui::Begin("Stats");
 
         auto stats = Engine::Renderer2D::GetStats();
         ImGui::Text("Renderer2D Stats:");
@@ -153,31 +144,6 @@ namespace Engine
         ImGui::Text("Quads: %d", stats.QuadCount);
         ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());
         ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
-
-        if (m_SquareEntity) {
-            ImGui::Separator();
-            auto& tag = m_SquareEntity.GetComponent<TagComponent>().Tag;
-            ImGui::Text("%s", tag.c_str());
-
-            auto& squareColor = m_SquareEntity.GetComponent<SpriteRendererComponent>().Color;
-            ImGui::ColorEdit4("Square Color", glm::value_ptr(squareColor));
-            ImGui::Separator();
-        }
-
-        ImGui::DragFloat3("Camera Transform",
-                          glm::value_ptr(m_CameraEntity.GetComponent<TransformComponent>().Transform[3]));
-
-        if (ImGui::Checkbox("Camera A", &m_PrimaryCamera)) {
-            m_CameraEntity.GetComponent<CameraComponent>().Primary = m_PrimaryCamera;
-            m_SecondCamera.GetComponent<CameraComponent>().Primary = !m_PrimaryCamera;
-        }
-
-        {
-            auto& camera = m_SecondCamera.GetComponent<CameraComponent>().Camera;
-            float orthoSize = camera.GetOrthographicSize();
-            if (ImGui::DragFloat("Second Camera Ortho Size", &orthoSize))
-                camera.SetOrthographicSize(orthoSize);
-        }
 
         ImGui::End();
 
@@ -205,7 +171,5 @@ namespace Engine
         ImGui::End();
     }
 
-    void EditorLayer::OnEvent(Event& e) {
-        m_CameraController.OnEvent(e);
-    }
+    void EditorLayer::OnEvent(Event& e) { m_CameraController.OnEvent(e); }
 }  // namespace Engine
