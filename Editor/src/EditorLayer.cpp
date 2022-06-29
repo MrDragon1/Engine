@@ -6,6 +6,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "Engine/Scene/SceneSerializer.hpp"
 namespace Engine
 {
     EditorLayer::EditorLayer() : Layer("EditorLayer"), m_CameraController(1280.0f / 720.0f) {}
@@ -19,7 +20,7 @@ namespace Engine
         m_Framebuffer = Framebuffer::Create(fbSpec);
 
         m_Scene = CreateRef<Scene>();
-
+#if 0
         auto square = m_Scene->CreateEntity("Green Square");
         square.AddComponent<SpriteRendererComponent>(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
         m_SquareEntity = square;
@@ -55,6 +56,7 @@ namespace Engine
         };
 
         m_CameraEntity.AddComponent<NativeScriptComponent>().Bind<CameraController>();
+#endif
         m_SceneHierarchyPanel.SetContext(m_Scene);
     }
 
@@ -132,6 +134,16 @@ namespace Engine
                 // Disabling fullscreen would allow the window to be moved to the front of other windows,
                 // which we can't undo at the moment without finer window depth/z control.
                 // ImGui::MenuItem("Fullscreen", NULL, &opt_fullscreen_persistant);
+
+                if (ImGui::MenuItem("Serialize")) {
+                    SceneSerializer serializer(m_Scene);
+                    serializer.Serialize("assets/scenes/Example.Scene");
+                }
+
+                if (ImGui::MenuItem("Deserialize")) {
+                    SceneSerializer serializer(m_Scene);
+                    serializer.Deserialize("assets/scenes/Example.Scene");
+                }
 
                 if (ImGui::MenuItem("Exit")) Engine::Application::Get().Close();
                 ImGui::EndMenu();
