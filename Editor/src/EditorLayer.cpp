@@ -7,6 +7,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "Engine/Scene/SceneSerializer.hpp"
+#include "Engine/Utils/PlatformUtils.hpp"
 namespace Engine
 {
     EditorLayer::EditorLayer() : Layer("EditorLayer"), m_CameraController(1280.0f / 720.0f) {}
@@ -135,15 +136,9 @@ namespace Engine
                 // which we can't undo at the moment without finer window depth/z control.
                 // ImGui::MenuItem("Fullscreen", NULL, &opt_fullscreen_persistant);
 
-                if (ImGui::MenuItem("Serialize")) {
-                    SceneSerializer serializer(m_Scene);
-                    serializer.Serialize("assets/scenes/Example.Scene");
-                }
-
-                if (ImGui::MenuItem("Deserialize")) {
-                    SceneSerializer serializer(m_Scene);
-                    serializer.Deserialize("assets/scenes/Example.Scene");
-                }
+                if (ImGui::MenuItem("New", "Ctrl+N")) NewScene();
+                if (ImGui::MenuItem("Open...", "Ctrl+O")) OpenScene();
+                if (ImGui::MenuItem("SaveAs...", "Ctrl+shift+S")) SaveSceneAs();
 
                 if (ImGui::MenuItem("Exit")) Engine::Application::Get().Close();
                 ImGui::EndMenu();
@@ -189,5 +184,61 @@ namespace Engine
         ImGui::End();
     }
 
-    void EditorLayer::OnEvent(Event& e) { m_CameraController.OnEvent(e); }
+    void EditorLayer::OnEvent(Event& e) {
+        m_CameraController.OnEvent(e);
+        EventDispatcher dispatcher(e);
+        dispatcher.Dispatch<KeyPressedEvent>(ENGINE_BIND_EVENT_FN(EditorLayer::OnKeyPressed));
+    }
+
+    bool EditorLayer::OnKeyPressed(KeyPressedEvent& e) {
+        // Shortcuts
+        if (e.GetRepeatCount() > 0) return false;
+
+        bool control = Input::IsKeyPressed(Key::LeftControl) || Input::IsKeyPressed(Key::RightControl);
+        bool shift = Input::IsKeyPressed(Key::LeftShift) || Input::IsKeyPressed(Key::RightShift);
+        switch (e.GetKeyCode()) {
+            case Key::N: {
+                if (control) {
+                    NewScene();
+                    ENGINE_CORE_INFO("call ctrl n");
+                }
+                break;
+            }
+            case Key::O: {
+                if (control) OpenScene();
+                break;
+            }
+            case Key::S: {
+                if (control && shift) SaveSceneAs();
+                break;
+            }
+        }
+        return true;
+    }
+
+    void EditorLayer::NewScene() {
+        m_Scene = CreateRef<Scene>();
+        m_Scene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+        m_SceneHierarchyPanel.SetContext(m_Scene);
+    }
+
+    void EditorLayer::OpenScene() {
+        std::string filepath = FileDialogs::OpenFile("Scene (*.Scene)\0*.Scene\0");
+        if (!filepath.empty()) {
+            m_Scene = CreateRef<Scene>();
+            m_Scene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+            m_SceneHierarchyPanel.SetContext(m_Scene);
+
+            SceneSerializer serializer(m_Scene);
+            serializer.Deserialize(filepath);
+        }
+    }
+
+    void EditorLayer::SaveSceneAs() {
+        std::string filepath = FileDialogs::SaveFile("Scene (*.Scene)\0*.Scene\0");
+        if (!filepath.empty()) {
+            SceneSerializer serializer(m_Scene);
+            serializer.Serialize(filepath);
+        }
+    }
 }  // namespace Engine

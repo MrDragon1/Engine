@@ -23,6 +23,7 @@ target("Engine")
     set_kind("static")
     set_pcxxheader("Engine/src/pch.hpp")
     add_files("Engine/src/**.cpp","Engine/vendor/**.cpp")
+    add_links("comdlg32")
     add_includedirs("Engine/src","Engine/vendor")
 
     

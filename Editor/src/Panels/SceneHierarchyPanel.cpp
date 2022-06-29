@@ -7,7 +7,10 @@ namespace Engine
 {
     SceneHierarchyPanel::SceneHierarchyPanel(const Ref<Scene>& scene) { SetContext(scene); }
 
-    void SceneHierarchyPanel::SetContext(const Ref<Scene>& scene) { m_Context = scene; }
+    void SceneHierarchyPanel::SetContext(const Ref<Scene>& scene) {
+        m_Context = scene;
+        m_SelectionContext = {};
+    }
 
     void SceneHierarchyPanel::OnImguiRender() {
         ImGui::Begin("Scene Hierarchy");
