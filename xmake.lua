@@ -16,14 +16,14 @@ target("Editor")
     add_deps("Engine")
     set_kind("binary")
     add_files("Editor/src/**.cpp")
-    add_includedirs("Engine/src")
+    add_includedirs("Engine/src","Engine/vendor")
 
 target("Engine")
     set_toolchains("clang")
     set_kind("static")
     set_pcxxheader("Engine/src/pch.hpp")
     add_files("Engine/src/**.cpp","Engine/vendor/**.cpp")
-    add_links("comdlg32")
+    add_syslinks("comdlg32")
     add_includedirs("Engine/src","Engine/vendor")
 
     

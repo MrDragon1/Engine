@@ -12,7 +12,7 @@ namespace Engine
         m_SelectionContext = {};
     }
 
-    void SceneHierarchyPanel::OnImguiRender() {
+    void SceneHierarchyPanel::OnImGuiRender() {
         ImGui::Begin("Scene Hierarchy");
 
         m_Context->m_Registry.each([&](auto entityID) {

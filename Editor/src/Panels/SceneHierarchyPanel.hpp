@@ -9,7 +9,8 @@ namespace Engine
         SceneHierarchyPanel(const Ref<Scene>& scene);
 
         void SetContext(const Ref<Scene>& scene);
-        void OnImguiRender();
+        void OnImGuiRender();
+        Entity GetSelectedEntity() const { return m_SelectionContext; }
 
       private:
         void DrawEntityNode(Entity entity);
