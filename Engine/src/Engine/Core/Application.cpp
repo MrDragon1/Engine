@@ -1,10 +1,10 @@
+#include "pch.hpp"
 #include "Application.hpp"
 #include <GLFW/glfw3.h>
 
 #include "Engine/Core/Input.hpp"
 #include "Engine/Core/Log.hpp"
 #include "Engine/Event/ApplicationEvent.hpp"
-#include "pch.hpp"
 
 #include "Engine/Renderer/Renderer.hpp"
 namespace Engine

@@ -1,3 +1,4 @@
+#include "pch.hpp"
 #include "Math.hpp"
 
 #define GLM_ENABLE_EXPERIMENTAL

@@ -1,10 +1,10 @@
+#include "pch.hpp"
 #include "OpenGLContext.hpp"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 #include "Engine/Core/Utils.hpp"
-#include "pch.hpp"
 
 namespace Engine {
 OpenGLContext::OpenGLContext(GLFWwindow *windowHandle) : m_WindowHandle(windowHandle) { ENGINE_CORE_ASSERT(windowHandle, "Window handle is null!"); }

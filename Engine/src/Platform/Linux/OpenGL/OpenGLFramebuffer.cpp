@@ -1,3 +1,4 @@
+#include "pch.hpp"
 #include "OpenGLFramebuffer.hpp"
 
 #include <glad/glad.h>
