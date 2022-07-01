@@ -25,44 +25,9 @@ namespace Engine
         m_Framebuffer = Framebuffer::Create(fbSpec);
 
         m_Scene = CreateRef<Scene>();
-#if 0
-        auto square = m_Scene->CreateEntity("Green Square");
-        square.AddComponent<SpriteRendererComponent>(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
-        m_SquareEntity = square;
-
-        auto redSquare = m_Scene->CreateEntity("Red Square");
-        redSquare.AddComponent<SpriteRendererComponent>(glm::vec4{1.0f, 0.0f, 0.0f, 1.0f});
-
-        m_CameraEntity = m_Scene->CreateEntity("Camera Entity");
-        m_CameraEntity.AddComponent<CameraComponent>();
-
-        m_SecondCamera = m_Scene->CreateEntity("Clip-Space Entity");
-        auto& cc = m_SecondCamera.AddComponent<CameraComponent>();
-        cc.Primary = false;
-
-        class CameraController : public ScriptableEntity {
-          public:
-            void OnCreate() {
-                auto& translation = GetComponent<TransformComponent>().Translation;
-                translation.x = rand() % 10 - 5.0f;
-            }
-
-            void OnDestroy() {}
-
-            void OnUpdate(Timestep ts) {
-                auto& translation = GetComponent<TransformComponent>().Translation;
-                float speed = 5.0f;
-
-                if (Input::IsKeyPressed(KeyCode::A)) translation.x -= speed * ts;
-                if (Input::IsKeyPressed(KeyCode::D)) translation.x += speed * ts;
-                if (Input::IsKeyPressed(KeyCode::W)) translation.y += speed * ts;
-                if (Input::IsKeyPressed(KeyCode::S)) translation.y -= speed * ts;
-            }
-        };
-
-        m_CameraEntity.AddComponent<NativeScriptComponent>().Bind<CameraController>();
-#endif
         m_SceneHierarchyPanel.SetContext(m_Scene);
+
+        m_EditorCamera = EditorCamera(30.0f, 1280.0f / 720.0f, 0.1f, 1000.0f);
     }
 
     void EditorLayer::OnDetach() {}
@@ -73,6 +38,8 @@ namespace Engine
         //     m_CameraController.OnUpdate(ts);
         // }
 
+        m_EditorCamera.OnUpdate(ts);
+
         // Render
         Renderer2D::ResetStats();
 
@@ -80,7 +47,7 @@ namespace Engine
         RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1});
         RenderCommand::Clear();
 
-        m_Scene->OnUpdate(ts);
+        m_Scene->OnUpdateEditor(ts, m_EditorCamera);
 
         m_Framebuffer->Unbind();
     }
@@ -179,7 +146,7 @@ namespace Engine
                                                                                (spec.Width != m_ViewportSize.x || spec.Height != m_ViewportSize.y)) {
             m_Framebuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
             m_CameraController.OnResize(m_ViewportSize.x, m_ViewportSize.y);
-
+            m_EditorCamera.SetViewportSize(m_ViewportSize.x, m_ViewportSize.y);
             m_Scene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
         }
         uint64_t textureID = m_Framebuffer->GetColorAttachmentRendererID();
@@ -195,16 +162,19 @@ namespace Engine
             float windowHeight = (float)ImGui::GetWindowHeight();
             ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
 
-            // Camera
-            auto cameraEntity = m_Scene->GetPrimaryCameraEntity();
-            const auto& camera = cameraEntity.GetComponent<CameraComponent>().Camera;
-            const glm::mat4& cameraProjection = camera.GetProjection();
-            glm::mat4 cameraView = glm::inverse(cameraEntity.GetComponent<TransformComponent>().GetTransform());
+            // // Camera
+            // auto cameraEntity = m_Scene->GetPrimaryCameraEntity();
+            // const auto& camera = cameraEntity.GetComponent<CameraComponent>().Camera;
+            // const glm::mat4& cameraProjection = camera.GetProjection();
+            // glm::mat4 cameraView = glm::inverse(cameraEntity.GetComponent<TransformComponent>().GetTransform());
+
+            // Editor camera
+            const glm::mat4& cameraProjection = m_EditorCamera.GetProjection();
+            glm::mat4 cameraView = m_EditorCamera.GetViewMatrix();
 
             // Entity transform
             auto& tc = selectedEntity.GetComponent<TransformComponent>();
             glm::mat4 transform = tc.GetTransform();
-
 
             // Snapping
             bool snap = Input::IsKeyPressed(Key::LeftControl);
@@ -235,6 +205,7 @@ namespace Engine
 
     void EditorLayer::OnEvent(Event& e) {
         m_CameraController.OnEvent(e);
+        m_EditorCamera.OnEvent(e);
         EventDispatcher dispatcher(e);
         dispatcher.Dispatch<KeyPressedEvent>(ENGINE_BIND_EVENT_FN(EditorLayer::OnKeyPressed));
     }
@@ -247,10 +218,7 @@ namespace Engine
         bool shift = Input::IsKeyPressed(Key::LeftShift) || Input::IsKeyPressed(Key::RightShift);
         switch (e.GetKeyCode()) {
             case Key::N: {
-                if (control) {
-                    NewScene();
-                    ENGINE_CORE_INFO("call ctrl n");
-                }
+                if (control) NewScene();
                 break;
             }
             case Key::O: {

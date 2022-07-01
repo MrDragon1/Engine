@@ -10,7 +10,7 @@ namespace Engine
 
     Scene::~Scene() {}
 
-    void Scene::OnUpdate(Timestep ts) {
+    void Scene::OnUpdateRuntime(Timestep ts) {
         // Update Scripts
         {
             m_Registry.view<NativeScriptComponent>().each([=](auto entity, auto& scriptable) {
@@ -49,6 +49,18 @@ namespace Engine
 
             Renderer2D::EndScene();
         }
+    }
+
+    void Scene::OnUpdateEditor(Timestep ts, EditorCamera& camera) {
+        Renderer2D::BeginScene(camera);
+
+        auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
+        for (auto entity : group) {
+            const auto [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
+            Renderer2D::DrawQuad(transform.GetTransform(), sprite.Color);
+        }
+
+        Renderer2D::EndScene();
     }
 
     Entity Scene::CreateEntity(const std::string& name) {

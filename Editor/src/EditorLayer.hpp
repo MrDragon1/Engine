@@ -2,6 +2,7 @@
 
 #include "Engine.hpp"
 #include "Panels/SceneHierarchyPanel.hpp"
+#include "Engine/Renderer/EditorCamera.hpp"
 namespace Engine
 {
     class EditorLayer : public Layer {
@@ -25,7 +26,7 @@ namespace Engine
 
       private:
         OrthographicCameraController m_CameraController;
-
+        EditorCamera m_EditorCamera;
         // Temp
         Ref<VertexArray> m_SquareVA;
         Ref<Shader> m_FlatColorShader;

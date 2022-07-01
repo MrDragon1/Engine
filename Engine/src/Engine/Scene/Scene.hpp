@@ -3,7 +3,7 @@
 #include "entt/entt.hpp"
 
 #include "Engine/Core/Timestep.hpp"
-
+#include "Engine/Renderer/EditorCamera.hpp"
 namespace Engine
 {
     class Entity;
@@ -12,7 +12,8 @@ namespace Engine
         Scene();
         ~Scene();
 
-        void OnUpdate(Timestep ts);
+        void OnUpdateRuntime(Timestep ts);
+        void OnUpdateEditor(Timestep ts,EditorCamera& camera);
 
         Entity CreateEntity(const std::string& name = std::string());
         void DestroyEntity(Entity entity);
