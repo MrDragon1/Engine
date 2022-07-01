@@ -30,6 +30,7 @@ void main()
 #version 460 core
 
 layout(location = 0) out vec4 color;
+layout(location = 1) out int color2;
 
 in vec2 v_TexCoord;
 in vec4 v_Color;
@@ -42,4 +43,5 @@ void main()
 {
     const int texIndex = int(v_TexIndex);
     color = texture(u_Textures[texIndex], v_TexCoord * v_TilingFactor) * v_Color;
+    color2 = 50;
 } 
