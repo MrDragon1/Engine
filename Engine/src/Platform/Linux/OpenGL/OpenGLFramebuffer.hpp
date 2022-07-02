@@ -15,6 +15,8 @@ namespace Engine
         virtual int ReadPixel(uint32_t attachmentIndex, int x, int y) override;
 
         const FramebufferSpecification& GetSpecification() const override { return m_Specification; }
+        virtual void ClearAttachment(uint32_t attachmentIndex, int value) override;
+
         uint32_t GetColorAttachmentRendererID(uint32_t index = 0) const override {
             ENGINE_CORE_ASSERT(index < m_ColorAttachments.size());
             return m_ColorAttachments[index];
