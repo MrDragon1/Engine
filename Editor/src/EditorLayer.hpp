@@ -2,6 +2,7 @@
 
 #include "Engine.hpp"
 #include "Panels/SceneHierarchyPanel.hpp"
+#include "Panels/ContentBrowserPanel.hpp"
 #include "Engine/Renderer/EditorCamera.hpp"
 namespace Engine
 {
@@ -50,6 +51,7 @@ namespace Engine
         bool m_ViewportFocused = false, m_ViewportHovered = false;
 
         SceneHierarchyPanel m_SceneHierarchyPanel;
+        ContentBrowserPanel m_ContentBrowserPanel;
 
         int m_GizmoType = -1;
     };
