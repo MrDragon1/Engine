@@ -14,6 +14,8 @@
 
 namespace Engine
 {
+    extern const std::filesystem::path g_AssetPath;
+
     EditorLayer::EditorLayer() : Layer("EditorLayer"), m_CameraController(1280.0f / 720.0f) {}
 
     void EditorLayer::OnAttach() {
@@ -174,6 +176,14 @@ namespace Engine
         uint64_t textureID = m_Framebuffer->GetColorAttachmentRendererID();
         ImGui::Image(reinterpret_cast<void*>(textureID), ImVec2{m_ViewportSize.x, m_ViewportSize.y}, ImVec2{0, 1}, ImVec2{1, 0});
 
+        if (ImGui::BeginDragDropTarget()) {
+            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
+                const wchar_t* path = (const wchar_t*)payload->Data;
+                OpenScene(std::filesystem::path(g_AssetPath) / path);
+            }
+            ImGui::EndDragDropTarget();
+        }
+
         ImVec2 minBound = ImGui::GetWindowPos();
         minBound.x += viewportOffset.x;
         minBound.y += viewportOffset.y;
@@ -294,13 +304,17 @@ namespace Engine
     void EditorLayer::OpenScene() {
         std::string filepath = FileDialogs::OpenFile("Scene (*.Scene)\0*.Scene\0");
         if (!filepath.empty()) {
-            m_Scene = CreateRef<Scene>();
-            m_Scene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-            m_SceneHierarchyPanel.SetContext(m_Scene);
-
-            SceneSerializer serializer(m_Scene);
-            serializer.Deserialize(filepath);
+            OpenScene(std::filesystem::path(filepath));
         }
+    }
+
+    void EditorLayer::OpenScene(const std::filesystem::path& path) {
+        m_Scene = CreateRef<Scene>();
+        m_Scene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+        m_SceneHierarchyPanel.SetContext(m_Scene);
+
+        SceneSerializer serializer(m_Scene);
+        serializer.Deserialize(path.string());
     }
 
     void EditorLayer::SaveSceneAs() {
