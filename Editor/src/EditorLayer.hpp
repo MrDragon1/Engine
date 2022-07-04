@@ -27,6 +27,10 @@ namespace Engine
         void OpenScene(const std::filesystem::path& path);
         void SaveSceneAs();
 
+        void OnScenePlay();
+        void OnSceneStop();
+
+        void UI_Toolbar();
       private:
         OrthographicCameraController m_CameraController;
         EditorCamera m_EditorCamera;
@@ -36,6 +40,8 @@ namespace Engine
         Ref<Framebuffer> m_Framebuffer;
 
         Ref<Texture2D> m_CheckerboardTexture;
+        Ref<Texture2D> m_IconPlay;
+        Ref<Texture2D> m_IconStop;
 
         Ref<Scene> m_Scene;
         Entity m_SquareEntity;
@@ -55,5 +61,12 @@ namespace Engine
         ContentBrowserPanel m_ContentBrowserPanel;
 
         int m_GizmoType = -1;
+
+        enum class SceneState
+        {
+            Edit = 0, Play = 1
+        };
+
+        SceneState m_SceneState = SceneState::Edit;
     };
 }  // namespace Engine
