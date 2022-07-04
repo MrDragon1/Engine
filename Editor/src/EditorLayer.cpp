@@ -343,9 +343,15 @@ namespace Engine
         }
     }
 
-    void EditorLayer::OnScenePlay() { m_SceneState = SceneState::Play; }
+    void EditorLayer::OnScenePlay() {
+        m_SceneState = SceneState::Play;
+        m_Scene->OnRuntimeStart();
+    }
 
-    void EditorLayer::OnSceneStop() { m_SceneState = SceneState::Edit; }
+    void EditorLayer::OnSceneStop() {
+        m_SceneState = SceneState::Edit;
+        m_Scene->OnRuntimeStop();
+    }
 
     void EditorLayer::UI_Toolbar() {
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 2));
