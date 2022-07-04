@@ -2,18 +2,37 @@
 #include "spdlog/spdlog.h"
 #include "spdlog/fmt/ostr.h"
 #include "Engine/Core/Utils.hpp"
-namespace Engine {
-class Log {
-  public:
-    static void Init();
-    inline static std::shared_ptr<spdlog::logger>& GetCoreLogger() { return s_CoreLogger; }
-    inline static std::shared_ptr<spdlog::logger>& GetClientLogger() { return s_ClientLogger; }
 
-  private:
-    static std::shared_ptr<spdlog::logger> s_CoreLogger;
-    static std::shared_ptr<spdlog::logger> s_ClientLogger;
-};
+#define GLM_ENABLE_EXPERIMENTAL
+#include "glm/gtx/string_cast.hpp"
+namespace Engine
+{
+    class Log {
+      public:
+        static void Init();
+        inline static std::shared_ptr<spdlog::logger>& GetCoreLogger() { return s_CoreLogger; }
+        inline static std::shared_ptr<spdlog::logger>& GetClientLogger() { return s_ClientLogger; }
+
+      private:
+        static std::shared_ptr<spdlog::logger> s_CoreLogger;
+        static std::shared_ptr<spdlog::logger> s_ClientLogger;
+    };
 }  // namespace Engine
+
+template <typename OStream, glm::length_t L, typename T, glm::qualifier Q>
+inline OStream& operator<<(OStream& os, const glm::vec<L, T, Q>& vector) {
+    return os << glm::to_string(vector);
+}
+
+template <typename OStream, glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
+inline OStream& operator<<(OStream& os, const glm::mat<C, R, T, Q>& matrix) {
+    return os << glm::to_string(matrix);
+}
+
+template <typename OStream, typename T, glm::qualifier Q>
+inline OStream& operator<<(OStream& os, glm::qua<T, Q> quaternio) {
+    return os << glm::to_string(quaternio);
+}
 
 // Core log macros
 #define ENGINE_CORE_TRACE(...) ::Engine::Log::GetCoreLogger()->trace(__VA_ARGS__)

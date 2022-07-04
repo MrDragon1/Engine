@@ -323,6 +323,10 @@ namespace Engine
     }
 
     void EditorLayer::OpenScene(const std::filesystem::path& path) {
+        if (path.extension().string() != ".Scene") {
+            ENGINE_WARN("Could not load {0} - not a scene file", path.filename().string());
+            return;
+        }
         m_Scene = CreateRef<Scene>();
         m_Scene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
         m_SceneHierarchyPanel.SetContext(m_Scene);
