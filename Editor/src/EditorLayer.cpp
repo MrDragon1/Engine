@@ -19,7 +19,6 @@ namespace Engine
     EditorLayer::EditorLayer() : Layer("EditorLayer"), m_CameraController(1280.0f / 720.0f) {}
 
     void EditorLayer::OnAttach() {
-        m_CheckerboardTexture = Texture2D::Create("assets/textures/Checkerboard.png");
         m_IconPlay = Texture2D::Create("assets/icons/PlayButton.png");
         m_IconStop = Texture2D::Create("assets/icons/StopButton.png");
 

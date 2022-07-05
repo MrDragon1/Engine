@@ -44,7 +44,6 @@ namespace Engine
         Ref<Shader> m_FlatColorShader;
         Ref<Framebuffer> m_Framebuffer;
 
-        Ref<Texture2D> m_CheckerboardTexture;
         Ref<Texture2D> m_IconPlay;
         Ref<Texture2D> m_IconStop;
 
@@ -52,14 +51,8 @@ namespace Engine
         Ref<Scene> m_EditorScene;
 
         std::filesystem::path m_EditorScenePath;
-        
-        Entity m_SquareEntity;
-        Entity m_CameraEntity;
-        Entity m_SecondCamera;
-        bool m_PrimaryCamera = true;
-        Entity m_HoveredEntity;
 
-        glm::vec4 m_SquareColor = {0.2f, 0.3f, 0.8f, 1.0f};
+        Entity m_HoveredEntity;
 
         glm::vec2 m_ViewportSize = {0.0f, 0.0f};
         glm::vec2 m_ViewportBounds[2];
