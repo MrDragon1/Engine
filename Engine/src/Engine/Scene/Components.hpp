@@ -1,18 +1,27 @@
 #pragma once
 
+#include "Engine/Renderer/SceneCamera.hpp"
+#include "Engine/Renderer/texture.hpp"
+#include "Engine/Core/UUID.hpp"
+
 #include <functional>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <string>
-#include "Engine/Renderer/SceneCamera.hpp"
-#include "Engine/Scene/ScriptableEntity.hpp"
-#include "Engine/Renderer/texture.hpp"
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
 
 namespace Engine
 {
+    struct IDComponent {
+        UUID ID;
+
+        IDComponent() = default;
+        IDComponent(UUID uuid): ID(uuid) {};
+        IDComponent(const IDComponent&) = default;
+    };
+
     struct TagComponent {
         std::string Tag;
 
@@ -53,6 +62,7 @@ namespace Engine
         CameraComponent(const CameraComponent&) = default;
     };
 
+    class ScriptableEntity;
     struct NativeScriptComponent {
         ScriptableEntity* Instance = nullptr;
 

@@ -1,5 +1,6 @@
 #pragma once
 #include "Scene.hpp"
+#include "Components.hpp"
 #include "entt/entt.hpp"
 
 namespace Engine
@@ -34,6 +35,8 @@ namespace Engine
             ENGINE_CORE_ASSERT(HasComponent<T>(), "Entity does not have component!");
             m_Scene->m_Registry.remove<T>(m_Entity);
         }
+
+        UUID GetUUID() { return GetComponent<IDComponent>().ID; };
 
         operator bool() const { return m_Entity != entt::null; }
         operator uint32_t() const { return (uint32_t)m_Entity; }

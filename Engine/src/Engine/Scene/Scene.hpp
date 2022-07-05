@@ -1,9 +1,10 @@
 #pragma once
 
-#include "entt/entt.hpp"
-
+#include "Engine/Core/UUID.hpp"
 #include "Engine/Core/Timestep.hpp"
 #include "Engine/Renderer/EditorCamera.hpp"
+
+#include "entt/entt.hpp"
 
 class b2World;
 namespace Engine
@@ -19,6 +20,8 @@ namespace Engine
         void OnUpdateEditor(Timestep ts, EditorCamera& camera);
 
         Entity CreateEntity(const std::string& name = std::string());
+        Entity CreateEntityWithUUID(UUID uuid, const std::string& name = std::string());
+        
         void DestroyEntity(Entity entity);
         void OnRuntimeStart();
         void OnRuntimeStop();

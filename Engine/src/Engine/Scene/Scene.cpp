@@ -1,8 +1,8 @@
 #include "pch.hpp"
 #include "Scene.hpp"
 
-#include "Entity.hpp"
 #include "Components.hpp"
+#include "Engine/Scene/ScriptableEntity.hpp"
 #include "Engine/Renderer/Renderer2D.hpp"
 
 #include "box2d/b2_world.h"
@@ -103,7 +103,13 @@ namespace Engine
     }
 
     Entity Scene::CreateEntity(const std::string& name) {
+        return CreateEntityWithUUID(UUID(),name);
+    }
+    
+    Entity Scene::CreateEntityWithUUID(UUID uuid, const std::string& name)
+    {
         Entity entity = {m_Registry.create(), this};
+        entity.AddComponent<IDComponent>(uuid);
         entity.AddComponent<TransformComponent>();
         auto& tag = entity.AddComponent<TagComponent>();
         tag.Tag = name.empty() ? "DefaultEntity" : name;
@@ -172,6 +178,8 @@ namespace Engine
     void Scene::OnComponentAdded(Entity entity, T& component) {
         static_assert(false);
     }
+    template <>
+    void Scene::OnComponentAdded<IDComponent>(Entity entity, IDComponent& component) {}
     template <>
     void Scene::OnComponentAdded<TransformComponent>(Entity entity, TransformComponent& component) {}
     template <>
