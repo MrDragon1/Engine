@@ -233,6 +233,7 @@ namespace Engine
         try {
             data = YAML::LoadFile(filepath);
         } catch (YAML::ParserException e) {
+            ENGINE_CORE_ERROR("Failed to load .Scene file '{0}'\n     {1}", filepath, e.what());
             return false;
         }
         if (!data["Scene"]) return false;
