@@ -29,9 +29,7 @@ namespace Engine
         fbSpec.Height = 720;
         m_Framebuffer = Framebuffer::Create(fbSpec);
 
-        m_Scene = CreateRef<Scene>();
-        m_SceneHierarchyPanel.SetContext(m_Scene);
-
+        m_ActiveScene = CreateRef<Scene>();
         m_EditorCamera = EditorCamera(30.0f, 1280.0f / 720.0f, 0.1f, 1000.0f);
     }
 
@@ -57,12 +55,12 @@ namespace Engine
                 // if (m_ViewportFocused) {
                 //     m_CameraController.OnUpdate(ts);
                 // }
-                m_Scene->OnUpdateRuntime(ts);
+                m_ActiveScene->OnUpdateRuntime(ts);
                 break;
             }
 
             case SceneState::Edit: {
-                m_Scene->OnUpdateEditor(ts, m_EditorCamera);
+                m_ActiveScene->OnUpdateEditor(ts, m_EditorCamera);
                 break;
             }
         }
@@ -77,7 +75,7 @@ namespace Engine
 
         if (mouseX >= 0 && mouseY >= 0 && mouseX < (int)viewportSize.x && mouseY < (int)viewportSize.y) {
             int pixelData = m_Framebuffer->ReadPixel(1, mouseX, mouseY);
-            m_HoveredEntity = pixelData == -1 ? Entity() : Entity((entt::entity)pixelData, m_Scene.get());
+            m_HoveredEntity = pixelData == -1 ? Entity() : Entity((entt::entity)pixelData, m_ActiveScene.get());
         }
 
         m_Framebuffer->Unbind();
@@ -183,7 +181,7 @@ namespace Engine
             m_Framebuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
             m_CameraController.OnResize(m_ViewportSize.x, m_ViewportSize.y);
             m_EditorCamera.SetViewportSize(m_ViewportSize.x, m_ViewportSize.y);
-            m_Scene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+            m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
         }
         uint64_t textureID = m_Framebuffer->GetColorAttachmentRendererID();
         ImGui::Image(reinterpret_cast<void*>(textureID), ImVec2{m_ViewportSize.x, m_ViewportSize.y}, ImVec2{0, 1}, ImVec2{1, 0});
@@ -281,7 +279,16 @@ namespace Engine
                 break;
             }
             case Key::S: {
-                if (control && shift) SaveSceneAs();
+                if (control) {
+                    if (shift)
+                        SaveSceneAs();
+                    else
+                        SaveScene();
+                }
+                break;
+            }
+            case Key::D: {
+                if (control) DuplicateEntity();
                 break;
             }
             // Gizmos
@@ -310,9 +317,11 @@ namespace Engine
     }
 
     void EditorLayer::NewScene() {
-        m_Scene = CreateRef<Scene>();
-        m_Scene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-        m_SceneHierarchyPanel.SetContext(m_Scene);
+        m_ActiveScene = CreateRef<Scene>();
+        m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+        m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+        m_EditorScenePath = std::filesystem::path();
+        m_EditorScene = m_ActiveScene;  // TODO: Save old scene before new scene is created
     }
 
     void EditorLayer::OpenScene() {
@@ -323,34 +332,63 @@ namespace Engine
     }
 
     void EditorLayer::OpenScene(const std::filesystem::path& path) {
+        if (m_SceneState != SceneState::Edit) OnSceneStop();
+
         if (path.extension().string() != ".Scene") {
             ENGINE_WARN("Could not load {0} - not a scene file", path.filename().string());
             return;
         }
-        m_Scene = CreateRef<Scene>();
-        m_Scene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-        m_SceneHierarchyPanel.SetContext(m_Scene);
+        m_EditorScene = CreateRef<Scene>();
+        m_EditorScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+        m_SceneHierarchyPanel.SetContext(m_EditorScene);
 
-        SceneSerializer serializer(m_Scene);
-        serializer.Deserialize(path.string());
+        SceneSerializer serializer(m_EditorScene);
+        ENGINE_CORE_ASSERT(serializer.Deserialize(path.string()), "Deserialize Scene {0} failed", path.string());
+
+        m_ActiveScene = m_EditorScene;
+        m_EditorScenePath = path;
     }
 
     void EditorLayer::SaveSceneAs() {
         std::string filepath = FileDialogs::SaveFile("Scene (*.Scene)\0*.Scene\0");
         if (!filepath.empty()) {
-            SceneSerializer serializer(m_Scene);
-            serializer.Serialize(filepath);
+            SerializeScene(m_ActiveScene, filepath);
+            m_EditorScenePath = filepath;
         }
     }
 
+    void EditorLayer::SaveScene() {
+        if (!m_EditorScenePath.empty())
+            SerializeScene(m_ActiveScene, m_EditorScenePath);
+        else
+            SaveSceneAs();
+    }
+
+    void EditorLayer::DuplicateEntity() {
+        if (m_SceneState != SceneState::Edit) return;
+
+        Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
+        if (selectedEntity) m_EditorScene->DuplicateEntity(selectedEntity);
+    }
+
+    void EditorLayer::SerializeScene(Ref<Scene> scene, const std::filesystem::path& path) {
+        SceneSerializer serializer(scene);
+        serializer.Serialize(path.string());
+    }
+
     void EditorLayer::OnScenePlay() {
+        // TODO: Save Scene when changed
         m_SceneState = SceneState::Play;
-        m_Scene->OnRuntimeStart();
+        m_ActiveScene = Scene::Copy(m_EditorScene);
+        m_ActiveScene->OnRuntimeStart();
+        m_SceneHierarchyPanel.SetContext(m_ActiveScene);
     }
 
     void EditorLayer::OnSceneStop() {
         m_SceneState = SceneState::Edit;
-        m_Scene->OnRuntimeStop();
+        m_ActiveScene->OnRuntimeStop();
+        m_ActiveScene = m_EditorScene;
+        m_SceneHierarchyPanel.SetContext(m_ActiveScene);
     }
 
     void EditorLayer::UI_Toolbar() {
