@@ -29,6 +29,3 @@ target("Engine")
     add_files("Engine/src/**.cpp","Engine/vendor/**.cpp")
     add_includedirs("Engine/src","Engine/vendor")
     add_syslinks("comdlg32")
-
-
-
