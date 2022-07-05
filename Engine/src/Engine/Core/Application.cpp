@@ -1,11 +1,10 @@
 #include "pch.hpp"
 #include "Application.hpp"
-#include <GLFW/glfw3.h>
 
 #include "Engine/Core/Input.hpp"
 #include "Engine/Core/Log.hpp"
 #include "Engine/Event/ApplicationEvent.hpp"
-
+#include "Engine/Utils/PlatformUtils.hpp"
 #include "Engine/Renderer/Renderer.hpp"
 namespace Engine
 {
@@ -49,7 +48,7 @@ namespace Engine
 
     void Application::Run() {
         while (m_Running) {
-            float time = (float)glfwGetTime();
+            float time = Time::GetTime();
             Timestep timestep = time - m_LastFrameTime;
             m_LastFrameTime = time;
 

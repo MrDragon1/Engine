@@ -17,7 +17,7 @@ namespace Engine
         virtual void Bind(uint32_t slot = 0) const override;
         virtual void SetData(void* data, uint32_t size) override;
         virtual bool operator==(const Texture& other) const override {
-            return m_RendererID == ((OpenGLTexture2D&)other).m_RendererID;
+            return m_RendererID == other.GetRendererID();
         }
         virtual bool IsLoaded() const override { return m_IsLoaded;};
       private:
