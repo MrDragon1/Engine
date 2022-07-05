@@ -30,13 +30,5 @@ target("Engine")
     add_includedirs("Engine/src","Engine/vendor")
     add_syslinks("comdlg32")
 
-target("Sandbox")
-    set_default(false)
-    set_toolchains("clang")
-    add_deps("Engine")
-    set_kind("binary")
-    add_files("Sandbox/src/**.cpp")
-    add_includedirs("Engine/src")
-
 
 
