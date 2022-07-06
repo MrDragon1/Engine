@@ -20,7 +20,7 @@ namespace std
 
     template <>
     struct hash<Engine::UUID> {
-        std::size_t operator()(const Engine::UUID& uuid) const { return hash<uint64_t>()((uint64_t)uuid); }
+        std::size_t operator()(const Engine::UUID& uuid) const { return (uint64_t)uuid; }
     };
 
 }  // namespace std
