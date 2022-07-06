@@ -134,11 +134,9 @@ namespace Engine
                 // which we can't undo at the moment without finer window depth/z control.
                 // ImGui::MenuItem("Fullscreen", NULL, &opt_fullscreen_persistant);1
                 if (ImGui::MenuItem("New", "Ctrl+N")) NewScene();
-
                 if (ImGui::MenuItem("Open...", "Ctrl+O")) OpenScene();
-
+                if (ImGui::MenuItem("Save", "Ctrl+S")) SaveScene();
                 if (ImGui::MenuItem("Save As...", "Ctrl+Shift+S")) SaveSceneAs();
-
                 if (ImGui::MenuItem("Exit")) Application::Get().Close();
                 ImGui::EndMenu();
             }
