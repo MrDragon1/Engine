@@ -1,18 +1,18 @@
 #include "EditorLayer.hpp"
 
 // Should remove this
-#include "Engine/Scene/Components.hpp"
+#include "Ethereal/Scene/Components.hpp"
 #include "imgui.h"
 #include "imguizmo/ImGuizmo.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "Engine/Scene/SceneSerializer.hpp"
-#include "Engine/Utils/PlatformUtils.hpp"
-#include "Engine/Utils/Math.hpp"
+#include "Ethereal/Scene/SceneSerializer.hpp"
+#include "Ethereal/Utils/PlatformUtils.hpp"
+#include "Ethereal/Utils/Math.hpp"
 
-namespace Engine
+namespace Ethereal
 {
     extern const std::filesystem::path g_AssetPath;
 
@@ -258,8 +258,8 @@ namespace Engine
             m_EditorCamera.OnEvent(e);
         }
         EventDispatcher dispatcher(e);
-        dispatcher.Dispatch<KeyPressedEvent>(ENGINE_BIND_EVENT_FN(EditorLayer::OnKeyPressed));
-        dispatcher.Dispatch<MouseButtonPressedEvent>(ENGINE_BIND_EVENT_FN(EditorLayer::OnMouseButtonPressed));
+        dispatcher.Dispatch<KeyPressedEvent>(ET_BIND_EVENT_FN(EditorLayer::OnKeyPressed));
+        dispatcher.Dispatch<MouseButtonPressedEvent>(ET_BIND_EVENT_FN(EditorLayer::OnMouseButtonPressed));
     }
 
     bool EditorLayer::OnKeyPressed(KeyPressedEvent& e) {
@@ -334,7 +334,7 @@ namespace Engine
         if (m_SceneState != SceneState::Edit) OnSceneStop();
 
         if (path.extension().string() != ".Scene") {
-            ENGINE_WARN("Could not load {0} - not a scene file", path.filename().string());
+            ET_WARN("Could not load {0} - not a scene file", path.filename().string());
             return;
         }
         m_EditorScene = CreateRef<Scene>();
@@ -342,7 +342,7 @@ namespace Engine
         m_SceneHierarchyPanel.SetContext(m_EditorScene);
 
         SceneSerializer serializer(m_EditorScene);
-        ENGINE_CORE_ASSERT(serializer.Deserialize(path.string()), "Deserialize Scene {0} failed", path.string());
+        ET_CORE_ASSERT(serializer.Deserialize(path.string()), "Deserialize Scene {0} failed", path.string());
 
         m_ActiveScene = m_EditorScene;
         m_EditorScenePath = path;
@@ -418,4 +418,4 @@ namespace Engine
         ImGui::PopStyleColor(3);
         ImGui::End();
     }
-}  // namespace Engine
+}  // namespace Ethereal

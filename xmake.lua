@@ -6,7 +6,7 @@ add_requires("spdlog","glad","glfw","glm","entt","yaml-cpp","box2d") -- glad mus
 
 set_languages("cxx20")
 set_optimize("fastest")
-add_defines("ENGINE_PLATFORM_LINUX","ENGINE_ENABLE_ASSERTS")
+add_defines("ET_PLATFORM_LINUX","ET_ENABLE_ASSERTS")
 
 add_packages("imgui")
 add_packages("spdlog","glad","glfw","glm","entt","yaml-cpp","box2d")
@@ -18,14 +18,14 @@ target("Editor")
     add_deps("Engine")
     set_kind("binary")
     add_files("Editor/src/**.cpp")
-    add_includedirs("Engine/src","Engine/vendor")
+    add_includedirs("Ethereal/src","Ethereal/vendor")
 
 
 target("Engine")
     set_toolchains("clang")
     set_kind("static")
-    set_pcxxheader("Engine/src/pch.hpp")
+    set_pcxxheader("Ethereal/src/pch.hpp")
 
-    add_files("Engine/src/**.cpp","Engine/vendor/**.cpp")
-    add_includedirs("Engine/src","Engine/vendor")
+    add_files("Ethereal/src/**.cpp","Ethereal/vendor/**.cpp")
+    add_includedirs("Ethereal/src","Ethereal/vendor")
     add_syslinks("comdlg32")

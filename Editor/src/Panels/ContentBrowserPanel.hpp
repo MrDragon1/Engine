@@ -1,7 +1,7 @@
 #pragma once
 #include <filesystem>
-#include "Engine/Renderer/Texture.hpp"
-namespace Engine
+#include "Ethereal/Renderer/Texture.hpp"
+namespace Ethereal
 {
     class ContentBrowserPanel {
       public:
@@ -13,4 +13,4 @@ namespace Engine
         Ref<Texture2D> m_DirectoryIcon;
 		Ref<Texture2D> m_FileIcon;
     };
-}  // namespace Engine
+}  // namespace Ethereal

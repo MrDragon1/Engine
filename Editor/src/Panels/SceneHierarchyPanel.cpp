@@ -4,7 +4,7 @@
 #include <imgui_internal.h>
 #include <filesystem>
 #include <glm/gtc/type_ptr.hpp>
-namespace Engine
+namespace Ethereal
 {
     extern const std::filesystem::path g_AssetPath;
 
@@ -264,7 +264,7 @@ namespace Engine
                     if (texture->IsLoaded())
                         component.Texture = texture;
                     else
-                        ENGINE_WARN("Could not load texture {0}", texturePath.filename().string());
+                        ET_WARN("Could not load texture {0}", texturePath.filename().string());
                 }
                 ImGui::EndDragDropTarget();
             }
@@ -311,4 +311,4 @@ namespace Engine
         }
     }
 
-}  // namespace Engine
+}  // namespace Ethereal

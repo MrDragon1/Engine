@@ -3,7 +3,7 @@
 
 #include "imgui.h"
 
-namespace Engine
+namespace Ethereal
 {
     extern const std::filesystem::path g_AssetPath = "assets";
 
@@ -64,4 +64,4 @@ namespace Engine
         // TODO: status bar
         ImGui::End();
     }
-}  // namespace Engine
+}  // namespace Ethereal

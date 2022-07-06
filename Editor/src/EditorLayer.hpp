@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Engine.hpp"
+#include "Ethereal.hpp"
 #include "Panels/SceneHierarchyPanel.hpp"
 #include "Panels/ContentBrowserPanel.hpp"
-#include "Engine/Renderer/EditorCamera.hpp"
-namespace Engine
+#include "Ethereal/Renderer/EditorCamera.hpp"
+namespace Ethereal
 {
     class EditorLayer : public Layer {
       public:
@@ -72,4 +72,4 @@ namespace Engine
 
         SceneState m_SceneState = SceneState::Edit;
     };
-}  // namespace Engine
+}  // namespace Ethereal
