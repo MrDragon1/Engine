@@ -16,7 +16,8 @@ namespace Ethereal
         m_Window = Window::Create(WindowProps(name));
         m_Window->SetEventCallback(ET_BIND_EVENT_FN(Application::OnEvent));
 
-        Renderer::Init();
+        // Renderer::Init();
+        RenderCommand::Init();
 
         m_ImGuiLayer = new ImGuiLayer();
         PushOverlay(m_ImGuiLayer);
@@ -40,8 +41,7 @@ namespace Ethereal
         dispatcher.Dispatch<WindowResizeEvent>(ET_BIND_EVENT_FN(Application::OnWindowResize));
 
         for (auto it = m_LayerStack.rbegin(); it != m_LayerStack.rend(); ++it) {
-            if (e.Handled)
-                break;
+            if (e.Handled) break;
             (*it)->OnEvent(e);
         }
     }
@@ -53,8 +53,7 @@ namespace Ethereal
             m_LastFrameTime = time;
 
             if (!m_Minimized) {
-                for (Layer* layer : m_LayerStack)
-                    layer->OnUpdate(timestep);
+                for (Layer* layer : m_LayerStack) layer->OnUpdate(timestep);
             }
             m_ImGuiLayer->Begin();
             for (Layer* layer : m_LayerStack) layer->OnImGuiRender();
@@ -63,9 +62,7 @@ namespace Ethereal
         }
     }
 
-    void Application::Close() {
-        m_Running = false;
-    }
+    void Application::Close() { m_Running = false; }
 
     bool Application::OnWindowClose(WindowCloseEvent& e) {
         m_Running = false;

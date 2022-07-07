@@ -9,6 +9,6 @@ namespace Ethereal
         GameObject() = default;
         void AddRenderEntity(RenderEntity renderEntity);
 
-        std::vector<RenderEntity> m_RenderEntities;
+        std::vector<RenderEntity> m_RenderEntities;//One object has many sub objects
     };
 }  // namespace Ethereal

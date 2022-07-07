@@ -9,7 +9,6 @@
 class b2World;
 namespace Ethereal
 {
-
     class Entity;
     class Scene {
       public:
@@ -17,7 +16,7 @@ namespace Ethereal
         ~Scene();
 
         static Ref<Scene> Copy(Ref<Scene> other);
-        
+
         Entity CreateEntity(const std::string& name = std::string());
         Entity CreateEntityWithUUID(UUID uuid, const std::string& name = std::string());
 

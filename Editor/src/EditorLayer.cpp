@@ -40,7 +40,7 @@ namespace Ethereal
         m_EditorCamera.OnUpdate(ts);
 
         // Render
-        Renderer2D::ResetStats();
+        //Renderer2D::ResetStats();
 
         m_Framebuffer->Bind();
         RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1});
@@ -51,16 +51,11 @@ namespace Ethereal
 
         switch (m_SceneState) {
             case SceneState::Play: {
-                // if (m_ViewportFocused) {
-                //     m_CameraController.OnUpdate(ts);
-                // }
-                // m_ActiveScene->OnUpdateRuntime(ts);
                 m_RenderSystem.OnUpdateRuntime(ts, m_ActiveScene);
                 break;
             }
 
             case SceneState::Edit: {
-                // m_ActiveScene->OnUpdateEditor(ts, m_EditorCamera);
                 m_RenderSystem.OnUpdateEditor(ts, m_ActiveScene, m_EditorCamera);
                 break;
             }
@@ -149,19 +144,19 @@ namespace Ethereal
         m_SceneHierarchyPanel.OnImGuiRender();
         m_ContentBrowserPanel.OnImGuiRender();
 
-        ImGui::Begin("Stats");
-        std::string name = "None";
-        if (m_HoveredEntity) name = m_HoveredEntity.GetComponent<TagComponent>().Tag;
-        ImGui::Text("Hovered Entity: %s", name.c_str());
+        // ImGui::Begin("Stats");
+        // std::string name = "None";
+        // if (m_HoveredEntity) name = m_HoveredEntity.GetComponent<TagComponent>().Tag;
+        // ImGui::Text("Hovered Entity: %s", name.c_str());
 
-        auto stats = Renderer2D::GetStats();
-        ImGui::Text("Renderer2D Stats:");
-        ImGui::Text("Draw Calls: %d", stats.DrawCalls);
-        ImGui::Text("Quads: %d", stats.QuadCount);
-        ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());
-        ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
+        // auto stats = Renderer2D::GetStats();
+        // ImGui::Text("Renderer2D Stats:");
+        // ImGui::Text("Draw Calls: %d", stats.DrawCalls);
+        // ImGui::Text("Quads: %d", stats.QuadCount);
+        // ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());
+        // ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
 
-        ImGui::End();
+        // ImGui::End();
 
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
         ImGui::Begin("Viewport");

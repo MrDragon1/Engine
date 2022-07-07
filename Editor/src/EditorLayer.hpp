@@ -41,7 +41,6 @@ namespace Ethereal
       private:
         OrthographicCameraController m_CameraController;
         EditorCamera m_EditorCamera;
-
         Ref<Framebuffer> m_Framebuffer;
 
         Ref<Texture2D> m_IconPlay;

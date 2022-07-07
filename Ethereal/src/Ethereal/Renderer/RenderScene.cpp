@@ -30,6 +30,16 @@ namespace Ethereal
             RenderCommand::DrawIndexed(RenderMeshNode.ref_mesh->m_VAO, RenderMeshNode.ref_mesh->m_IndexCount);
         }
     }
+    
+    void RenderScene::BeginRender(const glm::mat4& projection, const glm::mat4& transform)
+    {
+        m_Shader->Bind();
+        m_Shader->SetMat4("u_ViewProjection", projection * glm::inverse(transform));
+        if (m_Visiable_RenderMeshNode.empty()) return;
+        for (auto& RenderMeshNode : m_Visiable_RenderMeshNode) {
+            RenderCommand::DrawIndexed(RenderMeshNode.ref_mesh->m_VAO, RenderMeshNode.ref_mesh->m_IndexCount);
+        }
+    }
 
     void RenderScene::Clear() {
         m_Visiable_RenderMeshNode.clear();
