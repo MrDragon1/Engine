@@ -17,9 +17,7 @@ namespace Ethereal
         ~Scene();
 
         static Ref<Scene> Copy(Ref<Scene> other);
-        void OnUpdateRuntime(Timestep ts);
-        void OnUpdateEditor(Timestep ts, EditorCamera& camera);
-
+        
         Entity CreateEntity(const std::string& name = std::string());
         Entity CreateEntityWithUUID(UUID uuid, const std::string& name = std::string());
 
