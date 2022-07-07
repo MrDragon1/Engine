@@ -26,6 +26,10 @@ namespace Ethereal
             s_RendererAPI->DrawIndexed(vertexArray,count);
         }
 
+        inline static void Draw(const Ref<VertexArray>& vertexArray, uint32_t count = 0) {
+            s_RendererAPI->Draw(vertexArray,count);
+        }
+
       private:
         static RendererAPI* s_RendererAPI;
     };

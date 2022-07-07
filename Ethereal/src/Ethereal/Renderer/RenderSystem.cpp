@@ -11,6 +11,9 @@
 #include "box2d/b2_body.h"
 #include "box2d/b2_polygon_shape.h"
 #include "box2d/b2_fixture.h"
+
+#include "Ethereal/Utils/ObjLoader.hpp"
+
 namespace Ethereal
 {
 
@@ -109,8 +112,8 @@ namespace Ethereal
         RenderMeshData renderMeshData;
         {
             BufferLayout layout = {
-                {ShaderDataType::Float3, "a_Position"}, {ShaderDataType::Float4, "a_Color"},       {ShaderDataType::Float2, "a_TexCoord"},
-                {ShaderDataType::Float, "a_TexIndex"},  {ShaderDataType::Float, "a_TilingFactor"}, {ShaderDataType::Int, "a_EntityID"},
+                {ShaderDataType::Float3, "a_Position"}, {ShaderDataType::Float3, "a_Normal"}, {ShaderDataType::Float4, "a_Color"},
+                {ShaderDataType::Float2, "a_TexCoord"}, {ShaderDataType::Int, "a_EntityID"},
             };
             renderMeshData.m_static_mesh_data.m_layout = layout;
 
@@ -119,19 +122,17 @@ namespace Ethereal
             const float textureIndex = 0.0f;  // White Texture
             const float tilingFactor = 1.0f;
 
-            renderMeshData.m_static_mesh_data.m_vertex_buffer = CreateRef<BufferData>(quadVertexCount * sizeof(QuadVertex));
+            renderMeshData.m_static_mesh_data.m_vertex_buffer = CreateRef<BufferData>(quadVertexCount * sizeof(MeshVertex));
 
-            QuadVertex* QuadVertexBufferPtr = (QuadVertex*)renderMeshData.m_static_mesh_data.m_vertex_buffer->m_data;
+            MeshVertex* QuadVertexBufferPtr = (MeshVertex*)renderMeshData.m_static_mesh_data.m_vertex_buffer->m_data;
             for (size_t i = 0; i < quadVertexCount; i++) {
                 QuadVertexBufferPtr->Position = transformDesc.GetTransform() * QuadVertexPositions[i];
+                QuadVertexBufferPtr->Normal = glm::vec3(0.0f, 0.0f, 1.0f);
                 QuadVertexBufferPtr->Color = sprite.Color;
                 QuadVertexBufferPtr->TexCoord = textureCoords[i];
-                QuadVertexBufferPtr->TexIndex = textureIndex;
-                QuadVertexBufferPtr->TilingFactor = tilingFactor;
                 QuadVertexBufferPtr->EntityID = (int)(uint32_t)entity;
                 QuadVertexBufferPtr++;
             }
-
             renderMeshData.m_static_mesh_data.m_index_buffer = CreateRef<BufferData>(6 * sizeof(uint32_t));
             uint32_t* quadIndices = (uint32_t*)renderMeshData.m_static_mesh_data.m_index_buffer->m_data;
             quadIndices[0] = 0;
@@ -147,6 +148,29 @@ namespace Ethereal
 
     void RenderSystem::OnUpdateEditor(Timestep ts, const Ref<Scene>& scene, const EditorCamera& camera) {
         m_RenderScene->Clear();
+
+        //ObjLoader objLoader;
+        GameObjectMeshDesc desc;
+        desc.m_filePath = "assets/models/cornell_box/cornell_box.obj";
+
+        RenderMeshData meshData;
+        meshData.m_static_mesh_data.m_layout = {
+            {ShaderDataType::Float3, "a_Position"}, {ShaderDataType::Float3, "a_Normal"}, {ShaderDataType::Float4, "a_Color"},
+            {ShaderDataType::Float2, "a_TexCoord"}, {ShaderDataType::Int, "a_EntityID"},
+        };
+        ObjLoader::Load(desc,  meshData.m_static_mesh_data.m_vertex_buffer,  meshData.m_static_mesh_data.m_index_buffer);
+
+        GameObjectTransformDesc transformDesc;
+        Ref<GameObject> gameObject = CreateRef<GameObject>();
+        RenderEntity renderEntity;
+        renderEntity.m_AssetID = 1071314643;
+        renderEntity.m_Transform_Desc = transformDesc;
+        renderEntity.m_MeshData = meshData;
+        m_RenderResource->UploadRenderResource(renderEntity, meshData);
+        gameObject->AddRenderEntity(renderEntity);
+        m_RenderScene->AddGameObject(gameObject);
+
+
         auto group = scene->GetRegistry().group<TransformComponent>(entt::get<SpriteRendererComponent>);
         for (auto entity : group) {
             const auto [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);

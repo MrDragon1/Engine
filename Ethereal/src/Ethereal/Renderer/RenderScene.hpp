@@ -7,6 +7,7 @@
 #include "Shader.hpp"
 #include "Framebuffer.hpp"
 #include "Texture.hpp"
+
 namespace Ethereal
 {
     class RenderResource;

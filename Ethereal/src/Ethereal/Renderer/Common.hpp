@@ -20,13 +20,11 @@ namespace Ethereal
         }
     };
 
-    struct QuadVertex {
+    struct MeshVertex {
         glm::vec3 Position;
+        glm::vec3 Normal;
         glm::vec4 Color;
         glm::vec2 TexCoord;
-        // TODO: texid
-        float TexIndex;
-        float TilingFactor;
 
         // Editor-only
         int EntityID;

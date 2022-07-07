@@ -27,7 +27,8 @@ namespace Ethereal
         m_Shader->SetMat4("u_ViewProjection", camera.GetViewProjection());
         if (m_Visiable_RenderMeshNode.empty()) return;
         for (auto& RenderMeshNode : m_Visiable_RenderMeshNode) {
-            RenderCommand::DrawIndexed(RenderMeshNode.ref_mesh->m_VAO, RenderMeshNode.ref_mesh->m_IndexCount);
+            //RenderCommand::DrawIndexed(RenderMeshNode.ref_mesh->m_VAO, RenderMeshNode.ref_mesh->m_IndexCount);
+            RenderCommand::Draw(RenderMeshNode.ref_mesh->m_VAO, RenderMeshNode.ref_mesh->m_IndexCount);
         }
     }
     
@@ -37,7 +38,8 @@ namespace Ethereal
         m_Shader->SetMat4("u_ViewProjection", projection * glm::inverse(transform));
         if (m_Visiable_RenderMeshNode.empty()) return;
         for (auto& RenderMeshNode : m_Visiable_RenderMeshNode) {
-            RenderCommand::DrawIndexed(RenderMeshNode.ref_mesh->m_VAO, RenderMeshNode.ref_mesh->m_IndexCount);
+            //RenderCommand::DrawIndexed(RenderMeshNode.ref_mesh->m_VAO, RenderMeshNode.ref_mesh->m_IndexCount);
+            RenderCommand::Draw(RenderMeshNode.ref_mesh->m_VAO, RenderMeshNode.ref_mesh->m_IndexCount);
         }
     }
 
