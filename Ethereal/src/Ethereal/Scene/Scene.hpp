@@ -25,12 +25,14 @@ namespace Ethereal
 
         void DestroyEntity(Entity entity);
         void DuplicateEntity(Entity entity);
-        
+
         void OnRuntimeStart();
         void OnRuntimeStop();
 
         void OnViewportResize(uint32_t width, uint32_t height);
         Entity GetPrimaryCameraEntity();
+
+        entt::registry& GetRegistry() { return m_Registry; }
 
       private:
         template <typename T>
@@ -44,5 +46,6 @@ namespace Ethereal
         friend class Entity;
         friend class SceneSerializer;
         friend class SceneHierarchyPanel;
+        friend class RenderSystem;
     };
 }  // namespace Ethereal

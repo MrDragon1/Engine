@@ -6,7 +6,7 @@
         {
             "label": "build",
             "type": "shell",
-            "command": "xmake build Editor",
+            "command": "xmake & xmake d",
             "group": {
                 // 从这里
                 "kind": "build",

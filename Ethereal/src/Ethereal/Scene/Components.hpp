@@ -9,9 +9,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <string>
 
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtx/quaternion.hpp>
-
 namespace Ethereal
 {
     struct IDComponent {

@@ -4,6 +4,8 @@
 #include "Panels/SceneHierarchyPanel.hpp"
 #include "Panels/ContentBrowserPanel.hpp"
 #include "Ethereal/Renderer/EditorCamera.hpp"
+#include "Ethereal/Renderer/RenderSystem.hpp"
+
 namespace Ethereal
 {
     class EditorLayer : public Layer {
@@ -39,9 +41,7 @@ namespace Ethereal
       private:
         OrthographicCameraController m_CameraController;
         EditorCamera m_EditorCamera;
-        // Temp
-        Ref<VertexArray> m_SquareVA;
-        Ref<Shader> m_FlatColorShader;
+
         Ref<Framebuffer> m_Framebuffer;
 
         Ref<Texture2D> m_IconPlay;
@@ -71,5 +71,7 @@ namespace Ethereal
         };
 
         SceneState m_SceneState = SceneState::Edit;
+
+        RenderSystem m_RenderSystem;
     };
 }  // namespace Ethereal

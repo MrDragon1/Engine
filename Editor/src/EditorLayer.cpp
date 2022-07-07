@@ -54,12 +54,14 @@ namespace Ethereal
                 // if (m_ViewportFocused) {
                 //     m_CameraController.OnUpdate(ts);
                 // }
-                m_ActiveScene->OnUpdateRuntime(ts);
+                // m_ActiveScene->OnUpdateRuntime(ts);
+                m_RenderSystem.OnUpdateRuntime(ts, m_ActiveScene);
                 break;
             }
 
             case SceneState::Edit: {
-                m_ActiveScene->OnUpdateEditor(ts, m_EditorCamera);
+                // m_ActiveScene->OnUpdateEditor(ts, m_EditorCamera);
+                m_RenderSystem.OnUpdateEditor(ts, m_ActiveScene, m_EditorCamera);
                 break;
             }
         }

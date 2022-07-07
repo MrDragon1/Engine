@@ -21,5 +21,6 @@ namespace Ethereal
       private:
         Entity m_Entity;
         friend class Scene;
+        friend class RenderSystem;
     };
 }  // namespace Ethereal

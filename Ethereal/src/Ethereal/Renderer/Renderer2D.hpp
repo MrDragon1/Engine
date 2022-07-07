@@ -63,9 +63,9 @@ namespace Ethereal
         static void ResetStats();
         static Statistics GetStats();
 
+        static void StartBatch();
       private:
         static void FlushAndReset();
-        static void StartBatch();
         static void NextBatch();
     };
 }  // namespace Ethereal
