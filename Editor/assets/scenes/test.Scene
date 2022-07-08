@@ -1,20 +1,56 @@
 Scene: Untitled
 Entities:
-  - Entity: 2894178422382036569
+  - Entity: 1234567822345290653
     TagComponent:
-      Tag: Empty Entity
+      Tag: Cylinder
+    TransformComponent:
+      Translation: [4.51618576, 1, 4.4000001]
+      Rotation: [-0.562079191, -0.00733617647, -1.78871441]
+      Scale: [0.999999881, 1, 1]
+    MeshComponent:
+      m_filePath: assets/models/cylinder/cylinder.obj
+    MaterialComponent:
+      m_PureColor: [0, 1, 0, 1]
+      m_base_color_file: "null"
+      m_metallic_roughness_file: "null"
+      m_normal_file: "null"
+      m_occlusion_file: "null"
+      m_emissive_file: "null"
+    SpriteRendererComponent:
+      Color: [1, 1, 0, 1]
+  - Entity: 1234178422345290653
+    TagComponent:
+      Tag: Cube
+    TransformComponent:
+      Translation: [-4.19999981, -0.400000006, 1]
+      Rotation: [0.059341196, -0.00872664619, -0.265290052]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      m_filePath: assets/models/cube/cube.obj
+    MaterialComponent:
+      m_PureColor: [1, 0, 0, 1]
+      m_base_color_file: "null"
+      m_metallic_roughness_file: "null"
+      m_normal_file: "null"
+      m_occlusion_file: "null"
+      m_emissive_file: "null"
+    SpriteRendererComponent:
+      Color: [1, 1, 0, 1]
+  - Entity: 3584178422345290653
+    TagComponent:
+      Tag: Block
     TransformComponent:
       Translation: [0, 0, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
-    SpriteRendererComponent:
-      Color: [1, 1, 0, 1]
     MeshComponent:
       m_filePath: assets/models/block/block.obj
     MaterialComponent:
-      m_PureColor: [1, 1, 0, 1]
-      m_base_color_file:
-      m_metallic_roughness_file:
-      m_normal_file:
-      m_occlusion_file:
-      m_emissive_file:
+      m_PureColor: [1, 0, 1, 1]
+      m_base_color_file: "null"
+      m_metallic_roughness_file: "null"
+      m_normal_file: "null"
+      m_occlusion_file: "null"
+      m_emissive_file: "null"
+    SpriteRendererComponent:
+      Color: [1, 1, 0, 1]

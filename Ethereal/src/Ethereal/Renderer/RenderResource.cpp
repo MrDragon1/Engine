@@ -27,8 +27,6 @@ namespace Ethereal
         } else {
             GLMesh temp_mesh;
             temp_mesh.m_Layout = RenderMeshData.m_static_mesh_data.m_layout;
-            ET_CORE_ASSERT(RenderMeshData.m_static_mesh_data.m_vertex_buffer->isValid(),"m_vertex_buffer is null");
-            ET_CORE_ASSERT(RenderMeshData.m_static_mesh_data.m_index_buffer->isValid(),"m_index_buffer is null");
             temp_mesh.m_VertexCount = RenderMeshData.m_static_mesh_data.m_vertex_buffer->m_count;
             temp_mesh.m_IndexCount = RenderMeshData.m_static_mesh_data.m_index_buffer->m_count;
 

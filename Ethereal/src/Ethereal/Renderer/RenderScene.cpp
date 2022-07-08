@@ -39,6 +39,7 @@ namespace Ethereal
         if (m_Visiable_RenderMeshNode.empty()) return;
         for (auto& RenderMeshNode : m_Visiable_RenderMeshNode) {
             RenderMeshNode.ref_mesh->m_VAO->Bind();
+            m_Shader->SetMat4("u_Model", RenderMeshNode.model_matrix);
             RenderMeshNode.ref_material->m_BaseColorMap->Bind(0);
             RenderCommand::DrawIndexed(RenderMeshNode.ref_mesh->m_VAO, RenderMeshNode.ref_mesh->m_IndexCount);
             // RenderCommand::Draw(RenderMeshNode.ref_mesh->m_VAO, RenderMeshNode.ref_mesh->m_VertexCount);
