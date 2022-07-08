@@ -3,10 +3,41 @@
 
 #include "VertexArray.hpp"
 #include "Buffer.hpp"
+#include "Texture.hpp"
+#include "Ethereal/Utils/Math.hpp"
+
 namespace Ethereal
 {
+    //*************************************************
+    //****************** Descriptor *******************
+    //*************************************************
     struct GameObjectMeshDesc {
+        GameObjectMeshDesc() = default;
         std::string m_filePath;
+        bool operator==(const GameObjectMeshDesc& rhs) const { return m_filePath == rhs.m_filePath; }
+        size_t getHashValue() const { return std::hash<std::string>{}(m_filePath); }
+    };
+
+    struct GameObjectMaterialDesc {
+        GameObjectMaterialDesc() = default;
+        std::optional<glm::vec4> m_PureColor;  // null if not pure color
+        std::string m_base_color_file;
+        std::string m_metallic_roughness_file;
+        std::string m_normal_file;
+        std::string m_occlusion_file;
+        std::string m_emissive_file;
+
+        bool operator==(const GameObjectMaterialDesc& rhs) const {
+            return m_PureColor == rhs.m_PureColor && m_base_color_file == rhs.m_base_color_file &&
+                   m_metallic_roughness_file == rhs.m_metallic_roughness_file && m_normal_file == rhs.m_normal_file &&
+                   m_occlusion_file == rhs.m_occlusion_file && m_emissive_file == rhs.m_emissive_file;
+        }
+
+        size_t getHashValue() const {
+            size_t hash = 0;
+            hash_combine(hash, m_base_color_file, m_metallic_roughness_file, m_normal_file, m_occlusion_file, m_emissive_file);
+            return hash;
+        }
     };
 
     struct GameObjectTransformDesc {
@@ -20,24 +51,40 @@ namespace Ethereal
         }
     };
 
+    // for hash in unordered_map
+    template <>
+    struct std::hash<Ethereal::GameObjectMeshDesc> {
+        size_t operator()(const Ethereal::GameObjectMeshDesc& rhs) const noexcept { return rhs.getHashValue(); }
+    };
+    template <>
+    struct std::hash<Ethereal::GameObjectMaterialDesc> {
+        size_t operator()(const Ethereal::GameObjectMaterialDesc& rhs) const noexcept { return rhs.getHashValue(); }
+    };
+
+    //*************************************************
+    //******************* CPU Data ********************
+    //*************************************************
     struct MeshVertex {
         glm::vec3 Position;
         glm::vec3 Normal;
         glm::vec4 Color;
-        glm::vec2 TexCoord;
+        glm::vec2 UV;
 
         // Editor-only
         int EntityID;
     };
+    template <typename T>
     class BufferData {
       public:
         size_t m_size{0};
+        size_t m_count{0};
         void* m_data{nullptr};
 
         BufferData() = delete;
-        BufferData(size_t size) {
-            m_size = size;
-            m_data = malloc(size);
+        BufferData(size_t count) {
+            m_size = count * sizeof(T);
+            m_count = count;
+            m_data = malloc(m_size);
         }
         ~BufferData() {
             if (m_data) {
@@ -48,8 +95,8 @@ namespace Ethereal
     };
 
     struct StaticMeshData {
-        Ref<BufferData> m_vertex_buffer;
-        Ref<BufferData> m_index_buffer;
+        Ref<BufferData<MeshVertex>> m_vertex_buffer;
+        Ref<BufferData<uint32_t>> m_index_buffer;
         BufferLayout m_layout;
     };
 
@@ -58,16 +105,27 @@ namespace Ethereal
         // std::shared_ptr<BufferData> m_skeleton_binding_buffer;
     };
 
+    struct RenderMaterialData {
+        Ref<TextureData> m_BaseColorData;
+        Ref<TextureData> m_MetallicData;
+        Ref<TextureData> m_NormalData;
+        Ref<TextureData> m_OcclusionData;
+        Ref<TextureData> m_EmissionData;
+    };
+
     struct RenderEntity {
-        // size_t m_InstanceID;
-        size_t m_AssetID;
+        size_t m_InstanceID;
+        size_t m_MeshAssetID;
+        size_t m_MaterialAssetID;
 
         GameObjectMeshDesc m_Mesh_Desc;
         GameObjectTransformDesc m_Transform_Desc;
-        RenderMeshData m_MeshData;  // Temporary
+        GameObjectMaterialDesc m_Material_Desc;
     };
 
-    // GPU Data
+    //*************************************************
+    //******************* GPU Data ********************
+    //*************************************************
     struct GLMesh {
         Ref<VertexArray> m_VAO;
         Ref<VertexBuffer> m_VBO;
@@ -77,9 +135,19 @@ namespace Ethereal
         BufferLayout m_Layout;
     };
 
+    struct GLMaterial {
+        Ref<Texture> m_BaseColorMap;
+        Ref<Texture> m_MetallicMap;
+        Ref<Texture> m_NormalMap;
+        Ref<Texture> m_OcclusionMap;
+        Ref<Texture> m_EmissionMap;
+        // TODO: uniform data
+    };
+
     struct RenderMeshNode {
         glm::mat4 model_matrix;
         GLMesh* ref_mesh = nullptr;
+        GLMaterial* ref_material = nullptr;
         // uint32_t node_id;
     };
 

@@ -167,6 +167,10 @@ namespace Ethereal
     template <>
     void Scene::OnComponentAdded<TransformComponent>(Entity entity, TransformComponent& component) {}
     template <>
+    void Scene::OnComponentAdded<MeshComponent>(Entity entity, MeshComponent& component) {}
+    template <>
+    void Scene::OnComponentAdded<MaterialComponent>(Entity entity, MaterialComponent& component) {}
+    template <>
     void Scene::OnComponentAdded<CameraComponent>(Entity entity, CameraComponent& component) {
         component.Camera.SetViewportSize(m_ViewportWidth, m_ViewportHeight);
     }

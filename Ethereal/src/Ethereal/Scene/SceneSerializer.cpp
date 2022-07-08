@@ -118,7 +118,7 @@ namespace Ethereal
     static void SerializeEntity(YAML::Emitter& out, Entity entity) {
         ET_CORE_ASSERT(entity.HasComponent<IDComponent>(), "Entity must have an ID component");
 
-        out << YAML::BeginMap;                                            // Entity
+        out << YAML::BeginMap;  // Entity
         out << YAML::Key << "Entity" << YAML::Value << entity.GetUUID();
 
         if (entity.HasComponent<TagComponent>()) {
@@ -141,6 +141,34 @@ namespace Ethereal
             out << YAML::Key << "Scale" << YAML::Value << tc.Scale;
 
             out << YAML::EndMap;  // TransformComponent
+        }
+
+        if (entity.HasComponent<MeshComponent>()) {
+            out << YAML::Key << "MeshComponent";
+            out << YAML::BeginMap;  // MeshComponent
+
+            auto& mesh = entity.GetComponent<MeshComponent>();
+            out << YAML::Key << "m_filePath" << YAML::Value << mesh.Desc.m_filePath;
+
+            out << YAML::EndMap;  // MeshComponent
+        }
+
+        if (entity.HasComponent<MaterialComponent>()) {
+            out << YAML::Key << "MaterialComponent";
+            out << YAML::BeginMap;  // MaterialComponent
+
+            auto& material = entity.GetComponent<MaterialComponent>();
+            if (material.Desc.m_PureColor.has_value())
+                out << YAML::Key << "m_PureColor" << YAML::Value << material.Desc.m_PureColor.value();
+            else
+                out << YAML::Key << "m_PureColor" << YAML::Value << "";
+            out << YAML::Key << "m_base_color_file" << YAML::Value << material.Desc.m_base_color_file;
+            out << YAML::Key << "m_metallic_roughness_file" << YAML::Value << material.Desc.m_metallic_roughness_file;
+            out << YAML::Key << "m_normal_file" << YAML::Value << material.Desc.m_normal_file;
+            out << YAML::Key << "m_occlusion_file" << YAML::Value << material.Desc.m_occlusion_file;
+            out << YAML::Key << "m_emissive_file" << YAML::Value << material.Desc.m_emissive_file;
+
+            out << YAML::EndMap;  // MaterialComponent
         }
 
         if (entity.HasComponent<CameraComponent>()) {
@@ -260,6 +288,24 @@ namespace Ethereal
                     tc.Translation = transformComponent["Translation"].as<glm::vec3>();
                     tc.Rotation = transformComponent["Rotation"].as<glm::vec3>();
                     tc.Scale = transformComponent["Scale"].as<glm::vec3>();
+                }
+
+                auto meshComponent = entity["MeshComponent"];
+                if (meshComponent) {
+                    auto& mesh = deserializedEntity.AddComponent<MeshComponent>();
+                    mesh.Desc.m_filePath = meshComponent["m_filePath"].as<std::string>();
+                }
+
+                auto materialComponent = entity["MaterialComponent"];
+                if (materialComponent) {
+                    auto& material = deserializedEntity.AddComponent<MaterialComponent>();
+                    if (!materialComponent["m_PureColor"].IsNull())
+                        material.Desc.m_PureColor = materialComponent["m_PureColor"].as<glm::vec4>();
+                    material.Desc.m_base_color_file = materialComponent["m_base_color_file"].as<std::string>();
+                    material.Desc.m_metallic_roughness_file = materialComponent["m_metallic_roughness_file"].as<std::string>();
+                    material.Desc.m_normal_file = materialComponent["m_normal_file"].as<std::string>();
+                    material.Desc.m_occlusion_file = materialComponent["m_occlusion_file"].as<std::string>();
+                    material.Desc.m_emissive_file = materialComponent["m_emissive_file"].as<std::string>();
                 }
 
                 auto cameraComponent = entity["CameraComponent"];

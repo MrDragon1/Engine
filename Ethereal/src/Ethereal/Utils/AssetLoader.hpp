@@ -11,6 +11,12 @@ namespace Ethereal
 
     class ObjLoader {
       public:
-        static void Load(const GameObjectMeshDesc& desc, Ref<BufferData>& VertexBuffer, Ref<BufferData>& IndexBuffer);
+        static void Load(const GameObjectMeshDesc& desc, RenderMeshData& renderMeshData, int entityID = -1);
+    };
+
+    class TextureLoader {
+      public:
+        static void Load(const GameObjectMaterialDesc& desc, RenderMaterialData& RenderMaterialData);
+        static void LoadPath(const std::string& path, RenderMaterialData& RenderMaterialData);
     };
 }  // namespace Ethereal

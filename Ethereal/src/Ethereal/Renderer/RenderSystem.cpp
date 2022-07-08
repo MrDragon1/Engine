@@ -12,7 +12,7 @@
 #include "box2d/b2_polygon_shape.h"
 #include "box2d/b2_fixture.h"
 
-#include "Ethereal/Utils/ObjLoader.hpp"
+#include "Ethereal/Utils/AssetLoader.hpp"
 
 namespace Ethereal
 {
@@ -99,9 +99,7 @@ namespace Ethereal
         ET_CORE_ASSERT(entity.HasComponent<TransformComponent>() && entity.HasComponent<SpriteRendererComponent>(),
                        "Entity must have TransformComponent and SpriteRendererComponent");
         TransformComponent transform = entity.GetComponent<TransformComponent>();
-        SpriteRendererComponent sprite = entity.GetComponent<SpriteRendererComponent>();
-
-        renderEntity.m_AssetID = entity.GetUUID();
+        renderEntity.m_InstanceID = entity.GetUUID();
 
         GameObjectTransformDesc transformDesc;
         transformDesc.Translation = transform.Translation;
@@ -109,67 +107,67 @@ namespace Ethereal
         transformDesc.Scale = transform.Scale;
         renderEntity.m_Transform_Desc = transformDesc;
 
+        GameObjectMeshDesc meshDesc = entity.GetComponent<MeshComponent>().Desc;
+        GameObjectMaterialDesc materialDesc = entity.GetComponent<MaterialComponent>().Desc;
+
+        renderEntity.m_Mesh_Desc = meshDesc;
+        renderEntity.m_Material_Desc = materialDesc;
+
+        //* Load Mesh Data
         RenderMeshData renderMeshData;
-        {
-            BufferLayout layout = {
-                {ShaderDataType::Float3, "a_Position"}, {ShaderDataType::Float3, "a_Normal"}, {ShaderDataType::Float4, "a_Color"},
-                {ShaderDataType::Float2, "a_TexCoord"}, {ShaderDataType::Int, "a_EntityID"},
-            };
-            renderMeshData.m_static_mesh_data.m_layout = layout;
-
-            constexpr size_t quadVertexCount = 4;
-            constexpr glm::vec2 textureCoords[] = {{0.0f, 0.0f}, {1.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 1.0f}};
-            const float textureIndex = 0.0f;  // White Texture
-            const float tilingFactor = 1.0f;
-
-            renderMeshData.m_static_mesh_data.m_vertex_buffer = CreateRef<BufferData>(quadVertexCount * sizeof(MeshVertex));
-
-            MeshVertex* QuadVertexBufferPtr = (MeshVertex*)renderMeshData.m_static_mesh_data.m_vertex_buffer->m_data;
-            for (size_t i = 0; i < quadVertexCount; i++) {
-                QuadVertexBufferPtr->Position = transformDesc.GetTransform() * QuadVertexPositions[i];
-                QuadVertexBufferPtr->Normal = glm::vec3(0.0f, 0.0f, 1.0f);
-                QuadVertexBufferPtr->Color = sprite.Color;
-                QuadVertexBufferPtr->TexCoord = textureCoords[i];
-                QuadVertexBufferPtr->EntityID = (int)(uint32_t)entity;
-                QuadVertexBufferPtr++;
-            }
-            renderMeshData.m_static_mesh_data.m_index_buffer = CreateRef<BufferData>(6 * sizeof(uint32_t));
-            uint32_t* quadIndices = (uint32_t*)renderMeshData.m_static_mesh_data.m_index_buffer->m_data;
-            quadIndices[0] = 0;
-            quadIndices[1] = 1;
-            quadIndices[2] = 3;
-            quadIndices[3] = 1;
-            quadIndices[4] = 2;
-            quadIndices[5] = 3;
+        bool is_MeshLoaded = m_RenderScene->getMeshAssetIdAllocator().hasElement(meshDesc);
+        if (!is_MeshLoaded) {
+            renderMeshData = m_RenderResource->LoadMeshData(meshDesc, (int)(uint32_t)entity);
+            ET_CORE_INFO("File path {}",meshDesc.m_filePath);
         }
-        renderEntity.m_MeshData = renderMeshData;
-        m_RenderResource->UploadRenderResource(renderEntity, renderMeshData);
+        renderEntity.m_MeshAssetID = m_RenderScene->getMeshAssetIdAllocator().allocUUID(meshDesc);
+
+        //* Load Material Data
+        RenderMaterialData renderMaterialData;
+        bool is_MaterialLoaded = m_RenderScene->getMaterialAssetIdAllocator().hasElement(materialDesc);
+        if (!is_MaterialLoaded) {
+            renderMaterialData = m_RenderResource->LoadMaterialData(materialDesc);
+        }
+        renderEntity.m_MaterialAssetID = m_RenderScene->getMaterialAssetIdAllocator().allocUUID(materialDesc);
+
+        if(!is_MeshLoaded) {
+            m_RenderResource->UploadRenderResource(renderEntity,renderMeshData);
+        }
+
+        if(!is_MaterialLoaded) {
+            m_RenderResource->UploadRenderResource(renderEntity,renderMaterialData);
+        }
     }
 
     void RenderSystem::OnUpdateEditor(Timestep ts, const Ref<Scene>& scene, const EditorCamera& camera) {
         m_RenderScene->Clear();
 
-        //ObjLoader objLoader;
-        GameObjectMeshDesc desc;
-        desc.m_filePath = "assets/models/cornell_box/cornell_box.obj";
+        // Ref<GameObject> gameObject = CreateRef<GameObject>();
+        // RenderEntity renderEntity;
+        // renderEntity.m_InstanceID = 123124123;
+        // // Mesh
+        // renderEntity.m_MeshAssetID = 1071314643;
+        // GameObjectMeshDesc desc;
+        // desc.m_filePath = "assets/models/block/block.obj";
+        // renderEntity.m_Mesh_Desc = desc;
 
-        RenderMeshData meshData;
-        meshData.m_static_mesh_data.m_layout = {
-            {ShaderDataType::Float3, "a_Position"}, {ShaderDataType::Float3, "a_Normal"}, {ShaderDataType::Float4, "a_Color"},
-            {ShaderDataType::Float2, "a_TexCoord"}, {ShaderDataType::Int, "a_EntityID"},
-        };
-        ObjLoader::Load(desc,  meshData.m_static_mesh_data.m_vertex_buffer,  meshData.m_static_mesh_data.m_index_buffer);
+        // RenderMeshData meshData = m_RenderResource->LoadMeshData(desc);
 
-        GameObjectTransformDesc transformDesc;
-        Ref<GameObject> gameObject = CreateRef<GameObject>();
-        RenderEntity renderEntity;
-        renderEntity.m_AssetID = 1071314643;
-        renderEntity.m_Transform_Desc = transformDesc;
-        renderEntity.m_MeshData = meshData;
-        m_RenderResource->UploadRenderResource(renderEntity, meshData);
-        gameObject->AddRenderEntity(renderEntity);
-        m_RenderScene->AddGameObject(gameObject);
+        // // Transform
+        // GameObjectTransformDesc transformDesc;
+        // renderEntity.m_Transform_Desc = transformDesc;
 
+        // // Material
+        // renderEntity.m_MaterialAssetID = 1071314643333;
+        // GameObjectMaterialDesc materialDesc;
+        // materialDesc.m_PureColor = glm::vec4(0.0, 1.0, 0.0, 1.0);
+        // renderEntity.m_Material_Desc = materialDesc;
+
+        // RenderMaterialData renderMaterialData = m_RenderResource->LoadMaterialData(materialDesc);
+
+        // m_RenderResource->UploadRenderResource(renderEntity, meshData, renderMaterialData);
+        // gameObject->AddRenderEntity(renderEntity);
+        // m_RenderScene->AddGameObject(gameObject);
 
         auto group = scene->GetRegistry().group<TransformComponent>(entt::get<SpriteRendererComponent>);
         for (auto entity : group) {

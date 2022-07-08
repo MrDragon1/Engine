@@ -9,3 +9,12 @@ Entities:
       Scale: [1, 1, 1]
     SpriteRendererComponent:
       Color: [1, 1, 0, 1]
+    MeshComponent:
+      m_filePath: assets/models/block/block.obj
+    MaterialComponent:
+      m_PureColor: [1, 1, 0, 1]
+      m_base_color_file:
+      m_metallic_roughness_file:
+      m_normal_file:
+      m_occlusion_file:
+      m_emissive_file:

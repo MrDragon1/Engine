@@ -1,15 +1,71 @@
 #include "pch.hpp"
 #include "OpenGLTexture.hpp"
-
-#include "stb_image/stb_image.h"
-
+#include "Ethereal/Utils/AssetLoader.hpp"
 #include <glad/glad.h>
 
 namespace Ethereal
 {
-    OpenGLTexture2D::OpenGLTexture2D(uint32_t width, uint32_t height) : m_Width(width), m_Height(height) {
-        m_InternalFormat = GL_RGBA8;
-        m_DataFormat = GL_RGBA;
+    OpenGLTexture2D::OpenGLTexture2D(const std::string& path)
+    {
+        RenderMaterialData RenderMaterialData;
+        TextureLoader::LoadPath(path, RenderMaterialData);
+        LoadTextureData(RenderMaterialData.m_BaseColorData);
+    }
+
+    OpenGLTexture2D::OpenGLTexture2D(const Ref<TextureData>& data) { LoadTextureData(data); }
+    
+
+    void OpenGLTexture2D::GetOpenGLTextureFormat(const ETHEREAL_PIXEL_FORMAT& format) {
+        // m_InternalFormat: https://www.khronos.org/opengl/wiki/Texture_Storage
+
+        // m_DataFormat: https://docs.gl/gl4/glTexSubImage2D
+        // Only: GL_RED, GL_RG, GL_RGB, GL_BGR, GL_RGBA, GL_BGRA, GL_DEPTH_COMPONENT, and GL_STENCIL_INDEX.
+        switch (format) {
+            case ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_R8G8B8_UNORM:
+                m_InternalFormat = GL_RGB8;
+                m_DataFormat = GL_RGB;
+                break;
+            case ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_R8G8B8_SRGB:
+                m_InternalFormat = GL_SRGB8;
+                m_DataFormat = GL_RGB;
+                break;
+            case ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_R8G8B8A8_UNORM:
+                m_InternalFormat = GL_RGBA8;
+                m_DataFormat = GL_RGBA;
+                break;
+            case ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_R8G8B8A8_SRGB:
+                m_InternalFormat = GL_SRGB8_ALPHA8;
+                m_DataFormat = GL_RGBA;
+                break;
+            case ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_R32G32_FLOAT:
+                m_InternalFormat = GL_RG32F;
+                m_DataFormat = GL_RG;
+                break;
+            case ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_R32G32B32_FLOAT:
+                m_InternalFormat = GL_RGB32F;
+                m_DataFormat = GL_RGB;
+                break;
+            case ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_R32G32B32A32_FLOAT:
+                m_InternalFormat = GL_RGBA32F;
+                m_DataFormat = GL_RGBA;
+                break;
+            default:
+                throw std::runtime_error("invalid texture_byte_size");
+                break;
+        }
+    }
+
+    void OpenGLTexture2D::LoadTextureData(const Ref<TextureData>& data) {
+        // Not Consider this case yet.
+        // uint32_t m_depth {0};
+        // uint32_t m_mip_levels {0};
+        // uint32_t m_array_layers {0};
+        ET_CORE_ASSERT(data->m_type == ETHEREAL_IMAGE_TYPE::ETHEREAL_IMAGE_TYPE_2D && data->isValid(), "Invalid image type!");
+        GetOpenGLTextureFormat(data->m_format);
+        m_IsLoaded = true;
+
+        m_Height = data->m_height;
+        m_Width = data->m_width;
 
         glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID);
         glTextureStorage2D(m_RendererID, 1, m_InternalFormat, m_Width, m_Height);
@@ -19,51 +75,17 @@ namespace Ethereal
 
         glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+        glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Width, m_Height, m_DataFormat, GL_UNSIGNED_BYTE, data->m_pixels);
     }
 
-    OpenGLTexture2D::OpenGLTexture2D(const std::string& path) : m_Path(path) {
-        int width, height, channels;
-        stbi_set_flip_vertically_on_load(1);
-        stbi_uc* data = stbi_load(path.c_str(), &width, &height, &channels, 0);
-
-        if (data) {
-            m_IsLoaded = true;
-            m_Width = width;
-            m_Height = height;
-            GLenum internalFormat = 0, dataFormat = 0;
-            if (channels == 4) {
-                internalFormat = GL_RGBA8;
-                dataFormat = GL_RGBA;
-            } else if (channels == 3) {
-                internalFormat = GL_RGB8;
-                dataFormat = GL_RGB;
-            }
-
-            m_InternalFormat = internalFormat;
-            m_DataFormat = dataFormat;
-            ET_CORE_ASSERT(internalFormat & dataFormat, "Format not supported!");
-            
-            glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID);
-            glTextureStorage2D(m_RendererID, 1, internalFormat, m_Width, m_Height);
-
-            glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-            glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
-            glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-            glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Width, m_Height, dataFormat, GL_UNSIGNED_BYTE, data);
-
-            stbi_image_free(data);
-        }
-    }
 
     void OpenGLTexture2D::SetData(void* data, uint32_t size) {
         uint32_t bpp = m_DataFormat == GL_RGBA ? 4 : 3;  // bytes per pixel
         ET_CORE_ASSERT(size == m_Width * m_Height * bpp, "Data must be entire texture!");
         glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Width, m_Height, m_DataFormat, GL_UNSIGNED_BYTE, data);
     }
-
+    
     OpenGLTexture2D::~OpenGLTexture2D() { glDeleteTextures(1, &m_RendererID); }
 
     void OpenGLTexture2D::Bind(uint32_t slot) const { glBindTextureUnit(slot, m_RendererID); }

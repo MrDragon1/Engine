@@ -6,8 +6,8 @@ namespace Ethereal
 {
     class OpenGLTexture2D : public Texture2D {
       public:
-        OpenGLTexture2D(uint32_t width, uint32_t height);
         OpenGLTexture2D(const std::string& path);
+        OpenGLTexture2D(const Ref<TextureData>& path);
         virtual ~OpenGLTexture2D();
 
         virtual uint32_t GetWidth() const override { return m_Width; };
@@ -21,9 +21,10 @@ namespace Ethereal
         }
         virtual bool IsLoaded() const override { return m_IsLoaded;};
       private:
-        std::string m_Path;
-        uint32_t m_Width, m_Height;
+        void GetOpenGLTextureFormat(const ETHEREAL_PIXEL_FORMAT& format);
+        void LoadTextureData(const Ref<TextureData>& data);
         uint32_t m_RendererID;
+        uint32_t m_Width, m_Height;
         GLenum m_InternalFormat, m_DataFormat;
         bool m_IsLoaded = false;
     };
