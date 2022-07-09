@@ -1,19 +1,20 @@
 #include "RenderResource.hpp"
-#include "Ethereal/Utils/AssetLoader.hpp"
+#include "Ethereal/Utils/AssetManager.hpp"
+#include "Ethereal/Utils/AssetLoader.hpp" //Temporary
 namespace Ethereal
 {
 
-    void RenderResource::UploadRenderResource(RenderEntity& RenderEntity, RenderMeshData& RenderMeshData, RenderMaterialData& RenderMaterialData) {
+    void RenderResource::UploadRenderResource(RenderEntity& RenderEntity, RenderMeshData& RenderMeshData, GameObjectMaterialDesc& GameObjectMaterialDesc) {
         UploadRenderMesh(RenderEntity, RenderMeshData);
-        UploadRenderMaterial(RenderEntity, RenderMaterialData);
+        UploadRenderMaterial(RenderEntity, GameObjectMaterialDesc);
     }
 
     void RenderResource::UploadRenderResource(RenderEntity& RenderEntity, RenderMeshData& RenderMeshData) {
         UploadRenderMesh(RenderEntity, RenderMeshData);
     }
 
-    void RenderResource::UploadRenderResource(RenderEntity& RenderEntity, RenderMaterialData& RenderMaterialData) {
-        UploadRenderMaterial(RenderEntity, RenderMaterialData);
+    void RenderResource::UploadRenderResource(RenderEntity& RenderEntity, GameObjectMaterialDesc& GameObjectMaterialDesc) {
+        UploadRenderMaterial(RenderEntity, GameObjectMaterialDesc);
     }
 
     void RenderResource::UploadRenderMesh(RenderEntity& RenderEntity, RenderMeshData& RenderMeshData) {
@@ -44,23 +45,21 @@ namespace Ethereal
         }
     }
 
-    void RenderResource::UploadRenderMaterial(RenderEntity& RenderEntity, RenderMaterialData& RenderMaterialData) {
+    void RenderResource::UploadRenderMaterial(RenderEntity& RenderEntity, GameObjectMaterialDesc& GameObjectMaterialDesc) {
         size_t materialAssetId = RenderEntity.m_MaterialAssetID;
         auto it = m_Material_Map.find(materialAssetId);
         if (it != m_Material_Map.end()) {
             // TODO: move to dirty data update func
-            UpdateMaterial(RenderEntity, RenderMaterialData);
+            UpdateMaterial(RenderEntity, GameObjectMaterialDesc);
             // Alread exist
             // ET_CORE_INFO("Already exist {0}", assetid);
         } else {
             GLMaterial temp_material;
-            ET_CORE_ASSERT(RenderMaterialData.m_BaseColorData, "Material must have BaseColorData");
-            temp_material.m_BaseColorMap = Texture2D::Create(RenderMaterialData.m_BaseColorData);
-            
-            if (RenderMaterialData.m_EmissiveData) temp_material.m_EmissionMap = Texture2D::Create(RenderMaterialData.m_EmissiveData);
-            if (RenderMaterialData.m_MetallicData) temp_material.m_MetallicMap = Texture2D::Create(RenderMaterialData.m_MetallicData);
-            if (RenderMaterialData.m_OcclusionData) temp_material.m_OcclusionMap = Texture2D::Create(RenderMaterialData.m_OcclusionData);
-            if (RenderMaterialData.m_NormalData) temp_material.m_NormalMap = Texture2D::Create(RenderMaterialData.m_NormalData);
+            temp_material.m_BaseColorMap = TextureManager::GetTexture(GameObjectMaterialDesc.m_base_color_file);
+            temp_material.m_EmissionMap = TextureManager::GetTexture(GameObjectMaterialDesc.m_emissive_file);
+            temp_material.m_MetallicMap = TextureManager::GetTexture(GameObjectMaterialDesc.m_metallic_roughness_file);
+            temp_material.m_OcclusionMap = TextureManager::GetTexture(GameObjectMaterialDesc.m_occlusion_file);
+            temp_material.m_NormalMap = TextureManager::GetTexture(GameObjectMaterialDesc.m_normal_file);
 
             auto res = m_Material_Map.insert(std::make_pair(materialAssetId, std::move(temp_material)));
             ET_CORE_ASSERT(res.second, "Failed to insert material into map");
@@ -82,7 +81,7 @@ namespace Ethereal
         }
     }
 
-    void RenderResource::UpdateMaterial(RenderEntity& RenderEntity, RenderMaterialData& RenderMaterialData) {
+    void RenderResource::UpdateMaterial(RenderEntity& RenderEntity, GameObjectMaterialDesc& GameObjectMaterialDesc) {
         // Do nothing
     }
 
@@ -120,11 +119,13 @@ namespace Ethereal
         return meshData;
     } 
     
-    RenderMaterialData RenderResource::LoadMaterialData(GameObjectMaterialDesc& material_desc)
+    void RenderResource::LoadMaterialData(GameObjectMaterialDesc& material_desc)
     {
-        RenderMaterialData renderMaterialData;
-        TextureLoader::Load(material_desc, renderMaterialData);
-        return renderMaterialData;
+        TextureManager::AddTexture(material_desc.m_base_color_file);
+        TextureManager::AddTexture(material_desc.m_metallic_roughness_file);
+        TextureManager::AddTexture(material_desc.m_normal_file);
+        TextureManager::AddTexture(material_desc.m_occlusion_file);
+        TextureManager::AddTexture(material_desc.m_emissive_file);
     }
     
 }  // namespace Ethereal

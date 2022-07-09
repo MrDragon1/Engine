@@ -1,4 +1,4 @@
-Scene: Test Scene
+Scene: Untitled
 Entities:
   - Entity: 3584178422345290653
     TagComponent:
@@ -8,14 +8,14 @@ Entities:
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
     MeshComponent:
-      m_filePath: assets/models/block/block.obj
+      m_filePath: assets\models\block\block.obj
     MaterialComponent:
-      m_PureColor: 
-      m_base_color_file: assets/textures/default/default_diffuse.png
-      m_metallic_roughness_file: assets/textures/default/default_metallic_roughness.png
-      m_normal_file: assets/textures/default/default_normal.png
-      m_occlusion_file: assets/textures/default/default_occlusion.png
-      m_emissive_file: assets/textures/default/default_emissive.png
+      m_PureColor: ~
+      m_base_color_file: assets\models\cube\wall.jpg
+      m_metallic_roughness_file: assets\textures\default\default_metallic_roughness.png
+      m_normal_file: assets\models\cube\wall.jpg
+      m_occlusion_file: assets\textures\default\default_occlusion.png
+      m_emissive_file: assets\textures\default\default_emissive.png
     SpriteRendererComponent:
       Color: [1, 1, 0, 1]
   - Entity: 1234178422345290653
@@ -26,14 +26,14 @@ Entities:
       Rotation: [0.059341196, -0.00872664619, -0.265290052]
       Scale: [1, 1, 1]
     MeshComponent:
-      m_filePath: assets/models/cube/cube.obj
+      m_filePath: assets\models\cube\cube.obj
     MaterialComponent:
-      m_PureColor: 
-      m_base_color_file: assets/models/cube/wall.jpg
-      m_metallic_roughness_file: assets/textures/default/default_metallic_roughness.png
-      m_normal_file: assets/textures/default/default_normal.png
-      m_occlusion_file: assets/textures/default/default_occlusion.png
-      m_emissive_file: assets/textures/default/default_emissive.png
+      m_PureColor: ~
+      m_base_color_file: assets\models\cube\wall.jpg
+      m_metallic_roughness_file: assets\textures\default\default_metallic_roughness.png
+      m_normal_file: assets\textures\default\default_normal.png
+      m_occlusion_file: assets\textures\default\default_occlusion.png
+      m_emissive_file: assets\textures\default\default_emissive.png
     SpriteRendererComponent:
       Color: [1, 1, 0, 1]
   - Entity: 1234567822345290653
@@ -44,13 +44,13 @@ Entities:
       Rotation: [-0.562079191, -0.00733617647, -1.78871441]
       Scale: [0.999999881, 1, 1]
     MeshComponent:
-      m_filePath: assets/models/cylinder/cylinder.obj
+      m_filePath: assets\models\cylinder\cylinder.obj
     MaterialComponent:
-      m_PureColor: 
-      m_base_color_file: assets/textures/default/default_diffuse.png
-      m_metallic_roughness_file: assets/textures/default/default_metallic_roughness.png
-      m_normal_file: assets/textures/default/default_normal.png
-      m_occlusion_file: assets/textures/default/default_occlusion.png
-      m_emissive_file: assets/textures/default/default_emissive.png
+      m_PureColor: ~
+      m_base_color_file: assets\textures\default\default_diffuse.png
+      m_metallic_roughness_file: assets\textures\default\default_metallic_roughness.png
+      m_normal_file: assets\textures\default\default_normal.png
+      m_occlusion_file: assets\textures\default\default_occlusion.png
+      m_emissive_file: assets\textures\default\default_emissive.png
     SpriteRendererComponent:
       Color: [1, 1, 0, 1]

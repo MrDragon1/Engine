@@ -140,54 +140,6 @@ namespace Ethereal
             }
         }
     }
-
-    void TextureLoader::Load(const GameObjectMaterialDesc& desc, RenderMaterialData& renderMaterialData) {
-        // For pure color texture
-        Ref<TextureData> textureData = CreateRef<TextureData>();
-        if (desc.m_PureColor.has_value()) {
-            textureData->m_width = 1;
-            textureData->m_height = 1;
-            textureData->m_depth = 1;
-            textureData->m_array_layers = 1;
-            textureData->m_mip_levels = 1;
-            textureData->m_type = ETHEREAL_IMAGE_TYPE::ETHEREAL_IMAGE_TYPE_2D;
-            textureData->m_pixels = malloc(sizeof(uint32_t));
-            auto temp_color = desc.m_PureColor.value()* glm::vec4(255);
-            glm::u8vec4 color{(uint8_t)temp_color.r, (uint8_t)temp_color.g, (uint8_t)temp_color.b, (uint8_t)temp_color.a};
-            memcpy(textureData->m_pixels,&color,sizeof(uint32_t));
-            textureData->m_format = ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_R8G8B8A8_UNORM;
-        } else {
-            LoadPath(desc.m_base_color_file,textureData);
-        }
-        renderMaterialData.m_BaseColorData = std::move(textureData);
-
-        //Normal Texture
-        Ref<TextureData> normalData = CreateRef<TextureData>();
-        LoadPath(desc.m_normal_file,normalData);
-        renderMaterialData.m_NormalData = std::move(normalData);
-
-        //Metallic Texture
-        Ref<TextureData> metallicData = CreateRef<TextureData>();
-        LoadPath(desc.m_metallic_roughness_file,metallicData);
-        renderMaterialData.m_MetallicData = std::move(metallicData);
-
-        //Occlusion Texture
-        Ref<TextureData> occlusionData = CreateRef<TextureData>();
-        LoadPath(desc.m_occlusion_file,occlusionData);
-        renderMaterialData.m_OcclusionData = std::move(occlusionData);
-
-        //Emissive Texture
-        Ref<TextureData> emissiveData = CreateRef<TextureData>();
-        LoadPath(desc.m_emissive_file,emissiveData);
-        renderMaterialData.m_EmissiveData = std::move(emissiveData);
-    }
-
-    void TextureLoader::LoadPath(const std::string& path, RenderMaterialData& renderMaterialData) {
-        // For pure color texture
-        Ref<TextureData> textureData = CreateRef<TextureData>();
-        LoadPath(path, textureData);
-        renderMaterialData.m_BaseColorData = std::move(textureData);
-    }
     
     void TextureLoader::LoadPath(const std::string& path, Ref<TextureData>& textureData)
     {
@@ -213,6 +165,7 @@ namespace Ethereal
         }
         else {
             ET_CORE_WARN("Failed to load texture: {0}", path);
+            textureData = nullptr;
         }
     }
 }  // namespace Ethereal

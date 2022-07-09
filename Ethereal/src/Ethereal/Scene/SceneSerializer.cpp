@@ -160,8 +160,8 @@ namespace Ethereal
             auto& material = entity.GetComponent<MaterialComponent>();
             if (material.Desc.m_PureColor.has_value())
                 out << YAML::Key << "m_PureColor" << YAML::Value << material.Desc.m_PureColor.value();
-            else
-                out << YAML::Key << "m_PureColor" << YAML::Value << "";
+            else 
+                out << YAML::Key << "m_PureColor" << YAML::Value << YAML::Null;
             out << YAML::Key << "m_base_color_file" << YAML::Value << material.Desc.m_base_color_file;
             out << YAML::Key << "m_metallic_roughness_file" << YAML::Value << material.Desc.m_metallic_roughness_file;
             out << YAML::Key << "m_normal_file" << YAML::Value << material.Desc.m_normal_file;

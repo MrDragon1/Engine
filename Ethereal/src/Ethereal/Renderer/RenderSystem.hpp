@@ -16,6 +16,8 @@ namespace Ethereal
         void OnUpdateEditor(Timestep ts, const Ref<Scene>& scene, const EditorCamera& camera);
         void OnUpdateRuntime(Timestep ts, const Ref<Scene>& scene);
 
+        Ref<Texture2D> GetTexture(const GameObjectMaterialDesc& desc);
+        
         Ref<RenderScene> m_RenderScene;
         Ref<RenderResource> m_RenderResource;  // All the mesh in scene
 

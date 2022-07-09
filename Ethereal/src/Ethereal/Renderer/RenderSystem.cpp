@@ -16,14 +16,7 @@
 
 namespace Ethereal
 {
-
-    static glm::vec4 QuadVertexPositions[4];
     RenderSystem::RenderSystem() {
-        QuadVertexPositions[0] = {0.5f, 0.5f, 0.0f, 1.0f};
-        QuadVertexPositions[1] = {0.5f, -0.5f, 0.0f, 1.0f};
-        QuadVertexPositions[2] = {-0.5f, -0.5f, 0.0f, 1.0f};
-        QuadVertexPositions[3] = {-0.5f, 0.5f, 0.0f, 1.0f};
-
         m_RenderScene = CreateRef<RenderScene>("assets/shaders/Test.glsl");
         m_RenderResource = CreateRef<RenderResource>();
     }
@@ -120,21 +113,16 @@ namespace Ethereal
             renderMeshData = m_RenderResource->LoadMeshData(meshDesc, (int)(uint32_t)entity);
         }
         renderEntity.m_MeshAssetID = m_RenderScene->getMeshAssetIdAllocator().allocUUID(meshDesc);
-
-        //* Load Material Data
-        RenderMaterialData renderMaterialData;
-        bool is_MaterialLoaded = m_RenderScene->getMaterialAssetIdAllocator().hasElement(materialDesc);
-        if (!is_MaterialLoaded) {
-            renderMaterialData = m_RenderResource->LoadMaterialData(materialDesc);
-        }
-        renderEntity.m_MaterialAssetID = m_RenderScene->getMaterialAssetIdAllocator().allocUUID(materialDesc);
-
         if(!is_MeshLoaded) {
             m_RenderResource->UploadRenderResource(renderEntity,renderMeshData);
         }
 
-        if(!is_MaterialLoaded) {
-            m_RenderResource->UploadRenderResource(renderEntity,renderMaterialData);
+        //* Load Material Data
+        bool is_MaterialLoaded = m_RenderScene->getMaterialAssetIdAllocator().hasElement(materialDesc);
+        renderEntity.m_MaterialAssetID = m_RenderScene->getMaterialAssetIdAllocator().allocUUID(materialDesc);
+        if (!is_MaterialLoaded) {
+            m_RenderResource->LoadMaterialData(materialDesc);
+            m_RenderResource->UploadRenderResource(renderEntity,materialDesc);
         }
     }
 

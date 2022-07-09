@@ -16,8 +16,6 @@ namespace Ethereal
 
     class TextureLoader {
       public:
-        static void Load(const GameObjectMaterialDesc& desc, RenderMaterialData& RenderMaterialData);
-        static void LoadPath(const std::string& path, RenderMaterialData& RenderMaterialData);
         static void LoadPath(const std::string& path, Ref<TextureData>& textureData);
     };
 }  // namespace Ethereal

@@ -7,9 +7,11 @@ namespace Ethereal
 {
     OpenGLTexture2D::OpenGLTexture2D(const std::string& path)
     {
-        RenderMaterialData RenderMaterialData;
-        TextureLoader::LoadPath(path, RenderMaterialData);
-        LoadTextureData(RenderMaterialData.m_BaseColorData);
+        Ref<TextureData> textureData = CreateRef<TextureData>();
+        TextureLoader::LoadPath(path, textureData);
+        if(textureData)
+            LoadTextureData(textureData);
+        
     }
 
     OpenGLTexture2D::OpenGLTexture2D(const Ref<TextureData>& data) { LoadTextureData(data); }
@@ -56,10 +58,6 @@ namespace Ethereal
     }
 
     void OpenGLTexture2D::LoadTextureData(const Ref<TextureData>& data) {
-        // Not Consider this case yet.
-        // uint32_t m_depth {0};
-        // uint32_t m_mip_levels {0};
-        // uint32_t m_array_layers {0};
         ET_CORE_ASSERT(data->m_type == ETHEREAL_IMAGE_TYPE::ETHEREAL_IMAGE_TYPE_2D && data->isValid(), "Invalid image type!");
         GetOpenGLTextureFormat(data->m_format);
         m_IsLoaded = true;

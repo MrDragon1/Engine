@@ -18,14 +18,15 @@ namespace Ethereal
         size_t getHashValue() const { return std::hash<std::string>{}(m_filePath); }
     };
 
+
     struct GameObjectMaterialDesc {
         GameObjectMaterialDesc() = default;
         std::optional<glm::vec4> m_PureColor;  // null if not pure color
-        std::string m_base_color_file = "assets/textures/default/default_diffuse.png";
-        std::string m_metallic_roughness_file = "assets/textures/default/default_metallic_roughness.png";
-        std::string m_normal_file = "assets/textures/default/default_normal.png";
-        std::string m_occlusion_file = "assets/textures/default/default_occlusion.png";
-        std::string m_emissive_file = "assets/textures/default/default_emissive.png";
+        std::string m_base_color_file = "assets\\textures\\default\\default_diffuse.png";
+        std::string m_metallic_roughness_file = "assets\\textures\\default\\default_metallic_roughness.png";
+        std::string m_normal_file = "assets\\textures\\default\\default_normal.png";
+        std::string m_occlusion_file = "assets\\textures\\default\\default_occlusion.png";
+        std::string m_emissive_file = "assets\\textures\\default\\default_emissive.png";
 
         bool operator==(const GameObjectMaterialDesc& rhs) const {
             return m_PureColor == rhs.m_PureColor && m_base_color_file == rhs.m_base_color_file &&
@@ -103,14 +104,6 @@ namespace Ethereal
     struct RenderMeshData {
         StaticMeshData m_static_mesh_data;
         // std::shared_ptr<BufferData> m_skeleton_binding_buffer;
-    };
-
-    struct RenderMaterialData {
-        Ref<TextureData> m_BaseColorData;
-        Ref<TextureData> m_MetallicData;
-        Ref<TextureData> m_NormalData;
-        Ref<TextureData> m_OcclusionData;
-        Ref<TextureData> m_EmissiveData;
     };
 
     struct RenderEntity {
