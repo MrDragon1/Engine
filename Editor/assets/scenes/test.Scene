@@ -1,4 +1,4 @@
-Scene: Untitled
+Scene: TestScene
 Entities:
   - Entity: 1234567822345290653
     TagComponent:
@@ -28,8 +28,8 @@ Entities:
     MeshComponent:
       m_filePath: assets/models/cube/cube.obj
     MaterialComponent:
-      m_PureColor: [1, 0, 0, 1]
-      m_base_color_file: "null"
+      m_PureColor: 
+      m_base_color_file: assets/models/cube/wall.jpg
       m_metallic_roughness_file: "null"
       m_normal_file: "null"
       m_occlusion_file: "null"

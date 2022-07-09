@@ -167,6 +167,7 @@ namespace Ethereal
                 textureData->m_array_layers = 1;
                 textureData->m_mip_levels = 1;
                 textureData->m_type = ETHEREAL_IMAGE_TYPE::ETHEREAL_IMAGE_TYPE_2D;
+                textureData->m_pixels = malloc(width * height * channels);
                 memcpy(textureData->m_pixels, data, width * height * channels);
                 if (channels == 4) {
                     textureData->m_format = ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_R8G8B8A8_UNORM;
