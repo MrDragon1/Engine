@@ -35,28 +35,21 @@ namespace Ethereal
     void EditorLayer::OnDetach() {}
 
     void EditorLayer::OnUpdate(Timestep ts) {
-        // Update
-
-        m_EditorCamera.OnUpdate(ts);
-
-        // Render
-        //Renderer2D::ResetStats();
-
         m_Framebuffer->Bind();
         RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1});
         RenderCommand::Clear();
 
         // Clear our entity ID attachment to -1
         m_Framebuffer->ClearAttachment(1, -1);
-
+        
         switch (m_SceneState) {
             case SceneState::Play: {
-                m_RenderSystem.OnUpdateRuntime(ts, m_ActiveScene);
+                m_ActiveScene->OnUpdateRuntime(ts, m_RenderSystem);
                 break;
             }
-
             case SceneState::Edit: {
-                m_RenderSystem.OnUpdateEditor(ts, m_ActiveScene, m_EditorCamera);
+                m_EditorCamera.OnUpdate(ts);
+                m_ActiveScene->OnUpdateEditor(ts, m_EditorCamera, m_RenderSystem);
                 break;
             }
         }
@@ -71,7 +64,7 @@ namespace Ethereal
 
         if (mouseX >= 0 && mouseY >= 0 && mouseX < (int)viewportSize.x && mouseY < (int)viewportSize.y) {
             int pixelData = m_Framebuffer->ReadPixel(1, mouseX, mouseY);
-            //ET_CORE_INFO("Pixel data: {0}", pixelData);
+            // ET_CORE_INFO("Pixel data: {0}", pixelData);
             m_HoveredEntity = pixelData == -1 ? Entity() : Entity((entt::entity)pixelData, m_ActiveScene.get());
         }
 

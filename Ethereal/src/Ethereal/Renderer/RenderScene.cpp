@@ -8,9 +8,6 @@ namespace Ethereal
         m_Shader = Shader::Create(shaderPath);
         m_Shader->Bind();
 
-        int32_t samplers[MaxTextureSlots];
-        for (uint32_t i = 0; i < MaxTextureSlots; i++) samplers[i] = i;
-        //m_Shader->SetIntArray("u_Textures", samplers, MaxTextureSlots);
         m_Shader->SetInt("u_BaseColorTexture", 0);
         m_Shader->SetInt("u_MetallicTexture", 1);
         m_Shader->SetInt("u_NormalTexture", 2);
@@ -33,14 +30,13 @@ namespace Ethereal
         }
     }
 
-    void RenderScene::AddGameObject(Ref<GameObject>& gameObject) { m_GameObjects.push_back(gameObject); }
+    void RenderScene::AddGameObject(const Ref<GameObject>& gameObject) { m_GameObjects.push_back(gameObject); }
 
-    //* For editor loop
-    void RenderScene::BeginRender(const EditorCamera& camera) {
+    void RenderScene::SetViewProjectionMatrix(const glm::mat4& matrix) { m_ViewProjectionMatrix = matrix; }
+
+    void RenderScene::BeginRender() {
         m_Shader->Bind();
-        m_Shader->SetMat4("u_ViewProjection", camera.GetViewProjection());
-        // Bind textures
-        // for (uint32_t i = 0; i < TextureSlotIndex; i++) TextureSlots[i]->Bind(i);
+        m_Shader->SetMat4("u_ViewProjection", m_ViewProjectionMatrix);
         if (m_Visiable_RenderMeshNode.empty()) return;
         for (auto& RenderMeshNode : m_Visiable_RenderMeshNode) {
             RenderMeshNode.ref_mesh->m_VAO->Bind();
@@ -51,17 +47,6 @@ namespace Ethereal
             RenderMeshNode.ref_material->m_OcclusionMap->Bind(3);
             RenderMeshNode.ref_material->m_EmissionMap->Bind(4);
             RenderCommand::DrawIndexed(RenderMeshNode.ref_mesh->m_VAO, RenderMeshNode.ref_mesh->m_IndexCount);
-            // RenderCommand::Draw(RenderMeshNode.ref_mesh->m_VAO, RenderMeshNode.ref_mesh->m_VertexCount);
-        }
-    }
-
-    void RenderScene::BeginRender(const glm::mat4& projection, const glm::mat4& transform) {
-        m_Shader->Bind();
-        m_Shader->SetMat4("u_ViewProjection", projection * glm::inverse(transform));
-        if (m_Visiable_RenderMeshNode.empty()) return;
-        for (auto& RenderMeshNode : m_Visiable_RenderMeshNode) {
-            RenderCommand::DrawIndexed(RenderMeshNode.ref_mesh->m_VAO, RenderMeshNode.ref_mesh->m_IndexCount);
-            // RenderCommand::Draw(RenderMeshNode.ref_mesh->m_VAO, RenderMeshNode.ref_mesh->m_VertexCount);
         }
     }
 

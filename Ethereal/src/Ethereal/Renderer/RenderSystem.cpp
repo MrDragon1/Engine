@@ -21,127 +21,43 @@ namespace Ethereal
         m_RenderResource = CreateRef<RenderResource>();
     }
 
-    void RenderSystem::OnUpdateRuntime(Timestep ts, const Ref<Scene>& scene) {
-        // Update Scripts
-        {
-            scene->m_Registry.view<NativeScriptComponent>().each([=](auto entity, auto& scriptable) {
-                if (!scriptable.Instance) {
-                    scriptable.InstantiateFunction();
-                    scriptable.Instance->m_Entity = Entity{entity, scene.get()};
-                    scriptable.Instance->OnCreate();
-                }
-                scriptable.Instance->OnUpdate(ts);
-            });
-        }
-        // Physics
-        {
-            const int32_t velocityIterations = 6;
-            const int32_t positionIterations = 2;
-            scene->m_PhysicsWorld->Step(ts, velocityIterations, positionIterations);
-
-            // Retrieve transform from Box2D
-            auto view = scene->m_Registry.view<Rigidbody2DComponent>();
-            for (auto e : view) {
-                Entity entity = {e, scene.get()};
-                auto& transform = entity.GetComponent<TransformComponent>();
-                auto& rb2d = entity.GetComponent<Rigidbody2DComponent>();
-
-                b2Body* body = (b2Body*)rb2d.Body;
-                const auto& position = body->GetPosition();
-                transform.Translation.x = position.x;
-                transform.Translation.y = position.y;
-                transform.Rotation.z = body->GetAngle();
-            }
-        }
-
-        SceneCamera* mainCamera = nullptr;
-        glm::mat4 cameraTransform = glm::mat4(1.0f);
-        {
-            auto view = scene->m_Registry.view<TransformComponent, CameraComponent>();
-            for (auto entity : view) {
-                const auto [transform, camera] = view.get<TransformComponent, CameraComponent>(entity);
-                if (camera.Primary) {
-                    mainCamera = &camera.Camera;
-                    cameraTransform = transform.GetTransform();
-                    break;
-                }
-            }
-        }
-
-        if (mainCamera) {
-            m_RenderScene->Clear();
-            auto group = scene->GetRegistry().group<TransformComponent>(entt::get<SpriteRendererComponent>);
-            for (auto entity : group) {
-                const auto [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
-                Ref<GameObject> gameObject = CreateRef<GameObject>();
-
-                RenderEntity renderEntity;
-                Entity Entity{entity, scene.get()};
-
-                CastEntityToRenderEntity(Entity, renderEntity);
-                gameObject->AddRenderEntity(renderEntity);
-                m_RenderScene->AddGameObject(gameObject);
-            }
-
-            m_RenderScene->UpdateVisiableMeshNode(m_RenderResource);
-            m_RenderScene->BeginRender(mainCamera->GetProjection(), cameraTransform);
-        }
-    }
-
-    void RenderSystem::CastEntityToRenderEntity(Entity& entity, RenderEntity& renderEntity) {
-        ET_CORE_ASSERT(entity.HasComponent<TransformComponent>() && entity.HasComponent<SpriteRendererComponent>(),
-                       "Entity must have TransformComponent and SpriteRendererComponent");
-        TransformComponent transform = entity.GetComponent<TransformComponent>();
-        renderEntity.m_InstanceID = entity.GetUUID();
-
-        GameObjectTransformDesc transformDesc;
-        transformDesc.Translation = transform.Translation;
-        transformDesc.Rotation = transform.Rotation;
-        transformDesc.Scale = transform.Scale;
-        renderEntity.m_Transform_Desc = transformDesc;
-
-        GameObjectMeshDesc meshDesc = entity.GetComponent<MeshComponent>().Desc;
-        GameObjectMaterialDesc materialDesc = entity.GetComponent<MaterialComponent>().Desc;
-
-        renderEntity.m_Mesh_Desc = meshDesc;
-        renderEntity.m_Material_Desc = materialDesc;
-
-        //* Load Mesh Data
-        RenderMeshData renderMeshData;
-        bool is_MeshLoaded = m_RenderScene->getMeshAssetIdAllocator().hasElement(meshDesc);
-        if (!is_MeshLoaded) {
-            renderMeshData = m_RenderResource->LoadMeshData(meshDesc, (int)(uint32_t)entity);
-        }
-        renderEntity.m_MeshAssetID = m_RenderScene->getMeshAssetIdAllocator().allocUUID(meshDesc);
-        if(!is_MeshLoaded) {
-            m_RenderResource->UploadRenderResource(renderEntity,renderMeshData);
-        }
-
-        //* Load Material Data
-        bool is_MaterialLoaded = m_RenderScene->getMaterialAssetIdAllocator().hasElement(materialDesc);
-        renderEntity.m_MaterialAssetID = m_RenderScene->getMaterialAssetIdAllocator().allocUUID(materialDesc);
-        if (!is_MaterialLoaded) {
-            m_RenderResource->LoadMaterialData(materialDesc);
-            m_RenderResource->UploadRenderResource(renderEntity,materialDesc);
-        }
-    }
-
-    void RenderSystem::OnUpdateEditor(Timestep ts, const Ref<Scene>& scene, const EditorCamera& camera) {
+    void RenderSystem::UpdateRenderScene(const RenderSceneData& renderSceneData) {
         m_RenderScene->Clear();
-        auto group = scene->GetRegistry().group<TransformComponent>(entt::get<SpriteRendererComponent>);
-        for (auto entity : group) {
-            const auto [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
-            Ref<GameObject> gameObject = CreateRef<GameObject>();
-
+        for (const auto& data : renderSceneData.EntitiesData) {
             RenderEntity renderEntity;
-            Entity Entity{entity, scene.get()};
+            renderEntity.m_InstanceID = data.EntityID;
+            renderEntity.m_Transform_Desc = data.Transform;
+            renderEntity.m_Mesh_Desc = data.Mesh;
+            renderEntity.m_Material_Desc = data.Material;
+            // ET_CORE_INFO(renderEntity.m_Mesh_Desc.m_filePath);
+            //* Load Mesh Data
+            RenderMeshData renderMeshData;
+            bool is_MeshLoaded = m_RenderScene->getMeshAssetIdAllocator().hasElement(renderEntity.m_Mesh_Desc);
+            if (!is_MeshLoaded) {
+                renderMeshData = m_RenderResource->LoadMeshData(renderEntity.m_Mesh_Desc, (int)(uint32_t)renderEntity.m_InstanceID);
+            }
+            renderEntity.m_MeshAssetID = m_RenderScene->getMeshAssetIdAllocator().allocUUID(renderEntity.m_Mesh_Desc);
+            if (!is_MeshLoaded) {
+                m_RenderResource->UploadRenderResource(renderEntity, renderMeshData);
+            }
 
-            CastEntityToRenderEntity(Entity, renderEntity);
+            //* Load Material Data
+            bool is_MaterialLoaded = m_RenderScene->getMaterialAssetIdAllocator().hasElement(renderEntity.m_Material_Desc);
+            if (!is_MaterialLoaded) {
+                m_RenderResource->LoadMaterialData(renderEntity.m_Material_Desc);
+            }
+            renderEntity.m_MaterialAssetID = m_RenderScene->getMaterialAssetIdAllocator().allocUUID(renderEntity.m_Material_Desc);
+            if (!is_MaterialLoaded) {
+                m_RenderResource->UploadRenderResource(renderEntity, renderEntity.m_Material_Desc);
+            }
+
+            Ref<GameObject> gameObject = CreateRef<GameObject>();
             gameObject->AddRenderEntity(renderEntity);
             m_RenderScene->AddGameObject(gameObject);
         }
-
         m_RenderScene->UpdateVisiableMeshNode(m_RenderResource);
-        m_RenderScene->BeginRender(camera);
+        m_RenderScene->SetViewProjectionMatrix(renderSceneData.ViewProjectionMatrix);
+
+        m_RenderScene->BeginRender();
     }
 }  // namespace Ethereal

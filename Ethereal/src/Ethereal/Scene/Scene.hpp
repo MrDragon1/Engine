@@ -9,6 +9,7 @@
 class b2World;
 namespace Ethereal
 {
+    class RenderSystem;
     class Entity;
     class Scene {
       public:
@@ -19,6 +20,10 @@ namespace Ethereal
 
         Entity CreateEntity(const std::string& name = std::string());
         Entity CreateEntityWithUUID(UUID uuid, const std::string& name = std::string());
+
+        void OnUpdateRuntime(Timestep ts, RenderSystem& renderSystem);
+        void OnUpdateEditor(Timestep ts, EditorCamera& editorCamera, RenderSystem& renderSystem);
+        void SubmitRenderScene(RenderSystem& renderSystem, const glm::mat4& viewProjectionMatrix);
 
         void DestroyEntity(Entity entity);
         void DuplicateEntity(Entity entity);

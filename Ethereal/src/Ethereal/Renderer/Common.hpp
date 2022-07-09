@@ -111,9 +111,10 @@ namespace Ethereal
         size_t m_MeshAssetID;
         size_t m_MaterialAssetID;
 
+        //* remove this
         GameObjectMeshDesc m_Mesh_Desc;
-        GameObjectTransformDesc m_Transform_Desc;
         GameObjectMaterialDesc m_Material_Desc;
+        GameObjectTransformDesc m_Transform_Desc;
     };
 
     //*************************************************

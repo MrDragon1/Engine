@@ -19,10 +19,11 @@ namespace Ethereal
         RenderScene(const std::string& shaderPath);
         void UpdateVisiableMeshNode(const Ref<RenderResource>& RenderResource);
 
-        void AddGameObject(Ref<GameObject>& gameObject);
+        void AddGameObject(const Ref<GameObject>& gameObject);
 
-        void BeginRender(const EditorCamera& camera);
-        void BeginRender(const glm::mat4& projection, const glm::mat4& transform);
+        void SetViewProjectionMatrix(const glm::mat4& matrix);
+
+        void BeginRender();
 
         UUIDAllocator<GameObjectMeshDesc>& getMeshAssetIdAllocator() { return m_MeshAssetIdAllocator; };
         UUIDAllocator<GameObjectMaterialDesc>& getMaterialAssetIdAllocator() { return m_MaterialAssetIdAllocator; };
@@ -35,10 +36,10 @@ namespace Ethereal
 
         std::vector<Ref<GameObject>> m_GameObjects;
         std::vector<RenderMeshNode> m_Visiable_RenderMeshNode;  // only visiable scene
-        Ref<Shader> m_Shader;
 
-        std::array<Ref<Texture2D>, MaxTextureSlots> TextureSlots;
-        size_t TextureSlotIndex = 0;
+        glm::mat4 m_ViewProjectionMatrix;
+
+        Ref<Shader> m_Shader;
     };
 
 }  // namespace Ethereal

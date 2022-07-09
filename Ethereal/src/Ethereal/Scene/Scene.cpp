@@ -4,6 +4,7 @@
 #include "Components.hpp"
 #include "Ethereal/Scene/ScriptableEntity.hpp"
 #include "Ethereal/Renderer/Renderer2D.hpp"
+#include "Ethereal/Renderer/RenderSystem.hpp"
 
 #include "box2d/b2_world.h"
 #include "box2d/b2_body.h"
@@ -69,11 +70,12 @@ namespace Ethereal
         // Copy components (except IDComponent and TagComponent)
         CopyComponent<TransformComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
         CopyComponent<SpriteRendererComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
+        CopyComponent<MeshComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
+        CopyComponent<MaterialComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
         CopyComponent<CameraComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
         CopyComponent<NativeScriptComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
         CopyComponent<Rigidbody2DComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
         CopyComponent<BoxCollider2DComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
-
         return newScene;
     }
 
@@ -86,6 +88,87 @@ namespace Ethereal
         auto& tag = entity.AddComponent<TagComponent>();
         tag.Tag = name.empty() ? "DefaultEntity" : name;
         return entity;
+    }
+
+    void Scene::OnUpdateRuntime(Timestep ts, RenderSystem& renderSystem) {
+        // Update Scripts
+        {
+            m_Registry.view<NativeScriptComponent>().each([=](auto entity, auto& scriptable) {
+                if (!scriptable.Instance) {
+                    scriptable.InstantiateFunction();
+                    scriptable.Instance->m_Entity = Entity{entity, this};
+                    scriptable.Instance->OnCreate();
+                }
+                scriptable.Instance->OnUpdate(ts);
+            });
+        }
+        // Physics
+        {
+            const int32_t velocityIterations = 6;
+            const int32_t positionIterations = 2;
+            m_PhysicsWorld->Step(ts, velocityIterations, positionIterations);
+
+            // Retrieve transform from Box2D
+            auto view = m_Registry.view<Rigidbody2DComponent>();
+            for (auto e : view) {
+                Entity entity = {e, this};
+                auto& transform = entity.GetComponent<TransformComponent>();
+                auto& rb2d = entity.GetComponent<Rigidbody2DComponent>();
+
+                b2Body* body = (b2Body*)rb2d.Body;
+                const auto& position = body->GetPosition();
+                transform.Translation.x = position.x;
+                transform.Translation.y = position.y;
+                transform.Rotation.z = body->GetAngle();
+            }
+        }
+
+        SceneCamera* mainCamera = nullptr;
+        glm::mat4 cameraTransform = glm::mat4(1.0f);
+        {
+            auto view = m_Registry.view<TransformComponent, CameraComponent>();
+            for (auto entity : view) {
+                const auto [transform, camera] = view.get<TransformComponent, CameraComponent>(entity);
+                if (camera.Primary) {
+                    mainCamera = &camera.Camera;
+                    cameraTransform = transform.GetTransform();
+                    break;
+                }
+            }
+        }
+
+        if (mainCamera) {
+            SubmitRenderScene(renderSystem, mainCamera->GetProjection() * glm::inverse(cameraTransform));
+        }
+    }
+
+    void Scene::OnUpdateEditor(Timestep ts, EditorCamera& editorCamera, RenderSystem& renderSystem) {
+        SubmitRenderScene(renderSystem, editorCamera.GetViewProjection());
+    }
+
+    void Scene::SubmitRenderScene(RenderSystem& renderSystem, const glm::mat4& viewProjectionMatrix) {
+        RenderSceneData renderSceneData;
+        renderSceneData.ViewProjectionMatrix = viewProjectionMatrix;
+        
+        auto view = m_Registry.view<TransformComponent, MeshComponent, MaterialComponent>();
+        for (auto entity : view) {
+            const auto [transform, meshComponent, materialComponent] = view.get<TransformComponent, MeshComponent, MaterialComponent>(entity);
+            GameObjectTransformDesc transformDesc;
+            transformDesc.Translation = transform.Translation;
+            transformDesc.Rotation = transform.Rotation;
+            transformDesc.Scale = transform.Scale;
+            GameObjectMeshDesc meshDesc = meshComponent.Desc;
+            GameObjectMaterialDesc materialDesc = materialComponent.Desc;
+            
+            EntityDataForRenderSystem entityData;
+            entityData.EntityID = (size_t)entity;
+            entityData.Transform = transformDesc;
+            entityData.Mesh = meshDesc;
+            entityData.Material = materialDesc;
+
+            renderSceneData.EntitiesData.push_back(entityData);
+        }
+        renderSystem.UpdateRenderScene(renderSceneData);
     }
 
     void Scene::DestroyEntity(Entity entity) { m_Registry.destroy(entity); }
