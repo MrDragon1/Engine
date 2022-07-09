@@ -29,6 +29,8 @@ namespace Ethereal
 
         // Loop over shapes
         for (size_t s = 0; s < shapes.size(); s++) {
+            //TODO: support multiple materials for multiple shapes in one obj file
+            if(s > 1) ET_CORE_WARN("Ethereal only support one shape, because only one material per object is supported");
             // Loop over faces(polygon)
             size_t index_offset = 0;
             for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++) {
@@ -155,39 +157,44 @@ namespace Ethereal
             memcpy(textureData->m_pixels,&color,sizeof(uint32_t));
             textureData->m_format = ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_R8G8B8A8_UNORM;
         } else {
-            stbi_set_flip_vertically_on_load(1);
-            auto path = desc.m_base_color_file;
-            int width, height, channels;
-            stbi_uc* data = stbi_load(path.c_str(), &width, &height, &channels, 0);
-
-            if (data) {
-                textureData->m_width = width;
-                textureData->m_height = height;
-                textureData->m_depth = 1;
-                textureData->m_array_layers = 1;
-                textureData->m_mip_levels = 1;
-                textureData->m_type = ETHEREAL_IMAGE_TYPE::ETHEREAL_IMAGE_TYPE_2D;
-                textureData->m_pixels = malloc(width * height * channels);
-                memcpy(textureData->m_pixels, data, width * height * channels);
-                if (channels == 4) {
-                    textureData->m_format = ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_R8G8B8A8_UNORM;
-                } else if (channels == 3) {
-                    textureData->m_format = ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_R8G8B8_UNORM;
-                }
-                stbi_image_free(data);
-            }
+            LoadPath(desc.m_base_color_file,textureData);
         }
         renderMaterialData.m_BaseColorData = std::move(textureData);
+
+        //Normal Texture
+        Ref<TextureData> normalData = CreateRef<TextureData>();
+        LoadPath(desc.m_normal_file,normalData);
+        renderMaterialData.m_NormalData = std::move(normalData);
+
+        //Metallic Texture
+        Ref<TextureData> metallicData = CreateRef<TextureData>();
+        LoadPath(desc.m_metallic_roughness_file,metallicData);
+        renderMaterialData.m_MetallicData = std::move(metallicData);
+
+        //Occlusion Texture
+        Ref<TextureData> occlusionData = CreateRef<TextureData>();
+        LoadPath(desc.m_occlusion_file,occlusionData);
+        renderMaterialData.m_OcclusionData = std::move(occlusionData);
+
+        //Emissive Texture
+        Ref<TextureData> emissiveData = CreateRef<TextureData>();
+        LoadPath(desc.m_emissive_file,emissiveData);
+        renderMaterialData.m_EmissiveData = std::move(emissiveData);
     }
 
     void TextureLoader::LoadPath(const std::string& path, RenderMaterialData& renderMaterialData) {
         // For pure color texture
         Ref<TextureData> textureData = CreateRef<TextureData>();
-
+        LoadPath(path, textureData);
+        renderMaterialData.m_BaseColorData = std::move(textureData);
+    }
+    
+    void TextureLoader::LoadPath(const std::string& path, Ref<TextureData>& textureData)
+    {
         stbi_set_flip_vertically_on_load(1);
         int width, height, channels;
         stbi_uc* data = stbi_load(path.c_str(), &width, &height, &channels, 0);
-        ET_CORE_INFO("{0} {1} {2} ", width, height, channels);
+
         if (data) {
             textureData->m_width = width;
             textureData->m_height = height;
@@ -207,6 +214,5 @@ namespace Ethereal
         else {
             ET_CORE_WARN("Failed to load texture: {0}", path);
         }
-        renderMaterialData.m_BaseColorData = std::move(textureData);
     }
 }  // namespace Ethereal

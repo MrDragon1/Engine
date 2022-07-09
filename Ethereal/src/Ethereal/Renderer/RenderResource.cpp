@@ -57,7 +57,7 @@ namespace Ethereal
             ET_CORE_ASSERT(RenderMaterialData.m_BaseColorData, "Material must have BaseColorData");
             temp_material.m_BaseColorMap = Texture2D::Create(RenderMaterialData.m_BaseColorData);
             
-            if (RenderMaterialData.m_EmissionData) temp_material.m_EmissionMap = Texture2D::Create(RenderMaterialData.m_EmissionData);
+            if (RenderMaterialData.m_EmissiveData) temp_material.m_EmissionMap = Texture2D::Create(RenderMaterialData.m_EmissiveData);
             if (RenderMaterialData.m_MetallicData) temp_material.m_MetallicMap = Texture2D::Create(RenderMaterialData.m_MetallicData);
             if (RenderMaterialData.m_OcclusionData) temp_material.m_OcclusionMap = Texture2D::Create(RenderMaterialData.m_OcclusionData);
             if (RenderMaterialData.m_NormalData) temp_material.m_NormalMap = Texture2D::Create(RenderMaterialData.m_NormalData);

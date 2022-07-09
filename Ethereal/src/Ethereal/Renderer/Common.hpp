@@ -21,11 +21,11 @@ namespace Ethereal
     struct GameObjectMaterialDesc {
         GameObjectMaterialDesc() = default;
         std::optional<glm::vec4> m_PureColor;  // null if not pure color
-        std::string m_base_color_file;
-        std::string m_metallic_roughness_file;
-        std::string m_normal_file;
-        std::string m_occlusion_file;
-        std::string m_emissive_file;
+        std::string m_base_color_file = "assets/textures/default/default_diffuse.png";
+        std::string m_metallic_roughness_file = "assets/textures/default/default_metallic_roughness.png";
+        std::string m_normal_file = "assets/textures/default/default_normal.png";
+        std::string m_occlusion_file = "assets/textures/default/default_occlusion.png";
+        std::string m_emissive_file = "assets/textures/default/default_emissive.png";
 
         bool operator==(const GameObjectMaterialDesc& rhs) const {
             return m_PureColor == rhs.m_PureColor && m_base_color_file == rhs.m_base_color_file &&
@@ -110,7 +110,7 @@ namespace Ethereal
         Ref<TextureData> m_MetallicData;
         Ref<TextureData> m_NormalData;
         Ref<TextureData> m_OcclusionData;
-        Ref<TextureData> m_EmissionData;
+        Ref<TextureData> m_EmissiveData;
     };
 
     struct RenderEntity {

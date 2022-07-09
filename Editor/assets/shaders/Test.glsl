@@ -37,11 +37,14 @@ in vec3 v_Normal;
 in vec2 v_TexCoord;
 in flat int v_EntityID;
 
-uniform sampler2D u_Textures[32];
-
+uniform sampler2D u_BaseColorTexture;
+uniform sampler2D u_MetallicTexture;
+uniform sampler2D u_NormalTexture;
+uniform sampler2D u_OcclusionTexture;
+uniform sampler2D u_EmissionTexture;
 void main()
 {
     int index = 0;
-    color =  texture(u_Textures[index], v_TexCoord);
+    color =  texture(u_BaseColorTexture, v_TexCoord);
     color2 = v_EntityID;
 }

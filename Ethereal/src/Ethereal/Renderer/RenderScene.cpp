@@ -10,8 +10,12 @@ namespace Ethereal
 
         int32_t samplers[MaxTextureSlots];
         for (uint32_t i = 0; i < MaxTextureSlots; i++) samplers[i] = i;
-        m_Shader->SetIntArray("u_Textures", samplers, MaxTextureSlots);
-        
+        //m_Shader->SetIntArray("u_Textures", samplers, MaxTextureSlots);
+        m_Shader->SetInt("u_BaseColorTexture", 0);
+        m_Shader->SetInt("u_MetallicTexture", 1);
+        m_Shader->SetInt("u_NormalTexture", 2);
+        m_Shader->SetInt("u_OcclusionTexture", 3);
+        m_Shader->SetInt("u_EmissionTexture", 4);
     }
 
     void RenderScene::UpdateVisiableMeshNode(const Ref<RenderResource>& renderResource) {
@@ -31,6 +35,7 @@ namespace Ethereal
 
     void RenderScene::AddGameObject(Ref<GameObject>& gameObject) { m_GameObjects.push_back(gameObject); }
 
+    //* For editor loop
     void RenderScene::BeginRender(const EditorCamera& camera) {
         m_Shader->Bind();
         m_Shader->SetMat4("u_ViewProjection", camera.GetViewProjection());
@@ -41,6 +46,10 @@ namespace Ethereal
             RenderMeshNode.ref_mesh->m_VAO->Bind();
             m_Shader->SetMat4("u_Model", RenderMeshNode.model_matrix);
             RenderMeshNode.ref_material->m_BaseColorMap->Bind(0);
+            RenderMeshNode.ref_material->m_MetallicMap->Bind(1);
+            RenderMeshNode.ref_material->m_NormalMap->Bind(2);
+            RenderMeshNode.ref_material->m_OcclusionMap->Bind(3);
+            RenderMeshNode.ref_material->m_EmissionMap->Bind(4);
             RenderCommand::DrawIndexed(RenderMeshNode.ref_mesh->m_VAO, RenderMeshNode.ref_mesh->m_IndexCount);
             // RenderCommand::Draw(RenderMeshNode.ref_mesh->m_VAO, RenderMeshNode.ref_mesh->m_VertexCount);
         }
