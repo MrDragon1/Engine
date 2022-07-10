@@ -140,19 +140,28 @@ namespace Ethereal
         m_SceneHierarchyPanel.OnImGuiRender();
         m_ContentBrowserPanel.OnImGuiRender();
 
-        // ImGui::Begin("Stats");
-        // std::string name = "None";
-        // if (m_HoveredEntity) name = m_HoveredEntity.GetComponent<TagComponent>().Tag;
-        // ImGui::Text("Hovered Entity: %s", name.c_str());
+        ImGui::Begin("Stats");
+        std::string name = "None";
+        if (m_HoveredEntity) name = m_HoveredEntity.GetComponent<TagComponent>().Tag;
+        ImGui::Text("Hovered Entity: %s", name.c_str());
 
-        // auto stats = Renderer2D::GetStats();
-        // ImGui::Text("Renderer2D Stats:");
-        // ImGui::Text("Draw Calls: %d", stats.DrawCalls);
-        // ImGui::Text("Quads: %d", stats.QuadCount);
-        // ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());
-        // ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
+        
+        const char* drawModeStrings[] = {"FILLED", "LINE","POINT"};
+        const char* currentDrawModeString = drawModeStrings[(int)RenderCommand::GetDrawMode()];
+        if (ImGui::BeginCombo("Draw Mode", currentDrawModeString)) {
+            for (int i = 0; i < 3; i++) {
+                bool isSelected = currentDrawModeString == drawModeStrings[i];
+                if (ImGui::Selectable(drawModeStrings[i], isSelected)) {
+                    currentDrawModeString = drawModeStrings[i];
+                    RenderCommand::SetDrawMode((ETHEREAL_DRAW_MODE)i);
+                }
 
-        // ImGui::End();
+                if (isSelected) ImGui::SetItemDefaultFocus();
+            }
+            ImGui::EndCombo();
+        }
+
+        ImGui::End();
 
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
         ImGui::Begin("Viewport");
@@ -201,12 +210,6 @@ namespace Ethereal
             float windowWidth = (float)ImGui::GetWindowWidth();
             float windowHeight = (float)ImGui::GetWindowHeight();
             ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
-
-            // // Camera
-            // auto cameraEntity = m_Scene->GetPrimaryCameraEntity();
-            // const auto& camera = cameraEntity.GetComponent<CameraComponent>().Camera;
-            // const glm::mat4& cameraProjection = camera.GetProjection();
-            // glm::mat4 cameraView = glm::inverse(cameraEntity.GetComponent<TransformComponent>().GetTransform());
 
             // Editor camera
             const glm::mat4& cameraProjection = m_EditorCamera.GetProjection();

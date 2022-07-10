@@ -19,4 +19,11 @@ namespace Ethereal {
         ETHEREAL_IMAGE_TYPE_UNKNOWM = 0,
         ETHEREAL_IMAGE_TYPE_2D
     };
+
+    enum class ETHEREAL_DRAW_MODE : uint8_t
+    {
+        ETHEREAL_DRAW_MODE_FILLED = 0,
+        ETHEREAL_DRAW_MODE_LINE,
+        ETHEREAL_DRAW_MODE_POINT
+    };
 }

@@ -22,6 +22,14 @@ namespace Ethereal
             s_RendererAPI->Clear();
         }
 
+        inline static void SetDrawMode(ETHEREAL_DRAW_MODE mode){
+            s_RendererAPI->SetDrawMode(mode);
+        }
+
+        inline static ETHEREAL_DRAW_MODE GetDrawMode(){
+            return s_RendererAPI->GetDrawMode();
+        }
+
         inline static void DrawIndexed(const Ref<VertexArray>& vertexArray, uint32_t count = 0) {
             s_RendererAPI->DrawIndexed(vertexArray,count);
         }
