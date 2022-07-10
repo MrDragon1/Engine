@@ -1,30 +1,14 @@
 Scene: Test Scene
 Entities:
-  - Entity: 3584178422345290653
+  - Entity: 8771200316534182395
     TagComponent:
-      Tag: Block
+      Tag: Plane
     TransformComponent:
-      Translation: [0.600434303, 0, 0]
+      Translation: [2.94246364, -8.02337742, 4.48575401]
       Rotation: [0, 0, 0]
-      Scale: [1, 1, 1]
+      Scale: [34.524498, 29.5867233, 26.7573967]
     MeshComponent:
-      m_filePath: assets\models\block\block.obj
-    MaterialComponent:
-      m_PureColor: ~
-      m_base_color_file: assets\models\cube\wall.jpg
-      m_metallic_roughness_file: assets\textures\default\default_metallic_roughness.png
-      m_normal_file: assets\models\cube\wall.jpg
-      m_occlusion_file: assets\textures\default\default_occlusion.png
-      m_emissive_file: assets\textures\default\default_emissive.png
-  - Entity: 1234178422345290653
-    TagComponent:
-      Tag: Cube
-    TransformComponent:
-      Translation: [-4.19999981, -0.400000006, 1]
-      Rotation: [0.0593411401, -0.0087266406, -0.265290052]
-      Scale: [1, 1, 1]
-    MeshComponent:
-      m_filePath: assets\models\cube\cube.obj
+      m_filePath: assets/buildin/models/plane.obj
     MaterialComponent:
       m_PureColor: ~
       m_base_color_file: assets\models\cube\wall.jpg
@@ -32,6 +16,72 @@ Entities:
       m_normal_file: assets\textures\default\default_normal.png
       m_occlusion_file: assets\textures\default\default_occlusion.png
       m_emissive_file: assets\textures\default\default_emissive.png
+  - Entity: 15122997794576496913
+    TagComponent:
+      Tag: Capsule
+    TransformComponent:
+      Translation: [10.3416033, -0.789764225, 1.72702837]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      m_filePath: assets/buildin/models/capsule.obj
+    MaterialComponent:
+      m_PureColor: ~
+      m_base_color_file: assets\textures\default\default_diffuse.png
+      m_metallic_roughness_file: assets\textures\default\default_metallic_roughness.png
+      m_normal_file: assets\textures\default\default_normal.png
+      m_occlusion_file: assets\textures\default\default_occlusion.png
+      m_emissive_file: assets\textures\default\default_emissive.png
+  - Entity: 16497184390699425136
+    TagComponent:
+      Tag: Cone
+    TransformComponent:
+      Translation: [3.38519382, -2.04593229, 5.44406128]
+      Rotation: [0, 0, 0]
+      Scale: [1.93000007, 1.93000007, 1.93000007]
+    MeshComponent:
+      m_filePath: assets/buildin/models/cone.obj
+    MaterialComponent:
+      m_PureColor: ~
+      m_base_color_file: assets\textures\default\default_diffuse.png
+      m_metallic_roughness_file: assets\textures\default\default_metallic_roughness.png
+      m_normal_file: assets\textures\default\default_normal.png
+      m_occlusion_file: assets\textures\default\default_occlusion.png
+      m_emissive_file: assets\textures\default\default_emissive.png
+  - Entity: 3615642407834851653
+    TagComponent:
+      Tag: Cylinder
+    TransformComponent:
+      Translation: [2.43759251, 1.2399053e-05, 8.96865368]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      m_filePath: assets/buildin/models/cylinder.obj
+    MaterialComponent:
+      m_PureColor: ~
+      m_base_color_file: assets\textures\default\default_diffuse.png
+      m_metallic_roughness_file: assets\textures\default\default_metallic_roughness.png
+      m_normal_file: assets\textures\default\default_normal.png
+      m_occlusion_file: assets\textures\default\default_occlusion.png
+      m_emissive_file: assets\textures\default\default_emissive.png
+  - Entity: 2776347758192338158
+    TagComponent:
+      Tag: Camera
+    TransformComponent:
+      Translation: [21.7747936, -0.302311659, 11.6230288]
+      Rotation: [0, 1.04719758, 0]
+      Scale: [1, 1, 1]
+    CameraComponent:
+      Camera:
+        ProjectionType: 0
+        PerspectiveFOV: 0.785398185
+        PerspectiveNear: 0.00999999978
+        PerspectiveFar: 1000
+        OrthographicSize: 10
+        OrthographicNear: -1
+        OrthographicFar: 1
+      Primary: true
+      FixedAspectRatio: false
   - Entity: 1234567822345290653
     TagComponent:
       Tag: Cylinder
@@ -48,21 +98,35 @@ Entities:
       m_normal_file: assets\textures\default\default_normal.png
       m_occlusion_file: assets\textures\default\default_occlusion.png
       m_emissive_file: assets\textures\default\default_emissive.png
-  - Entity: 2776347758192338158
+  - Entity: 1234178422345290653
     TagComponent:
-      Tag: Camera
+      Tag: Cube
     TransformComponent:
-      Translation: [2.02244878, 0, 14.6000004]
+      Translation: [-13.330739, 17.4639816, -22.1897411]
+      Rotation: [0, 0, 0]
+      Scale: [1.00000012, 6.68827057, 7.59475327]
+    MeshComponent:
+      m_filePath: assets\models\cube\cube.obj
+    MaterialComponent:
+      m_PureColor: ~
+      m_base_color_file: assets\models\cube\wall.jpg
+      m_metallic_roughness_file: assets\textures\default\default_metallic_roughness.png
+      m_normal_file: assets\textures\default\default_normal.png
+      m_occlusion_file: assets\textures\default\default_occlusion.png
+      m_emissive_file: assets\textures\default\default_emissive.png
+  - Entity: 3584178422345290653
+    TagComponent:
+      Tag: Block
+    TransformComponent:
+      Translation: [8.31375408, 0, 3.5764277]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
-    CameraComponent:
-      Camera:
-        ProjectionType: 0
-        PerspectiveFOV: 0.785398185
-        PerspectiveNear: 0.00999999978
-        PerspectiveFar: 1000
-        OrthographicSize: 10
-        OrthographicNear: -1
-        OrthographicFar: 1
-      Primary: true
-      FixedAspectRatio: false
+    MeshComponent:
+      m_filePath: assets\models\block\block.obj
+    MaterialComponent:
+      m_PureColor: ~
+      m_base_color_file: assets\models\cube\wall.jpg
+      m_metallic_roughness_file: assets\textures\default\default_metallic_roughness.png
+      m_normal_file: assets\models\cube\wall.jpg
+      m_occlusion_file: assets\textures\default\default_occlusion.png
+      m_emissive_file: assets\textures\default\default_emissive.png

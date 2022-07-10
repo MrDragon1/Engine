@@ -1,14 +1,13 @@
-#include "pch.hpp"
 #include "Scene.hpp"
 
 #include "Components.hpp"
-#include "Ethereal/Scene/ScriptableEntity.hpp"
 #include "Ethereal/Renderer/RenderSystem.hpp"
-
-#include "box2d/b2_world.h"
+#include "Ethereal/Scene/ScriptableEntity.hpp"
 #include "box2d/b2_body.h"
-#include "box2d/b2_polygon_shape.h"
 #include "box2d/b2_fixture.h"
+#include "box2d/b2_polygon_shape.h"
+#include "box2d/b2_world.h"
+#include "pch.hpp"
 namespace Ethereal
 {
     static b2BodyType Rigidbody2DTypeToBox2DBody(Rigidbody2DComponent::BodyType bodyType) {
@@ -88,6 +87,47 @@ namespace Ethereal
         return entity;
     }
 
+    Entity Scene::Create3DObject(ETHEREAL_BASIC_3DOBJECT type) {
+        std::string filePath;
+        std::string name;
+        switch (type) {
+            case ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_CUBE:
+                filePath = "assets/buildin/models/cube.obj";
+                name = "Cube";
+                break;
+            case ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_SPHERE:
+                filePath = "assets/buildin/models/sphere.obj";
+                name = "Sphere";
+                break;
+            case ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_CYLINDER:
+                filePath = "assets/buildin/models/cylinder.obj";
+                name = "Cylinder";
+                break;
+            case ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_CONE:
+                filePath = "assets/buildin/models/cone.obj";
+                name = "Cone";
+                break;
+            case ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_CAPSULE:
+                filePath = "assets/buildin/models/capsule.obj";
+                name = "Capsule";
+                break;
+            case ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_PLANE:
+                filePath = "assets/buildin/models/plane.obj";
+                name = "Plane";
+                break;
+            default:
+                ET_CORE_ASSERT(false, "Unknown 3D object type");
+                break;
+        }
+
+        Entity Object = CreateEntity(name);
+        auto& materialComponent = Object.AddComponent<MaterialComponent>();
+        auto& meshComponent = Object.AddComponent<MeshComponent>();
+        meshComponent.Desc.m_filePath = filePath;
+
+        return Object;
+    }
+
     void Scene::OnUpdateRuntime(Timestep ts, RenderSystem& renderSystem) {
         // Update Scripts
         {
@@ -147,7 +187,7 @@ namespace Ethereal
     void Scene::SubmitRenderScene(RenderSystem& renderSystem, const glm::mat4& viewProjectionMatrix) {
         RenderSceneData renderSceneData;
         renderSceneData.ViewProjectionMatrix = viewProjectionMatrix;
-        
+
         auto view = m_Registry.view<TransformComponent, MeshComponent, MaterialComponent>();
         for (auto entity : view) {
             const auto [transform, meshComponent, materialComponent] = view.get<TransformComponent, MeshComponent, MaterialComponent>(entity);
@@ -157,7 +197,7 @@ namespace Ethereal
             transformDesc.Scale = transform.Scale;
             GameObjectMeshDesc meshDesc = meshComponent.Desc;
             GameObjectMaterialDesc materialDesc = materialComponent.Desc;
-            
+
             EntityDataForRenderSystem entityData;
             entityData.EntityID = (size_t)entity;
             entityData.Transform = transformDesc;

@@ -3,7 +3,7 @@
 #include "Ethereal/Core/UUID.hpp"
 #include "Ethereal/Core/Timestep.hpp"
 #include "Ethereal/Renderer/EditorCamera.hpp"
-
+#include "Ethereal/Utils/Macro.hpp"
 #include "entt/entt.hpp"
 
 class b2World;
@@ -20,6 +20,8 @@ namespace Ethereal
 
         Entity CreateEntity(const std::string& name = std::string());
         Entity CreateEntityWithUUID(UUID uuid, const std::string& name = std::string());
+        Entity Create3DObject(ETHEREAL_BASIC_3DOBJECT type);
+
 
         void OnUpdateRuntime(Timestep ts, RenderSystem& renderSystem);
         void OnUpdateEditor(Timestep ts, EditorCamera& editorCamera, RenderSystem& renderSystem);

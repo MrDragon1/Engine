@@ -30,6 +30,18 @@ namespace Ethereal
 
             if (ImGui::BeginPopupContextWindow(0, 1, false)) {
                 if (ImGui::MenuItem("Create Empty Entity")) m_Context->CreateEntity("Empty Entity");
+                if (ImGui::BeginMenu("3D Object"))
+                {
+                    if (ImGui::MenuItem("Cube")) m_SelectionContext = m_Context->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_CUBE);
+                    if (ImGui::MenuItem("Sphere")) m_SelectionContext = m_Context->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_SPHERE);
+                    if (ImGui::MenuItem("Cylinder")) m_SelectionContext = m_Context->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_CYLINDER);
+                    if (ImGui::MenuItem("Cone")) m_SelectionContext = m_Context->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_CONE);
+                    if (ImGui::MenuItem("Capsule")) m_SelectionContext = m_Context->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_CAPSULE);
+                    if (ImGui::MenuItem("Plane")) m_SelectionContext = m_Context->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_PLANE);
+                    if (ImGui::MenuItem("Quad")) m_SelectionContext = m_Context->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_QUAD);
+
+                    ImGui::EndMenu();
+                }
                 ImGui::EndPopup();
             }
         }
