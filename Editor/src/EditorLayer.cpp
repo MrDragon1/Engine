@@ -1,16 +1,15 @@
 #include "EditorLayer.hpp"
 
 // Should remove this
-#include "Ethereal/Scene/Components.hpp"
-#include "imgui.h"
-#include "imguizmo/ImGuizmo.h"
-
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "Ethereal/Scene/Components.hpp"
 #include "Ethereal/Scene/SceneSerializer.hpp"
-#include "Ethereal/Utils/PlatformUtils.hpp"
 #include "Ethereal/Utils/Math.hpp"
+#include "Ethereal/Utils/PlatformUtils.hpp"
+#include "imgui.h"
+#include "imguizmo/ImGuizmo.h"
 
 namespace Ethereal
 {
@@ -41,7 +40,7 @@ namespace Ethereal
 
         // Clear our entity ID attachment to -1
         m_Framebuffer->ClearAttachment(1, -1);
-        
+
         switch (m_SceneState) {
             case SceneState::Play: {
                 m_ActiveScene->OnUpdateRuntime(ts, m_RenderSystem);
@@ -55,7 +54,6 @@ namespace Ethereal
         }
         m_RenderSystem.Draw(ts);
 
-        
         auto [mx, my] = ImGui::GetMousePos();
         mx -= m_ViewportBounds[0].x;
         my -= m_ViewportBounds[0].y;
@@ -139,14 +137,13 @@ namespace Ethereal
 
         m_SceneHierarchyPanel.OnImGuiRender();
         m_ContentBrowserPanel.OnImGuiRender();
-
+        
         ImGui::Begin("Stats");
         std::string name = "None";
         if (m_HoveredEntity) name = m_HoveredEntity.GetComponent<TagComponent>().Tag;
         ImGui::Text("Hovered Entity: %s", name.c_str());
 
-        
-        const char* drawModeStrings[] = {"FILLED", "LINE","POINT"};
+        const char* drawModeStrings[] = {"FILLED", "LINE", "POINT"};
         const char* currentDrawModeString = drawModeStrings[(int)RenderCommand::GetDrawMode()];
         if (ImGui::BeginCombo("Draw Mode", currentDrawModeString)) {
             for (int i = 0; i < 3; i++) {

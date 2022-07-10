@@ -17,7 +17,7 @@ namespace Ethereal
         Editor() : Application("Engine Editor") {
             PushLayer(new EditorLayer());
         }
-
+        
         ~Editor() {
         }
     };

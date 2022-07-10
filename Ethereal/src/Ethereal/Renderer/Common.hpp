@@ -52,16 +52,6 @@ namespace Ethereal
         }
     };
 
-    // for hash in unordered_map
-    template <>
-    struct std::hash<Ethereal::GameObjectMeshDesc> {
-        size_t operator()(const Ethereal::GameObjectMeshDesc& rhs) const noexcept { return rhs.getHashValue(); }
-    };
-    template <>
-    struct std::hash<Ethereal::GameObjectMaterialDesc> {
-        size_t operator()(const Ethereal::GameObjectMaterialDesc& rhs) const noexcept { return rhs.getHashValue(); }
-    };
-
     //*************************************************
     //******************* CPU Data ********************
     //*************************************************
@@ -145,4 +135,14 @@ namespace Ethereal
         // uint32_t node_id;
     };
 
-}  // namespace Ethereal
+};  // namespace Ethereal
+
+// for hash in unordered_map
+template <>
+struct std::hash<Ethereal::GameObjectMeshDesc> {
+    size_t operator()(const Ethereal::GameObjectMeshDesc& rhs) const noexcept { return rhs.getHashValue(); }
+};
+template <>
+struct std::hash<Ethereal::GameObjectMaterialDesc> {
+    size_t operator()(const Ethereal::GameObjectMaterialDesc& rhs) const noexcept { return rhs.getHashValue(); }
+};

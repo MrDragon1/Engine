@@ -1,26 +1,21 @@
 #include "RenderSystem.hpp"
+
 #include "Ethereal/Scene/Components.hpp"
 #include "Ethereal/Scene/Entity.hpp"
 #include "Ethereal/Scene/Scene.hpp"
-
-#include "Ethereal/Scene/Components.hpp"
 #include "Ethereal/Scene/ScriptableEntity.hpp"
 // Temporary
-#include "box2d/b2_world.h"
-#include "box2d/b2_body.h"
-#include "box2d/b2_polygon_shape.h"
-#include "box2d/b2_fixture.h"
-
 #include "Ethereal/Utils/AssetLoader.hpp"
+#include "box2d/b2_body.h"
+#include "box2d/b2_fixture.h"
+#include "box2d/b2_polygon_shape.h"
+#include "box2d/b2_world.h"
 
 namespace Ethereal
 {
-    RenderSystem::RenderSystem() {
-        Init();
-    }
-    
-    void RenderSystem::Init()
-    {
+    RenderSystem::RenderSystem() { Init(); }
+
+    void RenderSystem::Init() {
         m_RenderScene = CreateRef<RenderScene>();
         m_RenderResource = CreateRef<RenderResource>();
         m_MainCameraRenderPass = CreateRef<MainCameraRenderPass>();
@@ -29,11 +24,8 @@ namespace Ethereal
 
         m_MainCameraRenderPass->Init();
     }
-    
-    void RenderSystem::Draw(Timestep ts)
-    {
-        m_MainCameraRenderPass->Draw();
-    }
+
+    void RenderSystem::Draw(Timestep ts) { m_MainCameraRenderPass->Draw(); }
 
     void RenderSystem::UpdateRenderScene(const RenderSceneData& renderSceneData) {
         m_RenderScene->Clear();
