@@ -28,14 +28,14 @@ namespace Ethereal
     class RenderSystem {
       public:
         RenderSystem();
-
-        void OnUpdate(Timestep ts);
+        void Init();
+        void Draw(Timestep ts);
         void UpdateRenderScene(const RenderSceneData& renderSceneData);
 
 
         Ref<RenderScene> m_RenderScene;
         Ref<RenderResource> m_RenderResource;  // All the mesh in scene
-        Ref<RenderPass> m_RenderPass;
+        Ref<MainCameraRenderPass> m_MainCameraRenderPass;
         // TODO: Ref<RenderContent>;
       private:
 

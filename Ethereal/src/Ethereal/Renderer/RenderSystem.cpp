@@ -16,8 +16,23 @@
 namespace Ethereal
 {
     RenderSystem::RenderSystem() {
-        m_RenderScene = CreateRef<RenderScene>("assets/shaders/Test.glsl");
+        Init();
+    }
+    
+    void RenderSystem::Init()
+    {
+        m_RenderScene = CreateRef<RenderScene>();
         m_RenderResource = CreateRef<RenderResource>();
+        m_MainCameraRenderPass = CreateRef<MainCameraRenderPass>();
+
+        m_RenderScene->SetVisiableNodeReference();
+
+        m_MainCameraRenderPass->Init();
+    }
+    
+    void RenderSystem::Draw(Timestep ts)
+    {
+        m_MainCameraRenderPass->Draw();
     }
 
     void RenderSystem::UpdateRenderScene(const RenderSceneData& renderSceneData) {
@@ -55,8 +70,7 @@ namespace Ethereal
             m_RenderScene->AddGameObject(gameObject);
         }
         m_RenderScene->UpdateVisiableMeshNode(m_RenderResource);
-        m_RenderScene->SetViewProjectionMatrix(renderSceneData.ViewProjectionMatrix);
 
-        m_RenderScene->BeginRender();
+        m_MainCameraRenderPass->SetViewProjectionMatrix(renderSceneData.ViewProjectionMatrix);
     }
 }  // namespace Ethereal

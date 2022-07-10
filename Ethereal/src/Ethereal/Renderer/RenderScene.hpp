@@ -16,18 +16,17 @@ namespace Ethereal
     class RenderScene {
       public:
         RenderScene() = default;
-        RenderScene(const std::string& shaderPath);
         void UpdateVisiableMeshNode(const Ref<RenderResource>& RenderResource);
 
         void AddGameObject(const Ref<GameObject>& gameObject);
 
         void SetViewProjectionMatrix(const glm::mat4& matrix);
+        void SetVisiableNodeReference();
 
         void BeginRender();
 
         UUIDAllocator<GameObjectMeshDesc>& getMeshAssetIdAllocator() { return m_MeshAssetIdAllocator; };
         UUIDAllocator<GameObjectMaterialDesc>& getMaterialAssetIdAllocator() { return m_MaterialAssetIdAllocator; };
-
         void Clear();
 
       private:
@@ -35,11 +34,7 @@ namespace Ethereal
         UUIDAllocator<GameObjectMaterialDesc> m_MaterialAssetIdAllocator;
 
         std::vector<Ref<GameObject>> m_GameObjects;
-        std::vector<RenderMeshNode> m_Visiable_RenderMeshNode;  // only visiable scene
-
-        glm::mat4 m_ViewProjectionMatrix;
-
-        Ref<Shader> m_Shader;
+        std::vector<RenderNode> m_MainCameraVisiableNodes;
     };
 
 }  // namespace Ethereal

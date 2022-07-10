@@ -138,7 +138,7 @@ namespace Ethereal
         // TODO: uniform data
     };
 
-    struct RenderMeshNode {
+    struct RenderNode {
         glm::mat4 model_matrix;
         GLMesh* ref_mesh = nullptr;
         GLMaterial* ref_material = nullptr;
