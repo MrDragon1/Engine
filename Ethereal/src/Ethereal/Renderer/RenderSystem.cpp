@@ -1,7 +1,6 @@
 #include "RenderSystem.hpp"
 #include "Ethereal/Scene/Components.hpp"
 #include "Ethereal/Scene/Entity.hpp"
-#include "Ethereal/Renderer/Renderer2D.hpp"
 #include "Ethereal/Scene/Scene.hpp"
 
 #include "Ethereal/Scene/Components.hpp"

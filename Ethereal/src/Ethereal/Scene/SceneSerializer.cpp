@@ -195,16 +195,6 @@ namespace Ethereal
             out << YAML::EndMap;  // CameraComponent
         }
 
-        if (entity.HasComponent<SpriteRendererComponent>()) {
-            out << YAML::Key << "SpriteRendererComponent";
-            out << YAML::BeginMap;  // SpriteRendererComponent
-
-            auto& spriteRendererComponent = entity.GetComponent<SpriteRendererComponent>();
-            out << YAML::Key << "Color" << YAML::Value << spriteRendererComponent.Color;
-
-            out << YAML::EndMap;  // SpriteRendererComponent
-        }
-
         if (entity.HasComponent<Rigidbody2DComponent>()) {
             out << YAML::Key << "Rigidbody2DComponent";
             out << YAML::BeginMap;  // Rigidbody2DComponent
@@ -236,7 +226,7 @@ namespace Ethereal
     void SceneSerializer::Serialize(const std::string& filepath) {
         YAML::Emitter out;
         out << YAML::BeginMap;
-        out << YAML::Key << "Scene" << YAML::Value << "Untitled";
+        out << YAML::Key << "Scene" << YAML::Value << m_Scene->GetName() ;
         out << YAML::Key << "Entities" << YAML::Value << YAML::BeginSeq;
         m_Scene->m_Registry.each([&](auto entityID) {
             Entity entity = {entityID, m_Scene.get()};
@@ -267,6 +257,7 @@ namespace Ethereal
         if (!data["Scene"]) return false;
 
         std::string sceneName = data["Scene"].as<std::string>();
+        m_Scene->SetName(sceneName);
         ET_CORE_TRACE("Deserializing scene '{0}'", sceneName);
 
         auto entities = data["Entities"];
@@ -325,12 +316,6 @@ namespace Ethereal
 
                     cc.Primary = cameraComponent["Primary"].as<bool>();
                     cc.FixedAspectRatio = cameraComponent["FixedAspectRatio"].as<bool>();
-                }
-
-                auto spriteRendererComponent = entity["SpriteRendererComponent"];
-                if (spriteRendererComponent) {
-                    auto& src = deserializedEntity.AddComponent<SpriteRendererComponent>();
-                    src.Color = spriteRendererComponent["Color"].as<glm::vec4>();
                 }
 
                 auto rigidbody2DComponent = entity["Rigidbody2DComponent"];

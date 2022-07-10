@@ -35,7 +35,8 @@ namespace Ethereal
         Entity GetPrimaryCameraEntity();
 
         entt::registry& GetRegistry() { return m_Registry; }
-
+        const std::string& GetName() const { return m_SceneName; }
+        void SetName(const std::string& name) { m_SceneName = name; }
       private:
         template <typename T>
         void OnComponentAdded(Entity entity, T& component);
@@ -43,6 +44,7 @@ namespace Ethereal
       private:
         entt::registry m_Registry;
         uint32_t m_ViewportWidth = 0, m_ViewportHeight = 0;
+        std::string m_SceneName = "Untitled";
         b2World* m_PhysicsWorld = nullptr;
 
         friend class Entity;

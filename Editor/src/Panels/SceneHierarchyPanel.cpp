@@ -191,7 +191,6 @@ namespace Ethereal
 
         if (ImGui::BeginPopup("AddComponent")) {
             DisplayAddComponentEntry<CameraComponent>("Camera");
-            DisplayAddComponentEntry<SpriteRendererComponent>("Sprite Renderer");
             DisplayAddComponentEntry<Rigidbody2DComponent>("Rigidbody 2D");
             DisplayAddComponentEntry<BoxCollider2DComponent>("Box Collider 2D");
             ImGui::EndPopup();
@@ -254,24 +253,6 @@ namespace Ethereal
 
                 ImGui::Checkbox("Fixed Aspect Ratio", &cameraComponent.FixedAspectRatio);
             }
-        });
-
-        DrawComponent<SpriteRendererComponent>("Sprite Renderer", entity, [](auto& component) {
-            ImGui::ColorEdit4("Color", glm::value_ptr(component.Color));
-            ImGui::Button("Texture");
-            if (ImGui::BeginDragDropTarget()) {
-                if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
-                    const wchar_t* path = (const wchar_t*)payload->Data;
-                    std::filesystem::path texturePath = std::filesystem::path(g_AssetPath) / path;
-                    Ref<Texture2D> texture = Texture2D::Create(texturePath.string());
-                    if (texture->IsLoaded())
-                        component.Texture = texture;
-                    else
-                        ET_WARN("Could not load texture {0}", texturePath.filename().string());
-                }
-                ImGui::EndDragDropTarget();
-            }
-            ImGui::DragFloat("Tilling Factor", &component.TillingFactor, 0.1f, 0.0f, 100.0f);
         });
 
         DrawComponent<Rigidbody2DComponent>("Rigidbody 2D", entity, [](auto& component) {

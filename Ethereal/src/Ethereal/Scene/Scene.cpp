@@ -3,7 +3,6 @@
 
 #include "Components.hpp"
 #include "Ethereal/Scene/ScriptableEntity.hpp"
-#include "Ethereal/Renderer/Renderer2D.hpp"
 #include "Ethereal/Renderer/RenderSystem.hpp"
 
 #include "box2d/b2_world.h"
@@ -69,7 +68,6 @@ namespace Ethereal
 
         // Copy components (except IDComponent and TagComponent)
         CopyComponent<TransformComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
-        CopyComponent<SpriteRendererComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
         CopyComponent<MeshComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
         CopyComponent<MaterialComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
         CopyComponent<CameraComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
@@ -178,7 +176,6 @@ namespace Ethereal
         Entity newEntity = CreateEntity(name);
 
         CopyComponentIfExists<TransformComponent>(newEntity, entity);
-        CopyComponentIfExists<SpriteRendererComponent>(newEntity, entity);
         CopyComponentIfExists<CameraComponent>(newEntity, entity);
         CopyComponentIfExists<NativeScriptComponent>(newEntity, entity);
         CopyComponentIfExists<Rigidbody2DComponent>(newEntity, entity);
@@ -257,8 +254,6 @@ namespace Ethereal
     void Scene::OnComponentAdded<CameraComponent>(Entity entity, CameraComponent& component) {
         component.Camera.SetViewportSize(m_ViewportWidth, m_ViewportHeight);
     }
-    template <>
-    void Scene::OnComponentAdded<SpriteRendererComponent>(Entity entity, SpriteRendererComponent& component) {}
     template <>
     void Scene::OnComponentAdded<TagComponent>(Entity entity, TagComponent& component) {}
     template <>

@@ -57,16 +57,6 @@ namespace Ethereal
         MaterialComponent(const GameObjectMaterialDesc& desc) : Desc(desc) {}
     };
 
-    struct SpriteRendererComponent {
-        glm::vec4 Color{1.0f, 1.0f, 0.0f, 1.0f};
-        Ref<Texture2D> Texture;
-        float TillingFactor = 1.0f;
-
-        SpriteRendererComponent() = default;
-        SpriteRendererComponent(const SpriteRendererComponent&) = default;
-        SpriteRendererComponent(const glm::vec4& color) : Color(color) {}
-    };
-
     struct CameraComponent {
         SceneCamera Camera;
         bool Primary = true;
