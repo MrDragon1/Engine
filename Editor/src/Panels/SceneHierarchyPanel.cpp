@@ -303,10 +303,17 @@ namespace Ethereal
 
         // TODO: Beautify this
         DrawComponent<MaterialComponent>("Material", entity, [](auto& component) {
+            ImGui::BeginTable("table_padding", 3,
+                              ImGuiTableFlags_BordersV | ImGuiTableFlags_BordersInnerV);
+
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0);
+
+            auto buttonSize = ImVec2(64, 64);
             ImGui::Text("Diffuse Map");
             ET_CORE_ASSERT(!component.Desc.m_base_color_file.empty(), "Material base color file is null");
             Ref<Texture> diffuseTexture = TextureManager::AddTexture(component.Desc.m_base_color_file);
-            ImGui::ImageButton((ImTextureID)diffuseTexture->GetRendererID(), ImVec2(96, 96), ImVec2(0, 0), ImVec2(1, 1), 0);
+            ImGui::ImageButton((ImTextureID)diffuseTexture->GetRendererID(), buttonSize, ImVec2(0, 0), ImVec2(1, 1), 0);
             if (ImGui::BeginDragDropTarget()) {
                 if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
                     const wchar_t* path = (const wchar_t*)payload->Data;
@@ -319,10 +326,12 @@ namespace Ethereal
                 }
                 ImGui::EndDragDropTarget();
             }
+
+            ImGui::TableSetColumnIndex(1);
             ImGui::Text("Normal Map");
             ET_CORE_ASSERT(!component.Desc.m_base_color_file.empty(), "Material base color file is null");
             Ref<Texture> normalTexture = TextureManager::AddTexture(component.Desc.m_normal_file);
-            ImGui::ImageButton((ImTextureID)normalTexture->GetRendererID(), ImVec2(96, 96), ImVec2(0, 0), ImVec2(1, 1), 0);
+            ImGui::ImageButton((ImTextureID)normalTexture->GetRendererID(), buttonSize, ImVec2(0, 0), ImVec2(1, 1), 0);
             if (ImGui::BeginDragDropTarget()) {
                 if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
                     const wchar_t* path = (const wchar_t*)payload->Data;
@@ -335,10 +344,12 @@ namespace Ethereal
                 }
                 ImGui::EndDragDropTarget();
             }
+
+            ImGui::TableSetColumnIndex(2);
             ImGui::Text("Metallic Map");
             ET_CORE_ASSERT(!component.Desc.m_base_color_file.empty(), "Material base color file is null");
             Ref<Texture> metallicTexture = TextureManager::AddTexture(component.Desc.m_metallic_roughness_file);
-            ImGui::ImageButton((ImTextureID)metallicTexture->GetRendererID(), ImVec2(96, 96), ImVec2(0, 0), ImVec2(1, 1), 0);
+            ImGui::ImageButton((ImTextureID)metallicTexture->GetRendererID(), buttonSize, ImVec2(0, 0), ImVec2(1, 1), 0);
             if (ImGui::BeginDragDropTarget()) {
                 if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
                     const wchar_t* path = (const wchar_t*)payload->Data;
@@ -351,38 +362,8 @@ namespace Ethereal
                 }
                 ImGui::EndDragDropTarget();
             }
-            // ImGui::Text("Occlusion Map");
-            // ET_CORE_ASSERT(!component.Desc.m_base_color_file.empty(), "Material base color file is null");
-            // Ref<Texture> occlusionTexture = TextureManager::AddTexture(component.Desc.m_occlusion_file);
-            // ImGui::ImageButton((ImTextureID)occlusionTexture->GetRendererID(), ImVec2(96, 96), ImVec2(0, 0), ImVec2(1, 1), 0);
-            // if (ImGui::BeginDragDropTarget()) {
-            //     if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
-            //         const wchar_t* path = (const wchar_t*)payload->Data;
-            //         std::filesystem::path texturePath = std::filesystem::path(g_AssetPath) / path;
-            //         Ref<Texture> texture = TextureManager::AddTexture(texturePath.string());
-            //         if (texture)
-            //             component.Desc.m_occlusion_file = texturePath.string();
-            //         else
-            //             ET_WARN("Could not load texture {0}", texturePath.filename().string());
-            //     }
-            //     ImGui::EndDragDropTarget();
-            // }
-            // ImGui::Text("Emissive Map");
-            // ET_CORE_ASSERT(!component.Desc.m_base_color_file.empty(), "Material base color file is null");
-            // Ref<Texture> emissiveTexture = TextureManager::AddTexture(component.Desc.m_emissive_file);
-            // ImGui::ImageButton((ImTextureID)emissiveTexture->GetRendererID(), ImVec2(96, 96), ImVec2(0, 0), ImVec2(1, 1), 0);
-            // if (ImGui::BeginDragDropTarget()) {
-            //     if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
-            //         const wchar_t* path = (const wchar_t*)payload->Data;
-            //         std::filesystem::path texturePath = std::filesystem::path(g_AssetPath) / path;
-            //         Ref<Texture> texture = TextureManager::AddTexture(texturePath.string());
-            //         if (texture)
-            //             component.Desc.m_emissive_file = texturePath.string();
-            //         else
-            //             ET_WARN("Could not load texture {0}", texturePath.filename().string());
-            //     }
-            //     ImGui::EndDragDropTarget();
-            // }
+
+            ImGui::EndTable();
         });
     }
 
