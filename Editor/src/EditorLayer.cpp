@@ -111,14 +111,14 @@ namespace Ethereal
         ImGuiIO& io = ImGui::GetIO();
         ImGuiStyle& style = ImGui::GetStyle();
         float minWinSizeX = style.WindowMinSize.x;
-        style.WindowMinSize.x = 370.0f;
+        style.WindowMinSize.x = 110.0f;
         if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable) {
             ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
             ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
         }
 
         style.WindowMinSize.x = minWinSizeX;
-
+        static bool bShowDemoImGui = false;
         if (ImGui::BeginMenuBar()) {
             if (ImGui::BeginMenu("File")) {
                 // Disabling fullscreen would allow the window to be moved to the front of other windows,
@@ -131,13 +131,18 @@ namespace Ethereal
                 if (ImGui::MenuItem("Exit")) Application::Get().Close();
                 ImGui::EndMenu();
             }
-
+            if (ImGui::BeginMenu("Help")) {
+                ImGui::MenuItem("Show Demo ImGui", NULL, &bShowDemoImGui);
+                ImGui::EndMenu();
+            }
             ImGui::EndMenuBar();
         }
-
+        if (bShowDemoImGui) {
+            ImGui::ShowDemoWindow(&bShowDemoImGui);
+        }
         m_SceneHierarchyPanel.OnImGuiRender();
         m_ContentBrowserPanel.OnImGuiRender();
-        
+
         ImGui::Begin("Stats");
         std::string name = "None";
         if (m_HoveredEntity) name = m_HoveredEntity.GetComponent<TagComponent>().Tag;
