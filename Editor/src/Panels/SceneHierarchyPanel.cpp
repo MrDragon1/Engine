@@ -29,6 +29,7 @@ namespace Ethereal
 
             if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered()) m_SelectionContext = {};
 
+            //Right click context menu
             if (ImGui::BeginPopupContextWindow(0, 1, false)) {
                 if (ImGui::MenuItem("Create Empty Entity")) m_Context->CreateEntity("Empty Entity");
                 if (ImGui::BeginMenu("3D Object")) {
@@ -40,13 +41,14 @@ namespace Ethereal
                         m_SelectionContext = m_Context->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_CYLINDER);
                     if (ImGui::MenuItem("Cone"))
                         m_SelectionContext = m_Context->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_CONE);
-                    if (ImGui::MenuItem("Capsule"))
-                        m_SelectionContext = m_Context->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_CAPSULE);
+                    if (ImGui::MenuItem("Torus"))
+                        m_SelectionContext = m_Context->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_TORUS);
                     if (ImGui::MenuItem("Plane"))
                         m_SelectionContext = m_Context->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_PLANE);
                     if (ImGui::MenuItem("Quad"))
                         m_SelectionContext = m_Context->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_QUAD);
-
+                    if (ImGui::MenuItem("Monkey"))
+                        m_SelectionContext = m_Context->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_MONKEY);
                     ImGui::EndMenu();
                 }
                 ImGui::EndPopup();

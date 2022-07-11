@@ -1,14 +1,62 @@
 Scene: Test Scene
 Entities:
-  - Entity: 8771200316534182395
+  - Entity: 4904882071569251738
     TagComponent:
-      Tag: Plane
+      Tag: Monkey
     TransformComponent:
-      Translation: [2.94246364, -8.02337742, 4.48575401]
-      Rotation: [0, 0, 0]
-      Scale: [34.524498, 29.5867233, 26.7573967]
+      Translation: [4.25593662, -2.78569245, 12.9527416]
+      Rotation: [0, 1.57079637, 0]
+      Scale: [1.4699074, 1.47000003, 1.4699074]
     MeshComponent:
-      m_filePath: assets/buildin/models/plane.obj
+      m_filePath: assets/buildin/models/monkey.obj
+    MaterialComponent:
+      m_PureColor: ~
+      m_base_color_file: assets\textures\default\default_diffuse.png
+      m_metallic_roughness_file: assets\textures\default\default_metallic_roughness.png
+      m_normal_file: assets\textures\default\default_normal.png
+      m_occlusion_file: assets\textures\default\default_occlusion.png
+      m_emissive_file: assets\textures\default\default_emissive.png
+  - Entity: 17947902473433127102
+    TagComponent:
+      Tag: Torus
+    TransformComponent:
+      Translation: [7.96021128, -5.75177383, -4.83264208]
+      Rotation: [0, 0, 0]
+      Scale: [2.76999974, 2.76999974, 2.76999974]
+    MeshComponent:
+      m_filePath: assets/buildin/models/torus.obj
+    MaterialComponent:
+      m_PureColor: ~
+      m_base_color_file: assets\textures\default\default_diffuse.png
+      m_metallic_roughness_file: assets\textures\default\default_metallic_roughness.png
+      m_normal_file: assets\textures\default\default_normal.png
+      m_occlusion_file: assets\textures\default\default_occlusion.png
+      m_emissive_file: assets\textures\default\default_emissive.png
+  - Entity: 3584178422345290653
+    TagComponent:
+      Tag: Block
+    TransformComponent:
+      Translation: [8.31375408, 0, 3.5764277]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      m_filePath: assets\models\block\block.obj
+    MaterialComponent:
+      m_PureColor: ~
+      m_base_color_file: assets\models\cube\wall.jpg
+      m_metallic_roughness_file: assets\textures\default\default_metallic_roughness.png
+      m_normal_file: assets\models\cube\wall.jpg
+      m_occlusion_file: assets\textures\default\default_occlusion.png
+      m_emissive_file: assets\textures\default\default_emissive.png
+  - Entity: 1234178422345290653
+    TagComponent:
+      Tag: Cube
+    TransformComponent:
+      Translation: [-13.330739, 17.4639816, -22.1897411]
+      Rotation: [0, 0, 0]
+      Scale: [1.00000012, 6.68827057, 7.59475327]
+    MeshComponent:
+      m_filePath: assets\models\cube\cube.obj
     MaterialComponent:
       m_PureColor: ~
       m_base_color_file: assets\models\cube\wall.jpg
@@ -16,47 +64,15 @@ Entities:
       m_normal_file: assets\textures\default\default_normal.png
       m_occlusion_file: assets\textures\default\default_occlusion.png
       m_emissive_file: assets\textures\default\default_emissive.png
-  - Entity: 15122997794576496913
-    TagComponent:
-      Tag: Capsule
-    TransformComponent:
-      Translation: [10.3416033, -0.789764225, 1.72702837]
-      Rotation: [0, 0, 0]
-      Scale: [1, 1, 1]
-    MeshComponent:
-      m_filePath: assets/buildin/models/capsule.obj
-    MaterialComponent:
-      m_PureColor: ~
-      m_base_color_file: assets\textures\default\default_diffuse.png
-      m_metallic_roughness_file: assets\textures\default\default_metallic_roughness.png
-      m_normal_file: assets\textures\default\default_normal.png
-      m_occlusion_file: assets\textures\default\default_occlusion.png
-      m_emissive_file: assets\textures\default\default_emissive.png
-  - Entity: 16497184390699425136
-    TagComponent:
-      Tag: Cone
-    TransformComponent:
-      Translation: [3.38519382, -2.04593229, 5.44406128]
-      Rotation: [0, 0, 0]
-      Scale: [1.93000007, 1.93000007, 1.93000007]
-    MeshComponent:
-      m_filePath: assets/buildin/models/cone.obj
-    MaterialComponent:
-      m_PureColor: ~
-      m_base_color_file: assets\textures\default\default_diffuse.png
-      m_metallic_roughness_file: assets\textures\default\default_metallic_roughness.png
-      m_normal_file: assets\textures\default\default_normal.png
-      m_occlusion_file: assets\textures\default\default_occlusion.png
-      m_emissive_file: assets\textures\default\default_emissive.png
-  - Entity: 3615642407834851653
+  - Entity: 1234567822345290653
     TagComponent:
       Tag: Cylinder
     TransformComponent:
-      Translation: [2.43759251, 1.2399053e-05, 8.96865368]
-      Rotation: [0, 0, 0]
-      Scale: [1, 1, 1]
+      Translation: [5.7865448, 0.712523103, 3.57813978]
+      Rotation: [-0.562079191, -0.00733617647, -1.78871441]
+      Scale: [0.999991953, 0.999993205, 1]
     MeshComponent:
-      m_filePath: assets/buildin/models/cylinder.obj
+      m_filePath: assets\models\cylinder\cylinder.obj
     MaterialComponent:
       m_PureColor: ~
       m_base_color_file: assets\textures\default\default_diffuse.png
@@ -82,15 +98,15 @@ Entities:
         OrthographicFar: 1
       Primary: true
       FixedAspectRatio: false
-  - Entity: 1234567822345290653
+  - Entity: 3615642407834851653
     TagComponent:
       Tag: Cylinder
     TransformComponent:
-      Translation: [5.7865448, 0.712523103, 3.57813978]
-      Rotation: [-0.562079191, -0.00733617647, -1.78871441]
-      Scale: [0.999991953, 0.999993205, 1]
+      Translation: [2.43759251, 1.2399053e-05, 8.96865368]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
     MeshComponent:
-      m_filePath: assets\models\cylinder\cylinder.obj
+      m_filePath: assets/buildin/models/cylinder.obj
     MaterialComponent:
       m_PureColor: ~
       m_base_color_file: assets\textures\default\default_diffuse.png
@@ -98,35 +114,35 @@ Entities:
       m_normal_file: assets\textures\default\default_normal.png
       m_occlusion_file: assets\textures\default\default_occlusion.png
       m_emissive_file: assets\textures\default\default_emissive.png
-  - Entity: 1234178422345290653
+  - Entity: 16497184390699425136
     TagComponent:
-      Tag: Cube
+      Tag: Cone
     TransformComponent:
-      Translation: [-13.330739, 17.4639816, -22.1897411]
+      Translation: [3.38519382, -2.04593229, 5.44406128]
       Rotation: [0, 0, 0]
-      Scale: [1.00000012, 6.68827057, 7.59475327]
+      Scale: [1.93000007, 1.93000007, 1.93000007]
     MeshComponent:
-      m_filePath: assets\models\cube\cube.obj
+      m_filePath: assets/buildin/models/cone.obj
+    MaterialComponent:
+      m_PureColor: ~
+      m_base_color_file: assets\textures\default\default_diffuse.png
+      m_metallic_roughness_file: assets\textures\default\default_metallic_roughness.png
+      m_normal_file: assets\textures\default\default_normal.png
+      m_occlusion_file: assets\textures\default\default_occlusion.png
+      m_emissive_file: assets\textures\default\default_emissive.png
+  - Entity: 8771200316534182395
+    TagComponent:
+      Tag: Plane
+    TransformComponent:
+      Translation: [2.94246364, -8.02337742, 4.48575401]
+      Rotation: [0, 0, 0]
+      Scale: [34.524498, 29.5867233, 26.7573967]
+    MeshComponent:
+      m_filePath: assets/buildin/models/plane.obj
     MaterialComponent:
       m_PureColor: ~
       m_base_color_file: assets\models\cube\wall.jpg
       m_metallic_roughness_file: assets\textures\default\default_metallic_roughness.png
       m_normal_file: assets\textures\default\default_normal.png
-      m_occlusion_file: assets\textures\default\default_occlusion.png
-      m_emissive_file: assets\textures\default\default_emissive.png
-  - Entity: 3584178422345290653
-    TagComponent:
-      Tag: Block
-    TransformComponent:
-      Translation: [8.31375408, 0, 3.5764277]
-      Rotation: [0, 0, 0]
-      Scale: [1, 1, 1]
-    MeshComponent:
-      m_filePath: assets\models\block\block.obj
-    MaterialComponent:
-      m_PureColor: ~
-      m_base_color_file: assets\models\cube\wall.jpg
-      m_metallic_roughness_file: assets\textures\default\default_metallic_roughness.png
-      m_normal_file: assets\models\cube\wall.jpg
       m_occlusion_file: assets\textures\default\default_occlusion.png
       m_emissive_file: assets\textures\default\default_emissive.png

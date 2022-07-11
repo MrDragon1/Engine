@@ -107,13 +107,17 @@ namespace Ethereal
                 filePath = "assets/buildin/models/cone.obj";
                 name = "Cone";
                 break;
-            case ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_CAPSULE:
-                filePath = "assets/buildin/models/capsule.obj";
-                name = "Capsule";
+            case ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_TORUS:
+                filePath = "assets/buildin/models/torus.obj";
+                name = "Torus";
                 break;
             case ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_PLANE:
                 filePath = "assets/buildin/models/plane.obj";
                 name = "Plane";
+                break;
+            case ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_MONKEY:
+                filePath = "assets/buildin/models/monkey.obj";
+                name = "Monkey";
                 break;
             default:
                 ET_CORE_ASSERT(false, "Unknown 3D object type");
