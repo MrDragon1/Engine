@@ -1,11 +1,12 @@
 #include "SceneHierarchyPanel.hpp"
 
-#include "Ethereal/Utils/AssetManager.hpp"
-
 #include <imgui.h>
 #include <imgui_internal.h>
+
 #include <filesystem>
 #include <glm/gtc/type_ptr.hpp>
+
+#include "Ethereal/Utils/AssetManager.hpp"
 
 namespace Ethereal
 {
@@ -30,15 +31,21 @@ namespace Ethereal
 
             if (ImGui::BeginPopupContextWindow(0, 1, false)) {
                 if (ImGui::MenuItem("Create Empty Entity")) m_Context->CreateEntity("Empty Entity");
-                if (ImGui::BeginMenu("3D Object"))
-                {
-                    if (ImGui::MenuItem("Cube")) m_SelectionContext = m_Context->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_CUBE);
-                    if (ImGui::MenuItem("Sphere")) m_SelectionContext = m_Context->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_SPHERE);
-                    if (ImGui::MenuItem("Cylinder")) m_SelectionContext = m_Context->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_CYLINDER);
-                    if (ImGui::MenuItem("Cone")) m_SelectionContext = m_Context->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_CONE);
-                    if (ImGui::MenuItem("Capsule")) m_SelectionContext = m_Context->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_CAPSULE);
-                    if (ImGui::MenuItem("Plane")) m_SelectionContext = m_Context->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_PLANE);
-                    if (ImGui::MenuItem("Quad")) m_SelectionContext = m_Context->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_QUAD);
+                if (ImGui::BeginMenu("3D Object")) {
+                    if (ImGui::MenuItem("Cube"))
+                        m_SelectionContext = m_Context->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_CUBE);
+                    if (ImGui::MenuItem("Sphere"))
+                        m_SelectionContext = m_Context->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_SPHERE);
+                    if (ImGui::MenuItem("Cylinder"))
+                        m_SelectionContext = m_Context->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_CYLINDER);
+                    if (ImGui::MenuItem("Cone"))
+                        m_SelectionContext = m_Context->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_CONE);
+                    if (ImGui::MenuItem("Capsule"))
+                        m_SelectionContext = m_Context->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_CAPSULE);
+                    if (ImGui::MenuItem("Plane"))
+                        m_SelectionContext = m_Context->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_PLANE);
+                    if (ImGui::MenuItem("Quad"))
+                        m_SelectionContext = m_Context->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_QUAD);
 
                     ImGui::EndMenu();
                 }
@@ -93,14 +100,15 @@ namespace Ethereal
         ImGuiIO& io = ImGui::GetIO();
         auto boldFont = io.Fonts->Fonts[0];
 
-        ImGui::PushID(label.c_str());
-
-        ImGui::Columns(2);
+        ImGui::Columns(2, nullptr, false);
         ImGui::SetColumnWidth(0, columnWidth);
         ImGui::Text(label.c_str());
         ImGui::NextColumn();
+        ImGui::BeginTable("table_padding", 3, ImGuiTableFlags_BordersV | ImGuiTableFlags_NoBordersInBody | ImGuiTableFlags_NoPadInnerX);
 
-        ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());
+        ImGui::TableNextRow();
+        ImGui::TableSetColumnIndex(0);
+
         ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{0, 0});
 
         float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
@@ -116,8 +124,8 @@ namespace Ethereal
 
         ImGui::SameLine();
         ImGui::DragFloat("##X", &values.x, 0.1f, 0.0f, 0.0f, "%.2f");
-        ImGui::PopItemWidth();
         ImGui::SameLine();
+        ImGui::TableSetColumnIndex(1);
 
         ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{0.2f, 0.7f, 0.2f, 1.0f});
         ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{0.3f, 0.8f, 0.3f, 1.0f});
@@ -129,8 +137,8 @@ namespace Ethereal
 
         ImGui::SameLine();
         ImGui::DragFloat("##Y", &values.y, 0.1f, 0.0f, 0.0f, "%.2f");
-        ImGui::PopItemWidth();
         ImGui::SameLine();
+        ImGui::TableSetColumnIndex(2);
 
         ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{0.1f, 0.25f, 0.8f, 1.0f});
         ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{0.2f, 0.35f, 0.9f, 1.0f});
@@ -142,13 +150,10 @@ namespace Ethereal
 
         ImGui::SameLine();
         ImGui::DragFloat("##Z", &values.z, 0.1f, 0.0f, 0.0f, "%.2f");
-        ImGui::PopItemWidth();
-
         ImGui::PopStyleVar();
 
-        ImGui::Columns(1);
-
-        ImGui::PopID();
+        ImGui::EndTable();
+        ImGui::EndColumns();
     }
 
     template <typename T, typename UIFunction>
@@ -296,7 +301,7 @@ namespace Ethereal
             ImGui::DragFloat("Restitution Threshold", &component.RestitutionThreshold, 0.01f, 0.0f);
         });
 
-        //TODO: Beautify this
+        // TODO: Beautify this
         DrawComponent<MaterialComponent>("Material", entity, [](auto& component) {
             ImGui::Text("Diffuse Map");
             ET_CORE_ASSERT(!component.Desc.m_base_color_file.empty(), "Material base color file is null");
