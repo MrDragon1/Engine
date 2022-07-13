@@ -28,49 +28,30 @@ namespace Ethereal
         m_Name = filepath.substr(lastSlash, count);
     }
 
-    OpenGLShader::OpenGLShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc)
-        : m_Name(name) {
+    OpenGLShader::OpenGLShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc) : m_Name(name) {
         std::unordered_map<GLenum, std::string> sources;
         sources[GL_VERTEX_SHADER] = vertexSrc;
         sources[GL_FRAGMENT_SHADER] = fragmentSrc;
         Compile(sources);
     }
 
-    OpenGLShader::~OpenGLShader() {
-        glDeleteProgram(m_RendererID);
-    }
+    OpenGLShader::~OpenGLShader() { glDeleteProgram(m_RendererID); }
 
-    void OpenGLShader::Bind() const {
-        glUseProgram(m_RendererID);
-    }
+    void OpenGLShader::Bind() const { glUseProgram(m_RendererID); }
 
-    void OpenGLShader::Unbind() const {
-        glUseProgram(0);
-    }
+    void OpenGLShader::Unbind() const { glUseProgram(0); }
 
-    void OpenGLShader::SetFloat(const std::string& name, float value) {
-        UploadUniformFloat(name, value);
-    }
+    void OpenGLShader::SetFloat(const std::string& name, float value) { UploadUniformFloat(name, value); }
 
-    void OpenGLShader::SetFloat3(const std::string& name, const glm::vec3& value) {
-        UploadUniformFloat3(name, value);
-    }
+    void OpenGLShader::SetFloat3(const std::string& name, const glm::vec3& value) { UploadUniformFloat3(name, value); }
 
-    void OpenGLShader::SetFloat4(const std::string& name, const glm::vec4& value) {
-        UploadUniformFloat4(name, value);
-    }
+    void OpenGLShader::SetFloat4(const std::string& name, const glm::vec4& value) { UploadUniformFloat4(name, value); }
 
-    void OpenGLShader::SetMat4(const std::string& name, const glm::mat4& value) {
-        UploadUniformMat4(name, value);
-    }
+    void OpenGLShader::SetMat4(const std::string& name, const glm::mat4& value) { UploadUniformMat4(name, value); }
 
-    void OpenGLShader::SetInt(const std::string& name, int value) {
-        UploadUniformInt(name, value);
-    }
+    void OpenGLShader::SetInt(const std::string& name, int value) { UploadUniformInt(name, value); }
 
-    void OpenGLShader::SetIntArray(const std::string& name, int* values, uint32_t count) {
-        UploadUniformIntArray(name, values, count);
-    }
+    void OpenGLShader::SetIntArray(const std::string& name, int* values, uint32_t count) { UploadUniformIntArray(name, values, count); }
 
     void OpenGLShader::UploadUniformIntArray(const std::string& name, int* values, uint32_t count) {
         GLint location = glGetUniformLocation(m_RendererID, name.c_str());
@@ -78,7 +59,9 @@ namespace Ethereal
     }
 
     void OpenGLShader::UploadUniformInt(const std::string& name, int value) {
+        //TODO: fix wrong location
         GLint location = glGetUniformLocation(m_RendererID, name.c_str());
+        ET_CORE_INFO("{0} {1}", name, location);
         glUniform1i(location, value);
     }
 
@@ -142,7 +125,8 @@ namespace Ethereal
 
             size_t nextLinePos = source.find_first_not_of("\r\n", eol);
             pos = source.find(typeToken, nextLinePos);
-            shaderSources[ShaderTypeFromString(type)] = source.substr(nextLinePos, pos - (nextLinePos == std::string::npos ? source.size() - 1 : nextLinePos));
+            shaderSources[ShaderTypeFromString(type)] =
+                source.substr(nextLinePos, pos - (nextLinePos == std::string::npos ? source.size() - 1 : nextLinePos));
         }
 
         return shaderSources;
@@ -150,7 +134,7 @@ namespace Ethereal
 
     void OpenGLShader::Compile(const std::unordered_map<GLenum, std::string>& shaderSources) {
         GLuint program = glCreateProgram();
-        std::vector<GLenum> glShaderIDs(shaderSources.size());
+        std::vector<GLenum> glShaderIDs;
         for (auto& kv : shaderSources) {
             GLenum type = kv.first;
             const std::string& source = kv.second;
@@ -198,7 +182,7 @@ namespace Ethereal
 
             // We don't need the program anymore.
             glDeleteProgram(program);
-
+            
             for (auto id : glShaderIDs)
                 glDeleteShader(id);
 

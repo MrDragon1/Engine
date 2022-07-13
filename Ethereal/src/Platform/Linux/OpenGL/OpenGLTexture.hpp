@@ -7,7 +7,7 @@ namespace Ethereal
     class OpenGLTexture2D : public Texture2D {
       public:
         OpenGLTexture2D(const std::string& path);
-        OpenGLTexture2D(const Ref<TextureData>& path);
+        OpenGLTexture2D(const Ref<TextureData>& data);
         virtual ~OpenGLTexture2D();
 
         virtual uint32_t GetWidth() const override { return m_Width; };
@@ -16,6 +16,7 @@ namespace Ethereal
 
         virtual void Bind(uint32_t slot = 0) const override;
         virtual void SetData(void* data, uint32_t size) override;
+        virtual void Clear(int data) override;
         virtual bool operator==(const Texture& other) const override {
             return m_RendererID == other.GetRendererID();
         }

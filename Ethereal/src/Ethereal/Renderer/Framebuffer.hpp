@@ -1,28 +1,12 @@
 #pragma once
 #include "pch.hpp"
-
+#include "Texture.hpp"
 namespace Ethereal
 {
-    enum class FramebufferTextureFormat
-    {
-        None = 0,
-
-        // Color
-        RGBA8,
-        RED_INTEGER,
-
-        // Depth/stencil
-        DEPTH24STENCIL8,
-
-        // Defaults
-        Depth = DEPTH24STENCIL8
-    };
-
     struct FramebufferTextureSpecification {
         FramebufferTextureSpecification() = default;
-        FramebufferTextureSpecification(FramebufferTextureFormat format) : TextureFormat(format) {}
-
-        FramebufferTextureFormat TextureFormat = FramebufferTextureFormat::None;
+        FramebufferTextureSpecification(ETHEREAL_PIXEL_FORMAT format) : TextureFormat(format) {}
+        ETHEREAL_PIXEL_FORMAT TextureFormat = ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_R32G32B32A32_FLOAT;
         // TODO: filtering/wrap
     };
 
@@ -47,7 +31,8 @@ namespace Ethereal
         virtual void Resize(uint32_t width, uint32_t height) = 0;
 
         virtual const FramebufferSpecification& GetSpecification() const = 0;
-        virtual uint32_t GetColorAttachmentRendererID(uint32_t index = 0) const = 0;
+        virtual Ref<Texture> GetColorAttachment(uint32_t index = 0) const = 0;
+        virtual Ref<Texture> GetDepthAttachment() const = 0;
         virtual void ClearAttachment(uint32_t attachmentIndex, int value) = 0;
         
         virtual int ReadPixel(uint32_t attachmentIndex, int x, int y) = 0;

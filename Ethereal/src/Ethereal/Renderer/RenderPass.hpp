@@ -1,6 +1,7 @@
 #pragma once
 #include "Common.hpp"
 #include "Ethereal/Renderer/Shader.hpp"
+#include "Ethereal/Renderer/FrameBuffer.hpp"
 
 namespace Ethereal
 {
@@ -33,4 +34,23 @@ namespace Ethereal
         Ref<Shader> m_Shader;
         std::string m_ShaderPath = "assets/shaders/Test.glsl";
     };
+
+    class ShadowMapRenderPass : public RenderPass {
+      public:
+        ShadowMapRenderPass() = default;
+        ~ShadowMapRenderPass() = default;
+        void Init() override;
+        void Draw() override;
+
+        void SetViewProjectionMatrix(const glm::mat4& matrix) { m_ViewProjectionMatrix = matrix; }
+
+      private:
+        glm::mat4 m_ViewProjectionMatrix;
+        Ref<Shader> m_Shader;
+        std::string m_ShaderPath = "assets/shaders/ShadowMap.glsl";
+        Ref<Framebuffer> m_Framebuffer;
+        const int m_ShadowMapSize = 1024;
+        Ref<Texture> m_DepthMap;
+    };
+
 }  // namespace Ethereal
