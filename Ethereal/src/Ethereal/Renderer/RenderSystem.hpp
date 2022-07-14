@@ -10,19 +10,17 @@
 
 namespace Ethereal
 {
-    struct EntityDataForRenderSystem
-    {
+    struct EntityDataForRenderSystem {
         size_t EntityID;
         GameObjectTransformDesc Transform;
         GameObjectMeshDesc Mesh;
         GameObjectMaterialDesc Material;
     };
 
-    struct RenderSceneData
-    {
+    struct RenderSceneData {
         glm::mat4 ViewProjectionMatrix;
         std::vector<EntityDataForRenderSystem> EntitiesData;
-        //TODO: Lights
+        // TODO: Lights
     };
 
     class RenderSystem {
@@ -32,12 +30,19 @@ namespace Ethereal
         void Draw(Timestep ts);
         void UpdateRenderScene(const RenderSceneData& renderSceneData);
 
+        void OnResize(int width, int height);
 
+        uint32_t GetMainImageHeight() { return m_Height; };
+        uint32_t GetMainImageWidth() { return m_Width; };
+        uint64_t GetMainImage();
+        int GetMousePicking(int x, int y);
+        
         Ref<RenderScene> m_RenderScene;
         Ref<RenderResource> m_RenderResource;  // All the mesh in scene
         Ref<MainCameraRenderPass> m_MainCameraRenderPass;
         // TODO: Ref<RenderContent>;
-      private:
+        uint32_t m_Height, m_Width;
 
+      private:
     };
 }  // namespace Ethereal

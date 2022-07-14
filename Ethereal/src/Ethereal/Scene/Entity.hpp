@@ -46,7 +46,7 @@ namespace Ethereal
         UUID GetUUID() { return GetComponent<IDComponent>().ID; };
         const std::string& GetName() { return GetComponent<TagComponent>().Tag; }
 
-        operator bool() const { return m_Entity != entt::null; }
+        operator bool() const { return m_Entity != entt::null && m_Scene != nullptr; }
         operator uint32_t() const { return (uint32_t)m_Entity; }
         operator entt::entity() const { return m_Entity; }
 

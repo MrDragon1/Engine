@@ -16,13 +16,14 @@ namespace Ethereal
     RenderSystem::RenderSystem() { Init(); }
 
     void RenderSystem::Init() {
+        m_Width = 1280;
+        m_Height = 720;
         m_RenderScene = CreateRef<RenderScene>();
         m_RenderResource = CreateRef<RenderResource>();
         m_MainCameraRenderPass = CreateRef<MainCameraRenderPass>();
+        m_MainCameraRenderPass->Init(m_Width, m_Height);
 
         m_RenderScene->SetVisiableNodeReference();
-
-        m_MainCameraRenderPass->Init();
     }
 
     void RenderSystem::Draw(Timestep ts) { m_MainCameraRenderPass->Draw(); }
@@ -65,4 +66,14 @@ namespace Ethereal
 
         m_MainCameraRenderPass->SetViewProjectionMatrix(renderSceneData.ViewProjectionMatrix);
     }
+
+    void RenderSystem::OnResize(int width, int height) {
+        m_Height = height;
+        m_Width = width;
+        m_MainCameraRenderPass->OnResize(width, height);
+    }
+
+    uint64_t RenderSystem::GetMainImage() { return m_MainCameraRenderPass->m_Framebuffer->GetColorAttachment(0)->GetRendererID(); }
+
+    int RenderSystem::GetMousePicking(int x, int y) { return m_MainCameraRenderPass->GetMousePicking(x, y); }
 }  // namespace Ethereal

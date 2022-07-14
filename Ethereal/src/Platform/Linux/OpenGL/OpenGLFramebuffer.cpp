@@ -34,7 +34,6 @@ namespace Ethereal
                 colorAttachment.reset();
             }
             m_DepthAttachment.reset();
-            ;
 
             m_ColorAttachments.clear();
             m_DepthAttachment = nullptr;
@@ -55,6 +54,7 @@ namespace Ethereal
                 m_ColorAttachments[i] = Texture2D::Create(data);
                 m_ColorAttachments[i]->Bind();
                 glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, m_ColorAttachments[i]->GetRendererID(), 0);
+                ET_CORE_INFO("Bind {}",i);
             }
         }
 
@@ -96,11 +96,12 @@ namespace Ethereal
     }
 
     int OpenGLFramebuffer::ReadPixel(uint32_t attachmentIndex, int x, int y) {
+        Bind();
         ET_CORE_ASSERT(attachmentIndex < m_ColorAttachments.size());
-
         glReadBuffer(GL_COLOR_ATTACHMENT0 + attachmentIndex);
         int pixelData;
         glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, &pixelData);
+        Unbind();
         return pixelData;
     }
 

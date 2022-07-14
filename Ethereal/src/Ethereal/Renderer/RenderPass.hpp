@@ -14,34 +14,43 @@ namespace Ethereal
       public:
         RenderPass() = default;
         virtual ~RenderPass() = default;
-        virtual void Init() = 0;
+        virtual void Init(uint32_t width, uint32_t height) = 0;
         virtual void Draw() = 0;
+        virtual void OnResize(uint32_t width, uint32_t height) = 0;
 
         static VisiableNodes m_VisiableNodes;
+
+        friend class RenderSystem;
     };
 
     class MainCameraRenderPass : public RenderPass {
       public:
         MainCameraRenderPass() = default;
         ~MainCameraRenderPass() = default;
-        void Init() override;
+        void Init(uint32_t width, uint32_t height) override;
         void Draw() override;
+        void OnResize(uint32_t width, uint32_t height) override;
 
         void SetViewProjectionMatrix(const glm::mat4& matrix) { m_ViewProjectionMatrix = matrix; }
+        int GetMousePicking(int x, int y);
 
       private:
         glm::mat4 m_ViewProjectionMatrix;
         Ref<Shader> m_Shader;
         std::string m_ShaderPath = "assets/shaders/Test.glsl";
+        Ref<Framebuffer> m_Framebuffer;
+
+        friend class RenderSystem;
     };
 
     class ShadowMapRenderPass : public RenderPass {
       public:
         ShadowMapRenderPass() = default;
         ~ShadowMapRenderPass() = default;
-        void Init() override;
+        void Init(uint32_t width, uint32_t height) override;
         void Draw() override;
 
+        void OnResize(uint32_t width, uint32_t height) override;
         void SetViewProjectionMatrix(const glm::mat4& matrix) { m_ViewProjectionMatrix = matrix; }
 
       private:
@@ -51,6 +60,8 @@ namespace Ethereal
         Ref<Framebuffer> m_Framebuffer;
         const int m_ShadowMapSize = 1024;
         Ref<Texture> m_DepthMap;
+
+        friend class RenderSystem;
     };
 
 }  // namespace Ethereal

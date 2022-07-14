@@ -64,6 +64,7 @@ namespace Ethereal
         }
     }
 
+    //TODO: Check every gl call
     void checkError() {
         std::map<int, std::string> ErrorInfo{{0, "NO_ERROR"},
                                              {1280, "GL_INVALID_ENUM"},
@@ -84,37 +85,26 @@ namespace Ethereal
     }
 
     void OpenGLTexture2D::LoadTextureData(const Ref<TextureData>& data) {
-        ET_CORE_INFO("test");
-        checkError();
         GetOpenGLTextureFormat(data->m_format);
         m_IsLoaded = data->isValid();
 
         m_Height = data->m_height;
         m_Width = data->m_width;
-        checkError();
         // glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID);
         glGenTextures(1, &m_RendererID);
-        checkError();
         glBindTexture(GL_TEXTURE_2D, m_RendererID);
-        checkError();
         // glTextureStorage2D(m_RendererID, 1, m_InternalFormat, m_Width, m_Height);
         // checkError();
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        checkError();
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        checkError();
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        checkError();
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        checkError();
 
         GLenum dataType = m_DataFormat != GL_DEPTH_COMPONENT ? GL_UNSIGNED_BYTE : GL_FLOAT;
         glTexImage2D(GL_TEXTURE_2D, 0, m_InternalFormat, m_Width, m_Height, 0, m_DataFormat, dataType, m_IsLoaded ? data->m_pixels : nullptr);
         // glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_Width, m_Height, m_DataFormat, dataType, m_IsLoaded ? data->m_pixels : nullptr);
-        checkError();
-        ET_CORE_INFO("done {}", m_RendererID);
     }
 
     void OpenGLTexture2D::SetData(void* data, uint32_t size) {

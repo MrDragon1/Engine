@@ -26,7 +26,6 @@ namespace Ethereal
                               ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_DEPTH};
         fbSpec.Width = 1280;
         fbSpec.Height = 720;
-        m_Framebuffer = Framebuffer::Create(fbSpec);
 
         m_ActiveScene = CreateRef<Scene>();
         m_EditorCamera = EditorCamera(30.0f, 1280.0f / 720.0f, 0.1f, 1000.0f);
@@ -35,13 +34,6 @@ namespace Ethereal
     void EditorLayer::OnDetach() {}
 
     void EditorLayer::OnUpdate(Timestep ts) {
-        m_Framebuffer->Bind();
-        RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1});
-        RenderCommand::Clear();
-
-        // Clear our entity ID attachment to -1
-        m_Framebuffer->ClearAttachment(1, -1);
-
         switch (m_SceneState) {
             case SceneState::Play: {
                 m_ActiveScene->OnUpdateRuntime(ts, m_RenderSystem);
@@ -53,7 +45,9 @@ namespace Ethereal
                 break;
             }
         }
+
         m_RenderSystem.Draw(ts);
+        
         if (m_SceneState == SceneState::Edit) {
             auto [mx, my] = ImGui::GetMousePos();
             mx -= m_ViewportBounds[0].x;
@@ -64,13 +58,11 @@ namespace Ethereal
             int mouseY = (int)my;
 
             if (mouseX >= 0 && mouseY >= 0 && mouseX < (int)viewportSize.x && mouseY < (int)viewportSize.y) {
-                int pixelData = m_Framebuffer->ReadPixel(1, mouseX, mouseY);
+                int pixelData = m_RenderSystem.GetMousePicking(mouseX, mouseY);
                 // ET_CORE_INFO("Pixel data: {0}", pixelData);
                 m_HoveredEntity = pixelData == -1 ? Entity() : Entity((entt::entity)pixelData, m_ActiveScene.get());
             }
         }
-
-        m_Framebuffer->Unbind();
     }
 
     void EditorLayer::OnImGuiRender() {
@@ -178,15 +170,16 @@ namespace Ethereal
         ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
         m_ViewportSize = {viewportPanelSize.x, viewportPanelSize.y};
         // Resize
-        if (FramebufferSpecification spec = m_Framebuffer->GetSpecification(); m_ViewportSize.x > 0.0f &&
-                                                                               m_ViewportSize.y > 0.0f &&  // zero sized framebuffer is invalid
-                                                                               (spec.Width != m_ViewportSize.x || spec.Height != m_ViewportSize.y)) {
-            m_Framebuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+        if (m_ViewportSize.x > 0.0f && m_ViewportSize.y > 0.0f &&  // zero sized framebuffer is invalid
+            (m_RenderSystem.GetMainImageWidth() != m_ViewportSize.x || m_RenderSystem.GetMainImageHeight() != m_ViewportSize.y)) {
+            // m_Framebuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+            m_RenderSystem.OnResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
             m_CameraController.OnResize(m_ViewportSize.x, m_ViewportSize.y);
             m_EditorCamera.SetViewportSize(m_ViewportSize.x, m_ViewportSize.y);
             m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
         }
-        uint64_t textureID = m_Framebuffer->GetColorAttachment(0)->GetRendererID();
+        uint64_t textureID = m_RenderSystem.GetMainImage();
+        // ET_CORE_INFO("texture ID {}", textureID);
         ImGui::Image(reinterpret_cast<void*>(textureID), ImVec2{m_ViewportSize.x, m_ViewportSize.y}, ImVec2{0, 1}, ImVec2{1, 0});
 
         if (ImGui::BeginDragDropTarget()) {
