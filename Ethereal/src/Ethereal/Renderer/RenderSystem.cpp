@@ -22,11 +22,21 @@ namespace Ethereal
         m_RenderResource = CreateRef<RenderResource>();
         m_MainCameraRenderPass = CreateRef<MainCameraRenderPass>();
         m_MainCameraRenderPass->Init(m_Width, m_Height);
+        m_ShadowMapRenderPass = CreateRef<ShadowMapRenderPass>();
+        m_ShadowMapRenderPass->Init(m_Width, m_Height);
 
         m_RenderScene->SetVisiableNodeReference();
     }
 
-    void RenderSystem::Draw(Timestep ts) { m_MainCameraRenderPass->Draw(); }
+    void RenderSystem::Draw(Timestep ts) {
+        // m_ShadowMapRenderPass->SetLightPosition();
+        m_MainCameraRenderPass->SetLightSpaceMatrix(m_ShadowMapRenderPass->m_ViewProjectionMatrix);
+
+
+        m_ShadowMapRenderPass->Draw();
+        m_ShadowMapRenderPass->m_Framebuffer->GetDepthAttachment()->Bind(5);
+        m_MainCameraRenderPass->Draw();
+    }
 
     void RenderSystem::UpdateRenderScene(const RenderSceneData& renderSceneData) {
         m_RenderScene->Clear();
@@ -70,6 +80,7 @@ namespace Ethereal
     void RenderSystem::OnResize(int width, int height) {
         m_Height = height;
         m_Width = width;
+        m_ShadowMapRenderPass->OnResize(width, height);
         m_MainCameraRenderPass->OnResize(width, height);
     }
 

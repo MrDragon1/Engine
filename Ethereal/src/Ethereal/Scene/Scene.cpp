@@ -213,7 +213,9 @@ namespace Ethereal
         renderSystem.UpdateRenderScene(renderSceneData);
     }
 
-    void Scene::DestroyEntity(Entity entity) { m_Registry.destroy(entity); }
+    void Scene::DestroyEntity(Entity entity) { 
+        
+        m_Registry.destroy(entity); }
 
     void Scene::DuplicateEntity(Entity entity) {
         std::string name = entity.GetName();

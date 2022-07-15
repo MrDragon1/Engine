@@ -71,5 +71,7 @@ namespace Ethereal
         SceneState m_SceneState = SceneState::Edit;
 
         RenderSystem m_RenderSystem;
+
+        glm::vec3 m_LightPos= glm::vec3(-2,4,-1); 
     };
 }  // namespace Ethereal

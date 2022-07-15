@@ -45,7 +45,7 @@ namespace Ethereal
                 break;
             }
         }
-
+        m_RenderSystem.m_ShadowMapRenderPass->SetLightPosition(m_LightPos);
         m_RenderSystem.Draw(ts);
         
         if (m_SceneState == SceneState::Edit) {
@@ -139,7 +139,7 @@ namespace Ethereal
 
         ImGui::Begin("Stats");
         std::string name = "None";
-        if (m_HoveredEntity) name = m_HoveredEntity.GetComponent<TagComponent>().Tag;
+        if (m_HoveredEntity && m_HoveredEntity.HasComponent<TagComponent>()) name = m_HoveredEntity.GetComponent<TagComponent>().Tag;
         ImGui::Text("Hovered Entity: %s", name.c_str());
 
         const char* drawModeStrings[] = {"FILLED", "LINE", "POINT"};
@@ -156,7 +156,8 @@ namespace Ethereal
             }
             ImGui::EndCombo();
         }
-
+        
+        ImGui::DragFloat3("Light Position",glm::value_ptr(m_LightPos),0.1);
         ImGui::End();
 
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});

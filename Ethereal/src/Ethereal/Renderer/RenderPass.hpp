@@ -34,8 +34,12 @@ namespace Ethereal
         void SetViewProjectionMatrix(const glm::mat4& matrix) { m_ViewProjectionMatrix = matrix; }
         int GetMousePicking(int x, int y);
 
+        void SetLightSpaceMatrix(const glm::mat4& matrix) { m_LightSpaceMatrix = matrix; };
+
       private:
         glm::mat4 m_ViewProjectionMatrix;
+        glm::mat4 m_LightSpaceMatrix;
+
         Ref<Shader> m_Shader;
         std::string m_ShaderPath = "assets/shaders/Test.glsl";
         Ref<Framebuffer> m_Framebuffer;
@@ -51,17 +55,21 @@ namespace Ethereal
         void Draw() override;
 
         void OnResize(uint32_t width, uint32_t height) override;
-        void SetViewProjectionMatrix(const glm::mat4& matrix) { m_ViewProjectionMatrix = matrix; }
+        void SetLightPosition(const glm::vec3& pos) { m_LightPos = pos; CalculateViewProjectionMatrix();}
 
       private:
         glm::mat4 m_ViewProjectionMatrix;
+
+        glm::vec3 m_LightPos;
         Ref<Shader> m_Shader;
         std::string m_ShaderPath = "assets/shaders/ShadowMap.glsl";
         Ref<Framebuffer> m_Framebuffer;
         const int m_ShadowMapSize = 1024;
-        Ref<Texture> m_DepthMap;
 
         friend class RenderSystem;
+        
+        private: 
+        void CalculateViewProjectionMatrix();
     };
 
 }  // namespace Ethereal

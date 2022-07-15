@@ -40,6 +40,7 @@ namespace Ethereal
         Ref<RenderScene> m_RenderScene;
         Ref<RenderResource> m_RenderResource;  // All the mesh in scene
         Ref<MainCameraRenderPass> m_MainCameraRenderPass;
+        Ref<ShadowMapRenderPass> m_ShadowMapRenderPass;
         // TODO: Ref<RenderContent>;
         uint32_t m_Height, m_Width;
 
