@@ -139,7 +139,7 @@ namespace Ethereal
 
         ImGui::Begin("Stats");
         std::string name = "None";
-        if (m_HoveredEntity && m_HoveredEntity.HasComponent<TagComponent>()) name = m_HoveredEntity.GetComponent<TagComponent>().Tag;
+        // if (m_HoveredEntity && m_HoveredEntity.HasComponent<TagComponent>()) name = m_HoveredEntity.GetComponent<TagComponent>().Tag;
         ImGui::Text("Hovered Entity: %s", name.c_str());
 
         const char* drawModeStrings[] = {"FILLED", "LINE", "POINT"};

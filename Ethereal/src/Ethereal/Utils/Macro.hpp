@@ -1,7 +1,8 @@
 #pragma once
 #include "pch.hpp"
 
-namespace Ethereal {
+namespace Ethereal
+{
     enum class ETHEREAL_PIXEL_FORMAT : uint8_t
     {
         ETHEREAL_PIXEL_FORMAT_UNKNOWN = 0,
@@ -29,6 +30,11 @@ namespace Ethereal {
         ETHEREAL_DRAW_MODE_POINT
     };
 
+    enum class ETHEREAL_CULLFACE_TYPE
+    {
+        FRONT = 0,
+        BACK,
+    };
 
     //* UI stuff *//
     enum class ETHEREAL_BASIC_3DOBJECT : uint8_t
@@ -42,4 +48,4 @@ namespace Ethereal {
         ETHEREAL_BASIC_3DOBJECT_QUAD,
         ETHEREAL_BASIC_3DOBJECT_MONKEY
     };
-}
+}  // namespace Ethereal

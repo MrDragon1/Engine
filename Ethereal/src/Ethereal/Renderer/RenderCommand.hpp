@@ -30,6 +30,10 @@ namespace Ethereal
             return s_RendererAPI->GetDrawMode();
         }
 
+        inline static void SetCullFace(ETHEREAL_CULLFACE_TYPE type){
+            s_RendererAPI->SetCullFace(type);
+        }
+
         inline static void DrawIndexed(const Ref<VertexArray>& vertexArray, uint32_t count = 0) {
             s_RendererAPI->DrawIndexed(vertexArray,count);
         }

@@ -72,6 +72,6 @@ namespace Ethereal
 
         RenderSystem m_RenderSystem;
 
-        glm::vec3 m_LightPos= glm::vec3(-2,4,-1); 
+        glm::vec3 m_LightPos= glm::vec3(-20,40,-10);// as far as possiable (away from the scene to avoid clamp shadow)
     };
 }  // namespace Ethereal

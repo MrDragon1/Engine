@@ -21,6 +21,26 @@ namespace Ethereal
     {
         return m_DrawMode;
     }
+    
+    void OpenGLRendererAPI::SetCullFace(ETHEREAL_CULLFACE_TYPE type)
+    {
+        GLenum cullface;
+        switch (type) {
+            case ETHEREAL_CULLFACE_TYPE::BACK: {
+                cullface = GL_BACK;
+                break;
+            }
+            case ETHEREAL_CULLFACE_TYPE::FRONT:{
+                cullface = GL_FRONT;
+                break;
+            }
+
+            default:
+                ET_CORE_ASSERT("Unknown cullface type");
+
+        }
+        glCullFace(cullface);
+    }
 
     void OpenGLRendererAPI::SetDrawMode(ETHEREAL_DRAW_MODE mode) {
         m_DrawMode = mode;

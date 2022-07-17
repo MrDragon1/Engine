@@ -76,6 +76,7 @@ namespace Ethereal
         m_Framebuffer->Bind();
         RenderCommand::SetClearColor({0, 0, 0, 0});
         RenderCommand::Clear();
+        RenderCommand::SetCullFace(ETHEREAL_CULLFACE_TYPE::FRONT);
 
         const auto& visiableRenderNode = *m_VisiableNodes.p_main_camera_visible_mesh_nodes;
         m_Shader->Bind();
@@ -88,6 +89,7 @@ namespace Ethereal
             }
         }
 
+        RenderCommand::SetCullFace(ETHEREAL_CULLFACE_TYPE::BACK);
         m_Framebuffer->Unbind();
     }
 
@@ -97,9 +99,9 @@ namespace Ethereal
     }
 
     void ShadowMapRenderPass::CalculateViewProjectionMatrix() {
-        GLfloat near_plane = 0.1f, far_plane = 1000.0f;
-        glm::mat4 lightProjection = glm::ortho(-50.0f, 50.0f, -50.0f, 50.0f, near_plane, far_plane);
-        // glm::mat4 lightProjection = glm::perspective(100.0f, 1.0f, near_plane, far_plane);
+        GLfloat near_plane = 0.1f, far_plane = 100.0f;
+        glm::mat4 lightProjection = glm::ortho(-50.0f,50.0f, -50.0f, 50.0f, near_plane, far_plane);
+        // glm::mat4 lightProjection = glm::perspective(glm::radians(90.0f), 1.0f, near_plane, far_plane);
         glm::mat4 lightView = glm::lookAt(m_LightPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
         m_ViewProjectionMatrix = lightProjection * lightView;
     }
