@@ -167,6 +167,7 @@ namespace Ethereal
 
         SceneCamera* mainCamera = nullptr;
         glm::mat4 cameraTransform = glm::mat4(1.0f);
+        glm::vec3 cameraPosition = glm::vec3(1.0f);
         {
             auto view = m_Registry.view<TransformComponent, CameraComponent>();
             for (auto entity : view) {
@@ -174,6 +175,7 @@ namespace Ethereal
                 if (camera.Primary) {
                     mainCamera = &camera.Camera;
                     cameraTransform = transform.GetTransform();
+                    cameraPosition = transform.Translation;
                     break;
                 }
             }
@@ -181,11 +183,13 @@ namespace Ethereal
 
         if (mainCamera) {
             SubmitRenderScene(renderSystem, mainCamera->GetProjection() * glm::inverse(cameraTransform));
+            renderSystem.m_MainCameraRenderPass->SetCameraPosition(cameraPosition);
         }
     }
 
     void Scene::OnUpdateEditor(Timestep ts, EditorCamera& editorCamera, RenderSystem& renderSystem) {
         SubmitRenderScene(renderSystem, editorCamera.GetViewProjection());
+        renderSystem.m_MainCameraRenderPass->SetCameraPosition(editorCamera.GetPosition());
     }
 
     void Scene::SubmitRenderScene(RenderSystem& renderSystem, const glm::mat4& viewProjectionMatrix) {

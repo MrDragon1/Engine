@@ -46,10 +46,10 @@ namespace Ethereal
         // lights
         // ------
         glm::vec3 lightPositions[] = {
-            glm::vec3(-10.0f, 10.0f, 10.0f),
-            glm::vec3(10.0f, 10.0f, 10.0f),
-            glm::vec3(-10.0f, -10.0f, 10.0f),
-            glm::vec3(10.0f, -10.0f, 10.0f),
+            glm::vec3(-10.0f, 20.0f, 10.0f),
+            glm::vec3(10.0f, 20.0f, 10.0f),
+            glm::vec3(-10.0f, 0.0f, 10.0f),
+            glm::vec3(10.0f, 0.0f, 10.0f),
         };
         glm::vec3 lightColors[] = {glm::vec3(300.0f, 300.0f, 300.0f), glm::vec3(300.0f, 300.0f, 300.0f), glm::vec3(300.0f, 300.0f, 300.0f),
                                    glm::vec3(300.0f, 300.0f, 300.0f)};
