@@ -366,6 +366,9 @@ namespace Ethereal
             }
 
             ImGui::EndTable();
+
+            ImGui::DragFloat("Metallic", &component.Desc.m_Metallic, 0.01f, 0.0f, 1.0f);
+            ImGui::DragFloat("Roughness", &component.Desc.m_Roughness, 0.01f, 0.0f, 1.0f);
         });
     }
 

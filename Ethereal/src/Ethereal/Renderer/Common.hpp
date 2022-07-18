@@ -18,7 +18,6 @@ namespace Ethereal
         size_t getHashValue() const { return std::hash<std::string>{}(m_filePath); }
     };
 
-
     struct GameObjectMaterialDesc {
         GameObjectMaterialDesc() = default;
         std::optional<glm::vec4> m_PureColor;  // null if not pure color
@@ -28,15 +27,21 @@ namespace Ethereal
         std::string m_occlusion_file = "assets\\textures\\default\\default_occlusion.png";
         std::string m_emissive_file = "assets\\textures\\default\\default_emissive.png";
 
+        glm::vec3 m_Albedo = glm::vec3(1.0f);
+        float m_Metallic = 0.0f;
+        float m_Roughness = 0.0f;
+
         bool operator==(const GameObjectMaterialDesc& rhs) const {
             return m_PureColor == rhs.m_PureColor && m_base_color_file == rhs.m_base_color_file &&
                    m_metallic_roughness_file == rhs.m_metallic_roughness_file && m_normal_file == rhs.m_normal_file &&
-                   m_occlusion_file == rhs.m_occlusion_file && m_emissive_file == rhs.m_emissive_file;
+                   m_occlusion_file == rhs.m_occlusion_file && m_emissive_file == rhs.m_emissive_file && m_Albedo == rhs.m_Albedo &&
+                   m_Metallic == rhs.m_Metallic && m_Roughness == rhs.m_Roughness;
         }
 
         size_t getHashValue() const {
             size_t hash = 0;
-            hash_combine(hash, m_base_color_file, m_metallic_roughness_file, m_normal_file, m_occlusion_file, m_emissive_file);
+            hash_combine(hash, m_base_color_file, m_metallic_roughness_file, m_normal_file, m_occlusion_file, m_emissive_file,  std::to_string(m_Metallic),
+                         std::to_string(m_Roughness));
             return hash;
         }
     };
@@ -58,7 +63,6 @@ namespace Ethereal
     struct MeshVertex {
         glm::vec3 Position;
         glm::vec3 Normal;
-        glm::vec4 Color;
         glm::vec2 UV;
 
         // Editor-only
@@ -125,7 +129,10 @@ namespace Ethereal
         Ref<Texture> m_NormalMap;
         Ref<Texture> m_OcclusionMap;
         Ref<Texture> m_EmissionMap;
-        // TODO: uniform data
+
+        glm::vec3 m_Albedo = glm::vec3(1.0f);
+        float m_Metallic = 0.0f;
+        float m_Roughness = 0.0f;
     };
 
     struct RenderNode {

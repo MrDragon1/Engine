@@ -60,7 +60,11 @@ namespace Ethereal
             temp_material.m_MetallicMap = TextureManager::GetTexture(GameObjectMaterialDesc.m_metallic_roughness_file);
             temp_material.m_OcclusionMap = TextureManager::GetTexture(GameObjectMaterialDesc.m_occlusion_file);
             temp_material.m_NormalMap = TextureManager::GetTexture(GameObjectMaterialDesc.m_normal_file);
-
+            
+            temp_material.m_Albedo = GameObjectMaterialDesc.m_Albedo;
+            temp_material.m_Metallic = GameObjectMaterialDesc.m_Metallic;
+            temp_material.m_Roughness = GameObjectMaterialDesc.m_Roughness;
+            
             auto res = m_Material_Map.insert(std::make_pair(materialAssetId, std::move(temp_material)));
             ET_CORE_ASSERT(res.second, "Failed to insert material into map");
         }
@@ -112,7 +116,7 @@ namespace Ethereal
     {
         RenderMeshData meshData;
         meshData.m_static_mesh_data.m_layout = {
-            {ShaderDataType::Float3, "a_Position"}, {ShaderDataType::Float3, "a_Normal"}, {ShaderDataType::Float4, "a_Color"},
+            {ShaderDataType::Float3, "a_Position"}, {ShaderDataType::Float3, "a_Normal"},
             {ShaderDataType::Float2, "a_TexCoord"}, {ShaderDataType::Int, "a_EntityID"},
         };
         ObjLoader::Load(mesh_desc, meshData, entityID);

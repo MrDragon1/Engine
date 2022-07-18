@@ -168,6 +168,10 @@ namespace Ethereal
             out << YAML::Key << "m_occlusion_file" << YAML::Value << material.Desc.m_occlusion_file;
             out << YAML::Key << "m_emissive_file" << YAML::Value << material.Desc.m_emissive_file;
 
+            out << YAML::Key << "m_Albedo" << YAML::Value << material.Desc.m_Albedo;
+            out << YAML::Key << "m_Metallic" << YAML::Value << material.Desc.m_Metallic;
+            out << YAML::Key << "m_Roughness" << YAML::Value << material.Desc.m_Roughness;
+
             out << YAML::EndMap;  // MaterialComponent
         }
 
@@ -297,6 +301,11 @@ namespace Ethereal
                     material.Desc.m_normal_file = materialComponent["m_normal_file"].as<std::string>();
                     material.Desc.m_occlusion_file = materialComponent["m_occlusion_file"].as<std::string>();
                     material.Desc.m_emissive_file = materialComponent["m_emissive_file"].as<std::string>();
+
+
+                    material.Desc.m_Albedo = materialComponent["m_Albedo"].as<glm::vec3>();
+                    material.Desc.m_Metallic = materialComponent["m_Metallic"].as<float>();
+                    material.Desc.m_Roughness = materialComponent["m_Roughness"].as<float>();
                 }
 
                 auto cameraComponent = entity["CameraComponent"];

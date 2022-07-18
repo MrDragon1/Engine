@@ -33,8 +33,8 @@ namespace Ethereal
         m_MainCameraRenderPass->SetLightSpaceMatrix(m_ShadowMapRenderPass->m_ViewProjectionMatrix);
 
 
-        m_ShadowMapRenderPass->Draw();
-        m_ShadowMapRenderPass->m_Framebuffer->GetDepthAttachment()->Bind(5);
+        //m_ShadowMapRenderPass->Draw();
+        //m_ShadowMapRenderPass->m_Framebuffer->GetDepthAttachment()->Bind(5);
         m_MainCameraRenderPass->Draw();
     }
 
@@ -46,11 +46,13 @@ namespace Ethereal
             renderEntity.m_Transform_Desc = data.Transform;
             renderEntity.m_Mesh_Desc = data.Mesh;
             renderEntity.m_Material_Desc = data.Material;
-            // ET_CORE_INFO(renderEntity.m_Mesh_Desc.m_filePath);
+            //ET_CORE_INFO("m_Metallic {}",renderEntity.m_Material_Desc.m_Metallic);
             //* Load Mesh Data
             RenderMeshData renderMeshData;
             bool is_MeshLoaded = m_RenderScene->getMeshAssetIdAllocator().hasElement(renderEntity.m_Mesh_Desc);
             if (!is_MeshLoaded) {
+                // ! Entity ID only update once
+                // TODO : Update Entity ID everytime when mesh is loaded
                 renderMeshData = m_RenderResource->LoadMeshData(renderEntity.m_Mesh_Desc, (int)(uint32_t)renderEntity.m_InstanceID);
             }
             renderEntity.m_MeshAssetID = m_RenderScene->getMeshAssetIdAllocator().allocUUID(renderEntity.m_Mesh_Desc);

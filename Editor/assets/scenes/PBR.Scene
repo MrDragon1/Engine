@@ -1,0 +1,116 @@
+Scene: Test Scene
+Entities:
+  - Entity: 9860274454224209310
+    TagComponent:
+      Tag: Sphere5
+    TransformComponent:
+      Translation: [10.2646141, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      m_filePath: assets/buildin/models/sphere.obj
+    MaterialComponent:
+      m_PureColor: ~
+      m_base_color_file: assets\textures\default\default_diffuse.png
+      m_metallic_roughness_file: assets\textures\default\default_metallic_roughness.png
+      m_normal_file: assets\textures\default\default_normal.png
+      m_occlusion_file: assets\textures\default\default_occlusion.png
+      m_emissive_file: assets\textures\default\default_emissive.png
+      m_Albedo: [1, 1, 1]
+      m_Metallic: 1.0
+      m_Roughness: 0
+  - Entity: 5056108171594998044
+    TagComponent:
+      Tag: Sphere4
+    TransformComponent:
+      Translation: [7.63588381, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      m_filePath: assets/buildin/models/sphere.obj
+    MaterialComponent:
+      m_PureColor: ~
+      m_base_color_file: assets\textures\default\default_diffuse.png
+      m_metallic_roughness_file: assets\textures\default\default_metallic_roughness.png
+      m_normal_file: assets\textures\default\default_normal.png
+      m_occlusion_file: assets\textures\default\default_occlusion.png
+      m_emissive_file: assets\textures\default\default_emissive.png
+      m_Albedo: [1, 1, 1]
+      m_Metallic: 0.5
+      m_Roughness: 0
+  - Entity: 8771200316534182395
+    TagComponent:
+      Tag: Plane
+    TransformComponent:
+      Translation: [2.94246364, -8.02337742, 4.48575401]
+      Rotation: [0, 0, 0]
+      Scale: [34.524498, 29.5867233, 26.7573967]
+    MeshComponent:
+      m_filePath: assets/buildin/models/plane.obj
+    MaterialComponent:
+      m_PureColor: ~
+      m_base_color_file: assets\models\cube\wall.jpg
+      m_metallic_roughness_file: assets\textures\default\default_metallic_roughness.png
+      m_normal_file: assets\textures\default\default_normal.png
+      m_occlusion_file: assets\textures\default\default_occlusion.png
+      m_emissive_file: assets\textures\default\default_emissive.png
+      m_Albedo: [1, 1, 1]
+      m_Metallic: 0.5
+      m_Roughness: 0.5
+  - Entity: 14444282789850429630
+    TagComponent:
+      Tag: Sphere1
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      m_filePath: assets/buildin/models/sphere.obj
+    MaterialComponent:
+      m_PureColor: ~
+      m_base_color_file: assets\textures\default\default_diffuse.png
+      m_metallic_roughness_file: assets\textures\default\default_metallic_roughness.png
+      m_normal_file: assets\textures\default\default_normal.png
+      m_occlusion_file: assets\textures\default\default_occlusion.png
+      m_emissive_file: assets\textures\default\default_emissive.png
+      m_Albedo: [1, 1, 1]
+      m_Metallic: 0
+      m_Roughness: 0
+  - Entity: 360217341315330896
+    TagComponent:
+      Tag: Sphere2
+    TransformComponent:
+      Translation: [2.46144676, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      m_filePath: assets/buildin/models/sphere.obj
+    MaterialComponent:
+      m_PureColor: ~
+      m_base_color_file: assets\textures\default\default_diffuse.png
+      m_metallic_roughness_file: assets\textures\default\default_metallic_roughness.png
+      m_normal_file: assets\textures\default\default_normal.png
+      m_occlusion_file: assets\textures\default\default_occlusion.png
+      m_emissive_file: assets\textures\default\default_emissive.png
+      m_Albedo: [1, 1, 1]
+      m_Metallic: 0
+      m_Roughness: 0.5
+  - Entity: 10254764924041801388
+    TagComponent:
+      Tag: Sphere3
+    TransformComponent:
+      Translation: [4.91136122, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      m_filePath: assets/buildin/models/sphere.obj
+    MaterialComponent:
+      m_PureColor: ~
+      m_base_color_file: assets\textures\default\default_diffuse.png
+      m_metallic_roughness_file: assets\textures\default\default_metallic_roughness.png
+      m_normal_file: assets\textures\default\default_normal.png
+      m_occlusion_file: assets\textures\default\default_occlusion.png
+      m_emissive_file: assets\textures\default\default_emissive.png
+      m_Albedo: [1, 1, 1]
+      m_Metallic: 0
+      m_Roughness: 1

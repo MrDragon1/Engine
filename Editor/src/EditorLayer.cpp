@@ -46,6 +46,7 @@ namespace Ethereal
             }
         }
         m_RenderSystem.m_ShadowMapRenderPass->SetLightPosition(m_LightPos);
+        m_RenderSystem.m_MainCameraRenderPass->SetCameraPosition(m_EditorCamera.GetPosition());
         m_RenderSystem.Draw(ts);
         
         if (m_SceneState == SceneState::Edit) {

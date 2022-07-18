@@ -17,6 +17,10 @@ namespace Ethereal
 
         m_Shader = m_Shader = Shader::Create(m_ShaderPath);
         m_Shader->Bind();
+
+        m_Shader->SetFloat3("albedo", {0.5f, 0.0f, 0.0f});
+        m_Shader->SetFloat("ao", 1.0f);
+
         m_Shader->SetInt("u_BaseColorTexture", 0);
         m_Shader->SetInt("u_MetallicTexture", 1);
         m_Shader->SetInt("u_NormalTexture", 2);
@@ -37,6 +41,22 @@ namespace Ethereal
         m_Shader->Bind();
         m_Shader->SetMat4("u_ViewProjection", m_ViewProjectionMatrix);
         m_Shader->SetMat4("u_LightSpaceMatrix", m_LightSpaceMatrix);
+        m_Shader->SetFloat3("camPos", m_CameraPosition);
+
+        // lights
+        // ------
+        glm::vec3 lightPositions[] = {
+            glm::vec3(-10.0f, 10.0f, 10.0f),
+            glm::vec3(10.0f, 10.0f, 10.0f),
+            glm::vec3(-10.0f, -10.0f, 10.0f),
+            glm::vec3(10.0f, -10.0f, 10.0f),
+        };
+        glm::vec3 lightColors[] = {glm::vec3(300.0f, 300.0f, 300.0f), glm::vec3(300.0f, 300.0f, 300.0f), glm::vec3(300.0f, 300.0f, 300.0f),
+                                   glm::vec3(300.0f, 300.0f, 300.0f)};
+        for (int i = 0; i < 4; i++) {
+            m_Shader->SetFloat3("lightPositions[" + std::to_string(i) + "]", lightPositions[i]);
+            m_Shader->SetFloat3("lightColors[" + std::to_string(i) + "]", lightColors[i]);
+        }
 
         if (!visiableRenderNode.empty()) {
             for (auto& RenderNode : visiableRenderNode) {
@@ -47,6 +67,10 @@ namespace Ethereal
                 RenderNode.ref_material->m_NormalMap->Bind(2);
                 RenderNode.ref_material->m_OcclusionMap->Bind(3);
                 RenderNode.ref_material->m_EmissionMap->Bind(4);
+
+                m_Shader->SetFloat("roughness", RenderNode.ref_material->m_Roughness);
+                m_Shader->SetFloat("metallic", RenderNode.ref_material->m_Metallic);
+
                 RenderCommand::DrawIndexed(RenderNode.ref_mesh->m_VAO, RenderNode.ref_mesh->m_IndexCount);
             }
         }
@@ -100,7 +124,7 @@ namespace Ethereal
 
     void ShadowMapRenderPass::CalculateViewProjectionMatrix() {
         GLfloat near_plane = 0.1f, far_plane = 100.0f;
-        glm::mat4 lightProjection = glm::ortho(-50.0f,50.0f, -50.0f, 50.0f, near_plane, far_plane);
+        glm::mat4 lightProjection = glm::ortho(-50.0f, 50.0f, -50.0f, 50.0f, near_plane, far_plane);
         // glm::mat4 lightProjection = glm::perspective(glm::radians(90.0f), 1.0f, near_plane, far_plane);
         glm::mat4 lightView = glm::lookAt(m_LightPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
         m_ViewProjectionMatrix = lightProjection * lightView;
