@@ -4,7 +4,7 @@ Entities:
     TagComponent:
       Tag: Sphere5
     TransformComponent:
-      Translation: [10.2646141, 0, 0]
+      Translation: [10, 0, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
     MeshComponent:
@@ -17,13 +17,13 @@ Entities:
       m_occlusion_file: assets\textures\default\default_occlusion.png
       m_emissive_file: assets\textures\default\default_emissive.png
       m_Albedo: [1, 1, 1]
-      m_Metallic: 1.0
+      m_Metallic: 1
       m_Roughness: 0
   - Entity: 5056108171594998044
     TagComponent:
       Tag: Sphere4
     TransformComponent:
-      Translation: [7.63588381, 0, 0]
+      Translation: [5, 0, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
     MeshComponent:
@@ -61,7 +61,7 @@ Entities:
     TagComponent:
       Tag: Sphere1
     TransformComponent:
-      Translation: [0, 0, 0]
+      Translation: [-10, 0, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
     MeshComponent:
@@ -80,7 +80,7 @@ Entities:
     TagComponent:
       Tag: Sphere2
     TransformComponent:
-      Translation: [2.46144676, 0, 0]
+      Translation: [-5, 0, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
     MeshComponent:
@@ -99,7 +99,7 @@ Entities:
     TagComponent:
       Tag: Sphere3
     TransformComponent:
-      Translation: [4.91136122, 0, 0]
+      Translation: [0, 0, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
     MeshComponent:
