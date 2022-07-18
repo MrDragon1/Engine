@@ -68,6 +68,7 @@ namespace Ethereal
                 RenderNode.ref_material->m_OcclusionMap->Bind(3);
                 RenderNode.ref_material->m_EmissionMap->Bind(4);
 
+                m_Shader->SetFloat3("albedo", RenderNode.ref_material->m_Albedo);
                 m_Shader->SetFloat("roughness", RenderNode.ref_material->m_Roughness);
                 m_Shader->SetFloat("metallic", RenderNode.ref_material->m_Metallic);
 

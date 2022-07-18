@@ -29,7 +29,7 @@ namespace Ethereal
 
             if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered()) m_SelectionContext = {};
 
-            //Right click context menu
+            // Right click context menu
             if (ImGui::BeginPopupContextWindow(0, 1, false)) {
                 if (ImGui::MenuItem("Create Empty Entity")) m_Context->CreateEntity("Empty Entity");
                 if (ImGui::BeginMenu("3D Object")) {
@@ -305,8 +305,7 @@ namespace Ethereal
 
         // TODO: Beautify this
         DrawComponent<MaterialComponent>("Material", entity, [](auto& component) {
-            ImGui::BeginTable("table_padding", 3,
-                              ImGuiTableFlags_BordersV | ImGuiTableFlags_BordersInnerV);
+            ImGui::BeginTable("table_padding", 3, ImGuiTableFlags_BordersV | ImGuiTableFlags_BordersInnerV);
 
             ImGui::TableNextRow();
             ImGui::TableSetColumnIndex(0);
@@ -367,6 +366,7 @@ namespace Ethereal
 
             ImGui::EndTable();
 
+            ImGui::ColorEdit3("Albedo", glm::value_ptr(component.Desc.m_Albedo));
             ImGui::DragFloat("Metallic", &component.Desc.m_Metallic, 0.01f, 0.0f, 1.0f);
             ImGui::DragFloat("Roughness", &component.Desc.m_Roughness, 0.01f, 0.0f, 1.0f);
         });

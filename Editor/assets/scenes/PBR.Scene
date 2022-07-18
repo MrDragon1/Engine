@@ -1,10 +1,10 @@
 Scene: Test Scene
 Entities:
-  - Entity: 9860274454224209310
+  - Entity: 10254764924041801388
     TagComponent:
-      Tag: Sphere5
+      Tag: Sphere3
     TransformComponent:
-      Translation: [10, 0, 0]
+      Translation: [0, 0, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
     MeshComponent:
@@ -16,14 +16,14 @@ Entities:
       m_normal_file: assets\textures\default\default_normal.png
       m_occlusion_file: assets\textures\default\default_occlusion.png
       m_emissive_file: assets\textures\default\default_emissive.png
-      m_Albedo: [1, 1, 1]
+      m_Albedo: [0.5, 0, 0]
       m_Metallic: 1
-      m_Roughness: 0
-  - Entity: 5056108171594998044
+      m_Roughness: 0.620000005
+  - Entity: 360217341315330896
     TagComponent:
-      Tag: Sphere4
+      Tag: Sphere2
     TransformComponent:
-      Translation: [5, 0, 0]
+      Translation: [-5, 0, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
     MeshComponent:
@@ -35,27 +35,8 @@ Entities:
       m_normal_file: assets\textures\default\default_normal.png
       m_occlusion_file: assets\textures\default\default_occlusion.png
       m_emissive_file: assets\textures\default\default_emissive.png
-      m_Albedo: [1, 1, 1]
-      m_Metallic: 0.5
-      m_Roughness: 0
-  - Entity: 8771200316534182395
-    TagComponent:
-      Tag: Plane
-    TransformComponent:
-      Translation: [2.94246364, -8.02337742, 4.48575401]
-      Rotation: [0, 0, 0]
-      Scale: [34.524498, 29.5867233, 26.7573967]
-    MeshComponent:
-      m_filePath: assets/buildin/models/plane.obj
-    MaterialComponent:
-      m_PureColor: ~
-      m_base_color_file: assets\models\cube\wall.jpg
-      m_metallic_roughness_file: assets\textures\default\default_metallic_roughness.png
-      m_normal_file: assets\textures\default\default_normal.png
-      m_occlusion_file: assets\textures\default\default_occlusion.png
-      m_emissive_file: assets\textures\default\default_emissive.png
-      m_Albedo: [1, 1, 1]
-      m_Metallic: 0.5
+      m_Albedo: [0.5, 0, 0]
+      m_Metallic: 0
       m_Roughness: 0.5
   - Entity: 14444282789850429630
     TagComponent:
@@ -73,14 +54,33 @@ Entities:
       m_normal_file: assets\textures\default\default_normal.png
       m_occlusion_file: assets\textures\default\default_occlusion.png
       m_emissive_file: assets\textures\default\default_emissive.png
-      m_Albedo: [1, 1, 1]
+      m_Albedo: [0.5, 0, 0]
       m_Metallic: 0
       m_Roughness: 0
-  - Entity: 360217341315330896
+  - Entity: 8771200316534182395
     TagComponent:
-      Tag: Sphere2
+      Tag: Plane
     TransformComponent:
-      Translation: [-5, 0, 0]
+      Translation: [2.94246364, -8.02337742, 4.48575401]
+      Rotation: [0, 0, 0]
+      Scale: [34.524498, 29.5867233, 26.7573967]
+    MeshComponent:
+      m_filePath: assets/buildin/models/plane.obj
+    MaterialComponent:
+      m_PureColor: ~
+      m_base_color_file: assets\models\cube\wall.jpg
+      m_metallic_roughness_file: assets\textures\default\default_metallic_roughness.png
+      m_normal_file: assets\textures\default\default_normal.png
+      m_occlusion_file: assets\textures\default\default_occlusion.png
+      m_emissive_file: assets\textures\default\default_emissive.png
+      m_Albedo: [0.722007751, 0.722007751, 0.722007751]
+      m_Metallic: 0.119999997
+      m_Roughness: 0.25999999
+  - Entity: 5056108171594998044
+    TagComponent:
+      Tag: Sphere4
+    TransformComponent:
+      Translation: [5, 0, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
     MeshComponent:
@@ -92,14 +92,14 @@ Entities:
       m_normal_file: assets\textures\default\default_normal.png
       m_occlusion_file: assets\textures\default\default_occlusion.png
       m_emissive_file: assets\textures\default\default_emissive.png
-      m_Albedo: [1, 1, 1]
-      m_Metallic: 0
-      m_Roughness: 0.5
-  - Entity: 10254764924041801388
+      m_Albedo: [0.5, 0, 0]
+      m_Metallic: 0.5
+      m_Roughness: 0
+  - Entity: 9860274454224209310
     TagComponent:
-      Tag: Sphere3
+      Tag: Sphere5
     TransformComponent:
-      Translation: [0, 0, 0]
+      Translation: [10, 0, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
     MeshComponent:
@@ -111,6 +111,6 @@ Entities:
       m_normal_file: assets\textures\default\default_normal.png
       m_occlusion_file: assets\textures\default\default_occlusion.png
       m_emissive_file: assets\textures\default\default_emissive.png
-      m_Albedo: [1, 1, 1]
+      m_Albedo: [0.5, 0, 0]
       m_Metallic: 0
-      m_Roughness: 1
+      m_Roughness: 0.330000013
