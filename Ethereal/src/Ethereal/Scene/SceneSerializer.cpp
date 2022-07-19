@@ -169,6 +169,12 @@ namespace Ethereal
             out << YAML::Key << "m_Metallic" << YAML::Value << material.Desc.m_Metallic;
             out << YAML::Key << "m_Roughness" << YAML::Value << material.Desc.m_Roughness;
 
+            out << YAML::Key << "b_Albedo" << YAML::Value << material.Desc.b_Albedo;
+            out << YAML::Key << "b_Normal" << YAML::Value << material.Desc.b_Normal;
+            out << YAML::Key << "b_Metallic" << YAML::Value << material.Desc.b_Metallic;
+            out << YAML::Key << "b_Roughness" << YAML::Value << material.Desc.b_Roughness;
+            out << YAML::Key << "b_Occlusion" << YAML::Value << material.Desc.b_Occlusion;
+
             out << YAML::EndMap;  // MaterialComponent
         }
 
@@ -302,6 +308,12 @@ namespace Ethereal
                     material.Desc.m_Albedo = materialComponent["m_Albedo"].as<glm::vec3>();
                     material.Desc.m_Metallic = materialComponent["m_Metallic"].as<float>();
                     material.Desc.m_Roughness = materialComponent["m_Roughness"].as<float>();
+
+                    material.Desc.b_Albedo = materialComponent["b_Albedo"].as<bool>();
+                    material.Desc.b_Normal = materialComponent["b_Normal"].as<bool>();
+                    material.Desc.b_Metallic = materialComponent["b_Metallic"].as<bool>();
+                    material.Desc.b_Roughness = materialComponent["b_Roughness"].as<bool>();
+                    material.Desc.b_Occlusion = materialComponent["b_Occlusion"].as<bool>();
                 }
 
                 auto cameraComponent = entity["CameraComponent"];

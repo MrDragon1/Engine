@@ -305,12 +305,13 @@ namespace Ethereal
 
         // TODO: Beautify this
         DrawComponent<MaterialComponent>("Material", entity, [](auto& component) {
-            const auto& materialNode = [](const char* name, std::string& file, void (*func)()) {
+            const auto& materialNode = [&component](const char* name, std::string& file, void (*func)(MaterialComponent & components)) {
                 ET_CORE_ASSERT(!file.empty(), "Material {} file is null", name);
                 Ref<Texture> showTexture = TextureManager::AddTexture(file);
 
                 if (ImGui::TreeNode((void*)name, name)) {
                     ImGui::Image((ImTextureID)showTexture->GetRendererID(), ImVec2(64, 64), ImVec2{0, 1}, ImVec2{1, 0});
+                    static bool use = false;
                     if (ImGui::BeginDragDropTarget()) {
                         if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
                             const wchar_t* path = (const wchar_t*)payload->Data;
@@ -324,19 +325,52 @@ namespace Ethereal
                         ImGui::EndDragDropTarget();
                     }
 
-                    func();
+                    func(component);
 
                     ImGui::TreePop();
                 }
             };
 
-            materialNode("Albedo", component.Desc.m_AlbedoFile, []() {});
-            materialNode("Normal", component.Desc.m_NormalFile, []() {});
-            materialNode("Metallic", component.Desc.m_MetallicFile, []() {});
-            materialNode("Roughness", component.Desc.m_RoughnessFile, []() {});
-            materialNode("Occlusion", component.Desc.m_OcclusionFile, []() {});
-            materialNode("Emssive", component.Desc.m_EmissiveFile, []() {});
-
+            materialNode("Albedo", component.Desc.m_AlbedoFile, [](MaterialComponent& components) {
+                static bool use = false;
+                ImGui::SameLine();
+                if (ImGui::Checkbox("Use", &use)) {
+                    components.Desc.b_Albedo = use;
+                }
+            });
+            materialNode("Normal", component.Desc.m_NormalFile, [](MaterialComponent& components) {
+                static bool use = true;
+                ImGui::SameLine();
+                if (ImGui::Checkbox("Use", &use)) {
+                    components.Desc.b_Normal = use;
+                }
+            });
+            materialNode("Metallic", component.Desc.m_MetallicFile, [](MaterialComponent& components) {
+                static bool use = false;
+                ImGui::SameLine();
+                if (ImGui::Checkbox("Use", &use)) {
+                    components.Desc.b_Metallic = use;
+                }
+            });
+            materialNode("Roughness", component.Desc.m_RoughnessFile, [](MaterialComponent& components) {
+                static bool use = false;
+                ImGui::SameLine();
+                if (ImGui::Checkbox("Use", &use)) {
+                    components.Desc.b_Roughness = use;
+                }
+            });
+            materialNode("Occlusion", component.Desc.m_OcclusionFile, [](MaterialComponent& components) {
+                static bool use = false;
+                ImGui::SameLine();
+                if (ImGui::Checkbox("Use", &use)) {
+                    components.Desc.b_Occlusion = use;
+                }
+            });
+            materialNode("Emssive", component.Desc.m_EmissiveFile, [](MaterialComponent& components) {
+                static bool use = false;
+                ImGui::SameLine();
+                ImGui::Checkbox("Use", &use);
+            });
 
             ImGui::ColorEdit3("Albedo", glm::value_ptr(component.Desc.m_Albedo));
             ImGui::DragFloat("Metallic", &component.Desc.m_Metallic, 0.01f, 0.0f, 1.0f);

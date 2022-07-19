@@ -49,6 +49,13 @@ uniform sampler2D u_RoughnessMap;
 uniform sampler2D u_OcclusionMap;
 uniform sampler2D u_EmissiveMap;
 
+uniform bool u_UseAlbedoMap;
+uniform bool u_UseNormalMap;
+uniform bool u_UseMetallicMap;
+uniform bool u_UseRoughnessMap;
+uniform bool u_UseOcclusionMap;
+
+
 // lights
 uniform vec3 lightPositions[4];
 uniform vec3 lightColors[4];
@@ -116,13 +123,12 @@ vec3 getNormalFromMap()
 // ----------------------------------------------------------------------------
 void main()
 {
-    vec3 albedo     = pow(texture(u_AlbedoMap, v_TexCoord).rgb, vec3(2.2));
-    float metallic  = texture(u_MetallicMap, v_TexCoord).r;
-    float roughness = texture(u_RoughnessMap, v_TexCoord).r;
-    float ao        = texture(u_OcclusionMap, v_TexCoord).r;
+    vec3 albedo     = u_UseAlbedoMap ? pow(texture(u_AlbedoMap, v_TexCoord).rgb, vec3(2.2)) : u_Albedo;
+    float metallic  = u_UseMetallicMap ? texture(u_MetallicMap, v_TexCoord).r : u_Metallic;
+    float roughness = u_UseRoughnessMap ? texture(u_RoughnessMap, v_TexCoord).r : u_Roughness;
+    float ao        = u_UseOcclusionMap ? texture(u_OcclusionMap, v_TexCoord).r : u_Occlusion;
 
-    // vec3 N = normalize(v_Normal);
-    vec3 N = getNormalFromMap();
+    vec3 N = u_UseNormalMap ? getNormalFromMap() : normalize(v_Normal);
     vec3 V = normalize(camPos - v_WorldPos);
 
     // calculate reflectance at normal incidence; if dia-electric (like plastic) use F0 

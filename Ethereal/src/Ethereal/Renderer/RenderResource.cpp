@@ -66,6 +66,12 @@ namespace Ethereal
             temp_material.m_Metallic = GameObjectMaterialDesc.m_Metallic;
             temp_material.m_Roughness = GameObjectMaterialDesc.m_Roughness;
             
+            temp_material.b_Albedo = GameObjectMaterialDesc.b_Albedo;
+            temp_material.b_Normal = GameObjectMaterialDesc.b_Normal;
+            temp_material.b_Metallic = GameObjectMaterialDesc.b_Metallic;
+            temp_material.b_Roughness = GameObjectMaterialDesc.b_Roughness;
+            temp_material.b_Occlusion = GameObjectMaterialDesc.b_Occlusion;
+
             auto res = m_Material_Map.insert(std::make_pair(materialAssetId, std::move(temp_material)));
             ET_CORE_ASSERT(res.second, "Failed to insert material into map");
         }

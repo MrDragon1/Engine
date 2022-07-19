@@ -31,17 +31,26 @@ namespace Ethereal
         float m_Metallic = 0.0f;
         float m_Roughness = 0.0f;
 
+        // ! this will cause memory waste in Material_Map, need to improve this one day
+        // false -> use texture
+        bool b_Albedo = false;
+        bool b_Metallic = false;
+        bool b_Roughness = false;
+        bool b_Normal = false;
+        bool b_Occlusion = false;
+
         bool operator==(const GameObjectMaterialDesc& rhs) const {
-            return m_AlbedoFile == rhs.m_AlbedoFile &&
-                   m_MetallicFile == rhs.m_MetallicFile && m_RoughnessFile == rhs.m_RoughnessFile &&
-                   m_NormalFile == rhs.m_NormalFile && m_EmissiveFile == rhs.m_EmissiveFile && m_OcclusionFile == rhs.m_OcclusionFile && m_Albedo == rhs.m_Albedo &&
-                   m_Metallic == rhs.m_Metallic && m_Roughness == rhs.m_Roughness;
+            return m_AlbedoFile == rhs.m_AlbedoFile && m_MetallicFile == rhs.m_MetallicFile && m_RoughnessFile == rhs.m_RoughnessFile &&
+                   m_NormalFile == rhs.m_NormalFile && m_EmissiveFile == rhs.m_EmissiveFile && m_OcclusionFile == rhs.m_OcclusionFile &&
+                   m_Albedo == rhs.m_Albedo && m_Metallic == rhs.m_Metallic && m_Roughness == rhs.m_Roughness && b_Albedo == rhs.b_Albedo &&
+                   b_Metallic == rhs.b_Metallic && b_Roughness == rhs.b_Roughness && b_Normal == rhs.b_Normal && b_Occlusion == rhs.b_Occlusion;
         }
 
         size_t getHashValue() const {
             size_t hash = 0;
-            hash_combine(hash, m_AlbedoFile, m_MetallicFile, m_RoughnessFile, m_NormalFile, m_EmissiveFile, m_OcclusionFile,  std::to_string(m_Metallic),
-                         std::to_string(m_Roughness));
+            hash_combine(hash, m_AlbedoFile, m_MetallicFile, m_RoughnessFile, m_NormalFile, m_EmissiveFile, m_OcclusionFile,
+                         std::to_string(m_Metallic), std::to_string(m_Roughness), std::to_string(b_Albedo), std::to_string(b_Metallic),
+                         std::to_string(b_Roughness), std::to_string(b_Normal), std::to_string(b_Occlusion));
             return hash;
         }
     };
@@ -134,6 +143,12 @@ namespace Ethereal
         glm::vec3 m_Albedo = glm::vec3(1.0f);
         float m_Metallic = 0.0f;
         float m_Roughness = 0.0f;
+
+        bool b_Albedo = false;
+        bool b_Metallic = false;
+        bool b_Roughness = false;
+        bool b_Normal = false;
+        bool b_Occlusion = false;
     };
 
     struct RenderNode {

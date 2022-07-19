@@ -61,7 +61,6 @@ namespace Ethereal
     void OpenGLShader::UploadUniformInt(const std::string& name, int value) {
         //TODO: fix wrong location
         GLint location = glGetUniformLocation(m_RendererID, name.c_str());
-        ET_CORE_INFO("{0} {1}", name, location);
         glUniform1i(location, value);
     }
 

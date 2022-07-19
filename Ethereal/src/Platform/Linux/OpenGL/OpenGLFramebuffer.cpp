@@ -54,7 +54,6 @@ namespace Ethereal
                 m_ColorAttachments[i] = Texture2D::Create(data);
                 m_ColorAttachments[i]->Bind();
                 glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, m_ColorAttachments[i]->GetRendererID(), 0);
-                ET_CORE_INFO("Bind {}",i);
             }
         }
 

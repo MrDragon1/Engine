@@ -73,6 +73,12 @@ namespace Ethereal
                 m_Shader->SetFloat("u_Roughness", RenderNode.ref_material->m_Roughness);
                 m_Shader->SetFloat("u_Metallic", RenderNode.ref_material->m_Metallic);
 
+                m_Shader->SetInt("u_UseAlbedoMap", RenderNode.ref_material->b_Albedo);
+                m_Shader->SetInt("u_UseNormalMap", RenderNode.ref_material->b_Normal);
+                m_Shader->SetInt("u_UseMetallicMap", RenderNode.ref_material->b_Metallic);
+                m_Shader->SetInt("u_UseRoughnessMap", RenderNode.ref_material->b_Roughness);
+                m_Shader->SetInt("u_UseOcclusionMap", RenderNode.ref_material->b_Occlusion);
+
                 RenderCommand::DrawIndexed(RenderNode.ref_mesh->m_VAO, RenderNode.ref_mesh->m_IndexCount);
             }
         }
