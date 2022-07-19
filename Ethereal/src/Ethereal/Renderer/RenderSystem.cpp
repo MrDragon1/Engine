@@ -24,6 +24,8 @@ namespace Ethereal
         m_MainCameraRenderPass->Init(m_Width, m_Height);
         m_ShadowMapRenderPass = CreateRef<ShadowMapRenderPass>();
         m_ShadowMapRenderPass->Init(m_Width, m_Height);
+        m_SkyboxRenderPass = CreateRef<SkyboxRenderPass>();
+        m_SkyboxRenderPass->Init(m_Width, m_Height);
 
         m_RenderScene->SetVisiableNodeReference();
 
@@ -44,7 +46,7 @@ namespace Ethereal
             m_RenderResource->UploadRenderResource(renderEntity, renderMeshData);
         }
 
-        m_MainCameraRenderPass->m_Cube = m_RenderResource->GetGLMesh(renderEntity);
+        m_SkyboxRenderPass->m_Cube = m_RenderResource->GetGLMesh(renderEntity);
     }
 
     void RenderSystem::Draw(Timestep ts) {
@@ -55,6 +57,11 @@ namespace Ethereal
         //m_ShadowMapRenderPass->Draw();
         //m_ShadowMapRenderPass->m_Framebuffer->GetDepthAttachment()->Bind(5);
         m_MainCameraRenderPass->Draw();
+
+        //TODO : make skybox render pass a subpass of main camera render pass
+        m_MainCameraRenderPass->m_Framebuffer->Bind();
+        m_SkyboxRenderPass->Draw();
+        m_MainCameraRenderPass->m_Framebuffer->Unbind();
     }
 
     void RenderSystem::UpdateRenderScene(const RenderSceneData& renderSceneData) {

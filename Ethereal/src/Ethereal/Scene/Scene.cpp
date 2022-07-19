@@ -190,8 +190,8 @@ namespace Ethereal
     void Scene::OnUpdateEditor(Timestep ts, EditorCamera& editorCamera, RenderSystem& renderSystem) {
         SubmitRenderScene(renderSystem, editorCamera.GetViewProjection());
         renderSystem.m_MainCameraRenderPass->SetCameraPosition(editorCamera.GetPosition());
-        renderSystem.m_MainCameraRenderPass->SetSkyboxProjection(editorCamera.GetProjection());
-        renderSystem.m_MainCameraRenderPass->SetSkyboxView(editorCamera.GetViewMatrix());
+        renderSystem.m_SkyboxRenderPass->SetSkyboxProjection(editorCamera.GetProjection());
+        renderSystem.m_SkyboxRenderPass->SetSkyboxView(editorCamera.GetViewMatrix());
     }
 
     void Scene::SubmitRenderScene(RenderSystem& renderSystem, const glm::mat4& viewProjectionMatrix) {

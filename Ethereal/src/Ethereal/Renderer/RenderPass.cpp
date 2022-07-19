@@ -27,19 +27,6 @@ namespace Ethereal
         m_Shader->SetInt("u_RoughnessMap", 3);
         m_Shader->SetInt("u_OcclusionMap", 4);
         m_Shader->SetInt("u_EmissiveMap", 5);
-
-        m_SkyboxShader = Shader::Create(m_SkyboxShaderPath);
-        m_SkyboxShader->Bind();
-        m_SkyboxShader->SetInt("u_SkyboxTexture", 0);
-
-        std::vector<std::string> paths;
-        paths.push_back("assets/skyboxs/default/right.jpg");
-        paths.push_back("assets/skyboxs/default/left.jpg");
-        paths.push_back("assets/skyboxs/default/top.jpg");
-        paths.push_back("assets/skyboxs/default/bottom.jpg");
-        paths.push_back("assets/skyboxs/default/front.jpg");
-        paths.push_back("assets/skyboxs/default/back.jpg");
-        m_SkyboxTexture = TextureCube::Create(paths);
     }
 
     void MainCameraRenderPass::Draw() {
@@ -96,15 +83,6 @@ namespace Ethereal
             }
         }
 
-        RenderCommand::SetDepthFunc(ETHEREAL_DEPTH_FUNC::LEQUAL);
-        m_SkyboxShader->Bind();
-        m_SkyboxShader->SetMat4("u_Projection", m_SkyboxProjection);
-        m_SkyboxShader->SetMat4("u_View", m_SkyboxView);
-        m_SkyboxTexture->Bind(0);
-        
-        RenderCommand::DrawIndexed(m_Cube.m_VAO, m_Cube.m_IndexCount);
-
-        RenderCommand::SetDepthFunc(ETHEREAL_DEPTH_FUNC::LESS);
         m_Framebuffer->Unbind();
     }
 
@@ -158,5 +136,39 @@ namespace Ethereal
         // glm::mat4 lightProjection = glm::perspective(glm::radians(90.0f), 1.0f, near_plane, far_plane);
         glm::mat4 lightView = glm::lookAt(m_LightPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
         m_ViewProjectionMatrix = lightProjection * lightView;
+    }
+    
+    void SkyboxRenderPass::Init(uint32_t width, uint32_t height)
+    {
+        m_SkyboxShader = Shader::Create(m_SkyboxShaderPath);
+        m_SkyboxShader->Bind();
+        m_SkyboxShader->SetInt("u_SkyboxTexture", 0);
+
+        std::vector<std::string> paths;
+        paths.push_back("assets/skyboxs/default/right.jpg");
+        paths.push_back("assets/skyboxs/default/left.jpg");
+        paths.push_back("assets/skyboxs/default/top.jpg");
+        paths.push_back("assets/skyboxs/default/bottom.jpg");
+        paths.push_back("assets/skyboxs/default/front.jpg");
+        paths.push_back("assets/skyboxs/default/back.jpg");
+        m_SkyboxTexture = TextureCube::Create(paths);
+    }
+    
+    void SkyboxRenderPass::Draw()
+    {
+        RenderCommand::SetDepthFunc(ETHEREAL_DEPTH_FUNC::LEQUAL);
+        m_SkyboxShader->Bind();
+        m_SkyboxShader->SetMat4("u_Projection", m_SkyboxProjection);
+        m_SkyboxShader->SetMat4("u_View", m_SkyboxView);
+        m_SkyboxTexture->Bind(0);
+        
+        RenderCommand::DrawIndexed(m_Cube.m_VAO, m_Cube.m_IndexCount);
+
+        RenderCommand::SetDepthFunc(ETHEREAL_DEPTH_FUNC::LESS);
+    }
+    
+    void SkyboxRenderPass::OnResize(uint32_t width, uint32_t height)
+    {
+        
     }
 }  // namespace Ethereal
