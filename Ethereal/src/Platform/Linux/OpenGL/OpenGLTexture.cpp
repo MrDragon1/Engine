@@ -150,6 +150,7 @@ namespace Ethereal
 
     void OpenGLTexture2D::Bind(uint32_t slot) const { glBindTextureUnit(slot, m_RendererID); }
 
+    // for non-hdr cube map only
     OpenGLTextureCube::OpenGLTextureCube(std::vector<std::string>& paths) {
         glDeleteTextures(1, &m_RendererID);
         glGenTextures(1, &m_RendererID);
@@ -171,6 +172,28 @@ namespace Ethereal
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
     }
+    
+    // For hdr map only
+    OpenGLTextureCube::OpenGLTextureCube(const Ref<TextureData>& data)
+    {
+        glDeleteTextures(1, &m_RendererID);
+        glGenTextures(1, &m_RendererID);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, m_RendererID);
+
+        int width, height, nrChannels;
+        for (unsigned int i = 0; i < 6; i++) {
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, data->m_width, data->m_height, 0, GL_RGB, GL_FLOAT,
+                         nullptr);
+            m_Width = data->m_width;
+            m_Height = data->m_height;
+        }
+
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+    }
 
     OpenGLTextureCube::~OpenGLTextureCube() { glDeleteTextures(1, &m_RendererID); }
 
@@ -178,4 +201,11 @@ namespace Ethereal
         glActiveTexture(GL_TEXTURE0 + slot);
         glBindTexture(GL_TEXTURE_CUBE_MAP, m_RendererID);
     }
+
+    void OpenGLTextureCube::BindToFramebuffer(uint32_t face) const
+    {
+        ET_CORE_ASSERT(face >= 0 && face <= 5, "Cube map face must be between 0 and 5!");
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, m_RendererID, 0);
+    }
+
 }  // namespace Ethereal

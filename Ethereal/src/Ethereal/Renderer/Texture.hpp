@@ -56,6 +56,8 @@ namespace Ethereal
 
     class TextureCube : public Texture {
       public:
+        virtual void BindToFramebuffer(uint32_t face) const = 0;
         static Ref<TextureCube> Create(std::vector<std::string>& paths);
+        static Ref<TextureCube> Create(const Ref<TextureData>& data);
     };
 }  // namespace Ethereal

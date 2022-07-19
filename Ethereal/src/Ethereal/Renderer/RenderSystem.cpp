@@ -26,9 +26,10 @@ namespace Ethereal
         m_ShadowMapRenderPass->Init(m_Width, m_Height);
         m_SkyboxRenderPass = CreateRef<SkyboxRenderPass>();
         m_SkyboxRenderPass->Init(m_Width, m_Height);
+        m_EnvironmentMapRenderPass = CreateRef<EnvironmentMapRenderPass>();
+        m_EnvironmentMapRenderPass->Init(m_Width, m_Height);
 
         m_RenderScene->SetVisiableNodeReference();
-
 
         // ! This is not a good way to draw skybox cube
         GameObjectMeshDesc desc;
@@ -47,19 +48,21 @@ namespace Ethereal
         }
 
         m_SkyboxRenderPass->m_Cube = m_RenderResource->GetGLMesh(renderEntity);
+        m_EnvironmentMapRenderPass->m_Cube = m_RenderResource->GetGLMesh(renderEntity);
     }
 
     void RenderSystem::Draw(Timestep ts) {
+        m_EnvironmentMapRenderPass->Draw();
         // m_ShadowMapRenderPass->SetLightPosition();
         m_MainCameraRenderPass->SetLightSpaceMatrix(m_ShadowMapRenderPass->m_ViewProjectionMatrix);
 
-
-        //m_ShadowMapRenderPass->Draw();
-        //m_ShadowMapRenderPass->m_Framebuffer->GetDepthAttachment()->Bind(5);
+        // m_ShadowMapRenderPass->Draw();
+        // m_ShadowMapRenderPass->m_Framebuffer->GetDepthAttachment()->Bind(5);
         m_MainCameraRenderPass->Draw();
 
-        //TODO : make skybox render pass a subpass of main camera render pass
+        // TODO : make skybox render pass a subpass of main camera render pass
         m_MainCameraRenderPass->m_Framebuffer->Bind();
+        m_EnvironmentMapRenderPass->m_EnvCubeMap->Bind(0);
         m_SkyboxRenderPass->Draw();
         m_MainCameraRenderPass->m_Framebuffer->Unbind();
     }
@@ -72,7 +75,7 @@ namespace Ethereal
             renderEntity.m_Transform_Desc = data.Transform;
             renderEntity.m_Mesh_Desc = data.Mesh;
             renderEntity.m_Material_Desc = data.Material;
-            //ET_CORE_INFO("m_Metallic {}",renderEntity.m_Material_Desc.m_Metallic);
+            // ET_CORE_INFO("m_Metallic {}",renderEntity.m_Material_Desc.m_Metallic);
             //* Load Mesh Data
             RenderMeshData renderMeshData;
             bool is_MeshLoaded = m_RenderScene->getMeshAssetIdAllocator().hasElement(renderEntity.m_Mesh_Desc);

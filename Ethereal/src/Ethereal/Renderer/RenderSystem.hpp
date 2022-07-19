@@ -42,6 +42,7 @@ namespace Ethereal
         Ref<MainCameraRenderPass> m_MainCameraRenderPass;
         Ref<ShadowMapRenderPass> m_ShadowMapRenderPass;
         Ref<SkyboxRenderPass> m_SkyboxRenderPass;
+        Ref<EnvironmentMapRenderPass> m_EnvironmentMapRenderPass;
         // TODO: Ref<RenderContent>;
         uint32_t m_Height, m_Width;
 

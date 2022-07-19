@@ -37,6 +37,7 @@ namespace Ethereal
     class OpenGLTextureCube : public TextureCube {
       public:
         OpenGLTextureCube(std::vector<std::string>& paths);
+        OpenGLTextureCube(const Ref<TextureData>& data);
         virtual ~OpenGLTextureCube();
 
         virtual uint32_t GetWidth() const override { return m_Width; };
@@ -49,6 +50,7 @@ namespace Ethereal
         virtual bool operator==(const Texture& other) const override { return m_RendererID == other.GetRendererID(); }
         virtual bool IsLoaded() const override { return m_IsLoaded; };
 
+        virtual void BindToFramebuffer(uint32_t face) const override;
       private:
         void LoadTextureData(const Ref<TextureData>& data);
         uint32_t m_RendererID;

@@ -157,8 +157,10 @@ namespace Ethereal
             textureData->m_array_layers = 1;
             textureData->m_mip_levels = 1;
             textureData->m_type = ETHEREAL_IMAGE_TYPE::ETHEREAL_IMAGE_TYPE_2D;
-            textureData->m_pixels = malloc(width * height * channels);
-            memcpy(textureData->m_pixels, data, width * height * channels);
+            size_t datasize = width * height * channels;
+            if (hdr) datasize *= sizeof(float);
+            textureData->m_pixels = malloc(datasize);
+            memcpy(textureData->m_pixels, data, datasize);
             if (hdr) {
                 textureData->m_format = ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_HDR;
             } else {
