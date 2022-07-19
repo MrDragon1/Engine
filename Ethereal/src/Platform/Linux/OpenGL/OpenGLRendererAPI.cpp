@@ -56,6 +56,39 @@ namespace Ethereal
                 break;
         };
     }
+    
+    void OpenGLRendererAPI::SetDepthFunc(ETHEREAL_DEPTH_FUNC func)
+    {
+        switch (func) {
+            case ETHEREAL_DEPTH_FUNC::LESS:
+                glDepthFunc(GL_LESS);
+                break;
+            case ETHEREAL_DEPTH_FUNC::LEQUAL:
+                glDepthFunc(GL_LEQUAL);
+                break;
+            case ETHEREAL_DEPTH_FUNC::EQUAL:
+                glDepthFunc(GL_EQUAL);
+                break;
+            case ETHEREAL_DEPTH_FUNC::GEQUAL: 
+                glDepthFunc(GL_GEQUAL);
+                break;  
+            case ETHEREAL_DEPTH_FUNC::GREATER:
+                glDepthFunc(GL_GREATER);
+                break;
+            case ETHEREAL_DEPTH_FUNC::NOTEQUAL:
+                glDepthFunc(GL_NOTEQUAL);
+                break;
+            case ETHEREAL_DEPTH_FUNC::ALWAYS:
+                glDepthFunc(GL_ALWAYS);
+                break;
+            case ETHEREAL_DEPTH_FUNC::NEVER:
+                glDepthFunc(GL_NEVER);
+                break;
+            default:
+                ET_CORE_ASSERT("Unknown depth func");
+                break;
+        }
+    }
 
     void OpenGLRendererAPI::DrawIndexed(const Ref<VertexArray>& vertexArray, uint32_t indexCount) {
         uint32_t count = indexCount ? indexCount : vertexArray->GetIndexBuffer()->GetCount();

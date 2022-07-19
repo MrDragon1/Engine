@@ -26,6 +26,25 @@ namespace Ethereal
         m_ShadowMapRenderPass->Init(m_Width, m_Height);
 
         m_RenderScene->SetVisiableNodeReference();
+
+
+        // ! This is not a good way to draw skybox cube
+        GameObjectMeshDesc desc;
+        desc.m_filePath = "assets/buildin/models/cube.obj";
+        RenderEntity renderEntity;
+        renderEntity.m_Mesh_Desc = desc;
+        renderEntity.m_InstanceID = 12345;
+        RenderMeshData renderMeshData;
+        bool is_MeshLoaded = m_RenderScene->getMeshAssetIdAllocator().hasElement(renderEntity.m_Mesh_Desc);
+        if (!is_MeshLoaded) {
+            renderMeshData = m_RenderResource->LoadMeshData(renderEntity.m_Mesh_Desc, (int)(uint32_t)renderEntity.m_InstanceID);
+        }
+        renderEntity.m_MeshAssetID = m_RenderScene->getMeshAssetIdAllocator().allocUUID(renderEntity.m_Mesh_Desc);
+        if (!is_MeshLoaded) {
+            m_RenderResource->UploadRenderResource(renderEntity, renderMeshData);
+        }
+
+        m_MainCameraRenderPass->m_Cube = m_RenderResource->GetGLMesh(renderEntity);
     }
 
     void RenderSystem::Draw(Timestep ts) {

@@ -21,6 +21,7 @@ namespace Ethereal
         virtual ETHEREAL_DRAW_MODE GetDrawMode() = 0;
         virtual void SetCullFace(ETHEREAL_CULLFACE_TYPE type) = 0;
         virtual void SetDrawMode(ETHEREAL_DRAW_MODE mode) = 0;
+        virtual void SetDepthFunc(ETHEREAL_DEPTH_FUNC func) = 0;
         virtual void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) = 0;
         virtual void DrawIndexed(const Ref<VertexArray>& vertexArray, uint32_t indexCount = 0) = 0;
         virtual void Draw(const Ref<VertexArray>& vertexArray, uint32_t indexCount = 0) = 0;

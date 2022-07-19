@@ -15,7 +15,22 @@ namespace Ethereal
         ETHEREAL_PIXEL_FORMAT_R32G32B32A32_FLOAT,
         ETHEREAL_PIXEL_FORMAT_R32_INTEGER,
         ETHEREAL_PIXEL_FORMAT_DEPTH,
-        ETHEREAL_PIXEL_FORMAT_RED
+        ETHEREAL_PIXEL_FORMAT_RED,
+        ETHEREAL_PIXEL_FORMAT_HDR
+    };
+
+    enum class ETHEREAL_FILTER_FORMAT : uint8_t
+    {
+        ETHEREAL_FILTER_FORMAT_LINEAR = 0,
+        ETHEREAL_FILTER_FORMAT_NEAREST,
+        // TODO: Mipmap stuff
+    };
+
+    enum class ETHEREAL_WARP_FORMAT : uint8_t
+    {
+        ETHEREAL_WARP_FORMAT_CLAMP_TO_EDGE = 0,
+        ETHEREAL_WARP_FORMAT_CLAMP_TO_BORDER,
+        ETHEREAL_WARP_FORMAT_REPEAT,
     };
 
     enum class ETHEREAL_IMAGE_TYPE : uint8_t
@@ -35,6 +50,18 @@ namespace Ethereal
     {
         FRONT = 0,
         BACK,
+    };
+
+    enum class ETHEREAL_DEPTH_FUNC
+    {
+        NEVER = 0,
+        LESS,
+        EQUAL,
+        LEQUAL,
+        GREATER,
+        NOTEQUAL,
+        GEQUAL,
+        ALWAYS
     };
 
     //* UI stuff *//

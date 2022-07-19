@@ -29,4 +29,18 @@ namespace Ethereal
         ET_CORE_ASSERT(false, "Unknown RendererAPI!");
         return nullptr;
     }
+    
+    Ref<TextureCube> TextureCube::Create(std::vector<std::string>& paths)
+    {
+        switch (Renderer::GetAPI())
+        {
+        case RendererAPI::API::None:    ET_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
+        case RendererAPI::API::OpenGL:  return std::make_shared<OpenGLTextureCube>(paths);
+        }
+
+        ET_CORE_ASSERT(false, "Unknown RendererAPI!");
+        return nullptr;
+    }
+
+
 }

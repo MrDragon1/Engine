@@ -37,6 +37,10 @@ namespace Ethereal
         void SetLightSpaceMatrix(const glm::mat4& matrix) { m_LightSpaceMatrix = matrix; };
         void SetCameraPosition(const glm::vec3& position) { m_CameraPosition = position; };
 
+
+        //temporary
+        void SetSkyboxProjection(const glm::mat4& matrix) { m_SkyboxProjection = matrix; };
+        void SetSkyboxView(const glm::mat4& matrix) { m_SkyboxView = matrix; };
       private:
         glm::mat4 m_ViewProjectionMatrix;
         glm::mat4 m_LightSpaceMatrix;
@@ -47,6 +51,12 @@ namespace Ethereal
 
         // temporary
         glm::vec3 m_CameraPosition;
+        Ref<Shader> m_SkyboxShader;
+        std::string m_SkyboxShaderPath = "assets/shaders/Skybox.glsl";
+        Ref<TextureCube> m_SkyboxTexture;
+        glm::mat4 m_SkyboxProjection;
+        glm::mat4 m_SkyboxView;
+        GLMesh m_Cube;
 
         friend class RenderSystem;
     };
@@ -78,5 +88,4 @@ namespace Ethereal
       private:
         void CalculateViewProjectionMatrix();
     };
-
 }  // namespace Ethereal

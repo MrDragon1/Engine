@@ -29,8 +29,8 @@ namespace Ethereal
 
         // Loop over shapes
         for (size_t s = 0; s < shapes.size(); s++) {
-            //TODO: support multiple materials for multiple shapes in one obj file
-            if(s > 1) ET_CORE_WARN("Ethereal only support one shape, because only one material per object is supported");
+            // TODO: support multiple materials for multiple shapes in one obj file
+            if (s > 1) ET_CORE_WARN("Ethereal only support one shape, because only one material per object is supported");
             // Loop over faces(polygon)
             size_t index_offset = 0;
             for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++) {
@@ -125,7 +125,6 @@ namespace Ethereal
                     mesh_vertices.push_back(mesh_vert);
                 }
 
-                
                 renderMeshData.m_static_mesh_data.m_vertex_buffer = CreateRef<BufferData<MeshVertex>>(mesh_vertices.size());
                 renderMeshData.m_static_mesh_data.m_index_buffer = CreateRef<BufferData<uint32_t>>(mesh_vertices.size());
 
@@ -140,12 +139,16 @@ namespace Ethereal
             }
         }
     }
-    
-    void TextureLoader::LoadPath(const std::string& path, Ref<TextureData>& textureData)
-    {
-        stbi_set_flip_vertically_on_load(1);
+
+    void TextureLoader::LoadPath(const std::string& path, Ref<TextureData>& textureData, bool flip) {
+        stbi_set_flip_vertically_on_load(flip);
         int width, height, channels;
-        stbi_uc* data = stbi_load(path.c_str(), &width, &height, &channels, 0);
+        bool hdr = path.ends_with(".hdr");
+        void* data;
+        if (hdr)
+            data = stbi_loadf(path.c_str(), &width, &height, &channels, 0);
+        else
+            data = stbi_load(path.c_str(), &width, &height, &channels, 0);
 
         if (data) {
             textureData->m_width = width;
@@ -156,17 +159,20 @@ namespace Ethereal
             textureData->m_type = ETHEREAL_IMAGE_TYPE::ETHEREAL_IMAGE_TYPE_2D;
             textureData->m_pixels = malloc(width * height * channels);
             memcpy(textureData->m_pixels, data, width * height * channels);
-            if (channels == 4) {
-                textureData->m_format = ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_R8G8B8A8_UNORM;
-            } else if (channels == 3) {
-                textureData->m_format = ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_R8G8B8_UNORM;
+            if (hdr) {
+                textureData->m_format = ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_HDR;
+            } else {
+                if (channels == 4) {
+                    textureData->m_format = ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_R8G8B8A8_UNORM;
+                } else if (channels == 3) {
+                    textureData->m_format = ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_R8G8B8_UNORM;
+                } else if (channels == 1) {
+                    textureData->m_format = ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_RED;
+                }
             }
-            else if (channels == 1) {
-                textureData->m_format = ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_RED;
-            }
+
             stbi_image_free(data);
-        }
-        else {
+        } else {
             ET_CORE_WARN("Failed to load texture: {0}", path);
             textureData = nullptr;
         }

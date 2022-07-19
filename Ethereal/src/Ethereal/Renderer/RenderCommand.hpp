@@ -30,6 +30,10 @@ namespace Ethereal
             return s_RendererAPI->GetDrawMode();
         }
 
+        inline static void SetDepthFunc(ETHEREAL_DEPTH_FUNC func){
+            s_RendererAPI->SetDepthFunc(func);
+        } 
+
         inline static void SetCullFace(ETHEREAL_CULLFACE_TYPE type){
             s_RendererAPI->SetCullFace(type);
         }

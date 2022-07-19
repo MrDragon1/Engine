@@ -16,6 +16,6 @@ namespace Ethereal
 
     class TextureLoader {
       public:
-        static void LoadPath(const std::string& path, Ref<TextureData>& textureData);
+        static void LoadPath(const std::string& path, Ref<TextureData>& textureData, bool flip = true);
     };
 }  // namespace Ethereal

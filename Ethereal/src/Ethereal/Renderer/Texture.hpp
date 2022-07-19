@@ -19,6 +19,9 @@ namespace Ethereal
         ETHEREAL_PIXEL_FORMAT m_format {ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_UNKNOWN};
         ETHEREAL_IMAGE_TYPE   m_type {ETHEREAL_IMAGE_TYPE::ETHEREAL_IMAGE_TYPE_UNKNOWM};
 
+        ETHEREAL_WARP_FORMAT m_warp_format {ETHEREAL_WARP_FORMAT::ETHEREAL_WARP_FORMAT_CLAMP_TO_EDGE};
+        ETHEREAL_FILTER_FORMAT m_filter_format {ETHEREAL_FILTER_FORMAT::ETHEREAL_FILTER_FORMAT_LINEAR};
+
         TextureData() = default;
         ~TextureData()
         {
@@ -49,5 +52,10 @@ namespace Ethereal
       public:
         static Ref<Texture2D> Create(const std::string& path);
         static Ref<Texture2D> Create(const Ref<TextureData>& data);
+    };
+
+    class TextureCube : public Texture {
+      public:
+        static Ref<TextureCube> Create(std::vector<std::string>& paths);
     };
 }  // namespace Ethereal

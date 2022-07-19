@@ -15,7 +15,7 @@ namespace Ethereal
         fbSpec.Height = height;
         m_Framebuffer = Framebuffer::Create(fbSpec);
 
-        m_Shader = m_Shader = Shader::Create(m_ShaderPath);
+        m_Shader = Shader::Create(m_ShaderPath);
         m_Shader->Bind();
 
         m_Shader->SetFloat3("u_Albedo", {0.5f, 0.0f, 0.0f});
@@ -27,6 +27,19 @@ namespace Ethereal
         m_Shader->SetInt("u_RoughnessMap", 3);
         m_Shader->SetInt("u_OcclusionMap", 4);
         m_Shader->SetInt("u_EmissiveMap", 5);
+
+        m_SkyboxShader = Shader::Create(m_SkyboxShaderPath);
+        m_SkyboxShader->Bind();
+        m_SkyboxShader->SetInt("u_SkyboxTexture", 0);
+
+        std::vector<std::string> paths;
+        paths.push_back("assets/skyboxs/default/right.jpg");
+        paths.push_back("assets/skyboxs/default/left.jpg");
+        paths.push_back("assets/skyboxs/default/top.jpg");
+        paths.push_back("assets/skyboxs/default/bottom.jpg");
+        paths.push_back("assets/skyboxs/default/front.jpg");
+        paths.push_back("assets/skyboxs/default/back.jpg");
+        m_SkyboxTexture = TextureCube::Create(paths);
     }
 
     void MainCameraRenderPass::Draw() {
@@ -83,6 +96,15 @@ namespace Ethereal
             }
         }
 
+        RenderCommand::SetDepthFunc(ETHEREAL_DEPTH_FUNC::LEQUAL);
+        m_SkyboxShader->Bind();
+        m_SkyboxShader->SetMat4("u_Projection", m_SkyboxProjection);
+        m_SkyboxShader->SetMat4("u_View", m_SkyboxView);
+        m_SkyboxTexture->Bind(0);
+        
+        RenderCommand::DrawIndexed(m_Cube.m_VAO, m_Cube.m_IndexCount);
+
+        RenderCommand::SetDepthFunc(ETHEREAL_DEPTH_FUNC::LESS);
         m_Framebuffer->Unbind();
     }
 
