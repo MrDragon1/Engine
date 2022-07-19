@@ -158,15 +158,12 @@ namespace Ethereal
             out << YAML::BeginMap;  // MaterialComponent
 
             auto& material = entity.GetComponent<MaterialComponent>();
-            if (material.Desc.m_PureColor.has_value())
-                out << YAML::Key << "m_PureColor" << YAML::Value << material.Desc.m_PureColor.value();
-            else 
-                out << YAML::Key << "m_PureColor" << YAML::Value << YAML::Null;
-            out << YAML::Key << "m_base_color_file" << YAML::Value << material.Desc.m_base_color_file;
-            out << YAML::Key << "m_metallic_roughness_file" << YAML::Value << material.Desc.m_metallic_roughness_file;
-            out << YAML::Key << "m_normal_file" << YAML::Value << material.Desc.m_normal_file;
-            out << YAML::Key << "m_occlusion_file" << YAML::Value << material.Desc.m_occlusion_file;
-            out << YAML::Key << "m_emissive_file" << YAML::Value << material.Desc.m_emissive_file;
+            out << YAML::Key << "m_AlbedoFile" << YAML::Value << material.Desc.m_AlbedoFile;
+            out << YAML::Key << "m_MetallicFile" << YAML::Value << material.Desc.m_MetallicFile;
+            out << YAML::Key << "m_RoughnessFile" << YAML::Value << material.Desc.m_RoughnessFile;
+            out << YAML::Key << "m_NormalFile" << YAML::Value << material.Desc.m_NormalFile;
+            out << YAML::Key << "m_OcclusionFile" << YAML::Value << material.Desc.m_OcclusionFile;
+            out << YAML::Key << "m_EmissiveFile" << YAML::Value << material.Desc.m_EmissiveFile;
 
             out << YAML::Key << "m_Albedo" << YAML::Value << material.Desc.m_Albedo;
             out << YAML::Key << "m_Metallic" << YAML::Value << material.Desc.m_Metallic;
@@ -294,13 +291,12 @@ namespace Ethereal
                 auto materialComponent = entity["MaterialComponent"];
                 if (materialComponent) {
                     auto& material = deserializedEntity.AddComponent<MaterialComponent>();
-                    if (!materialComponent["m_PureColor"].IsNull())
-                        material.Desc.m_PureColor = materialComponent["m_PureColor"].as<glm::vec4>();
-                    material.Desc.m_base_color_file = materialComponent["m_base_color_file"].as<std::string>();
-                    material.Desc.m_metallic_roughness_file = materialComponent["m_metallic_roughness_file"].as<std::string>();
-                    material.Desc.m_normal_file = materialComponent["m_normal_file"].as<std::string>();
-                    material.Desc.m_occlusion_file = materialComponent["m_occlusion_file"].as<std::string>();
-                    material.Desc.m_emissive_file = materialComponent["m_emissive_file"].as<std::string>();
+                    material.Desc.m_AlbedoFile = materialComponent["m_AlbedoFile"].as<std::string>();
+                    material.Desc.m_MetallicFile = materialComponent["m_MetallicFile"].as<std::string>();
+                    material.Desc.m_RoughnessFile = materialComponent["m_RoughnessFile"].as<std::string>();
+                    material.Desc.m_NormalFile = materialComponent["m_NormalFile"].as<std::string>();
+                    material.Desc.m_OcclusionFile = materialComponent["m_OcclusionFile"].as<std::string>();
+                    material.Desc.m_EmissiveFile = materialComponent["m_EmissiveFile"].as<std::string>();
 
 
                     material.Desc.m_Albedo = materialComponent["m_Albedo"].as<glm::vec3>();

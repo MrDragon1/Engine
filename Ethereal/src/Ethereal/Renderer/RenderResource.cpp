@@ -55,11 +55,12 @@ namespace Ethereal
             // ET_CORE_INFO("Already exist {0}", assetid);
         } else {
             GLMaterial temp_material;
-            temp_material.m_BaseColorMap = TextureManager::GetTexture(GameObjectMaterialDesc.m_base_color_file);
-            temp_material.m_EmissionMap = TextureManager::GetTexture(GameObjectMaterialDesc.m_emissive_file);
-            temp_material.m_MetallicMap = TextureManager::GetTexture(GameObjectMaterialDesc.m_metallic_roughness_file);
-            temp_material.m_OcclusionMap = TextureManager::GetTexture(GameObjectMaterialDesc.m_occlusion_file);
-            temp_material.m_NormalMap = TextureManager::GetTexture(GameObjectMaterialDesc.m_normal_file);
+            temp_material.m_AlbedoMap = TextureManager::GetTexture(GameObjectMaterialDesc.m_AlbedoFile);
+            temp_material.m_EmissiveMap = TextureManager::GetTexture(GameObjectMaterialDesc.m_EmissiveFile);
+            temp_material.m_RoughnessMap = TextureManager::GetTexture(GameObjectMaterialDesc.m_RoughnessFile);
+            temp_material.m_MetallicMap = TextureManager::GetTexture(GameObjectMaterialDesc.m_MetallicFile);
+            temp_material.m_OcclusionMap = TextureManager::GetTexture(GameObjectMaterialDesc.m_OcclusionFile);
+            temp_material.m_NormalMap = TextureManager::GetTexture(GameObjectMaterialDesc.m_NormalFile);
             
             temp_material.m_Albedo = GameObjectMaterialDesc.m_Albedo;
             temp_material.m_Metallic = GameObjectMaterialDesc.m_Metallic;
@@ -125,11 +126,12 @@ namespace Ethereal
     
     void RenderResource::LoadMaterialData(GameObjectMaterialDesc& material_desc)
     {
-        TextureManager::AddTexture(material_desc.m_base_color_file);
-        TextureManager::AddTexture(material_desc.m_metallic_roughness_file);
-        TextureManager::AddTexture(material_desc.m_normal_file);
-        TextureManager::AddTexture(material_desc.m_occlusion_file);
-        TextureManager::AddTexture(material_desc.m_emissive_file);
+        TextureManager::AddTexture(material_desc.m_AlbedoFile);
+        TextureManager::AddTexture(material_desc.m_MetallicFile);
+        TextureManager::AddTexture(material_desc.m_RoughnessFile);
+        TextureManager::AddTexture(material_desc.m_NormalFile);
+        TextureManager::AddTexture(material_desc.m_OcclusionFile);
+        TextureManager::AddTexture(material_desc.m_EmissiveFile);
     }
     
 }  // namespace Ethereal

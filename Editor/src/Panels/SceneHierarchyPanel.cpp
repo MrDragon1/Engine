@@ -305,66 +305,38 @@ namespace Ethereal
 
         // TODO: Beautify this
         DrawComponent<MaterialComponent>("Material", entity, [](auto& component) {
-            ImGui::BeginTable("table_padding", 3, ImGuiTableFlags_BordersV | ImGuiTableFlags_BordersInnerV);
+            const auto& materialNode = [](const char* name, std::string& file, void (*func)()) {
+                ET_CORE_ASSERT(!file.empty(), "Material {} file is null", name);
+                Ref<Texture> showTexture = TextureManager::AddTexture(file);
 
-            ImGui::TableNextRow();
-            ImGui::TableSetColumnIndex(0);
+                if (ImGui::TreeNode((void*)name, name)) {
+                    ImGui::Image((ImTextureID)showTexture->GetRendererID(), ImVec2(64, 64), ImVec2{0, 1}, ImVec2{1, 0});
+                    if (ImGui::BeginDragDropTarget()) {
+                        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
+                            const wchar_t* path = (const wchar_t*)payload->Data;
+                            std::filesystem::path texturePath = std::filesystem::path(g_AssetPath) / path;
+                            Ref<Texture> texture = TextureManager::AddTexture(texturePath.string());
+                            if (texture)
+                                file = texturePath.string();
+                            else
+                                ET_WARN("Could not load texture {0}", texturePath.filename().string());
+                        }
+                        ImGui::EndDragDropTarget();
+                    }
 
-            auto buttonSize = ImVec2(64, 64);
-            ImGui::Text("Diffuse Map");
-            ET_CORE_ASSERT(!component.Desc.m_base_color_file.empty(), "Material base color file is null");
-            Ref<Texture> diffuseTexture = TextureManager::AddTexture(component.Desc.m_base_color_file);
-            ImGui::ImageButton((ImTextureID)diffuseTexture->GetRendererID(), buttonSize, ImVec2(0, 0), ImVec2(1, 1), 0);
-            if (ImGui::BeginDragDropTarget()) {
-                if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
-                    const wchar_t* path = (const wchar_t*)payload->Data;
-                    std::filesystem::path texturePath = std::filesystem::path(g_AssetPath) / path;
-                    Ref<Texture> texture = TextureManager::AddTexture(texturePath.string());
-                    if (texture)
-                        component.Desc.m_base_color_file = texturePath.string();
-                    else
-                        ET_WARN("Could not load texture {0}", texturePath.filename().string());
+                    func();
+
+                    ImGui::TreePop();
                 }
-                ImGui::EndDragDropTarget();
-            }
+            };
 
-            ImGui::TableSetColumnIndex(1);
-            ImGui::Text("Normal Map");
-            ET_CORE_ASSERT(!component.Desc.m_base_color_file.empty(), "Material base color file is null");
-            Ref<Texture> normalTexture = TextureManager::AddTexture(component.Desc.m_normal_file);
-            ImGui::ImageButton((ImTextureID)normalTexture->GetRendererID(), buttonSize, ImVec2(0, 0), ImVec2(1, 1), 0);
-            if (ImGui::BeginDragDropTarget()) {
-                if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
-                    const wchar_t* path = (const wchar_t*)payload->Data;
-                    std::filesystem::path texturePath = std::filesystem::path(g_AssetPath) / path;
-                    Ref<Texture> texture = TextureManager::AddTexture(texturePath.string());
-                    if (texture)
-                        component.Desc.m_normal_file = texturePath.string();
-                    else
-                        ET_WARN("Could not load texture {0}", texturePath.filename().string());
-                }
-                ImGui::EndDragDropTarget();
-            }
+            materialNode("Albedo", component.Desc.m_AlbedoFile, []() {});
+            materialNode("Normal", component.Desc.m_NormalFile, []() {});
+            materialNode("Metallic", component.Desc.m_MetallicFile, []() {});
+            materialNode("Roughness", component.Desc.m_RoughnessFile, []() {});
+            materialNode("Occlusion", component.Desc.m_OcclusionFile, []() {});
+            materialNode("Emssive", component.Desc.m_EmissiveFile, []() {});
 
-            ImGui::TableSetColumnIndex(2);
-            ImGui::Text("Metallic Map");
-            ET_CORE_ASSERT(!component.Desc.m_base_color_file.empty(), "Material base color file is null");
-            Ref<Texture> metallicTexture = TextureManager::AddTexture(component.Desc.m_metallic_roughness_file);
-            ImGui::ImageButton((ImTextureID)metallicTexture->GetRendererID(), buttonSize, ImVec2(0, 0), ImVec2(1, 1), 0);
-            if (ImGui::BeginDragDropTarget()) {
-                if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
-                    const wchar_t* path = (const wchar_t*)payload->Data;
-                    std::filesystem::path texturePath = std::filesystem::path(g_AssetPath) / path;
-                    Ref<Texture> texture = TextureManager::AddTexture(texturePath.string());
-                    if (texture)
-                        component.Desc.m_metallic_roughness_file = texturePath.string();
-                    else
-                        ET_WARN("Could not load texture {0}", texturePath.filename().string());
-                }
-                ImGui::EndDragDropTarget();
-            }
-
-            ImGui::EndTable();
 
             ImGui::ColorEdit3("Albedo", glm::value_ptr(component.Desc.m_Albedo));
             ImGui::DragFloat("Metallic", &component.Desc.m_Metallic, 0.01f, 0.0f, 1.0f);

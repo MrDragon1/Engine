@@ -18,15 +18,15 @@ namespace Ethereal
         m_Shader = m_Shader = Shader::Create(m_ShaderPath);
         m_Shader->Bind();
 
-        m_Shader->SetFloat3("albedo", {0.5f, 0.0f, 0.0f});
-        m_Shader->SetFloat("ao", 1.0f);
+        m_Shader->SetFloat3("u_Albedo", {0.5f, 0.0f, 0.0f});
+        m_Shader->SetFloat("u_Occlusion", 1.0f);
 
-        m_Shader->SetInt("u_BaseColorTexture", 0);
-        m_Shader->SetInt("u_MetallicTexture", 1);
-        m_Shader->SetInt("u_NormalTexture", 2);
-        m_Shader->SetInt("u_OcclusionTexture", 3);
-        m_Shader->SetInt("u_EmissionTexture", 4);
-        m_Shader->SetInt("u_ShadowMap", 5);
+        m_Shader->SetInt("u_AlbedoMap", 0);
+        m_Shader->SetInt("u_NormalMap", 1);
+        m_Shader->SetInt("u_MetallicMap", 2);
+        m_Shader->SetInt("u_RoughnessMap", 3);
+        m_Shader->SetInt("u_OcclusionMap", 4);
+        m_Shader->SetInt("u_EmissiveMap", 5);
     }
 
     void MainCameraRenderPass::Draw() {
@@ -62,15 +62,16 @@ namespace Ethereal
             for (auto& RenderNode : visiableRenderNode) {
                 RenderNode.ref_mesh->m_VAO->Bind();
                 m_Shader->SetMat4("u_Model", RenderNode.model_matrix);
-                RenderNode.ref_material->m_BaseColorMap->Bind(0);
-                RenderNode.ref_material->m_MetallicMap->Bind(1);
-                RenderNode.ref_material->m_NormalMap->Bind(2);
-                RenderNode.ref_material->m_OcclusionMap->Bind(3);
-                RenderNode.ref_material->m_EmissionMap->Bind(4);
+                RenderNode.ref_material->m_AlbedoMap->Bind(0);
+                RenderNode.ref_material->m_NormalMap->Bind(1);
+                RenderNode.ref_material->m_MetallicMap->Bind(2);
+                RenderNode.ref_material->m_RoughnessMap->Bind(3);
+                RenderNode.ref_material->m_OcclusionMap->Bind(4);
+                RenderNode.ref_material->m_EmissiveMap->Bind(5);
 
-                m_Shader->SetFloat3("albedo", RenderNode.ref_material->m_Albedo);
-                m_Shader->SetFloat("roughness", RenderNode.ref_material->m_Roughness);
-                m_Shader->SetFloat("metallic", RenderNode.ref_material->m_Metallic);
+                m_Shader->SetFloat3("u_Albedo", RenderNode.ref_material->m_Albedo);
+                m_Shader->SetFloat("u_Roughness", RenderNode.ref_material->m_Roughness);
+                m_Shader->SetFloat("u_Metallic", RenderNode.ref_material->m_Metallic);
 
                 RenderCommand::DrawIndexed(RenderNode.ref_mesh->m_VAO, RenderNode.ref_mesh->m_IndexCount);
             }

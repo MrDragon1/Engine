@@ -161,6 +161,9 @@ namespace Ethereal
             } else if (channels == 3) {
                 textureData->m_format = ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_R8G8B8_UNORM;
             }
+            else if (channels == 1) {
+                textureData->m_format = ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_RED;
+            }
             stbi_image_free(data);
         }
         else {

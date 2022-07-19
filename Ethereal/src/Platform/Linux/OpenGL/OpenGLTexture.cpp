@@ -58,6 +58,10 @@ namespace Ethereal
                 m_InternalFormat = GL_DEPTH_COMPONENT;
                 m_DataFormat = GL_DEPTH_COMPONENT;
                 break;
+            case ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_RED:
+                m_InternalFormat = GL_RED;
+                m_DataFormat = GL_RED;
+                break;
             default:
                 throw std::runtime_error("invalid texture_byte_size");
                 break;
@@ -94,7 +98,7 @@ namespace Ethereal
         glGenTextures(1, &m_RendererID);
         glBindTexture(GL_TEXTURE_2D, m_RendererID);
         // glTextureStorage2D(m_RendererID, 1, m_InternalFormat, m_Width, m_Height);
-        // checkError();
+
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);

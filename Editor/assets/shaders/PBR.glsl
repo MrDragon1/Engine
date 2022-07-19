@@ -37,10 +37,17 @@ in vec2 v_TexCoord;
 in flat int v_EntityID;
 
 // material parameters
-uniform vec3 albedo;
-uniform float metallic;
-uniform float roughness;
-uniform float ao;
+uniform vec3 u_Albedo;
+uniform float u_Metallic;
+uniform float u_Roughness;
+uniform float u_Occlusion;
+
+uniform sampler2D u_AlbedoMap;
+uniform sampler2D u_NormalMap;
+uniform sampler2D u_MetallicMap;
+uniform sampler2D u_RoughnessMap;
+uniform sampler2D u_OcclusionMap;
+uniform sampler2D u_EmissiveMap;
 
 // lights
 uniform vec3 lightPositions[4];
@@ -89,10 +96,33 @@ vec3 fresnelSchlick(float cosTheta, vec3 F0)
 {
     return F0 + (1.0 - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
 }
+
+vec3 getNormalFromMap()
+{
+    vec3 tangentNormal = texture(u_NormalMap, v_TexCoord).xyz * 2.0 - 1.0;
+
+    vec3 Q1  = dFdx(v_WorldPos);
+    vec3 Q2  = dFdy(v_WorldPos);
+    vec2 st1 = dFdx(v_TexCoord);
+    vec2 st2 = dFdy(v_TexCoord);
+
+    vec3 N   = normalize(v_Normal);
+    vec3 T  = normalize(Q1*st2.t - Q2*st1.t);
+    vec3 B  = -normalize(cross(N, T));
+    mat3 TBN = mat3(T, B, N);
+
+    return normalize(TBN * tangentNormal);
+}
 // ----------------------------------------------------------------------------
 void main()
-{		
-    vec3 N = normalize(v_Normal);
+{
+    vec3 albedo     = pow(texture(u_AlbedoMap, v_TexCoord).rgb, vec3(2.2));
+    float metallic  = texture(u_MetallicMap, v_TexCoord).r;
+    float roughness = texture(u_RoughnessMap, v_TexCoord).r;
+    float ao        = texture(u_OcclusionMap, v_TexCoord).r;
+
+    // vec3 N = normalize(v_Normal);
+    vec3 N = getNormalFromMap();
     vec3 V = normalize(camPos - v_WorldPos);
 
     // calculate reflectance at normal incidence; if dia-electric (like plastic) use F0 
