@@ -2,6 +2,7 @@
 #include "Common.hpp"
 #include "Ethereal/Renderer/Shader.hpp"
 #include "Ethereal/Renderer/FrameBuffer.hpp"
+#include "RenderCommand.hpp"
 
 namespace Ethereal
 {
@@ -23,108 +24,4 @@ namespace Ethereal
         friend class RenderSystem;
     };
 
-    class MainCameraRenderPass : public RenderPass {
-      public:
-        MainCameraRenderPass() = default;
-        ~MainCameraRenderPass() = default;
-        void Init(uint32_t width, uint32_t height) override;
-        void Draw() override;
-        void OnResize(uint32_t width, uint32_t height) override;
-
-        void SetViewProjectionMatrix(const glm::mat4& matrix) { m_ViewProjectionMatrix = matrix; }
-        int GetMousePicking(int x, int y);
-
-        void SetLightSpaceMatrix(const glm::mat4& matrix) { m_LightSpaceMatrix = matrix; };
-        void SetCameraPosition(const glm::vec3& position) { m_CameraPosition = position; };
-
-      private:
-        glm::mat4 m_ViewProjectionMatrix;
-        glm::mat4 m_LightSpaceMatrix;
-
-        Ref<Shader> m_Shader;
-        std::string m_ShaderPath = "assets/shaders/PBR.glsl";
-        Ref<Framebuffer> m_Framebuffer;
-
-        // temporary
-        glm::vec3 m_CameraPosition;
-
-        friend class RenderSystem;
-    };
-
-    class ShadowMapRenderPass : public RenderPass {
-      public:
-        ShadowMapRenderPass() = default;
-        ~ShadowMapRenderPass() = default;
-        void Init(uint32_t width, uint32_t height) override;
-        void Draw() override;
-
-        void OnResize(uint32_t width, uint32_t height) override;
-        void SetLightPosition(const glm::vec3& pos) {
-            m_LightPos = pos;
-            CalculateViewProjectionMatrix();
-        }
-
-      private:
-        glm::mat4 m_ViewProjectionMatrix;
-
-        glm::vec3 m_LightPos;
-        Ref<Shader> m_Shader;
-        std::string m_ShaderPath = "assets/shaders/ShadowMap.glsl";
-        Ref<Framebuffer> m_Framebuffer;
-        const int m_ShadowMapSize = 1024;
-
-        friend class RenderSystem;
-
-      private:
-        void CalculateViewProjectionMatrix();
-    };
-
-    class SkyboxRenderPass : public RenderPass {
-      public:
-        SkyboxRenderPass() = default;
-        ~SkyboxRenderPass() = default;
-        void Init(uint32_t width, uint32_t height) override;
-        void Draw() override;
-        void OnResize(uint32_t width, uint32_t height) override;
-
-        void SetSkyboxProjection(const glm::mat4& matrix) { m_SkyboxProjection = matrix; };
-        void SetSkyboxView(const glm::mat4& matrix) { m_SkyboxView = matrix; };
-
-      private:
-        Ref<Shader> m_SkyboxShader;
-        std::string m_SkyboxShaderPath = "assets/shaders/Skybox.glsl";
-        glm::mat4 m_SkyboxProjection;
-        glm::mat4 m_SkyboxView;
-        GLMesh m_Cube;
-
-        friend class RenderSystem;
-    };
-
-    class EnvironmentMapRenderPass : public RenderPass {
-      public:
-        EnvironmentMapRenderPass() = default;
-        ~EnvironmentMapRenderPass() = default;
-        void Init(uint32_t width, uint32_t height) override;
-        void Draw() override;
-        void OnResize(uint32_t width, uint32_t height) override;
-
-      private:
-        bool m_IsFirstCall = true;
-        Ref<Framebuffer> m_Framebuffer;
-
-        Ref<Shader> m_EquirectangularToCubeMapShader;
-        std::string m_EquirectangularToCubeMapShaderPath = "assets/shaders/EquirectangularToCubeMap.glsl";
-        Ref<Shader> m_IrradianceConvolutionShader;
-        std::string m_IrradianceConvolutionShaderPath = "assets/shaders/IrradianceConvolution.glsl";
-
-        Ref<TextureCube> m_EnvCubeMap;
-        Ref<TextureCube> m_IrradianceCubeMap;
-        Ref<Texture> m_HDRTexture;
-
-        std::string m_HDRTexturePath = "assets/textures/hdr/newport_loft.hdr";
-
-        GLMesh m_Cube;
-
-        friend class RenderSystem;
-    };
 }  // namespace Ethereal

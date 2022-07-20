@@ -8,6 +8,11 @@
 #include "Common.hpp"
 #include "Ethereal/Core/Timestep.hpp"
 
+#include "Ethereal/Renderer/RenderPass/EnvironmentMapRenderPass.hpp"
+#include "Ethereal/Renderer/RenderPass/MainCameraRenderPass.hpp"
+#include "Ethereal/Renderer/RenderPass/SkyboxRenderPass.hpp"
+#include "Ethereal/Renderer/RenderPass/ShadowMapRenderPass.hpp"
+
 namespace Ethereal
 {
     struct EntityDataForRenderSystem {
