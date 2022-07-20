@@ -1,7 +1,7 @@
 #pragma once
-#include "Engine.hpp"
+#include "Ethereal.hpp"
 
-namespace Engine
+namespace Ethereal
 {
     class SceneHierarchyPanel {
       public:
@@ -24,4 +24,4 @@ namespace Engine
         Ref<Scene> m_Context;
         Entity m_SelectionContext;
     };
-}  // namespace Engine
+}  // namespace Ethereal

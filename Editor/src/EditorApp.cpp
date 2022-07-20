@@ -1,5 +1,5 @@
-#include <Engine.hpp>
-#include <Engine/Core/EntryPoint.hpp>
+#include <Ethereal.hpp>
+#include <Ethereal/Core/EntryPoint.hpp>
 
 #include "Platform/Linux/OpenGL/OpenGLShader.hpp"
 
@@ -10,14 +10,14 @@
 
 #include "EditorLayer.hpp"
 
-namespace Engine
+namespace Ethereal
 {
     class Editor : public Application {
       public:
         Editor() : Application("Engine Editor") {
             PushLayer(new EditorLayer());
         }
-
+        
         ~Editor() {
         }
     };

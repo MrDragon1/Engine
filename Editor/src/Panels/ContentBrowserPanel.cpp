@@ -3,7 +3,7 @@
 
 #include "imgui.h"
 
-namespace Engine
+namespace Ethereal
 {
     extern const std::filesystem::path g_AssetPath = "assets";
 
@@ -38,6 +38,7 @@ namespace Engine
 
             Ref<Texture2D> icon = directoryEntry.is_directory() ? m_DirectoryIcon : m_FileIcon;
             ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+
             ImGui::ImageButton((ImTextureID)icon->GetRendererID(), {thumbnailSize, thumbnailSize}, {0, 1}, {1, 0});
 
             if (ImGui::BeginDragDropSource()) {
@@ -64,4 +65,4 @@ namespace Engine
         // TODO: status bar
         ImGui::End();
     }
-}  // namespace Engine
+}  // namespace Ethereal

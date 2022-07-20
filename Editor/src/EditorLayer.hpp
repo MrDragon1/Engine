@@ -1,10 +1,12 @@
 #pragma once
 
-#include "Engine.hpp"
+#include "Ethereal.hpp"
 #include "Panels/SceneHierarchyPanel.hpp"
 #include "Panels/ContentBrowserPanel.hpp"
-#include "Engine/Renderer/EditorCamera.hpp"
-namespace Engine
+#include "Ethereal/Renderer/EditorCamera.hpp"
+#include "Ethereal/Renderer/RenderSystem.hpp"
+
+namespace Ethereal
 {
     class EditorLayer : public Layer {
       public:
@@ -39,10 +41,6 @@ namespace Engine
       private:
         OrthographicCameraController m_CameraController;
         EditorCamera m_EditorCamera;
-        // Temp
-        Ref<VertexArray> m_SquareVA;
-        Ref<Shader> m_FlatColorShader;
-        Ref<Framebuffer> m_Framebuffer;
 
         Ref<Texture2D> m_IconPlay;
         Ref<Texture2D> m_IconStop;
@@ -71,5 +69,9 @@ namespace Engine
         };
 
         SceneState m_SceneState = SceneState::Edit;
+
+        RenderSystem m_RenderSystem;
+
+        glm::vec3 m_LightPos= glm::vec3(-20,40,-10);// as far as possiable (away from the scene to avoid clamp shadow)
     };
-}  // namespace Engine
+}  // namespace Ethereal

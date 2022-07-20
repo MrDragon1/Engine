@@ -1,6 +1,7 @@
 # Xmake cache
 .xmake/
 build/
+note/
 .cache/*
 
 # MacOS Cache
@@ -18,7 +19,6 @@ build/
 *.slo
 *.lo
 *.o
-*.obj
 
 # Precompiled Headers
 *.gch

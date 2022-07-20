@@ -1,0 +1,908 @@
+Scene: Test Scene
+Entities:
+  - Entity: 11244255559850430025
+    TagComponent:
+      Tag: Sphere55
+    TransformComponent:
+      Translation: [12.5, 25, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      m_filePath: assets/buildin/models/sphere.obj
+    MaterialComponent:
+      m_AlbedoFile: assets\textures\rustediron\rustediron2_albedo.png
+      m_MetallicFile: assets\textures\rustediron\rustediron2_metallic.png
+      m_RoughnessFile: assets\textures\rustediron\rustediron2_roughness.png
+      m_NormalFile: assets\textures\rustediron\rustediron2_normal.png
+      m_OcclusionFile: assets\textures\default\default_occlusion.png
+      m_EmissiveFile: assets\textures\default\default_emissive.png
+      m_Albedo: [0.5, 0, 0]
+      m_Metallic: 1
+      m_Roughness: 1
+      b_Albedo: false
+      b_Normal: false
+      b_Metallic: false
+      b_Roughness: false
+      b_Occlusion: false
+  - Entity: 11244267889850430024
+    TagComponent:
+      Tag: Sphere44
+    TransformComponent:
+      Translation: [7.5, 25, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      m_filePath: assets/buildin/models/sphere.obj
+    MaterialComponent:
+      m_AlbedoFile: assets\textures\rustediron\rustediron2_albedo.png
+      m_MetallicFile: assets\textures\rustediron\rustediron2_metallic.png
+      m_RoughnessFile: assets\textures\rustediron\rustediron2_roughness.png
+      m_NormalFile: assets\textures\rustediron\rustediron2_normal.png
+      m_OcclusionFile: assets\textures\default\default_occlusion.png
+      m_EmissiveFile: assets\textures\default\default_emissive.png
+      m_Albedo: [0.5, 0, 0]
+      m_Metallic: 0.800000012
+      m_Roughness: 0.800000012
+      b_Albedo: false
+      b_Normal: false
+      b_Metallic: false
+      b_Roughness: false
+      b_Occlusion: false
+  - Entity: 11244267889850430023
+    TagComponent:
+      Tag: Sphere43
+    TransformComponent:
+      Translation: [2.5, 25, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      m_filePath: assets/buildin/models/sphere.obj
+    MaterialComponent:
+      m_AlbedoFile: assets\textures\rustediron\rustediron2_albedo.png
+      m_MetallicFile: assets\textures\rustediron\rustediron2_metallic.png
+      m_RoughnessFile: assets\textures\rustediron\rustediron2_roughness.png
+      m_NormalFile: assets\textures\rustediron\rustediron2_normal.png
+      m_OcclusionFile: assets\textures\default\default_occlusion.png
+      m_EmissiveFile: assets\textures\default\default_emissive.png
+      m_Albedo: [0.5, 0, 0]
+      m_Metallic: 0.800000012
+      m_Roughness: 0.600000024
+      b_Albedo: false
+      b_Normal: false
+      b_Metallic: false
+      b_Roughness: false
+      b_Occlusion: false
+  - Entity: 11244267889850430022
+    TagComponent:
+      Tag: Sphere42
+    TransformComponent:
+      Translation: [-2.5, 25, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      m_filePath: assets/buildin/models/sphere.obj
+    MaterialComponent:
+      m_AlbedoFile: assets\textures\rustediron\rustediron2_albedo.png
+      m_MetallicFile: assets\textures\rustediron\rustediron2_metallic.png
+      m_RoughnessFile: assets\textures\rustediron\rustediron2_roughness.png
+      m_NormalFile: assets\textures\rustediron\rustediron2_normal.png
+      m_OcclusionFile: assets\textures\default\default_occlusion.png
+      m_EmissiveFile: assets\textures\default\default_emissive.png
+      m_Albedo: [0.5, 0, 0]
+      m_Metallic: 0.800000012
+      m_Roughness: 0.400000006
+      b_Albedo: false
+      b_Normal: false
+      b_Metallic: false
+      b_Roughness: false
+      b_Occlusion: false
+  - Entity: 11244267889850430021
+    TagComponent:
+      Tag: Sphere41
+    TransformComponent:
+      Translation: [-7.5, 25, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      m_filePath: assets/buildin/models/sphere.obj
+    MaterialComponent:
+      m_AlbedoFile: assets\textures\rustediron\rustediron2_albedo.png
+      m_MetallicFile: assets\textures\rustediron\rustediron2_metallic.png
+      m_RoughnessFile: assets\textures\rustediron\rustediron2_roughness.png
+      m_NormalFile: assets\textures\rustediron\rustediron2_normal.png
+      m_OcclusionFile: assets\textures\default\default_occlusion.png
+      m_EmissiveFile: assets\textures\default\default_emissive.png
+      m_Albedo: [0.5, 0, 0]
+      m_Metallic: 0.800000012
+      m_Roughness: 0.200000003
+      b_Albedo: false
+      b_Normal: false
+      b_Metallic: false
+      b_Roughness: false
+      b_Occlusion: false
+  - Entity: 11244267889850430020
+    TagComponent:
+      Tag: Sphere40
+    TransformComponent:
+      Translation: [-12.5, 25, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      m_filePath: assets/buildin/models/sphere.obj
+    MaterialComponent:
+      m_AlbedoFile: assets\textures\rustediron\rustediron2_albedo.png
+      m_MetallicFile: assets\textures\rustediron\rustediron2_metallic.png
+      m_RoughnessFile: assets\textures\rustediron\rustediron2_roughness.png
+      m_NormalFile: assets\textures\rustediron\rustediron2_normal.png
+      m_OcclusionFile: assets\textures\default\default_occlusion.png
+      m_EmissiveFile: assets\textures\default\default_emissive.png
+      m_Albedo: [0.5, 0, 0]
+      m_Metallic: 0.800000012
+      m_Roughness: 0.0500000007
+      b_Albedo: false
+      b_Normal: false
+      b_Metallic: false
+      b_Roughness: false
+      b_Occlusion: false
+  - Entity: 11244267889850430025
+    TagComponent:
+      Tag: Sphere45
+    TransformComponent:
+      Translation: [12.5, 20, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      m_filePath: assets/buildin/models/sphere.obj
+    MaterialComponent:
+      m_AlbedoFile: assets\textures\rustediron\rustediron2_albedo.png
+      m_MetallicFile: assets\textures\rustediron\rustediron2_metallic.png
+      m_RoughnessFile: assets\textures\rustediron\rustediron2_roughness.png
+      m_NormalFile: assets\textures\rustediron\rustediron2_normal.png
+      m_OcclusionFile: assets\textures\default\default_occlusion.png
+      m_EmissiveFile: assets\textures\default\default_emissive.png
+      m_Albedo: [0.5, 0, 0]
+      m_Metallic: 0.800000012
+      m_Roughness: 1
+      b_Albedo: false
+      b_Normal: false
+      b_Metallic: false
+      b_Roughness: false
+      b_Occlusion: false
+  - Entity: 11244267889850430024
+    TagComponent:
+      Tag: Sphere44
+    TransformComponent:
+      Translation: [7.5, 20, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      m_filePath: assets/buildin/models/sphere.obj
+    MaterialComponent:
+      m_AlbedoFile: assets\textures\rustediron\rustediron2_albedo.png
+      m_MetallicFile: assets\textures\rustediron\rustediron2_metallic.png
+      m_RoughnessFile: assets\textures\rustediron\rustediron2_roughness.png
+      m_NormalFile: assets\textures\rustediron\rustediron2_normal.png
+      m_OcclusionFile: assets\textures\default\default_occlusion.png
+      m_EmissiveFile: assets\textures\default\default_emissive.png
+      m_Albedo: [0.5, 0, 0]
+      m_Metallic: 0.800000012
+      m_Roughness: 0.800000012
+      b_Albedo: false
+      b_Normal: false
+      b_Metallic: false
+      b_Roughness: false
+      b_Occlusion: false
+  - Entity: 11244267889850430023
+    TagComponent:
+      Tag: Sphere43
+    TransformComponent:
+      Translation: [2.5, 20, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      m_filePath: assets/buildin/models/sphere.obj
+    MaterialComponent:
+      m_AlbedoFile: assets\textures\rustediron\rustediron2_albedo.png
+      m_MetallicFile: assets\textures\rustediron\rustediron2_metallic.png
+      m_RoughnessFile: assets\textures\rustediron\rustediron2_roughness.png
+      m_NormalFile: assets\textures\rustediron\rustediron2_normal.png
+      m_OcclusionFile: assets\textures\default\default_occlusion.png
+      m_EmissiveFile: assets\textures\default\default_emissive.png
+      m_Albedo: [0.5, 0, 0]
+      m_Metallic: 0.800000012
+      m_Roughness: 0.600000024
+      b_Albedo: false
+      b_Normal: false
+      b_Metallic: false
+      b_Roughness: false
+      b_Occlusion: false
+  - Entity: 11244267889850430022
+    TagComponent:
+      Tag: Sphere42
+    TransformComponent:
+      Translation: [-2.5, 20, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      m_filePath: assets/buildin/models/sphere.obj
+    MaterialComponent:
+      m_AlbedoFile: assets\textures\rustediron\rustediron2_albedo.png
+      m_MetallicFile: assets\textures\rustediron\rustediron2_metallic.png
+      m_RoughnessFile: assets\textures\rustediron\rustediron2_roughness.png
+      m_NormalFile: assets\textures\rustediron\rustediron2_normal.png
+      m_OcclusionFile: assets\textures\default\default_occlusion.png
+      m_EmissiveFile: assets\textures\default\default_emissive.png
+      m_Albedo: [0.5, 0, 0]
+      m_Metallic: 0.800000012
+      m_Roughness: 0.400000006
+      b_Albedo: false
+      b_Normal: false
+      b_Metallic: false
+      b_Roughness: false
+      b_Occlusion: false
+  - Entity: 11244267889850430021
+    TagComponent:
+      Tag: Sphere41
+    TransformComponent:
+      Translation: [-7.5, 20, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      m_filePath: assets/buildin/models/sphere.obj
+    MaterialComponent:
+      m_AlbedoFile: assets\textures\rustediron\rustediron2_albedo.png
+      m_MetallicFile: assets\textures\rustediron\rustediron2_metallic.png
+      m_RoughnessFile: assets\textures\rustediron\rustediron2_roughness.png
+      m_NormalFile: assets\textures\rustediron\rustediron2_normal.png
+      m_OcclusionFile: assets\textures\default\default_occlusion.png
+      m_EmissiveFile: assets\textures\default\default_emissive.png
+      m_Albedo: [0.5, 0, 0]
+      m_Metallic: 0.800000012
+      m_Roughness: 0.200000003
+      b_Albedo: false
+      b_Normal: false
+      b_Metallic: false
+      b_Roughness: false
+      b_Occlusion: false
+  - Entity: 11244267889850430020
+    TagComponent:
+      Tag: Sphere40
+    TransformComponent:
+      Translation: [-12.5, 20, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      m_filePath: assets/buildin/models/sphere.obj
+    MaterialComponent:
+      m_AlbedoFile: assets\textures\rustediron\rustediron2_albedo.png
+      m_MetallicFile: assets\textures\rustediron\rustediron2_metallic.png
+      m_RoughnessFile: assets\textures\rustediron\rustediron2_roughness.png
+      m_NormalFile: assets\textures\rustediron\rustediron2_normal.png
+      m_OcclusionFile: assets\textures\default\default_occlusion.png
+      m_EmissiveFile: assets\textures\default\default_emissive.png
+      m_Albedo: [0.5, 0, 0]
+      m_Metallic: 0.800000012
+      m_Roughness: 0.0500000007
+      b_Albedo: false
+      b_Normal: false
+      b_Metallic: false
+      b_Roughness: false
+      b_Occlusion: false
+  - Entity: 11244282789850430025
+    TagComponent:
+      Tag: Sphere35
+    TransformComponent:
+      Translation: [12.5, 15, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      m_filePath: assets/buildin/models/sphere.obj
+    MaterialComponent:
+      m_AlbedoFile: assets\textures\rustediron\rustediron2_albedo.png
+      m_MetallicFile: assets\textures\rustediron\rustediron2_metallic.png
+      m_RoughnessFile: assets\textures\rustediron\rustediron2_roughness.png
+      m_NormalFile: assets\textures\rustediron\rustediron2_normal.png
+      m_OcclusionFile: assets\textures\default\default_occlusion.png
+      m_EmissiveFile: assets\textures\default\default_emissive.png
+      m_Albedo: [0.5, 0, 0]
+      m_Metallic: 0.600000024
+      m_Roughness: 1
+      b_Albedo: false
+      b_Normal: false
+      b_Metallic: false
+      b_Roughness: false
+      b_Occlusion: false
+  - Entity: 11244282789850430024
+    TagComponent:
+      Tag: Sphere34
+    TransformComponent:
+      Translation: [7.5, 15, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      m_filePath: assets/buildin/models/sphere.obj
+    MaterialComponent:
+      m_AlbedoFile: assets\textures\rustediron\rustediron2_albedo.png
+      m_MetallicFile: assets\textures\rustediron\rustediron2_metallic.png
+      m_RoughnessFile: assets\textures\rustediron\rustediron2_roughness.png
+      m_NormalFile: assets\textures\rustediron\rustediron2_normal.png
+      m_OcclusionFile: assets\textures\default\default_occlusion.png
+      m_EmissiveFile: assets\textures\default\default_emissive.png
+      m_Albedo: [0.5, 0, 0]
+      m_Metallic: 0.600000024
+      m_Roughness: 0.800000012
+      b_Albedo: false
+      b_Normal: false
+      b_Metallic: false
+      b_Roughness: false
+      b_Occlusion: false
+  - Entity: 11244282789850430023
+    TagComponent:
+      Tag: Sphere33
+    TransformComponent:
+      Translation: [2.5, 15, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      m_filePath: assets/buildin/models/sphere.obj
+    MaterialComponent:
+      m_AlbedoFile: assets\textures\rustediron\rustediron2_albedo.png
+      m_MetallicFile: assets\textures\rustediron\rustediron2_metallic.png
+      m_RoughnessFile: assets\textures\rustediron\rustediron2_roughness.png
+      m_NormalFile: assets\textures\rustediron\rustediron2_normal.png
+      m_OcclusionFile: assets\textures\default\default_occlusion.png
+      m_EmissiveFile: assets\textures\default\default_emissive.png
+      m_Albedo: [0.5, 0, 0]
+      m_Metallic: 0.600000024
+      m_Roughness: 0.600000024
+      b_Albedo: false
+      b_Normal: false
+      b_Metallic: false
+      b_Roughness: false
+      b_Occlusion: false
+  - Entity: 11244282789850430022
+    TagComponent:
+      Tag: Sphere32
+    TransformComponent:
+      Translation: [-2.5, 15, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      m_filePath: assets/buildin/models/sphere.obj
+    MaterialComponent:
+      m_AlbedoFile: assets\textures\rustediron\rustediron2_albedo.png
+      m_MetallicFile: assets\textures\rustediron\rustediron2_metallic.png
+      m_RoughnessFile: assets\textures\rustediron\rustediron2_roughness.png
+      m_NormalFile: assets\textures\rustediron\rustediron2_normal.png
+      m_OcclusionFile: assets\textures\default\default_occlusion.png
+      m_EmissiveFile: assets\textures\default\default_emissive.png
+      m_Albedo: [0.5, 0, 0]
+      m_Metallic: 0.600000024
+      m_Roughness: 0.400000006
+      b_Albedo: false
+      b_Normal: false
+      b_Metallic: false
+      b_Roughness: false
+      b_Occlusion: false
+  - Entity: 11244282789850430021
+    TagComponent:
+      Tag: Sphere31
+    TransformComponent:
+      Translation: [-7.5, 15, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      m_filePath: assets/buildin/models/sphere.obj
+    MaterialComponent:
+      m_AlbedoFile: assets\textures\rustediron\rustediron2_albedo.png
+      m_MetallicFile: assets\textures\rustediron\rustediron2_metallic.png
+      m_RoughnessFile: assets\textures\rustediron\rustediron2_roughness.png
+      m_NormalFile: assets\textures\rustediron\rustediron2_normal.png
+      m_OcclusionFile: assets\textures\default\default_occlusion.png
+      m_EmissiveFile: assets\textures\default\default_emissive.png
+      m_Albedo: [0.5, 0, 0]
+      m_Metallic: 0.600000024
+      m_Roughness: 0.200000003
+      b_Albedo: false
+      b_Normal: false
+      b_Metallic: false
+      b_Roughness: false
+      b_Occlusion: false
+  - Entity: 11244282789850430020
+    TagComponent:
+      Tag: Sphere30
+    TransformComponent:
+      Translation: [-12.5, 15, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      m_filePath: assets/buildin/models/sphere.obj
+    MaterialComponent:
+      m_AlbedoFile: assets\textures\rustediron\rustediron2_albedo.png
+      m_MetallicFile: assets\textures\rustediron\rustediron2_metallic.png
+      m_RoughnessFile: assets\textures\rustediron\rustediron2_roughness.png
+      m_NormalFile: assets\textures\rustediron\rustediron2_normal.png
+      m_OcclusionFile: assets\textures\default\default_occlusion.png
+      m_EmissiveFile: assets\textures\default\default_emissive.png
+      m_Albedo: [0.5, 0, 0]
+      m_Metallic: 0.600000024
+      m_Roughness: 0.0500000007
+      b_Albedo: false
+      b_Normal: false
+      b_Metallic: false
+      b_Roughness: false
+      b_Occlusion: false
+  - Entity: 11244282789850429025
+    TagComponent:
+      Tag: Sphere25
+    TransformComponent:
+      Translation: [12.5, 10, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      m_filePath: assets/buildin/models/sphere.obj
+    MaterialComponent:
+      m_AlbedoFile: assets\textures\rustediron\rustediron2_albedo.png
+      m_MetallicFile: assets\textures\rustediron\rustediron2_metallic.png
+      m_RoughnessFile: assets\textures\rustediron\rustediron2_roughness.png
+      m_NormalFile: assets\textures\rustediron\rustediron2_normal.png
+      m_OcclusionFile: assets\textures\default\default_occlusion.png
+      m_EmissiveFile: assets\textures\default\default_emissive.png
+      m_Albedo: [0.5, 0, 0]
+      m_Metallic: 0.400000006
+      m_Roughness: 1
+      b_Albedo: false
+      b_Normal: false
+      b_Metallic: false
+      b_Roughness: false
+      b_Occlusion: false
+  - Entity: 11244282789850429024
+    TagComponent:
+      Tag: Sphere24
+    TransformComponent:
+      Translation: [7.5, 10, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      m_filePath: assets/buildin/models/sphere.obj
+    MaterialComponent:
+      m_AlbedoFile: assets\textures\rustediron\rustediron2_albedo.png
+      m_MetallicFile: assets\textures\rustediron\rustediron2_metallic.png
+      m_RoughnessFile: assets\textures\rustediron\rustediron2_roughness.png
+      m_NormalFile: assets\textures\rustediron\rustediron2_normal.png
+      m_OcclusionFile: assets\textures\default\default_occlusion.png
+      m_EmissiveFile: assets\textures\default\default_emissive.png
+      m_Albedo: [0.5, 0, 0]
+      m_Metallic: 0.400000006
+      m_Roughness: 0.800000012
+      b_Albedo: false
+      b_Normal: false
+      b_Metallic: false
+      b_Roughness: false
+      b_Occlusion: false
+  - Entity: 11244282789850429023
+    TagComponent:
+      Tag: Sphere23
+    TransformComponent:
+      Translation: [2.5, 10, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      m_filePath: assets/buildin/models/sphere.obj
+    MaterialComponent:
+      m_AlbedoFile: assets\textures\rustediron\rustediron2_albedo.png
+      m_MetallicFile: assets\textures\rustediron\rustediron2_metallic.png
+      m_RoughnessFile: assets\textures\rustediron\rustediron2_roughness.png
+      m_NormalFile: assets\textures\rustediron\rustediron2_normal.png
+      m_OcclusionFile: assets\textures\default\default_occlusion.png
+      m_EmissiveFile: assets\textures\default\default_emissive.png
+      m_Albedo: [0.5, 0, 0]
+      m_Metallic: 0.400000006
+      m_Roughness: 0.600000024
+      b_Albedo: false
+      b_Normal: false
+      b_Metallic: false
+      b_Roughness: false
+      b_Occlusion: false
+  - Entity: 11244282789850429022
+    TagComponent:
+      Tag: Sphere22
+    TransformComponent:
+      Translation: [-2.5, 10, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      m_filePath: assets/buildin/models/sphere.obj
+    MaterialComponent:
+      m_AlbedoFile: assets\textures\rustediron\rustediron2_albedo.png
+      m_MetallicFile: assets\textures\rustediron\rustediron2_metallic.png
+      m_RoughnessFile: assets\textures\rustediron\rustediron2_roughness.png
+      m_NormalFile: assets\textures\rustediron\rustediron2_normal.png
+      m_OcclusionFile: assets\textures\default\default_occlusion.png
+      m_EmissiveFile: assets\textures\default\default_emissive.png
+      m_Albedo: [0.5, 0, 0]
+      m_Metallic: 0.400000006
+      m_Roughness: 0.400000006
+      b_Albedo: false
+      b_Normal: false
+      b_Metallic: false
+      b_Roughness: false
+      b_Occlusion: false
+  - Entity: 11244282789850429021
+    TagComponent:
+      Tag: Sphere21
+    TransformComponent:
+      Translation: [-7.5, 10, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      m_filePath: assets/buildin/models/sphere.obj
+    MaterialComponent:
+      m_AlbedoFile: assets\textures\rustediron\rustediron2_albedo.png
+      m_MetallicFile: assets\textures\rustediron\rustediron2_metallic.png
+      m_RoughnessFile: assets\textures\rustediron\rustediron2_roughness.png
+      m_NormalFile: assets\textures\rustediron\rustediron2_normal.png
+      m_OcclusionFile: assets\textures\default\default_occlusion.png
+      m_EmissiveFile: assets\textures\default\default_emissive.png
+      m_Albedo: [0.5, 0, 0]
+      m_Metallic: 0.400000006
+      m_Roughness: 0.200000003
+      b_Albedo: false
+      b_Normal: false
+      b_Metallic: false
+      b_Roughness: false
+      b_Occlusion: false
+  - Entity: 11244282789850429020
+    TagComponent:
+      Tag: Sphere20
+    TransformComponent:
+      Translation: [-12.5, 10, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      m_filePath: assets/buildin/models/sphere.obj
+    MaterialComponent:
+      m_AlbedoFile: assets\textures\rustediron\rustediron2_albedo.png
+      m_MetallicFile: assets\textures\rustediron\rustediron2_metallic.png
+      m_RoughnessFile: assets\textures\rustediron\rustediron2_roughness.png
+      m_NormalFile: assets\textures\rustediron\rustediron2_normal.png
+      m_OcclusionFile: assets\textures\default\default_occlusion.png
+      m_EmissiveFile: assets\textures\default\default_emissive.png
+      m_Albedo: [0.5, 0, 0]
+      m_Metallic: 0.400000006
+      m_Roughness: 0.0500000007
+      b_Albedo: false
+      b_Normal: false
+      b_Metallic: false
+      b_Roughness: false
+      b_Occlusion: false
+  - Entity: 14444282785850429120
+    TagComponent:
+      Tag: Sphere15
+    TransformComponent:
+      Translation: [12.5, 5, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      m_filePath: assets/buildin/models/sphere.obj
+    MaterialComponent:
+      m_AlbedoFile: assets\textures\rustediron\rustediron2_albedo.png
+      m_MetallicFile: assets\textures\rustediron\rustediron2_metallic.png
+      m_RoughnessFile: assets\textures\rustediron\rustediron2_roughness.png
+      m_NormalFile: assets\textures\rustediron\rustediron2_normal.png
+      m_OcclusionFile: assets\textures\default\default_occlusion.png
+      m_EmissiveFile: assets\textures\default\default_emissive.png
+      m_Albedo: [0.5, 0, 0]
+      m_Metallic: 0.200000003
+      m_Roughness: 1
+      b_Albedo: false
+      b_Normal: false
+      b_Metallic: false
+      b_Roughness: false
+      b_Occlusion: false
+  - Entity: 14444282789851229634
+    TagComponent:
+      Tag: Sphere14
+    TransformComponent:
+      Translation: [7.5, 5, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      m_filePath: assets/buildin/models/sphere.obj
+    MaterialComponent:
+      m_AlbedoFile: assets\textures\rustediron\rustediron2_albedo.png
+      m_MetallicFile: assets\textures\rustediron\rustediron2_metallic.png
+      m_RoughnessFile: assets\textures\rustediron\rustediron2_roughness.png
+      m_NormalFile: assets\textures\rustediron\rustediron2_normal.png
+      m_OcclusionFile: assets\textures\default\default_occlusion.png
+      m_EmissiveFile: assets\textures\default\default_emissive.png
+      m_Albedo: [0.5, 0, 0]
+      m_Metallic: 0.200000003
+      m_Roughness: 0.800000012
+      b_Albedo: false
+      b_Normal: false
+      b_Metallic: false
+      b_Roughness: false
+      b_Occlusion: false
+  - Entity: 14444282789850419635
+    TagComponent:
+      Tag: Sphere13
+    TransformComponent:
+      Translation: [2.5, 5, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      m_filePath: assets/buildin/models/sphere.obj
+    MaterialComponent:
+      m_AlbedoFile: assets\textures\rustediron\rustediron2_albedo.png
+      m_MetallicFile: assets\textures\rustediron\rustediron2_metallic.png
+      m_RoughnessFile: assets\textures\rustediron\rustediron2_roughness.png
+      m_NormalFile: assets\textures\rustediron\rustediron2_normal.png
+      m_OcclusionFile: assets\textures\default\default_occlusion.png
+      m_EmissiveFile: assets\textures\default\default_emissive.png
+      m_Albedo: [0.5, 0, 0]
+      m_Metallic: 0.200000003
+      m_Roughness: 0.600000024
+      b_Albedo: false
+      b_Normal: false
+      b_Metallic: false
+      b_Roughness: false
+      b_Occlusion: false
+  - Entity: 14444282789850429654
+    TagComponent:
+      Tag: Sphere12
+    TransformComponent:
+      Translation: [-2.5, 5, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      m_filePath: assets/buildin/models/sphere.obj
+    MaterialComponent:
+      m_AlbedoFile: assets\textures\rustediron\rustediron2_albedo.png
+      m_MetallicFile: assets\textures\rustediron\rustediron2_metallic.png
+      m_RoughnessFile: assets\textures\rustediron\rustediron2_roughness.png
+      m_NormalFile: assets\textures\rustediron\rustediron2_normal.png
+      m_OcclusionFile: assets\textures\default\default_occlusion.png
+      m_EmissiveFile: assets\textures\default\default_emissive.png
+      m_Albedo: [0.5, 0, 0]
+      m_Metallic: 0.200000003
+      m_Roughness: 0.400000006
+      b_Albedo: false
+      b_Normal: false
+      b_Metallic: false
+      b_Roughness: false
+      b_Occlusion: false
+  - Entity: 11144282789850429630
+    TagComponent:
+      Tag: Sphere11
+    TransformComponent:
+      Translation: [-7.5, 5, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      m_filePath: assets/buildin/models/sphere.obj
+    MaterialComponent:
+      m_AlbedoFile: assets\textures\rustediron\rustediron2_albedo.png
+      m_MetallicFile: assets\textures\rustediron\rustediron2_metallic.png
+      m_RoughnessFile: assets\textures\rustediron\rustediron2_roughness.png
+      m_NormalFile: assets\textures\rustediron\rustediron2_normal.png
+      m_OcclusionFile: assets\textures\default\default_occlusion.png
+      m_EmissiveFile: assets\textures\default\default_emissive.png
+      m_Albedo: [0.5, 0, 0]
+      m_Metallic: 0.200000003
+      m_Roughness: 0.200000003
+      b_Albedo: false
+      b_Normal: false
+      b_Metallic: false
+      b_Roughness: false
+      b_Occlusion: false
+  - Entity: 11244282789850429630
+    TagComponent:
+      Tag: Sphere10
+    TransformComponent:
+      Translation: [-12.5, 5, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      m_filePath: assets/buildin/models/sphere.obj
+    MaterialComponent:
+      m_AlbedoFile: assets\textures\rustediron\rustediron2_albedo.png
+      m_MetallicFile: assets\textures\rustediron\rustediron2_metallic.png
+      m_RoughnessFile: assets\textures\rustediron\rustediron2_roughness.png
+      m_NormalFile: assets\textures\rustediron\rustediron2_normal.png
+      m_OcclusionFile: assets\textures\default\default_occlusion.png
+      m_EmissiveFile: assets\textures\default\default_emissive.png
+      m_Albedo: [0.5, 0, 0]
+      m_Metallic: 0.200000003
+      m_Roughness: 0.0500000007
+      b_Albedo: false
+      b_Normal: false
+      b_Metallic: false
+      b_Roughness: false
+      b_Occlusion: false
+  - Entity: 14444282789850429120
+    TagComponent:
+      Tag: Sphere05
+    TransformComponent:
+      Translation: [12.5, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      m_filePath: assets/buildin/models/sphere.obj
+    MaterialComponent:
+      m_AlbedoFile: assets\textures\rustediron\rustediron2_albedo.png
+      m_MetallicFile: assets\textures\rustediron\rustediron2_metallic.png
+      m_RoughnessFile: assets\textures\rustediron\rustediron2_roughness.png
+      m_NormalFile: assets\textures\rustediron\rustediron2_normal.png
+      m_OcclusionFile: assets\textures\default\default_occlusion.png
+      m_EmissiveFile: assets\textures\default\default_emissive.png
+      m_Albedo: [0.5, 0, 0]
+      m_Metallic: 0
+      m_Roughness: 1
+      b_Albedo: false
+      b_Normal: false
+      b_Metallic: false
+      b_Roughness: false
+      b_Occlusion: false
+  - Entity: 14444282789850429634
+    TagComponent:
+      Tag: Sphere04
+    TransformComponent:
+      Translation: [7.5, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      m_filePath: assets/buildin/models/sphere.obj
+    MaterialComponent:
+      m_AlbedoFile: assets\textures\rustediron\rustediron2_albedo.png
+      m_MetallicFile: assets\textures\rustediron\rustediron2_metallic.png
+      m_RoughnessFile: assets\textures\rustediron\rustediron2_roughness.png
+      m_NormalFile: assets\textures\rustediron\rustediron2_normal.png
+      m_OcclusionFile: assets\textures\default\default_occlusion.png
+      m_EmissiveFile: assets\textures\default\default_emissive.png
+      m_Albedo: [0.5, 0, 0]
+      m_Metallic: 0
+      m_Roughness: 0.800000012
+      b_Albedo: false
+      b_Normal: false
+      b_Metallic: false
+      b_Roughness: false
+      b_Occlusion: false
+  - Entity: 14444282789850429635
+    TagComponent:
+      Tag: Sphere03
+    TransformComponent:
+      Translation: [2.5, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      m_filePath: assets/buildin/models/sphere.obj
+    MaterialComponent:
+      m_AlbedoFile: assets\textures\rustediron\rustediron2_albedo.png
+      m_MetallicFile: assets\textures\rustediron\rustediron2_metallic.png
+      m_RoughnessFile: assets\textures\rustediron\rustediron2_roughness.png
+      m_NormalFile: assets\textures\rustediron\rustediron2_normal.png
+      m_OcclusionFile: assets\textures\default\default_occlusion.png
+      m_EmissiveFile: assets\textures\default\default_emissive.png
+      m_Albedo: [0.5, 0, 0]
+      m_Metallic: 0
+      m_Roughness: 0.600000024
+      b_Albedo: false
+      b_Normal: false
+      b_Metallic: false
+      b_Roughness: false
+      b_Occlusion: false
+  - Entity: 14444282789850429612
+    TagComponent:
+      Tag: Sphere02
+    TransformComponent:
+      Translation: [-2.5, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      m_filePath: assets/buildin/models/sphere.obj
+    MaterialComponent:
+      m_AlbedoFile: assets\textures\gold\albedo.png
+      m_MetallicFile: assets\textures\gold\metallic.png
+      m_RoughnessFile: assets\textures\gold\roughness.png
+      m_NormalFile: assets\textures\gold\normal.png
+      m_OcclusionFile: assets\textures\default\default_occlusion.png
+      m_EmissiveFile: assets\textures\default\default_emissive.png
+      m_Albedo: [0.5, 0, 0]
+      m_Metallic: 0
+      m_Roughness: 0.400000006
+      b_Albedo: true
+      b_Normal: false
+      b_Metallic: true
+      b_Roughness: true
+      b_Occlusion: false
+  - Entity: 14444282789850429630
+    TagComponent:
+      Tag: Sphere01
+    TransformComponent:
+      Translation: [-7.5, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      m_filePath: assets/buildin/models/sphere.obj
+    MaterialComponent:
+      m_AlbedoFile: assets\textures\rustediron\rustediron2_albedo.png
+      m_MetallicFile: assets\textures\rustediron\rustediron2_metallic.png
+      m_RoughnessFile: assets\textures\rustediron\rustediron2_roughness.png
+      m_NormalFile: assets\textures\rustediron\rustediron2_normal.png
+      m_OcclusionFile: assets\textures\default\default_occlusion.png
+      m_EmissiveFile: assets\textures\default\default_emissive.png
+      m_Albedo: [0.5, 0, 0]
+      m_Metallic: 1
+      m_Roughness: 0
+      b_Albedo: false
+      b_Normal: false
+      b_Metallic: false
+      b_Roughness: false
+      b_Occlusion: false
+  - Entity: 14444282789850429630
+    TagComponent:
+      Tag: Sphere00
+    TransformComponent:
+      Translation: [-12.5, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      m_filePath: assets/buildin/models/sphere.obj
+    MaterialComponent:
+      m_AlbedoFile: assets\textures\rustediron\rustediron2_albedo.png
+      m_MetallicFile: assets\textures\rustediron\rustediron2_metallic.png
+      m_RoughnessFile: assets\textures\rustediron\rustediron2_roughness.png
+      m_NormalFile: assets\textures\rustediron\rustediron2_normal.png
+      m_OcclusionFile: assets\textures\default\default_occlusion.png
+      m_EmissiveFile: assets\textures\default\default_emissive.png
+      m_Albedo: [0.5, 0, 0]
+      m_Metallic: 0
+      m_Roughness: 0
+      b_Albedo: true
+      b_Normal: false
+      b_Metallic: true
+      b_Roughness: true
+      b_Occlusion: false
+  - Entity: 11171200316534182395
+    TagComponent:
+      Tag: Plane
+    TransformComponent:
+      Translation: [2.94246364, -8.02337742, 4.48575401]
+      Rotation: [0, 0, 0]
+      Scale: [34.524498, 29.5867233, 26.7573967]
+    MeshComponent:
+      m_filePath: assets/buildin/models/plane.obj
+    MaterialComponent:
+      m_AlbedoFile: assets\models\cube\wall.jpg
+      m_MetallicFile: assets\textures\default\default_metallic.png
+      m_RoughnessFile: assets\textures\default\default_roughness.png
+      m_NormalFile: assets\textures\default\default_normal.png
+      m_OcclusionFile: assets\textures\default\default_occlusion.png
+      m_EmissiveFile: assets\textures\default\default_emissive.png
+      m_Albedo: [0.722007751, 0.722007751, 0.722007751]
+      m_Metallic: 0.119999997
+      m_Roughness: 0.25999999
+      b_Albedo: false
+      b_Normal: false
+      b_Metallic: false
+      b_Roughness: false
+      b_Occlusion: false
+  - Entity: 15952522535893857515
+    TagComponent:
+      Tag: Camera
+    TransformComponent:
+      Translation: [0, 0, 20]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    CameraComponent:
+      Camera:
+        ProjectionType: 0
+        PerspectiveFOV: 0.785398185
+        PerspectiveNear: 0.00999999978
+        PerspectiveFar: 1000
+        OrthographicSize: 10
+        OrthographicNear: 0.100000001
+        OrthographicFar: 1000
+      Primary: true
+      FixedAspectRatio: false
