@@ -9,6 +9,7 @@ namespace Ethereal
     }
 
     void SkyboxRenderPass::Draw() {
+        // ! This will rewrite eneityID attachment in framebuffer
         RenderCommand::SetDepthFunc(ETHEREAL_DEPTH_FUNC::LEQUAL);
         m_SkyboxShader->Bind();
         m_SkyboxShader->SetMat4("u_Projection", m_SkyboxProjection);

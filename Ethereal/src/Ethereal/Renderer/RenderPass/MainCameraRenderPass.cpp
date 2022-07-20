@@ -24,6 +24,11 @@ namespace Ethereal
         m_Shader->SetInt("u_RoughnessMap", 3);
         m_Shader->SetInt("u_OcclusionMap", 4);
         m_Shader->SetInt("u_EmissiveMap", 5);
+
+        // IBL 
+        m_Shader->SetInt("u_IrradianceMap", 6);
+        m_Shader->SetInt("u_PrefilterMap", 7);
+        m_Shader->SetInt("u_BRDFLUT", 8);
     }
 
     void MainCameraRenderPass::Draw() {

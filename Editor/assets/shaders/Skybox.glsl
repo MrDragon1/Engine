@@ -21,7 +21,8 @@ void main()
 
 #type fragment
 #version 460 core
-out vec4 FragColor;
+layout(location = 0) out vec4 FragColor;
+
 in vec3 v_LocalPos;
 uniform samplerCube u_SkyboxTexture;
 

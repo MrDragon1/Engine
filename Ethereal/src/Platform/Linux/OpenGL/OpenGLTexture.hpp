@@ -50,7 +50,9 @@ namespace Ethereal
         virtual bool operator==(const Texture& other) const override { return m_RendererID == other.GetRendererID(); }
         virtual bool IsLoaded() const override { return m_IsLoaded; };
 
-        virtual void BindToFramebuffer(uint32_t face) const override;
+
+        virtual void BindToFramebuffer(uint32_t attachmentid, uint32_t face, uint32_t miplevel = 0) const override;
+        virtual void GenerateMipmaps() const override;
       private:
         void LoadTextureData(const Ref<TextureData>& data);
         uint32_t m_RendererID;

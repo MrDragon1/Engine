@@ -176,7 +176,7 @@ namespace Ethereal
     // For hdr map only
     OpenGLTextureCube::OpenGLTextureCube(const Ref<TextureData>& data)
     {
-        glDeleteTextures(1, &m_RendererID);
+        //glDeleteTextures(1, &m_RendererID);
         glGenTextures(1, &m_RendererID);
         glBindTexture(GL_TEXTURE_CUBE_MAP, m_RendererID);
 
@@ -202,10 +202,18 @@ namespace Ethereal
         glBindTexture(GL_TEXTURE_CUBE_MAP, m_RendererID);
     }
 
-    void OpenGLTextureCube::BindToFramebuffer(uint32_t face) const
+    void OpenGLTextureCube::BindToFramebuffer(uint32_t attachmentid, uint32_t face, uint32_t miplevel) const
     {
         ET_CORE_ASSERT(face >= 0 && face <= 5, "Cube map face must be between 0 and 5!");
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, m_RendererID, 0);
+        ET_CORE_ASSERT(attachmentid >= 0 && attachmentid <= 3, "Attachment id must be between 0 and 3!");
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + attachmentid, GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, m_RendererID, miplevel);
+    }
+
+    void OpenGLTextureCube::GenerateMipmaps() const
+    {
+        glBindTexture(GL_TEXTURE_CUBE_MAP, m_RendererID);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
     }
 
 }  // namespace Ethereal

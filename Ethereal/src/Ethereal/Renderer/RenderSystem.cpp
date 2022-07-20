@@ -58,6 +58,10 @@ namespace Ethereal
 
         // m_ShadowMapRenderPass->Draw();
         // m_ShadowMapRenderPass->m_Framebuffer->GetDepthAttachment()->Bind(5);
+
+        m_EnvironmentMapRenderPass->m_IrradianceCubeMap->Bind(6);
+        m_EnvironmentMapRenderPass->m_PrefilterCubeMap->Bind(7);
+        m_EnvironmentMapRenderPass->m_BRDFLUTTexture->Bind(8);
         m_MainCameraRenderPass->Draw();
 
         // TODO : make skybox render pass a subpass of main camera render pass

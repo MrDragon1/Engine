@@ -17,14 +17,22 @@ namespace Ethereal
 
         Ref<Shader> m_EquirectangularToCubeMapShader;
         std::string m_EquirectangularToCubeMapShaderPath = "assets/shaders/EquirectangularToCubeMap.glsl";
-        Ref<Shader> m_IrradianceConvolutionShader;
-        std::string m_IrradianceConvolutionShaderPath = "assets/shaders/IrradianceConvolution.glsl";
+        Ref<Shader> m_PrefilterShader;
+        std::string m_PrefilterShaderPath = "assets/shaders/Prefilter.glsl";
+
 
         Ref<TextureCube> m_EnvCubeMap;
+        Ref<TextureCube> m_PrefilterCubeMap;
         Ref<TextureCube> m_IrradianceCubeMap;
-        Ref<Texture> m_HDRTexture;
+        Ref<Texture> m_BRDFLUTTexture;
 
-        std::string m_HDRTexturePath = "assets/textures/hdr/newport_loft.hdr";
+        Ref<Texture> m_EnvTexture;
+        Ref<Texture> m_IrradianceTexture;
+
+        std::string m_EnvTexturePath = "assets/textures/skybox/Newport_Loft/Newport_Loft_Ref.hdr";
+        std::string m_IrradianceTexturePath = "assets/textures/skybox/Newport_Loft/Newport_Loft_Env.hdr";
+        std::string m_BRDFLUTTexturePath = "assets/textures/global/brdf_schilk.hdr";
+
 
         GLMesh m_Cube;
 
