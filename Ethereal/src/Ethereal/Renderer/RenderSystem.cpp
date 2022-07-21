@@ -40,7 +40,7 @@ namespace Ethereal
         RenderMeshData renderMeshData;
         bool is_MeshLoaded = m_RenderScene->getMeshAssetIdAllocator().hasElement(renderEntity.m_Mesh_Desc);
         if (!is_MeshLoaded) {
-            renderMeshData = m_RenderResource->LoadMeshData(renderEntity.m_Mesh_Desc, (int)(uint32_t)renderEntity.m_InstanceID);
+            renderMeshData = m_RenderResource->LoadMeshData(renderEntity.m_Mesh_Desc);
         }
         renderEntity.m_MeshAssetID = m_RenderScene->getMeshAssetIdAllocator().allocUUID(renderEntity.m_Mesh_Desc);
         if (!is_MeshLoaded) {
@@ -49,10 +49,14 @@ namespace Ethereal
 
         m_SkyboxRenderPass->m_Cube = m_RenderResource->GetGLMesh(renderEntity);
         m_EnvironmentMapRenderPass->m_Cube = m_RenderResource->GetGLMesh(renderEntity);
+
+        m_EnvironmentMapRenderPass->Reset();
     }
 
     void RenderSystem::Draw(Timestep ts) {
+        // Only draw once
         m_EnvironmentMapRenderPass->Draw();
+
         // m_ShadowMapRenderPass->SetLightPosition();
         m_MainCameraRenderPass->SetLightSpaceMatrix(m_ShadowMapRenderPass->m_ViewProjectionMatrix);
 
@@ -84,9 +88,7 @@ namespace Ethereal
             RenderMeshData renderMeshData;
             bool is_MeshLoaded = m_RenderScene->getMeshAssetIdAllocator().hasElement(renderEntity.m_Mesh_Desc);
             if (!is_MeshLoaded) {
-                // ! Entity ID only update once
-                // TODO : Update Entity ID everytime when mesh is loaded
-                renderMeshData = m_RenderResource->LoadMeshData(renderEntity.m_Mesh_Desc, (int)(uint32_t)renderEntity.m_InstanceID);
+                renderMeshData = m_RenderResource->LoadMeshData(renderEntity.m_Mesh_Desc);
             }
             renderEntity.m_MeshAssetID = m_RenderScene->getMeshAssetIdAllocator().allocUUID(renderEntity.m_Mesh_Desc);
             if (!is_MeshLoaded) {

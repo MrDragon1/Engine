@@ -11,6 +11,8 @@ namespace Ethereal
         void Draw() override;
         void OnResize(uint32_t width, uint32_t height) override;
 
+        void Reset() { m_IsFirstCall = true; };
+
       private:
         bool m_IsFirstCall = true;
         Ref<Framebuffer> m_Framebuffer;
@@ -19,7 +21,6 @@ namespace Ethereal
         std::string m_EquirectangularToCubeMapShaderPath = "assets/shaders/EquirectangularToCubeMap.glsl";
         Ref<Shader> m_PrefilterShader;
         std::string m_PrefilterShaderPath = "assets/shaders/Prefilter.glsl";
-
 
         Ref<TextureCube> m_EnvCubeMap;
         Ref<TextureCube> m_PrefilterCubeMap;
@@ -32,7 +33,6 @@ namespace Ethereal
         std::string m_EnvTexturePath = "assets/textures/skybox/Newport_Loft/Newport_Loft_Ref.hdr";
         std::string m_IrradianceTexturePath = "assets/textures/skybox/Newport_Loft/Newport_Loft_Env.hdr";
         std::string m_BRDFLUTTexturePath = "assets/textures/global/brdf_schilk.hdr";
-
 
         GLMesh m_Cube;
 

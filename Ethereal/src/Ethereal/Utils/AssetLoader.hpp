@@ -11,7 +11,7 @@ namespace Ethereal
 
     class ObjLoader {
       public:
-        static void Load(const GameObjectMeshDesc& desc, RenderMeshData& renderMeshData, int entityID = -1);
+        static void Load(const GameObjectMeshDesc& desc, RenderMeshData& renderMeshData);
     };
 
     class TextureLoader {

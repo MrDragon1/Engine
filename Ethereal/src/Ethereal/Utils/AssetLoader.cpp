@@ -6,7 +6,7 @@
 
 namespace Ethereal
 {
-    void ObjLoader::Load(const GameObjectMeshDesc& desc, RenderMeshData& renderMeshData, int entityID) {
+    void ObjLoader::Load(const GameObjectMeshDesc& desc, RenderMeshData& renderMeshData) {
         tinyobj::ObjReaderConfig reader_config;
         tinyobj::ObjReader* reader = new tinyobj::ObjReader();
 
@@ -121,7 +121,6 @@ namespace Ethereal
                     mesh_vert.Position = vertex[i] / glm::vec3(1);
                     mesh_vert.Normal = normal[i];
                     mesh_vert.UV = uv[i];
-                    mesh_vert.EntityID = entityID;
                     mesh_vertices.push_back(mesh_vert);
                 }
 

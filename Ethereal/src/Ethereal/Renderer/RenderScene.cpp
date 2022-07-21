@@ -11,6 +11,7 @@ namespace Ethereal
                 auto& mesh = renderResource->GetGLMesh(renderEntity);
                 auto& material = renderResource->GetGLMaterial(renderEntity);
                 RenderNode node;
+                node.EntityID = renderEntity.m_InstanceID;
                 node.model_matrix = renderEntity.m_Transform_Desc.GetTransform();
                 node.ref_mesh = &mesh;
                 node.ref_material = &material;

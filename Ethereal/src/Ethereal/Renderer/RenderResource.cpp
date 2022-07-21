@@ -119,14 +119,14 @@ namespace Ethereal
     }
     
     //TODO: use another way to mouse picking and remove entityID
-    RenderMeshData RenderResource::LoadMeshData(GameObjectMeshDesc& mesh_desc, int entityID)
+    RenderMeshData RenderResource::LoadMeshData(GameObjectMeshDesc& mesh_desc)
     {
         RenderMeshData meshData;
         meshData.m_static_mesh_data.m_layout = {
             {ShaderDataType::Float3, "a_Position"}, {ShaderDataType::Float3, "a_Normal"},
-            {ShaderDataType::Float2, "a_TexCoord"}, {ShaderDataType::Int, "a_EntityID"},
+            {ShaderDataType::Float2, "a_TexCoord"}, 
         };
-        ObjLoader::Load(mesh_desc, meshData, entityID);
+        ObjLoader::Load(mesh_desc, meshData);
         return meshData;
     } 
     

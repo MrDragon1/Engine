@@ -16,7 +16,7 @@ namespace Ethereal
         GLMesh& GetGLMesh(RenderEntity entity);
         GLMaterial& GetGLMaterial(RenderEntity entity);
 
-        RenderMeshData LoadMeshData(GameObjectMeshDesc& mesh_desc, int entityID = -1);
+        RenderMeshData LoadMeshData(GameObjectMeshDesc& mesh_desc);
         void LoadMaterialData(GameObjectMaterialDesc& material_desc);
 
       private:

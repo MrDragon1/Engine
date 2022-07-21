@@ -22,6 +22,7 @@ void main()
 #type fragment
 #version 460 core
 layout(location = 0) out vec4 FragColor;
+layout(location = 1) out int EntityID;
 
 in vec3 v_LocalPos;
 uniform samplerCube u_SkyboxTexture;
@@ -34,4 +35,5 @@ void main()
     envColor = pow(envColor, vec3(1.0/2.2)); 
 
     FragColor = vec4(envColor, 1.0);
+    EntityID = -1;
 }

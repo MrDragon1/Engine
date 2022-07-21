@@ -64,6 +64,8 @@ namespace Ethereal
             for (auto& RenderNode : visiableRenderNode) {
                 RenderNode.ref_mesh->m_VAO->Bind();
                 m_Shader->SetMat4("u_Model", RenderNode.model_matrix);
+                m_Shader->SetInt("u_EntityID", RenderNode.EntityID);
+                
                 RenderNode.ref_material->m_AlbedoMap->Bind(0);
                 RenderNode.ref_material->m_NormalMap->Bind(1);
                 RenderNode.ref_material->m_MetallicMap->Bind(2);

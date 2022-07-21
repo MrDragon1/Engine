@@ -73,9 +73,6 @@ namespace Ethereal
         glm::vec3 Position;
         glm::vec3 Normal;
         glm::vec2 UV;
-
-        // Editor-only
-        int EntityID;
     };
     template <typename T>
     class BufferData {
@@ -153,6 +150,7 @@ namespace Ethereal
 
     struct RenderNode {
         glm::mat4 model_matrix;
+        size_t EntityID;
         GLMesh* ref_mesh = nullptr;
         GLMaterial* ref_material = nullptr;
         // uint32_t node_id;

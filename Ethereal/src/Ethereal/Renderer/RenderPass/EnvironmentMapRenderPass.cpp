@@ -94,13 +94,14 @@ namespace Ethereal
             float roughness = (float)mip / (float)(maxMipLevels - 1);
             m_PrefilterShader->SetFloat("u_Roughness", roughness);
             for (int i = 0; i < 6; i++) {
-                m_EnvTexture->Bind(0);
+                m_EnvCubeMap->Bind(0);
                 m_PrefilterShader->SetMat4("u_View", captureViews[i]);
                 m_PrefilterCubeMap->BindToFramebuffer(0, i, mip);
                 RenderCommand::Clear();
                 RenderCommand::DrawIndexed(m_Cube.m_VAO, m_Cube.m_IndexCount);
             }
         }
+        m_Framebuffer->Unbind();
         RenderCommand::SetDepthFunc(ETHEREAL_DEPTH_FUNC::LESS);
         m_IsFirstCall = false;
     }
