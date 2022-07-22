@@ -1,7 +1,7 @@
 #include "Scene.hpp"
 
 #include "Components.hpp"
-#include "Ethereal/Renderer/RenderSystem.hpp"
+#include "Ethereal/Core/GlobalContext.hpp"
 #include "Ethereal/Scene/ScriptableEntity.hpp"
 #include "Ethereal/Utils/IniParser.hpp"
 #include "box2d/b2_body.h"
@@ -133,7 +133,7 @@ namespace Ethereal
         return Object;
     }
 
-    void Scene::OnUpdateRuntime(Timestep ts, RenderSystem& renderSystem) {
+    void Scene::OnUpdateRuntime(Timestep ts) {
         // Update Scripts
         {
             m_Registry.view<NativeScriptComponent>().each([=](auto entity, auto& scriptable) {
@@ -189,11 +189,11 @@ namespace Ethereal
             renderSceneData.ProjectionMatrix = mainCamera->GetProjection();
             renderSceneData.CameraPosition = cameraPosition;
             renderSceneData.Skybox = m_SkyboxData;
-            SubmitRenderScene(renderSystem, renderSceneData);
+            SubmitRenderScene(renderSceneData);
         }
     }
 
-    void Scene::OnUpdateEditor(Timestep ts, EditorCamera& editorCamera, RenderSystem& renderSystem) {
+    void Scene::OnUpdateEditor(Timestep ts, EditorCamera& editorCamera) {
         RenderSceneData renderSceneData;
         renderSceneData.ViewProjectionMatrix = editorCamera.GetViewProjection();
         renderSceneData.ViewMatrix = editorCamera.GetViewMatrix();
@@ -201,10 +201,10 @@ namespace Ethereal
         renderSceneData.CameraPosition = editorCamera.GetPosition();
         renderSceneData.Skybox = m_SkyboxData;
 
-        SubmitRenderScene(renderSystem, renderSceneData);
+        SubmitRenderScene(renderSceneData);
     }
 
-    void Scene::SubmitRenderScene(RenderSystem& renderSystem, RenderSceneData& renderSceneData) {
+    void Scene::SubmitRenderScene(RenderSceneData& renderSceneData) {
         auto view = m_Registry.view<TransformComponent, MeshComponent, MaterialComponent>();
         for (auto entity : view) {
             const auto [transform, meshComponent, materialComponent] = view.get<TransformComponent, MeshComponent, MaterialComponent>(entity);
@@ -223,7 +223,7 @@ namespace Ethereal
 
             renderSceneData.EntitiesData.push_back(entityData);
         }
-        renderSystem.UpdateRenderScene(renderSceneData);
+        GlobalContext::GetRenderSystem().UpdateRenderScene(renderSceneData);
     }
 
     void Scene::DestroyEntity(Entity entity) { m_Registry.destroy(entity); }
@@ -296,12 +296,14 @@ namespace Ethereal
     }
 
     void Scene::SetSkybox(const std::string& path) {
+        m_SkyboxPath = path;
+        GlobalContext::GetRenderSystem().m_EnvironmentMapRenderPass->Reset();
         mINI::INIFile file(path);
         mINI::INIStructure ini;
         file.read(ini);
 
         std::string tmppath = path;
-        replace(tmppath.begin(), tmppath.end(), '\\', '/'); //替换'\'为'/'
+        replace(tmppath.begin(), tmppath.end(), '\\', '/');  //替换'\'为'/'
         std::string path_prefix = tmppath.substr(0, tmppath.find_last_of('/') + 1);
         m_SkyboxData.BackgroundMapPath = path_prefix + ini["Background"]["BGfile"].substr(1, ini["Background"]["BGfile"].length() - 2);
         m_SkyboxData.EnvironmentMapPath = path_prefix + ini["Enviroment"]["EVfile"].substr(1, ini["Enviroment"]["EVfile"].length() - 2);

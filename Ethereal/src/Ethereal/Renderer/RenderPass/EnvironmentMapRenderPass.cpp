@@ -37,7 +37,7 @@ namespace Ethereal
 
     void EnvironmentMapRenderPass::Draw() {
         if (!m_IsFirstCall) return;
-        ET_CORE_INFO("!!! EnvironmentMapRenderPass::Draw()");
+        ET_CORE_INFO("EnvironmentMapRenderPass::Draw()");
         m_BackgroundTexture = TextureManager::AddTexture(m_BackgroundTexturePath);
         m_EnvironmentTexture = TextureManager::AddTexture(m_EnvironmentTexturePath);
         m_ReflectionTexture = TextureManager::AddTexture(m_ReflectionTexturePath);

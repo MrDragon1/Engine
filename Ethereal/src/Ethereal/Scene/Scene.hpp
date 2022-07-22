@@ -29,9 +29,9 @@ namespace Ethereal
         Entity CreateEntityWithUUID(UUID uuid, const std::string& name = std::string());
         Entity Create3DObject(ETHEREAL_BASIC_3DOBJECT type);
 
-        void OnUpdateRuntime(Timestep ts, RenderSystem& renderSystem);
-        void OnUpdateEditor(Timestep ts, EditorCamera& editorCamera, RenderSystem& renderSystem);
-        void SubmitRenderScene(RenderSystem& renderSystem, RenderSceneData& renderSceneData);
+        void OnUpdateRuntime(Timestep ts);
+        void OnUpdateEditor(Timestep ts, EditorCamera& editorCamera);
+        void SubmitRenderScene(RenderSceneData& renderSceneData);
 
         void DestroyEntity(Entity entity);
         void DuplicateEntity(Entity entity);
@@ -44,6 +44,7 @@ namespace Ethereal
 
         entt::registry& GetRegistry() { return m_Registry; }
         const std::string& GetName() const { return m_SceneName; }
+        const std::string& GetSkybox() const { return m_SkyboxPath; }
         void SetName(const std::string& name) { m_SceneName = name; }
         void SetSkybox(const std::string& path);
 
@@ -56,6 +57,7 @@ namespace Ethereal
         uint32_t m_ViewportWidth = 0, m_ViewportHeight = 0;
         std::string m_SceneName = "Untitled";
 
+        std::string m_SkyboxPath;
         SkyboxData m_SkyboxData;
 
         b2World* m_PhysicsWorld = nullptr;

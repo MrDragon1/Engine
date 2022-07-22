@@ -1,9 +1,7 @@
 #include "EditorLayer.hpp"
+#include "pch.hpp"
 
-// Should remove this
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-
+#include "Ethereal/Core/GlobalContext.hpp"
 #include "Ethereal/Scene/Components.hpp"
 #include "Ethereal/Scene/SceneSerializer.hpp"
 #include "Ethereal/Utils/Math.hpp"
@@ -36,17 +34,17 @@ namespace Ethereal
     void EditorLayer::OnUpdate(Timestep ts) {
         switch (m_SceneState) {
             case SceneState::Play: {
-                m_ActiveScene->OnUpdateRuntime(ts, m_RenderSystem);
+                m_ActiveScene->OnUpdateRuntime(ts);
                 break;
             }
             case SceneState::Edit: {
                 m_EditorCamera.OnUpdate(ts);
-                m_ActiveScene->OnUpdateEditor(ts, m_EditorCamera, m_RenderSystem);
+                m_ActiveScene->OnUpdateEditor(ts, m_EditorCamera);
                 break;
             }
         }
-        m_RenderSystem.m_ShadowMapRenderPass->SetLightPosition(m_LightPos);
-        m_RenderSystem.Draw(ts);
+        GlobalContext::GetRenderSystem().m_ShadowMapRenderPass->SetLightPosition(m_LightPos);
+        GlobalContext::GetRenderSystem().Draw(ts);
 
         if (m_SceneState == SceneState::Edit) {
             auto [mx, my] = ImGui::GetMousePos();
@@ -58,7 +56,7 @@ namespace Ethereal
             int mouseY = (int)my;
 
             if (mouseX >= 0 && mouseY >= 0 && mouseX < (int)viewportSize.x && mouseY < (int)viewportSize.y) {
-                int pixelData = m_RenderSystem.GetMousePicking(mouseX, mouseY);
+                int pixelData = GlobalContext::GetRenderSystem().GetMousePicking(mouseX, mouseY);
                 // ET_CORE_INFO("Pixel data: {0}", pixelData);
                 m_HoveredEntity = pixelData == -1 ? Entity() : Entity((entt::entity)pixelData, m_ActiveScene.get());
             }
@@ -177,14 +175,15 @@ namespace Ethereal
         m_ViewportSize = {viewportPanelSize.x, viewportPanelSize.y};
         // Resize
         if (m_ViewportSize.x > 0.0f && m_ViewportSize.y > 0.0f &&  // zero sized framebuffer is invalid
-            (m_RenderSystem.GetMainImageWidth() != m_ViewportSize.x || m_RenderSystem.GetMainImageHeight() != m_ViewportSize.y)) {
+            (GlobalContext::GetRenderSystem().GetMainImageWidth() != m_ViewportSize.x ||
+             GlobalContext::GetRenderSystem().GetMainImageHeight() != m_ViewportSize.y)) {
             // m_Framebuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-            m_RenderSystem.OnResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+            GlobalContext::GetRenderSystem().OnResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
             m_CameraController.OnResize(m_ViewportSize.x, m_ViewportSize.y);
             m_EditorCamera.SetViewportSize(m_ViewportSize.x, m_ViewportSize.y);
             m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
         }
-        uint64_t textureID = m_RenderSystem.GetMainImage();
+        uint64_t textureID = GlobalContext::GetRenderSystem().GetMainImage();
         // ET_CORE_INFO("texture ID {}", textureID);
         ImGui::Image(reinterpret_cast<void*>(textureID), ImVec2{m_ViewportSize.x, m_ViewportSize.y}, ImVec2{0, 1}, ImVec2{1, 0});
 
@@ -423,7 +422,7 @@ namespace Ethereal
         if (ImGui::Begin("Skybox", p_open,
                          ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize)) {
             ImGui::Separator();
-            ImGui::Image(reinterpret_cast<void*>(m_RenderSystem.GetSkyboxImage()), ImVec2(256, 128), ImVec2(0, 1), ImVec2(1, 0));
+            ImGui::Image(reinterpret_cast<void*>(GlobalContext::GetRenderSystem().GetSkyboxImage()), ImVec2(256, 128), ImVec2(0, 1), ImVec2(1, 0));
             ImGui::Separator();
             if (ImGui::Button("Load Skybox")) {
                 std::string filepath = FileDialogs::OpenFile("Skybox (*.ibl)\0*.ibl\0");
@@ -431,7 +430,6 @@ namespace Ethereal
                     if (m_EditorScene) {
                         ET_CORE_INFO("Open Skybox {0}", filepath);
                         m_EditorScene->SetSkybox(filepath);
-                        m_RenderSystem.m_EnvironmentMapRenderPass->Reset();
                     }
                 }
             }

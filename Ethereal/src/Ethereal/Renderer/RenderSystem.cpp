@@ -13,7 +13,7 @@
 
 namespace Ethereal
 {
-    RenderSystem::RenderSystem() { Init(); }
+    RenderSystem::RenderSystem() { }
 
     void RenderSystem::Init() {
         m_Width = 1280;

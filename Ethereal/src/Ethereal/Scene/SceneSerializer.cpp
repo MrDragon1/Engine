@@ -233,7 +233,13 @@ namespace Ethereal
     void SceneSerializer::Serialize(const std::string& filepath) {
         YAML::Emitter out;
         out << YAML::BeginMap;
-        out << YAML::Key << "Scene" << YAML::Value << m_Scene->GetName() ;
+
+        out << YAML::Key << "Scene";
+        out << YAML::BeginMap;  // TransformComponent
+        out << YAML::Key << "Name" << YAML::Value << m_Scene->GetName();
+        out << YAML::Key << "Skybox" << YAML::Value << m_Scene->GetSkybox();
+        out << YAML::EndMap;  // TransformComponent
+
         out << YAML::Key << "Entities" << YAML::Value << YAML::BeginSeq;
         m_Scene->m_Registry.each([&](auto entityID) {
             Entity entity = {entityID, m_Scene.get()};
@@ -263,9 +269,12 @@ namespace Ethereal
         }
         if (!data["Scene"]) return false;
 
-        std::string sceneName = data["Scene"].as<std::string>();
+
+        std::string sceneName = data["Scene"]["Name"].as<std::string>();
         m_Scene->SetName(sceneName);
-        ET_CORE_TRACE("Deserializing scene '{0}'", sceneName);
+        m_Scene->SetSkybox(data["Scene"]["Skybox"].as<std::string>());
+
+        ET_CORE_TRACE("Deserializing scene '{0}' {1}", sceneName,data["Scene"]["Skybox"].as<std::string>());
 
         auto entities = data["Entities"];
         if (entities) {
@@ -303,7 +312,6 @@ namespace Ethereal
                     material.Desc.m_NormalFile = materialComponent["m_NormalFile"].as<std::string>();
                     material.Desc.m_OcclusionFile = materialComponent["m_OcclusionFile"].as<std::string>();
                     material.Desc.m_EmissiveFile = materialComponent["m_EmissiveFile"].as<std::string>();
-
 
                     material.Desc.m_Albedo = materialComponent["m_Albedo"].as<glm::vec3>();
                     material.Desc.m_Metallic = materialComponent["m_Metallic"].as<float>();

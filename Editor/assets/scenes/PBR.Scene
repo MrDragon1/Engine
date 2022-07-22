@@ -1,4 +1,6 @@
-Scene: Test Scene
+Scene:
+  Name: Test Scene
+  Skybox: G:\Code\Engine\Editor\assets\skyboxs\Walk_Of_Fame\Walk_Of_Fame.ibl
 Entities:
   - Entity: 11244255559850430025
     TagComponent:

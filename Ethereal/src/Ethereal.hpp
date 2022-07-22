@@ -9,6 +9,8 @@
 #include "Ethereal/Core/OrthographicCameraController.hpp"
 #include "Ethereal/Core/Timestep.hpp"
 
+#include "Ethereal/Core/GlobalContext.hpp"
+
 // ---Imgui----------------------------
 #include "Ethereal/ImGui/ImGuiLayer.hpp"
 

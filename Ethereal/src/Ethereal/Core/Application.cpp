@@ -6,6 +6,7 @@
 #include "Ethereal/Event/ApplicationEvent.hpp"
 #include "Ethereal/Utils/PlatformUtils.hpp"
 #include "Ethereal/Renderer/Renderer.hpp"
+#include "Ethereal/Core/GlobalContext.hpp"
 namespace Ethereal
 {
     Application* Application::s_Instance = nullptr;
@@ -18,7 +19,8 @@ namespace Ethereal
 
         // Renderer::Init();
         RenderCommand::Init();
-
+        GlobalContext::Reset();
+        
         m_ImGuiLayer = new ImGuiLayer();
         PushOverlay(m_ImGuiLayer);
     }
