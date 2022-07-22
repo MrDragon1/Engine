@@ -153,7 +153,6 @@ namespace Ethereal
             textureData->m_width = width;
             textureData->m_height = height;
             textureData->m_depth = 1;
-            textureData->m_array_layers = 1;
             textureData->m_mip_levels = 1;
             textureData->m_type = ETHEREAL_IMAGE_TYPE::ETHEREAL_IMAGE_TYPE_2D;
             size_t datasize = width * height * channels;

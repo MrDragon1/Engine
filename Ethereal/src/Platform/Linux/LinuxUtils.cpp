@@ -12,7 +12,7 @@ namespace Ethereal
 {
 
     std::string FileDialogs::OpenFile(const char* filter) {
-        OPENFILENAMEA ofn;
+        OPENFILENAME ofn;
         CHAR szFile[260] = {0};
         ZeroMemory(&ofn, sizeof(OPENFILENAME));
         ofn.lStructSize = sizeof(OPENFILENAME);
@@ -22,14 +22,14 @@ namespace Ethereal
         ofn.lpstrFilter = filter;
         ofn.nFilterIndex = 1;
         ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
-        if (GetOpenFileNameA(&ofn) == TRUE) {
+        if (GetOpenFileName(&ofn)) {
             return ofn.lpstrFile;
         }
         return std::string();
     }
 
     std::string FileDialogs::SaveFile(const char* filter) {
-        OPENFILENAMEA ofn;
+        OPENFILENAME ofn;
         CHAR szFile[260] = {0};
         ZeroMemory(&ofn, sizeof(OPENFILENAME));
         ofn.lStructSize = sizeof(OPENFILENAME);
@@ -39,12 +39,12 @@ namespace Ethereal
         ofn.lpstrFilter = filter;
         ofn.nFilterIndex = 1;
         ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
-        if (GetSaveFileNameA(&ofn) == TRUE) {
+        if (GetSaveFileName(&ofn)) {
             return ofn.lpstrFile;
         }
         return std::string();
     }
-    
+
     float Time::GetTime() { return glfwGetTime(); }
 
 }  // namespace Ethereal

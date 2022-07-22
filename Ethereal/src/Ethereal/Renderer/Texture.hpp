@@ -13,7 +13,6 @@ namespace Ethereal
         uint32_t m_height {0};
         uint32_t m_depth {0};
         uint32_t m_mip_levels {0};
-        uint32_t m_array_layers {0};
         void*    m_pixels {nullptr};
 
         ETHEREAL_PIXEL_FORMAT m_format {ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_UNKNOWN};

@@ -3,6 +3,7 @@
 #include "Components.hpp"
 #include "Ethereal/Renderer/RenderSystem.hpp"
 #include "Ethereal/Scene/ScriptableEntity.hpp"
+#include "Ethereal/Utils/IniParser.hpp"
 #include "box2d/b2_body.h"
 #include "box2d/b2_fixture.h"
 #include "box2d/b2_polygon_shape.h"
@@ -182,22 +183,28 @@ namespace Ethereal
         }
 
         if (mainCamera) {
-            SubmitRenderScene(renderSystem, mainCamera->GetProjection() * glm::inverse(cameraTransform));
-            renderSystem.m_MainCameraRenderPass->SetCameraPosition(cameraPosition);
+            RenderSceneData renderSceneData;
+            renderSceneData.ViewProjectionMatrix = mainCamera->GetProjection() * glm::inverse(cameraTransform);
+            renderSceneData.ViewMatrix = glm::inverse(cameraTransform);
+            renderSceneData.ProjectionMatrix = mainCamera->GetProjection();
+            renderSceneData.CameraPosition = cameraPosition;
+            renderSceneData.Skybox = m_SkyboxData;
+            SubmitRenderScene(renderSystem, renderSceneData);
         }
     }
 
     void Scene::OnUpdateEditor(Timestep ts, EditorCamera& editorCamera, RenderSystem& renderSystem) {
-        SubmitRenderScene(renderSystem, editorCamera.GetViewProjection());
-        renderSystem.m_MainCameraRenderPass->SetCameraPosition(editorCamera.GetPosition());
-        renderSystem.m_SkyboxRenderPass->SetSkyboxProjection(editorCamera.GetProjection());
-        renderSystem.m_SkyboxRenderPass->SetSkyboxView(editorCamera.GetViewMatrix());
+        RenderSceneData renderSceneData;
+        renderSceneData.ViewProjectionMatrix = editorCamera.GetViewProjection();
+        renderSceneData.ViewMatrix = editorCamera.GetViewMatrix();
+        renderSceneData.ProjectionMatrix = editorCamera.GetProjection();
+        renderSceneData.CameraPosition = editorCamera.GetPosition();
+        renderSceneData.Skybox = m_SkyboxData;
+
+        SubmitRenderScene(renderSystem, renderSceneData);
     }
 
-    void Scene::SubmitRenderScene(RenderSystem& renderSystem, const glm::mat4& viewProjectionMatrix) {
-        RenderSceneData renderSceneData;
-        renderSceneData.ViewProjectionMatrix = viewProjectionMatrix;
-
+    void Scene::SubmitRenderScene(RenderSystem& renderSystem, RenderSceneData& renderSceneData) {
         auto view = m_Registry.view<TransformComponent, MeshComponent, MaterialComponent>();
         for (auto entity : view) {
             const auto [transform, meshComponent, materialComponent] = view.get<TransformComponent, MeshComponent, MaterialComponent>(entity);
@@ -219,9 +226,7 @@ namespace Ethereal
         renderSystem.UpdateRenderScene(renderSceneData);
     }
 
-    void Scene::DestroyEntity(Entity entity) { 
-        
-        m_Registry.destroy(entity); }
+    void Scene::DestroyEntity(Entity entity) { m_Registry.destroy(entity); }
 
     void Scene::DuplicateEntity(Entity entity) {
         std::string name = entity.GetName();
@@ -288,6 +293,19 @@ namespace Ethereal
             if (camera.Primary) return Entity{entity, this};
         }
         return {};
+    }
+
+    void Scene::SetSkybox(const std::string& path) {
+        mINI::INIFile file(path);
+        mINI::INIStructure ini;
+        file.read(ini);
+
+        std::string tmppath = path;
+        replace(tmppath.begin(), tmppath.end(), '\\', '/'); //替换'\'为'/'
+        std::string path_prefix = tmppath.substr(0, tmppath.find_last_of('/') + 1);
+        m_SkyboxData.BackgroundMapPath = path_prefix + ini["Background"]["BGfile"].substr(1, ini["Background"]["BGfile"].length() - 2);
+        m_SkyboxData.EnvironmentMapPath = path_prefix + ini["Enviroment"]["EVfile"].substr(1, ini["Enviroment"]["EVfile"].length() - 2);
+        m_SkyboxData.ReflectionMapPath = path_prefix + ini["Reflection"]["REFfile"].substr(1, ini["Reflection"]["REFfile"].length() - 2);
     }
 
     template <typename T>

@@ -2,9 +2,11 @@
 
 #include "Ethereal/Renderer/Texture.hpp"
 #include "Ethereal/Renderer/Common.hpp"
+#include "Ethereal/Core/Base/Singleton.hpp"
 namespace Ethereal
 {
-    class TextureManager {
+    class TextureManager : public Singleton<TextureManager>
+    {
     public:
         static Ref<Texture> GetTexture(const std::string& path);
         static Ref<Texture> AddTexture(const std::string& path);

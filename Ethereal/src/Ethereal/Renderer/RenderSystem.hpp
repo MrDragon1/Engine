@@ -24,6 +24,11 @@ namespace Ethereal
 
     struct RenderSceneData {
         glm::mat4 ViewProjectionMatrix;
+        glm::mat4 ViewMatrix;
+        glm::mat4 ProjectionMatrix;
+        glm::vec3 CameraPosition;
+        SkyboxData Skybox;
+
         std::vector<EntityDataForRenderSystem> EntitiesData;
         // TODO: Lights
     };
@@ -40,8 +45,9 @@ namespace Ethereal
         uint32_t GetMainImageHeight() { return m_Height; };
         uint32_t GetMainImageWidth() { return m_Width; };
         uint64_t GetMainImage();
+        uint64_t GetSkyboxImage() { return m_EnvironmentMapRenderPass->m_BackgroundTexture->GetRendererID(); };
         int GetMousePicking(int x, int y);
-        
+
         Ref<RenderScene> m_RenderScene;
         Ref<RenderResource> m_RenderResource;  // All the mesh in scene
         Ref<MainCameraRenderPass> m_MainCameraRenderPass;

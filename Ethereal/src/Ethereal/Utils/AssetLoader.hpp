@@ -6,15 +6,16 @@
 #include "tiny_obj_loader.h"
 
 #include "Ethereal/Renderer/Common.hpp"
+#include "Ethereal/Core/Base/Singleton.hpp"
 namespace Ethereal
 {
 
-    class ObjLoader {
+    class ObjLoader : public Singleton<ObjLoader>{
       public:
         static void Load(const GameObjectMeshDesc& desc, RenderMeshData& renderMeshData);
     };
 
-    class TextureLoader {
+    class TextureLoader : public Singleton<TextureLoader>{
       public:
         static void LoadPath(const std::string& path, Ref<TextureData>& textureData, bool flip = true);
     };

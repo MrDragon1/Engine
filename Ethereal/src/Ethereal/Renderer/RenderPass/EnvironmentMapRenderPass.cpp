@@ -20,25 +20,28 @@ namespace Ethereal
         Ref<TextureData> data512 = CreateRef<TextureData>();
         data512->m_width = 512;
         data512->m_height = 512;
-        m_EnvCubeMap = TextureCube::Create(data512);
+        m_BackgroundCubeMap = TextureCube::Create(data512);
         Ref<TextureData> data32 = CreateRef<TextureData>();
         data32->m_width = 32;
         data32->m_height = 32;
-        m_IrradianceCubeMap = TextureCube::Create(data32);
+        m_EnvironmentCubeMap = TextureCube::Create(data32);
 
         Ref<TextureData> data128 = CreateRef<TextureData>();
         data128->m_width = 128;
         data128->m_height = 128;
-        m_PrefilterCubeMap = TextureCube::Create(data128);
-        m_PrefilterCubeMap->GenerateMipmaps();
+        m_ReflectionCubeMap = TextureCube::Create(data128);
+        m_ReflectionCubeMap->GenerateMipmaps();
 
-        m_EnvTexture = TextureManager::AddTexture(m_EnvTexturePath);
-        m_IrradianceTexture = TextureManager::AddTexture(m_IrradianceTexturePath);
-        m_BRDFLUTTexture = TextureManager::AddTexture(m_BRDFLUTTexturePath);
+        m_ReflectionCubeMapNoMipmaps = TextureCube::Create(data128);
     }
 
     void EnvironmentMapRenderPass::Draw() {
         if (!m_IsFirstCall) return;
+        ET_CORE_INFO("!!! EnvironmentMapRenderPass::Draw()");
+        m_BackgroundTexture = TextureManager::AddTexture(m_BackgroundTexturePath);
+        m_EnvironmentTexture = TextureManager::AddTexture(m_EnvironmentTexturePath);
+        m_ReflectionTexture = TextureManager::AddTexture(m_ReflectionTexturePath);
+        m_BRDFLUTTexture = TextureManager::AddTexture(m_BRDFLUTTexturePath);
 
         glm::mat4 captureProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
         glm::mat4 captureViews[] = {glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
@@ -53,24 +56,35 @@ namespace Ethereal
         m_EquirectangularToCubeMapShader->SetInt("u_EquirectangularMap0", 0);
         m_EquirectangularToCubeMapShader->SetMat4("u_Projection", captureProjection);
 
-        // Generate Environment CubeMap
+        // Generate Background CubeMap
         m_Framebuffer->Resize(512, 512);
         m_Framebuffer->Bind();
         for (int i = 0; i < 6; i++) {
-            m_EnvTexture->Bind(0);
+            m_BackgroundTexture->Bind(0);
             m_EquirectangularToCubeMapShader->SetMat4("u_View", captureViews[i]);
-            m_EnvCubeMap->BindToFramebuffer(0, i);
+            m_BackgroundCubeMap->BindToFramebuffer(0, i);
             RenderCommand::Clear();
             RenderCommand::DrawIndexed(m_Cube.m_VAO, m_Cube.m_IndexCount);
         }
 
-        // Generate Irradiance CubeMap
+        // Generate Environment CubeMap
         m_Framebuffer->Resize(32, 32);
         m_Framebuffer->Bind();
         for (int i = 0; i < 6; i++) {
-            m_IrradianceTexture->Bind(0);
+            m_EnvironmentTexture->Bind(0);
             m_EquirectangularToCubeMapShader->SetMat4("u_View", captureViews[i]);
-            m_IrradianceCubeMap->BindToFramebuffer(0, i);
+            m_EnvironmentCubeMap->BindToFramebuffer(0, i);
+            RenderCommand::Clear();
+            RenderCommand::DrawIndexed(m_Cube.m_VAO, m_Cube.m_IndexCount);
+        }
+
+        // Generate Reflection CubeMap
+        m_Framebuffer->Resize(128, 128);
+        m_Framebuffer->Bind();
+        for (int i = 0; i < 6; i++) {
+            m_ReflectionTexture->Bind(0);
+            m_EquirectangularToCubeMapShader->SetMat4("u_View", captureViews[i]);
+            m_ReflectionCubeMapNoMipmaps->BindToFramebuffer(0, i);
             RenderCommand::Clear();
             RenderCommand::DrawIndexed(m_Cube.m_VAO, m_Cube.m_IndexCount);
         }
@@ -88,15 +102,15 @@ namespace Ethereal
             unsigned int mipWidth = static_cast<unsigned int>(128 * std::pow(0.5, mip));
             unsigned int mipHeight = static_cast<unsigned int>(128 * std::pow(0.5, mip));
 
-            //RenderCommand::SetViewport(0, 0, mipWidth, mipHeight);
+            // RenderCommand::SetViewport(0, 0, mipWidth, mipHeight);
             m_Framebuffer->Resize(mipWidth, mipHeight);
             m_Framebuffer->Bind();
             float roughness = (float)mip / (float)(maxMipLevels - 1);
             m_PrefilterShader->SetFloat("u_Roughness", roughness);
             for (int i = 0; i < 6; i++) {
-                m_EnvCubeMap->Bind(0);
+                m_ReflectionCubeMapNoMipmaps->Bind(0);
                 m_PrefilterShader->SetMat4("u_View", captureViews[i]);
-                m_PrefilterCubeMap->BindToFramebuffer(0, i, mip);
+                m_ReflectionCubeMap->BindToFramebuffer(0, i, mip);
                 RenderCommand::Clear();
                 RenderCommand::DrawIndexed(m_Cube.m_VAO, m_Cube.m_IndexCount);
             }

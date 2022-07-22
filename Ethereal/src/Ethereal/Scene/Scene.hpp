@@ -9,8 +9,15 @@
 class b2World;
 namespace Ethereal
 {
+    struct SkyboxData {
+        std::string BackgroundMapPath = "assets/skyboxs/Newport_Loft/Newport_Loft_8k.jpg";
+        std::string EnvironmentMapPath = "assets/skyboxs/Newport_Loft/Newport_Loft_Env.hdr";
+        std::string ReflectionMapPath = "assets/skyboxs/Newport_Loft/Newport_Loft_Ref.hdr";
+    };
+
     class RenderSystem;
     class Entity;
+    struct RenderSceneData;
     class Scene {
       public:
         Scene();
@@ -22,10 +29,9 @@ namespace Ethereal
         Entity CreateEntityWithUUID(UUID uuid, const std::string& name = std::string());
         Entity Create3DObject(ETHEREAL_BASIC_3DOBJECT type);
 
-
         void OnUpdateRuntime(Timestep ts, RenderSystem& renderSystem);
         void OnUpdateEditor(Timestep ts, EditorCamera& editorCamera, RenderSystem& renderSystem);
-        void SubmitRenderScene(RenderSystem& renderSystem, const glm::mat4& viewProjectionMatrix);
+        void SubmitRenderScene(RenderSystem& renderSystem, RenderSceneData& renderSceneData);
 
         void DestroyEntity(Entity entity);
         void DuplicateEntity(Entity entity);
@@ -39,6 +45,8 @@ namespace Ethereal
         entt::registry& GetRegistry() { return m_Registry; }
         const std::string& GetName() const { return m_SceneName; }
         void SetName(const std::string& name) { m_SceneName = name; }
+        void SetSkybox(const std::string& path);
+
       private:
         template <typename T>
         void OnComponentAdded(Entity entity, T& component);
@@ -47,6 +55,9 @@ namespace Ethereal
         entt::registry m_Registry;
         uint32_t m_ViewportWidth = 0, m_ViewportHeight = 0;
         std::string m_SceneName = "Untitled";
+
+        SkyboxData m_SkyboxData;
+
         b2World* m_PhysicsWorld = nullptr;
 
         friend class Entity;

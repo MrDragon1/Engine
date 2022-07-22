@@ -47,7 +47,7 @@ namespace Ethereal
         }
         m_RenderSystem.m_ShadowMapRenderPass->SetLightPosition(m_LightPos);
         m_RenderSystem.Draw(ts);
-        
+
         if (m_SceneState == SceneState::Edit) {
             auto [mx, my] = ImGui::GetMousePos();
             mx -= m_ViewportBounds[0].x;
@@ -113,6 +113,7 @@ namespace Ethereal
 
         style.WindowMinSize.x = minWinSizeX;
         static bool bShowDemoImGui = false;
+        static bool bShowSkyboxSettings = false;
         if (ImGui::BeginMenuBar()) {
             if (ImGui::BeginMenu("File")) {
                 // Disabling fullscreen would allow the window to be moved to the front of other windows,
@@ -125,15 +126,19 @@ namespace Ethereal
                 if (ImGui::MenuItem("Exit")) Application::Get().Close();
                 ImGui::EndMenu();
             }
+            if (ImGui::BeginMenu("Settings")) {
+                ImGui::MenuItem("Skybox", NULL, &bShowSkyboxSettings);
+                ImGui::EndMenu();
+            }
             if (ImGui::BeginMenu("Help")) {
                 ImGui::MenuItem("Show Demo ImGui", NULL, &bShowDemoImGui);
                 ImGui::EndMenu();
             }
             ImGui::EndMenuBar();
         }
-        if (bShowDemoImGui) {
-            ImGui::ShowDemoWindow(&bShowDemoImGui);
-        }
+        if (bShowDemoImGui) ImGui::ShowDemoWindow(&bShowDemoImGui);
+        if (bShowSkyboxSettings) ShowSkyboxSettingWindow(&bShowSkyboxSettings);
+
         m_SceneHierarchyPanel.OnImGuiRender();
         m_ContentBrowserPanel.OnImGuiRender();
 
@@ -156,8 +161,8 @@ namespace Ethereal
             }
             ImGui::EndCombo();
         }
-        
-        ImGui::DragFloat3("Light Position",glm::value_ptr(m_LightPos),0.1);
+
+        ImGui::DragFloat3("Light Position", glm::value_ptr(m_LightPos), 0.1);
         ImGui::End();
 
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
@@ -410,6 +415,29 @@ namespace Ethereal
 
         ImGui::PopStyleVar(2);
         ImGui::PopStyleColor(3);
+        ImGui::End();
+    }
+
+    void EditorLayer::ShowSkyboxSettingWindow(bool* p_open) {
+        ImGui::SetNextWindowSize(ImVec2(300, 440), ImGuiCond_FirstUseEver);
+        if (ImGui::Begin("Skybox", p_open,
+                         ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize)) {
+            ImGui::Separator();
+            ImGui::Image(reinterpret_cast<void*>(m_RenderSystem.GetSkyboxImage()), ImVec2(256, 128), ImVec2(0, 1), ImVec2(1, 0));
+            ImGui::Separator();
+            if (ImGui::Button("Load Skybox")) {
+                std::string filepath = FileDialogs::OpenFile("Skybox (*.ibl)\0*.ibl\0");
+                if (!filepath.empty()) {
+                    if (m_EditorScene) {
+                        ET_CORE_INFO("Open Skybox {0}", filepath);
+                        m_EditorScene->SetSkybox(filepath);
+                        m_RenderSystem.m_EnvironmentMapRenderPass->Reset();
+                    }
+                }
+            }
+            ImGui::Separator();
+        }
+
         ImGui::End();
     }
 }  // namespace Ethereal

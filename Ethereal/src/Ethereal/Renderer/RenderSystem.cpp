@@ -63,14 +63,14 @@ namespace Ethereal
         // m_ShadowMapRenderPass->Draw();
         // m_ShadowMapRenderPass->m_Framebuffer->GetDepthAttachment()->Bind(5);
 
-        m_EnvironmentMapRenderPass->m_IrradianceCubeMap->Bind(6);
-        m_EnvironmentMapRenderPass->m_PrefilterCubeMap->Bind(7);
+        m_EnvironmentMapRenderPass->m_EnvironmentCubeMap->Bind(6);
+        m_EnvironmentMapRenderPass->m_ReflectionCubeMap->Bind(7);
         m_EnvironmentMapRenderPass->m_BRDFLUTTexture->Bind(8);
         m_MainCameraRenderPass->Draw();
 
         // TODO : make skybox render pass a subpass of main camera render pass
         m_MainCameraRenderPass->m_Framebuffer->Bind();
-        m_EnvironmentMapRenderPass->m_EnvCubeMap->Bind(0);
+        m_EnvironmentMapRenderPass->m_BackgroundCubeMap->Bind(0);
         m_SkyboxRenderPass->Draw();
         m_MainCameraRenderPass->m_Framebuffer->Unbind();
     }
@@ -110,6 +110,15 @@ namespace Ethereal
             m_RenderScene->AddGameObject(gameObject);
         }
         m_RenderScene->UpdateVisiableMeshNode(m_RenderResource);
+
+        m_MainCameraRenderPass->SetCameraPosition(renderSceneData.CameraPosition);
+        m_SkyboxRenderPass->SetSkyboxProjection(renderSceneData.ProjectionMatrix);
+        m_SkyboxRenderPass->SetSkyboxView(renderSceneData.ViewMatrix);
+
+        m_EnvironmentMapRenderPass->m_BackgroundTexturePath = renderSceneData.Skybox.BackgroundMapPath;
+
+        m_EnvironmentMapRenderPass->m_EnvironmentTexturePath = renderSceneData.Skybox.EnvironmentMapPath;
+        m_EnvironmentMapRenderPass->m_ReflectionTexturePath = renderSceneData.Skybox.ReflectionMapPath;
 
         m_MainCameraRenderPass->SetViewProjectionMatrix(renderSceneData.ViewProjectionMatrix);
     }

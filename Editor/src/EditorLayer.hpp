@@ -37,7 +37,7 @@ namespace Ethereal
         void OnSceneStop();
 
         void UI_Toolbar();
-
+        void ShowSkyboxSettingWindow(bool* p_open);
       private:
         OrthographicCameraController m_CameraController;
         EditorCamera m_EditorCamera;

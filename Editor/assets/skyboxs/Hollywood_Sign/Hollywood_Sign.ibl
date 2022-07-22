@@ -1,0 +1,46 @@
+[Header]
+ICOfile = "HWSign3-Fence_Thumb.jpg"
+PREVIEWfile = "HWSign3-Fence_preview.jpg"
+Name = "Hollywood Sign"
+Author = "Blochi"
+Location = "Hollywood"
+Comment = "Sunset and a clear sky, lots of blue dusk light"
+GEOlat = 34.13404881298771
+GEOlong = -118.32163274288177
+Link = "http://www.hdrlabs.com/sibl/archive.html"
+Date = "2007:03:08"
+Time = "08:03:00"
+Height = 2
+North = 0
+
+[Background]
+BGfile = "HWSign3-Fence_TMap.jpg"
+BGmap = 1
+BGu = 0.000000
+BGv = 0.000000
+BGheight = 4000
+
+[Enviroment]
+EVfile = "HWSign3-Fence_Env.hdr"
+EVmap = 1
+EVu = 0.000000
+EVv = 0.000000
+EVheight = 180
+EVmulti = 1.000000
+EVgamma = 1.500000
+
+[Reflection]
+REFfile = "HWSign3-Fence_2k.hdr"
+REFmap = 1
+REFu = 0.000000
+REFv = 0.000000
+REFheight = 1024
+REFmulti = 1.000000
+REFgamma = 1.500000
+
+[Sun]
+SUNcolor = 254,206,169
+SUNmulti = 1.000000
+SUNu = 0.794000
+SUNv = 0.476000
+

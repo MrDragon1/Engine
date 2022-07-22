@@ -50,6 +50,7 @@ add_requires("spdlog","glad","glfw","glm","entt","yaml-cpp","box2d","tinyobjload
 set_languages("cxx20")
 set_optimize("fastest")
 add_defines("ET_PLATFORM_LINUX","ET_ENABLE_ASSERTS")
+add_defines("ENGINE_ROOT_DIR=$(projectdir)")
 
 add_packages("imgui")
 add_packages("spdlog","glad","glfw","glm","entt","yaml-cpp","box2d","tinyobjloader")

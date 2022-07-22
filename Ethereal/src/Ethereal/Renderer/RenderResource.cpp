@@ -118,7 +118,6 @@ namespace Ethereal
         }
     }
     
-    //TODO: use another way to mouse picking and remove entityID
     RenderMeshData RenderResource::LoadMeshData(GameObjectMeshDesc& mesh_desc)
     {
         RenderMeshData meshData;

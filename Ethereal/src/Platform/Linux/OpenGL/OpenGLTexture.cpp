@@ -108,6 +108,18 @@ namespace Ethereal
             case ETHEREAL_FILTER_FORMAT::ETHEREAL_FILTER_FORMAT_LINEAR:
                 m_FilterFormat = GL_LINEAR;
                 break;
+            case ETHEREAL_FILTER_FORMAT::ETHEREAL_FILTER_FORMAT_NEAREST_MIPMAP_NEAREST:
+                m_FilterFormat = GL_NEAREST_MIPMAP_NEAREST;
+                break;
+            case ETHEREAL_FILTER_FORMAT::ETHEREAL_FILTER_FORMAT_LINEAR_MIPMAP_NEAREST:
+                m_FilterFormat = GL_LINEAR_MIPMAP_NEAREST;
+                break;
+            case ETHEREAL_FILTER_FORMAT::ETHEREAL_FILTER_FORMAT_NEAREST_MIPMAP_LINEAR:
+                m_FilterFormat = GL_NEAREST_MIPMAP_LINEAR;
+                break;
+            case ETHEREAL_FILTER_FORMAT::ETHEREAL_FILTER_FORMAT_LINEAR_MIPMAP_LINEAR:
+                m_FilterFormat = GL_LINEAR_MIPMAP_LINEAR;
+                break;
             default:
                 ET_CORE_ASSERT("invalid texture filter type");
                 break;
@@ -159,7 +171,7 @@ namespace Ethereal
         int width, height, nrChannels;
         for (unsigned int i = 0; i < paths.size(); i++) {
             Ref<TextureData> textureData = CreateRef<TextureData>();
-            TextureLoader::LoadPath(paths[i], textureData,false);
+            TextureLoader::LoadPath(paths[i], textureData);
             glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, textureData->m_width, textureData->m_height, 0, GL_RGB, GL_UNSIGNED_BYTE,
                          textureData->m_pixels);
             m_Width = textureData->m_width;

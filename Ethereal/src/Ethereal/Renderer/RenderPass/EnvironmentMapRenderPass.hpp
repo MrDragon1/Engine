@@ -22,16 +22,20 @@ namespace Ethereal
         Ref<Shader> m_PrefilterShader;
         std::string m_PrefilterShaderPath = "assets/shaders/Prefilter.glsl";
 
-        Ref<TextureCube> m_EnvCubeMap;
-        Ref<TextureCube> m_PrefilterCubeMap;
-        Ref<TextureCube> m_IrradianceCubeMap;
+        Ref<TextureCube> m_BackgroundCubeMap;
+        Ref<TextureCube> m_EnvironmentCubeMap;
+        Ref<TextureCube> m_ReflectionCubeMap;
         Ref<Texture> m_BRDFLUTTexture;
 
-        Ref<Texture> m_EnvTexture;
-        Ref<Texture> m_IrradianceTexture;
+        Ref<Texture> m_BackgroundTexture;
+        Ref<Texture> m_EnvironmentTexture;
+        Ref<Texture> m_ReflectionTexture;
+        Ref<TextureCube> m_ReflectionCubeMapNoMipmaps;
 
-        std::string m_EnvTexturePath = "assets/textures/skybox/Newport_Loft/Newport_Loft_Ref.hdr";
-        std::string m_IrradianceTexturePath = "assets/textures/skybox/Newport_Loft/Newport_Loft_Env.hdr";
+        std::string m_BackgroundTexturePath;
+        std::string m_EnvironmentTexturePath;
+        std::string m_ReflectionTexturePath;
+
         std::string m_BRDFLUTTexturePath = "assets/textures/global/brdf_schilk.hdr";
 
         GLMesh m_Cube;

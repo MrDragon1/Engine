@@ -20,6 +20,11 @@
 #define ET_CORE_ASSERT(x, ...)
 #endif
 
+#define ET_EXPAND_MACRO(x) x
+// https://gcc.gnu.org/onlinedocs/cpp/Stringizing.html
+#define ET_XSTRINGIFY_MACRO(x) ET_STRINGIFY_MACRO(x)
+#define ET_STRINGIFY_MACRO(x) #x
+
 #define BIT(x) (1 << x)
 
 #define ET_BIND_EVENT_FN(fn) std::bind(&fn, this, std::placeholders::_1)
