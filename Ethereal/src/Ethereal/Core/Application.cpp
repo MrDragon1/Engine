@@ -5,7 +5,6 @@
 #include "Ethereal/Core/Log.hpp"
 #include "Ethereal/Event/ApplicationEvent.hpp"
 #include "Ethereal/Utils/PlatformUtils.hpp"
-#include "Ethereal/Renderer/Renderer.hpp"
 #include "Ethereal/Core/GlobalContext.hpp"
 namespace Ethereal
 {
@@ -17,7 +16,6 @@ namespace Ethereal
         m_Window = Window::Create(WindowProps(name));
         m_Window->SetEventCallback(ET_BIND_EVENT_FN(Application::OnEvent));
 
-        // Renderer::Init();
         RenderCommand::Init();
         GlobalContext::Reset();
         
@@ -78,8 +76,7 @@ namespace Ethereal
         }
 
         m_Minimized = false;
-        Renderer::OnWindowResize(e.GetWidth(), e.GetHeight());
-
+        RenderCommand::SetViewport(0, 0, e.GetWidth(), e.GetHeight());
         return false;
     }
 

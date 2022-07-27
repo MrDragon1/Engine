@@ -1,13 +1,13 @@
 #include "pch.hpp"
 #include "Shader.hpp"
 
-#include "Ethereal/Renderer/Renderer.hpp"
+#include "RendererAPI.hpp"
 #include "Platform/Linux/OpenGL/OpenGLShader.hpp"
 namespace Ethereal
 {
     Ref<Shader> Shader::Create(const std::string& filepath)
     {
-        switch (Renderer::GetAPI())
+        switch (RendererAPI::GetAPI())
         {
         case RendererAPI::API::None:    ET_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
         case RendererAPI::API::OpenGL:  return std::make_shared<OpenGLShader>(filepath);
@@ -19,7 +19,7 @@ namespace Ethereal
 
     Ref<Shader> Shader::Create(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc)
     {
-        switch (Renderer::GetAPI())
+        switch (RendererAPI::GetAPI())
         {
         case RendererAPI::API::None:    ET_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
         case RendererAPI::API::OpenGL:  return std::make_shared<OpenGLShader>(name, vertexSrc, fragmentSrc);

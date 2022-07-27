@@ -1,14 +1,14 @@
 #include "pch.hpp"
 #include "Texture.hpp"
 
-#include "Renderer.hpp"
+#include "RendererAPI.hpp"
 #include "Platform/Linux/OpenGL/OpenGLTexture.hpp"
 
 namespace Ethereal
 {
     Ref<Texture2D> Texture2D::Create(const std::string& path)
     {
-        switch (Renderer::GetAPI())
+        switch (RendererAPI::GetAPI())
         {
         case RendererAPI::API::None:    ET_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
         case RendererAPI::API::OpenGL:  return std::make_shared<OpenGLTexture2D>(path);
@@ -20,7 +20,7 @@ namespace Ethereal
 
     Ref<Texture2D> Texture2D::Create(const Ref<TextureData>& data)
     {
-        switch (Renderer::GetAPI())
+        switch (RendererAPI::GetAPI())
         {
         case RendererAPI::API::None:    ET_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
         case RendererAPI::API::OpenGL:  return std::make_shared<OpenGLTexture2D>(data);
@@ -32,7 +32,7 @@ namespace Ethereal
     
     Ref<TextureCube> TextureCube::Create(std::vector<std::string>& paths)
     {
-        switch (Renderer::GetAPI())
+        switch (RendererAPI::GetAPI())
         {
         case RendererAPI::API::None:    ET_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
         case RendererAPI::API::OpenGL:  return std::make_shared<OpenGLTextureCube>(paths);
@@ -44,7 +44,7 @@ namespace Ethereal
     
     Ref<TextureCube> TextureCube::Create(const Ref<TextureData>& data)
     {
-        switch (Renderer::GetAPI())
+        switch (RendererAPI::GetAPI())
         {
         case RendererAPI::API::None:    ET_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
         case RendererAPI::API::OpenGL:  return std::make_shared<OpenGLTextureCube>(data);

@@ -16,7 +16,6 @@
 
 
 // ---Renderer-------------------------
-#include "Ethereal/Renderer/Renderer.hpp"
 #include "Ethereal/Renderer/RenderCommand.hpp"
 #include "Ethereal/Renderer/Buffer.hpp"
 #include "Ethereal/Renderer/VertexArray.hpp"
