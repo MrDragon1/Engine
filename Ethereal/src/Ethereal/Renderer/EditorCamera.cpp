@@ -5,7 +5,7 @@
 #include "Ethereal/Core/Input.hpp"
 #include "Ethereal/Core/KeyCodes.hpp"
 #include "Ethereal/Core/MouseButtonCodes.hpp"
-
+#include "Ethereal/Core/GlobalContext.hpp"
 #include "GLFW/glfw3.h"
 
 namespace Ethereal
@@ -20,7 +20,7 @@ namespace Ethereal
     }
 
     void EditorCamera::UpdateProjection() {
-        m_AspectRatio = m_ViewportWidth / m_ViewportHeight;
+        m_AspectRatio = GlobalContext::GetViewportSize().x / GlobalContext::GetViewportSize().y;
         m_Projection = glm::perspective(glm::radians(m_FOV), m_AspectRatio, m_NearClip, m_FarClip);
     }
 
@@ -34,10 +34,10 @@ namespace Ethereal
     }
 
     std::pair<float, float> EditorCamera::PanSpeed() const {
-        float x = std::min(m_ViewportWidth / 1000.0f, 2.4f);  // max = 2.4f
+        float x = std::min(GlobalContext::GetViewportSize().x / 1000.0f, 2.4f);  // max = 2.4f
         float xFactor = 0.0366f * (x * x) - 0.1778f * x + 0.3021f;
 
-        float y = std::min(m_ViewportHeight / 1000.0f, 2.4f);  // max = 2.4f
+        float y = std::min(GlobalContext::GetViewportSize().y / 1000.0f, 2.4f);  // max = 2.4f
         float yFactor = 0.0366f * (y * y) - 0.1778f * y + 0.3021f;
 
         return {xFactor, yFactor};

@@ -21,9 +21,7 @@ namespace Ethereal
         inline float GetDistance() const { return m_Distance; }
         inline void SetDistance(float distance) { m_Distance = distance; }
 
-        inline void SetViewportSize(float width, float height) {
-            m_ViewportWidth = width;
-            m_ViewportHeight = height;
+        inline void SetViewportSize() {
             UpdateProjection();
         }
 
@@ -66,8 +64,6 @@ namespace Ethereal
 
         float m_Distance = 50.0f;
         float m_Pitch = 0.0f, m_Yaw = 0.0f;
-
-        float m_ViewportWidth = 1280, m_ViewportHeight = 720;
     };
 
 }  // namespace Hazel

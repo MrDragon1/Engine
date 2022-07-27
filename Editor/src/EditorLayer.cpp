@@ -172,20 +172,19 @@ namespace Ethereal
         Application::Get().GetImGuiLayer()->BlockEvents(!m_ViewportFocused && !m_ViewportHovered);
 
         ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
-        m_ViewportSize = {viewportPanelSize.x, viewportPanelSize.y};
+        GlobalContext::SetViewportSize({viewportPanelSize.x, viewportPanelSize.y});
         // Resize
-        if (m_ViewportSize.x > 0.0f && m_ViewportSize.y > 0.0f &&  // zero sized framebuffer is invalid
-            (GlobalContext::GetRenderSystem().GetMainImageWidth() != m_ViewportSize.x ||
-             GlobalContext::GetRenderSystem().GetMainImageHeight() != m_ViewportSize.y)) {
-            // m_Framebuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-            GlobalContext::GetRenderSystem().OnResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-            m_CameraController.OnResize(m_ViewportSize.x, m_ViewportSize.y);
-            m_EditorCamera.SetViewportSize(m_ViewportSize.x, m_ViewportSize.y);
-            m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+        if (GlobalContext::GetViewportSize().x > 0.0f && GlobalContext::GetViewportSize().y > 0.0f &&  // zero sized framebuffer is invalid
+            (GlobalContext::GetRenderSystem().GetMainImageWidth() != GlobalContext::GetViewportSize().x ||
+             GlobalContext::GetRenderSystem().GetMainImageHeight() != GlobalContext::GetViewportSize().y)) {
+            GlobalContext::GetRenderSystem().OnResize();
+            // m_CameraController.OnResize(GlobalContext::GetViewportSize().x, GlobalContext::GetViewportSize().y);
+            m_EditorCamera.SetViewportSize();
+            m_ActiveScene->OnViewportResize((uint32_t)GlobalContext::GetViewportSize().x, (uint32_t)GlobalContext::GetViewportSize().y);
         }
         uint64_t textureID = GlobalContext::GetRenderSystem().GetMainImage();
         // ET_CORE_INFO("texture ID {}", textureID);
-        ImGui::Image(reinterpret_cast<void*>(textureID), ImVec2{m_ViewportSize.x, m_ViewportSize.y}, ImVec2{0, 1}, ImVec2{1, 0});
+        ImGui::Image(reinterpret_cast<void*>(textureID), ImVec2{GlobalContext::GetViewportSize().x, GlobalContext::GetViewportSize().y}, ImVec2{0, 1}, ImVec2{1, 0});
 
         if (ImGui::BeginDragDropTarget()) {
             if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
@@ -199,7 +198,7 @@ namespace Ethereal
         minBound.x += viewportOffset.x;
         minBound.y += viewportOffset.y;
 
-        ImVec2 maxBound = {minBound.x + m_ViewportSize.x, minBound.y + m_ViewportSize.y};
+        ImVec2 maxBound = {minBound.x + GlobalContext::GetViewportSize().x, minBound.y + GlobalContext::GetViewportSize().y};
         m_ViewportBounds[0] = {minBound.x, minBound.y};
         m_ViewportBounds[1] = {maxBound.x, maxBound.y};
 
@@ -315,7 +314,7 @@ namespace Ethereal
 
     void EditorLayer::NewScene() {
         m_ActiveScene = CreateRef<Scene>();
-        m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+        m_ActiveScene->OnViewportResize((uint32_t)GlobalContext::GetViewportSize().x, (uint32_t)GlobalContext::GetViewportSize().y);
         m_SceneHierarchyPanel.SetContext(m_ActiveScene);
         m_EditorScenePath = std::filesystem::path();
         m_EditorScene = m_ActiveScene;  // TODO: Save old scene before new scene is created
@@ -336,7 +335,7 @@ namespace Ethereal
             return;
         }
         m_EditorScene = CreateRef<Scene>();
-        m_EditorScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+        m_EditorScene->OnViewportResize((uint32_t)GlobalContext::GetViewportSize().x, (uint32_t)GlobalContext::GetViewportSize().y);
         m_SceneHierarchyPanel.SetContext(m_EditorScene);
 
         SceneSerializer serializer(m_EditorScene);

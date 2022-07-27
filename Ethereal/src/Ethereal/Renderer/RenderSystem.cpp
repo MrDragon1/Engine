@@ -4,6 +4,7 @@
 #include "Ethereal/Scene/Entity.hpp"
 #include "Ethereal/Scene/Scene.hpp"
 #include "Ethereal/Scene/ScriptableEntity.hpp"
+#include "Ethereal/Core/GlobalContext.hpp"
 // Temporary
 #include "Ethereal/Utils/AssetLoader.hpp"
 #include "box2d/b2_body.h"
@@ -123,11 +124,11 @@ namespace Ethereal
         m_MainCameraRenderPass->SetViewProjectionMatrix(renderSceneData.ViewProjectionMatrix);
     }
 
-    void RenderSystem::OnResize(int width, int height) {
-        m_Height = height;
-        m_Width = width;
-        m_ShadowMapRenderPass->OnResize(width, height);
-        m_MainCameraRenderPass->OnResize(width, height);
+    void RenderSystem::OnResize() {
+        m_Height = GlobalContext::GetViewportSize().y;
+        m_Width = GlobalContext::GetViewportSize().x;
+        m_ShadowMapRenderPass->OnResize(m_Width, m_Height);
+        m_MainCameraRenderPass->OnResize(m_Width, m_Height);
     }
 
     uint64_t RenderSystem::GetMainImage() { return m_MainCameraRenderPass->m_Framebuffer->GetColorAttachment(0)->GetRendererID(); }

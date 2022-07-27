@@ -40,7 +40,7 @@ namespace Ethereal
         void Draw(Timestep ts);
         void UpdateRenderScene(const RenderSceneData& renderSceneData);
 
-        void OnResize(int width, int height);
+        void OnResize();
 
         uint32_t GetMainImageHeight() { return m_Height; };
         uint32_t GetMainImageWidth() { return m_Width; };
