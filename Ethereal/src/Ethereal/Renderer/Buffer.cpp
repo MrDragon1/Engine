@@ -13,7 +13,7 @@ namespace Ethereal
         switch (RendererAPI::GetAPI())
         {
         case RendererAPI::API::None:    ET_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
-        case RendererAPI::API::OpenGL:  return CreateRef<OpenGLVertexBuffer>(size);
+        case RendererAPI::API::OpenGL:  return Ref<OpenGLVertexBuffer>::Create(size);
         }
         ET_CORE_ASSERT(false, "Unknown RendererAPI!");
         return nullptr;
@@ -24,7 +24,7 @@ namespace Ethereal
         switch (RendererAPI::GetAPI())
         {
             case RendererAPI::API::None:    ET_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
-            case RendererAPI::API::OpenGL:  return CreateRef<OpenGLVertexBuffer>(vertices, size);
+            case RendererAPI::API::OpenGL:  return Ref<OpenGLVertexBuffer>::Create(vertices, size);
         }
         ET_CORE_ASSERT(false, "Unknown RendererAPI!");
         return nullptr;
@@ -35,7 +35,7 @@ namespace Ethereal
         switch (RendererAPI::GetAPI())
         {
             case RendererAPI::API::None:    ET_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
-            case RendererAPI::API::OpenGL:  return CreateRef<OpenGLIndexBuffer>(indices, size);
+            case RendererAPI::API::OpenGL:  return Ref<OpenGLIndexBuffer>::Create(indices, size);
         }
         ET_CORE_ASSERT(false, "Unknown RendererAPI!");
         return nullptr;

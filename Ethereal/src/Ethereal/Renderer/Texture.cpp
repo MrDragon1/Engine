@@ -11,7 +11,7 @@ namespace Ethereal
         switch (RendererAPI::GetAPI())
         {
         case RendererAPI::API::None:    ET_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
-        case RendererAPI::API::OpenGL:  return std::make_shared<OpenGLTexture2D>(path);
+        case RendererAPI::API::OpenGL:  return Ref<OpenGLTexture2D>::Create(path);
         }
 
         ET_CORE_ASSERT(false, "Unknown RendererAPI!");
@@ -23,7 +23,7 @@ namespace Ethereal
         switch (RendererAPI::GetAPI())
         {
         case RendererAPI::API::None:    ET_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
-        case RendererAPI::API::OpenGL:  return std::make_shared<OpenGLTexture2D>(data);
+        case RendererAPI::API::OpenGL:  return Ref<OpenGLTexture2D>::Create(data);
         }
 
         ET_CORE_ASSERT(false, "Unknown RendererAPI!");
@@ -35,7 +35,7 @@ namespace Ethereal
         switch (RendererAPI::GetAPI())
         {
         case RendererAPI::API::None:    ET_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
-        case RendererAPI::API::OpenGL:  return std::make_shared<OpenGLTextureCube>(paths);
+        case RendererAPI::API::OpenGL:  return Ref<OpenGLTextureCube>::Create(paths);
         }
 
         ET_CORE_ASSERT(false, "Unknown RendererAPI!");
@@ -47,7 +47,7 @@ namespace Ethereal
         switch (RendererAPI::GetAPI())
         {
         case RendererAPI::API::None:    ET_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
-        case RendererAPI::API::OpenGL:  return std::make_shared<OpenGLTextureCube>(data);
+        case RendererAPI::API::OpenGL:  return Ref<OpenGLTextureCube>::Create(data);
         }
 
         ET_CORE_ASSERT(false, "Unknown RendererAPI!");

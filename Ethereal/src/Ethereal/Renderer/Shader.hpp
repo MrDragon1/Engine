@@ -6,7 +6,7 @@
 #include <glm/glm.hpp>
 namespace Ethereal
 {
-    class Shader {
+    class Shader : public RefCounted {
       public:
         virtual ~Shader() = default;
 

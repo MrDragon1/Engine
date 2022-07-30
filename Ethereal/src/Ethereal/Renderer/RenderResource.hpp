@@ -4,7 +4,7 @@
 
 namespace Ethereal
 {
-    class RenderResource {
+    class RenderResource : public RefCounted {
       public:
         RenderResource() = default;
         // Do upate data here

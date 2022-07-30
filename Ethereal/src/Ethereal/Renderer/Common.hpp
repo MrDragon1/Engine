@@ -75,7 +75,7 @@ namespace Ethereal
         glm::vec2 UV;
     };
     template <typename T>
-    class BufferData {
+    class BufferData : public RefCounted {
       public:
         size_t m_size{0};
         size_t m_count{0};
@@ -95,13 +95,13 @@ namespace Ethereal
         bool isValid() const { return m_data != nullptr; }
     };
 
-    struct StaticMeshData {
+    struct StaticMeshData{
         Ref<BufferData<MeshVertex>> m_vertex_buffer;
         Ref<BufferData<uint32_t>> m_index_buffer;
         BufferLayout m_layout;
     };
 
-    struct RenderMeshData {
+    struct RenderMeshData{
         StaticMeshData m_static_mesh_data;
         // std::shared_ptr<BufferData> m_skeleton_binding_buffer;
     };
@@ -120,7 +120,7 @@ namespace Ethereal
     //*************************************************
     //******************* GPU Data ********************
     //*************************************************
-    struct GLMesh {
+    struct GLMesh{
         Ref<VertexArray> m_VAO;
         Ref<VertexBuffer> m_VBO;
         Ref<IndexBuffer> m_IBO;
@@ -129,7 +129,7 @@ namespace Ethereal
         BufferLayout m_Layout;
     };
 
-    struct GLMaterial {
+    struct GLMaterial{
         Ref<Texture> m_AlbedoMap;
         Ref<Texture> m_NormalMap;
         Ref<Texture> m_MetallicMap;
@@ -148,7 +148,7 @@ namespace Ethereal
         bool b_Occlusion = false;
     };
 
-    struct RenderNode {
+    struct RenderNode{
         glm::mat4 model_matrix;
         size_t EntityID;
         GLMesh* ref_mesh = nullptr;

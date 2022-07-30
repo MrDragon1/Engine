@@ -2,6 +2,8 @@
 
 #include <cstdint>
 #include "Ethereal/Core/Utils.hpp"
+#include "Ethereal/Core/Base/Ref.hpp"
+
 namespace Ethereal
 {
     enum class ShaderDataType
@@ -60,8 +62,7 @@ namespace Ethereal
         BufferElement() = default;
 
         BufferElement(ShaderDataType type, const std::string& name, bool normalized = false)
-            : Name(name), Type(type), Size(ShaderDataTypeSize(type)), Offset(0), Normalized(normalized) {
-        }
+            : Name(name), Type(type), Size(ShaderDataTypeSize(type)), Offset(0), Normalized(normalized) {}
 
         uint32_t GetComponentCount() const {
             switch (Type) {
@@ -98,15 +99,12 @@ namespace Ethereal
       public:
         BufferLayout() = default;
 
-        BufferLayout(const std::initializer_list<BufferElement>& elements)
-            : m_Elements(elements) {
-            CalculateOffsetsAndStride();
-        }
+        BufferLayout(const std::initializer_list<BufferElement>& elements) : m_Elements(elements) { CalculateOffsetsAndStride(); }
 
         inline uint32_t GetStride() const { return m_Stride; }
         inline uint32_t GetElementSize() const { return m_ElementSize; }
         inline const std::vector<BufferElement>& GetElements() const { return m_Elements; }
-        
+
         std::vector<BufferElement>::iterator begin() { return m_Elements.begin(); }
         std::vector<BufferElement>::iterator end() { return m_Elements.end(); }
         std::vector<BufferElement>::const_iterator begin() const { return m_Elements.begin(); }
@@ -130,7 +128,7 @@ namespace Ethereal
         uint32_t m_ElementSize = 0;
     };
 
-    class VertexBuffer {
+    class VertexBuffer : public RefCounted {
       public:
         virtual ~VertexBuffer() = default;
 
@@ -146,7 +144,7 @@ namespace Ethereal
         virtual void SetLayout(const BufferLayout& layout) = 0;
     };
 
-    class IndexBuffer {
+    class IndexBuffer : public RefCounted {
       public:
         virtual ~IndexBuffer() = default;
 

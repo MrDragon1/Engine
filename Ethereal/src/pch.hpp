@@ -13,6 +13,7 @@
 #include <unordered_set>
 
 #include "Ethereal/Core/Log.hpp"
+#include "Ethereal/Core/Base/Ref.hpp"
 
 #include "glad/glad.h"
 

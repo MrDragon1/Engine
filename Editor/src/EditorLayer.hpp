@@ -4,6 +4,7 @@
 #include "Panels/SceneHierarchyPanel.hpp"
 #include "Panels/ContentBrowserPanel.hpp"
 #include "Ethereal/Renderer/EditorCamera.hpp"
+#include "Ethereal/Core/Base/Ref.hpp"
 
 namespace Ethereal
 {
@@ -37,6 +38,7 @@ namespace Ethereal
 
         void UI_Toolbar();
         void ShowSkyboxSettingWindow(bool* p_open);
+
       private:
         OrthographicCameraController m_CameraController;
         EditorCamera m_EditorCamera;
@@ -68,6 +70,6 @@ namespace Ethereal
 
         SceneState m_SceneState = SceneState::Edit;
 
-        glm::vec3 m_LightPos= glm::vec3(-20,40,-10);// as far as possiable (away from the scene to avoid clamp shadow)
+        glm::vec3 m_LightPos = glm::vec3(-20, 40, -10);  // as far as possiable (away from the scene to avoid clamp shadow)
     };
 }  // namespace Ethereal

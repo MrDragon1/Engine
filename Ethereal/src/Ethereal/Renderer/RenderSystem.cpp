@@ -19,15 +19,15 @@ namespace Ethereal
     void RenderSystem::Init() {
         m_Width = 1280;
         m_Height = 720;
-        m_RenderScene = CreateRef<RenderScene>();
-        m_RenderResource = CreateRef<RenderResource>();
-        m_MainCameraRenderPass = CreateRef<MainCameraRenderPass>();
+        m_RenderScene = Ref<RenderScene>::Create();
+        m_RenderResource = Ref<RenderResource>::Create();
+        m_MainCameraRenderPass = Ref<MainCameraRenderPass>::Create();
         m_MainCameraRenderPass->Init(m_Width, m_Height);
-        m_ShadowMapRenderPass = CreateRef<ShadowMapRenderPass>();
+        m_ShadowMapRenderPass = Ref<ShadowMapRenderPass>::Create();
         m_ShadowMapRenderPass->Init(m_Width, m_Height);
-        m_SkyboxRenderPass = CreateRef<SkyboxRenderPass>();
+        m_SkyboxRenderPass = Ref<SkyboxRenderPass>::Create();
         m_SkyboxRenderPass->Init(m_Width, m_Height);
-        m_EnvironmentMapRenderPass = CreateRef<EnvironmentMapRenderPass>();
+        m_EnvironmentMapRenderPass = Ref<EnvironmentMapRenderPass>::Create();
         m_EnvironmentMapRenderPass->Init(m_Width, m_Height);
 
         m_RenderScene->SetVisiableNodeReference();
@@ -106,7 +106,7 @@ namespace Ethereal
                 m_RenderResource->UploadRenderResource(renderEntity, renderEntity.m_Material_Desc);
             }
 
-            Ref<GameObject> gameObject = CreateRef<GameObject>();
+            Ref<GameObject> gameObject = Ref<GameObject>::Create();
             gameObject->AddRenderEntity(renderEntity);
             m_RenderScene->AddGameObject(gameObject);
         }

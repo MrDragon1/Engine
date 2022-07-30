@@ -4,7 +4,7 @@
 
 namespace Ethereal
 {
-    class GameObject {
+    class GameObject : public RefCounted{
       public:
         GameObject() = default;
         void AddRenderEntity(RenderEntity renderEntity);

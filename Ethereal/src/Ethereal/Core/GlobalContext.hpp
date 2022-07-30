@@ -5,7 +5,7 @@
 
 namespace Ethereal
 {
-    class GlobalContext final : public Singleton<GlobalContext> {
+    class GlobalContext final : public Singleton<GlobalContext>{
       public:
         GlobalContext();
         GlobalContext(const GlobalContext&) = delete;

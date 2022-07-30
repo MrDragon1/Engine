@@ -16,17 +16,17 @@ namespace Ethereal
         m_EquirectangularToCubeMapShader->Bind();
         m_PrefilterShader = Shader::Create(m_PrefilterShaderPath);
         m_PrefilterShader->Bind();
-
-        Ref<TextureData> data512 = CreateRef<TextureData>();
+        
+        Ref<TextureData> data512 = Ref<TextureData>::Create();
         data512->m_width = 512;
         data512->m_height = 512;
         m_BackgroundCubeMap = TextureCube::Create(data512);
-        Ref<TextureData> data32 = CreateRef<TextureData>();
+        Ref<TextureData> data32 = Ref<TextureData>::Create();
         data32->m_width = 32;
         data32->m_height = 32;
         m_EnvironmentCubeMap = TextureCube::Create(data32);
 
-        Ref<TextureData> data128 = CreateRef<TextureData>();
+        Ref<TextureData> data128 = Ref<TextureData>::Create();
         data128->m_width = 128;
         data128->m_height = 128;
         m_ReflectionCubeMap = TextureCube::Create(data128);

@@ -31,9 +31,9 @@ namespace Ethereal
         if (m_RendererID) {
             glDeleteFramebuffers(1, &m_RendererID);
             for (auto& colorAttachment : m_ColorAttachments) {
-                colorAttachment.reset();
+                colorAttachment.Reset();
             }
-            m_DepthAttachment.reset();
+            m_DepthAttachment.Reset();
 
             m_ColorAttachments.clear();
             m_DepthAttachment = nullptr;
@@ -45,7 +45,7 @@ namespace Ethereal
         if (m_ColorAttachmentSpecifications.size()) {
             m_ColorAttachments.resize(m_ColorAttachmentSpecifications.size());
             for (size_t i = 0; i < m_ColorAttachments.size(); i++) {
-                Ref<TextureData> data = CreateRef<TextureData>();
+                Ref<TextureData> data = Ref<TextureData>::Create();
                 data->m_width = m_Specification.Width;
                 data->m_height = m_Specification.Height;
                 data->m_depth = 1;
@@ -59,7 +59,7 @@ namespace Ethereal
         }
 
         if (m_DepthAttachmentSpecification.TextureFormat == ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_DEPTH) {
-            Ref<TextureData> data = CreateRef<TextureData>();
+            Ref<TextureData> data = Ref<TextureData>::Create();
             data->m_width = m_Specification.Width;
             data->m_height = m_Specification.Height;
             data->m_depth = 1;

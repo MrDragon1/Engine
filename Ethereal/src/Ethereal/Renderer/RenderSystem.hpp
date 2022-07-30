@@ -33,7 +33,7 @@ namespace Ethereal
         // TODO: Lights
     };
 
-    class RenderSystem {
+    class RenderSystem : public RefCounted{
       public:
         RenderSystem();
         void Init();

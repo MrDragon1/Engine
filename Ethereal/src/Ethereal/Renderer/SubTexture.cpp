@@ -13,6 +13,6 @@ namespace Ethereal {
     {
         glm::vec2 min = { (coords.x * cellSize.x) / texture->GetWidth(), (coords.y * cellSize.y) / texture->GetHeight() };
         glm::vec2 max = { ((coords.x + spriteSize.x) * cellSize.x) / texture->GetWidth(), ((coords.y + spriteSize.y) * cellSize.y) / texture->GetHeight() };
-        return CreateRef<SubTexture2D>(texture, min, max);
+        return Ref<SubTexture2D>::Create(texture, min, max);
     }
 }  // namespace Ethereal

@@ -6,7 +6,7 @@
 namespace Ethereal
 {
     OpenGLTexture2D::OpenGLTexture2D(const std::string& path) {
-        Ref<TextureData> textureData = CreateRef<TextureData>();
+        Ref<TextureData> textureData = Ref<TextureData>::Create();
         TextureLoader::LoadPath(path, textureData);
         if (textureData) {
             ET_CORE_ASSERT(textureData->m_type == ETHEREAL_IMAGE_TYPE::ETHEREAL_IMAGE_TYPE_2D && textureData->isValid(), "Invalid image type!");
@@ -170,7 +170,7 @@ namespace Ethereal
 
         int width, height, nrChannels;
         for (unsigned int i = 0; i < paths.size(); i++) {
-            Ref<TextureData> textureData = CreateRef<TextureData>();
+            Ref<TextureData> textureData = Ref<TextureData>::Create();
             TextureLoader::LoadPath(paths[i], textureData);
             glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, textureData->m_width, textureData->m_height, 0, GL_RGB, GL_UNSIGNED_BYTE,
                          textureData->m_pixels);

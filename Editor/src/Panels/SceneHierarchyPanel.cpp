@@ -23,7 +23,7 @@ namespace Ethereal
         ImGui::Begin("Scene Hierarchy");
         if (m_Context) {
             m_Context->m_Registry.each([&](auto entityID) {
-                Entity entity{entityID, m_Context.get()};
+                Entity entity{entityID, m_Context.Raw()};
                 DrawEntityNode(entity);
             });
 

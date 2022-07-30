@@ -4,7 +4,7 @@
 #include "RenderPass.hpp"
 namespace Ethereal
 {
-    void RenderScene::UpdateVisiableMeshNode(const Ref<RenderResource>& renderResource) {
+    void RenderScene::UpdateVisiableMeshNode(Ref<RenderResource>& renderResource) {
         m_MainCameraVisiableNodes.clear();
         for (auto& gameObject : m_GameObjects) {
             for (auto& renderEntity : gameObject->m_RenderEntities) {

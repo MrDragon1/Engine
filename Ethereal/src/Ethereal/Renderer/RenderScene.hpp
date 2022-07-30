@@ -13,10 +13,10 @@ namespace Ethereal
 {
     class RenderResource;
     static constexpr size_t MaxTextureSlots = 32;
-    class RenderScene {
+    class RenderScene : public RefCounted {
       public:
         RenderScene() = default;
-        void UpdateVisiableMeshNode(const Ref<RenderResource>& RenderResource);
+        void UpdateVisiableMeshNode(Ref<RenderResource>& RenderResource);
 
         void AddGameObject(const Ref<GameObject>& gameObject);
 

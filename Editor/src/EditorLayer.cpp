@@ -25,7 +25,7 @@ namespace Ethereal
         fbSpec.Width = 1280;
         fbSpec.Height = 720;
 
-        m_ActiveScene = CreateRef<Scene>();
+        m_ActiveScene = Ref<Scene>::Create();
         m_EditorCamera = EditorCamera(30.0f, 1280.0f / 720.0f, 0.1f, 1000.0f);
     }
 
@@ -58,7 +58,7 @@ namespace Ethereal
             if (mouseX >= 0 && mouseY >= 0 && mouseX < (int)viewportSize.x && mouseY < (int)viewportSize.y) {
                 int pixelData = GlobalContext::GetRenderSystem().GetMousePicking(mouseX, mouseY);
                 // ET_CORE_INFO("Pixel data: {0}", pixelData);
-                m_HoveredEntity = pixelData == -1 ? Entity() : Entity((entt::entity)pixelData, m_ActiveScene.get());
+                m_HoveredEntity = pixelData == -1 ? Entity() : Entity((entt::entity)pixelData, m_ActiveScene.Raw());
             }
         }
     }
@@ -313,7 +313,7 @@ namespace Ethereal
     }
 
     void EditorLayer::NewScene() {
-        m_ActiveScene = CreateRef<Scene>();
+        m_ActiveScene = Ref<Scene>::Create();
         m_ActiveScene->OnViewportResize((uint32_t)GlobalContext::GetViewportSize().x, (uint32_t)GlobalContext::GetViewportSize().y);
         m_SceneHierarchyPanel.SetContext(m_ActiveScene);
         m_EditorScenePath = std::filesystem::path();
@@ -334,7 +334,7 @@ namespace Ethereal
             ET_WARN("Could not load {0} - not a scene file", path.filename().string());
             return;
         }
-        m_EditorScene = CreateRef<Scene>();
+        m_EditorScene = Ref<Scene>::Create();
         m_EditorScene->OnViewportResize((uint32_t)GlobalContext::GetViewportSize().x, (uint32_t)GlobalContext::GetViewportSize().y);
         m_SceneHierarchyPanel.SetContext(m_EditorScene);
 

@@ -84,8 +84,8 @@ namespace Ethereal
 
         processNode(scene->mRootNode, scene);
 
-        renderMeshData.m_static_mesh_data.m_vertex_buffer = CreateRef<BufferData<MeshVertex>>(m_MeshVertices.size());
-        renderMeshData.m_static_mesh_data.m_index_buffer = CreateRef<BufferData<uint32_t>>(m_MeshIndices.size());
+        renderMeshData.m_static_mesh_data.m_vertex_buffer = Ref<BufferData<MeshVertex>>::Create(m_MeshVertices.size());
+        renderMeshData.m_static_mesh_data.m_index_buffer = Ref<BufferData<uint32_t>>::Create(m_MeshIndices.size());
 
         assert(m_MeshVertices.size() <= std::numeric_limits<uint32_t>::max());  // take care of the index range, should be
                                                                                 // consistent with the index range used by

@@ -5,9 +5,8 @@
 
 namespace Ethereal
 {
-    class VertexArray
-    {
-    public:
+    class VertexArray : public RefCounted {
+      public:
         virtual ~VertexArray() {}
 
         virtual void Bind() const = 0;
@@ -21,4 +20,4 @@ namespace Ethereal
 
         static Ref<VertexArray> Create();
     };
-}
+}  // namespace Ethereal

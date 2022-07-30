@@ -3,6 +3,7 @@
 #include "Ethereal/Renderer/Shader.hpp"
 #include "Ethereal/Renderer/FrameBuffer.hpp"
 #include "RenderCommand.hpp"
+#include "Ethereal/Core/Base/Ref.hpp"
 
 namespace Ethereal
 {
@@ -11,7 +12,7 @@ namespace Ethereal
         std::vector<RenderNode>* p_point_lights_visible_mesh_nodes{nullptr};
         std::vector<RenderNode>* p_main_camera_visible_mesh_nodes{nullptr};
     };
-    class RenderPass {
+    class RenderPass : public RefCounted {
       public:
         RenderPass() = default;
         virtual ~RenderPass() = default;

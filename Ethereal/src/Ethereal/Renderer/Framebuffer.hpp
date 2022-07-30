@@ -23,7 +23,7 @@ namespace Ethereal
         uint32_t Samples = 1;
     };
 
-    class Framebuffer {
+    class Framebuffer : public RefCounted {
       public:
         virtual ~Framebuffer() = default;
         virtual void Bind() = 0;
