@@ -1,4 +1,10 @@
-add_subdirectory(Windows)
+add_subdirectory(Core)
+add_subdirectory(Event)
+add_subdirectory(ImGui)
+add_subdirectory(Renderer)
+add_subdirectory(Scene)
+add_subdirectory(Utils)
+add_subdirectory(Platform)
 
 set(HFILES "")
 set(CPPFILES "")
