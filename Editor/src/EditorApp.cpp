@@ -1,7 +1,7 @@
 #include <Ethereal.h>
 #include "Core/EntryPoint.h"
 
-#include "Platform/Linux/OpenGL/OpenGLShader.h"
+#include "Platform/Windows/OpenGL/OpenGLShader.h"
 
 #include "imgui.h"
 

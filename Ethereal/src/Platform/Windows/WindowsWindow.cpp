@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "LinuxWindow.h"
+#include "WindowsWindow.h"
 
 #include "Event/ApplicationEvent.h"
 #include "Event/KeyEvent.h"
@@ -90,13 +90,13 @@ namespace Ethereal
 
     static void GLFWErrorCallback(int error, const char* description) { ET_ERROR("GLFW Error ({0}): {1}", error, description); }
 
-    Scope<Window> Window::Create(const WindowProps& props) { return CreateScope<LinuxWindow>(props); }
+    Scope<Window> Window::Create(const WindowProps& props) { return CreateScope<WindowsWindow>(props); }
 
-    LinuxWindow::LinuxWindow(const WindowProps& props) { Init(props); }
+    WindowsWindow::WindowsWindow(const WindowProps& props) { Init(props); }
 
-    LinuxWindow::~LinuxWindow() { Shutdown(); }
+    WindowsWindow::~WindowsWindow() { Shutdown(); }
 
-    void LinuxWindow::Init(const WindowProps& props) {
+    void WindowsWindow::Init(const WindowProps& props) {
         m_Data.Title = props.Title;
         m_Data.Width = props.Width;
         m_Data.Height = props.Height;
@@ -205,14 +205,14 @@ namespace Ethereal
         }
     }
 
-    void LinuxWindow::Shutdown() { glfwDestroyWindow(m_Window); }
+    void WindowsWindow::Shutdown() { glfwDestroyWindow(m_Window); }
 
-    void LinuxWindow::OnUpdate() {
+    void WindowsWindow::OnUpdate() {
         glfwPollEvents();
         glfwSwapBuffers(m_Window);
     }
 
-    void LinuxWindow::SetVSync(bool enabled) {
+    void WindowsWindow::SetVSync(bool enabled) {
         if (enabled) {
             glfwSwapInterval(1);
         } else {
@@ -221,5 +221,5 @@ namespace Ethereal
         m_Data.VSync = enabled;
     }
 
-    bool LinuxWindow::IsVSync() const { return m_Data.VSync; }
+    bool WindowsWindow::IsVSync() const { return m_Data.VSync; }
 }  // namespace Ethereal

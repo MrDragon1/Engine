@@ -1,4 +1,4 @@
-add_subdirectory(Linux)
+add_subdirectory(Windows)
 
 set(HFILES "")
 set(CPPFILES "")
