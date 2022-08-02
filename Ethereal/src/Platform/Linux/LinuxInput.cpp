@@ -1,7 +1,7 @@
-#include "pch.hpp"
-#include "LinuxInput.hpp"
+#include "pch.h"
+#include "LinuxInput.h"
 
-#include "Ethereal/Core/Application.hpp"
+#include "Core/Application.h"
 #include <GLFW/glfw3.h>
 
 namespace Ethereal

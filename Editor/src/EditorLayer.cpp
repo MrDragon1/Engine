@@ -1,13 +1,13 @@
-#include "EditorLayer.hpp"
-#include "pch.hpp"
+#include "EditorLayer.h"
+#include "pch.h"
 
-#include "Ethereal/Core/GlobalContext.hpp"
-#include "Ethereal/Scene/Components.hpp"
-#include "Ethereal/Scene/SceneSerializer.hpp"
-#include "Ethereal/Utils/Math.hpp"
-#include "Ethereal/Utils/PlatformUtils.hpp"
+#include "Core/GlobalContext.h"
+#include "Scene/Components.h"
+#include "Scene/SceneSerializer.h"
+#include "Utils/Math.h"
+#include "Utils/PlatformUtils.h"
 #include "imgui.h"
-#include "imguizmo/ImGuizmo.h"
+#include "ImGuizmo.h"
 
 namespace Ethereal
 {

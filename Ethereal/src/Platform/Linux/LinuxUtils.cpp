@@ -1,12 +1,12 @@
-#include "pch.hpp"
-#include "Ethereal/Utils/PlatformUtils.hpp"
+#include "pch.h"
+#include "Utils/PlatformUtils.h"
 
-#include <commdlg.h>
+//#include <commdlg.h>
 #include <GLFW/glfw3.h>
 #define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3native.h>
 
-#include "Ethereal/Core/Application.hpp"
+#include "Core/Application.h"
 
 namespace Ethereal
 {

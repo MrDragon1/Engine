@@ -1,4 +1,4 @@
-#include "SceneHierarchyPanel.hpp"
+#include "SceneHierarchyPanel.h"
 
 #include <imgui.h>
 #include <imgui_internal.h>
@@ -6,7 +6,7 @@
 #include <filesystem>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "Ethereal/Utils/AssetManager.hpp"
+#include "Utils/AssetManager.h"
 
 namespace Ethereal
 {
@@ -306,7 +306,7 @@ namespace Ethereal
         // TODO: Beautify this
         DrawComponent<MaterialComponent>("Material", entity, [](auto& component) {
             const auto& materialNode = [&component](const char* name, std::string& file, void (*func)(MaterialComponent & components)) {
-                ET_CORE_ASSERT(!file.empty(), "Material {} file is null", name);
+                ET_CORE_ASSERT(!file.empty(), "Material {0} file is null", name);
                 Ref<Texture> showTexture = TextureManager::AddTexture(file);
 
                 if (ImGui::TreeNode((void*)name, name)) {

@@ -1,6 +1,6 @@
-#include "pch.hpp"
-#include "OpenGLTexture.hpp"
-#include "Ethereal/Utils/AssetLoader.hpp"
+#include "pch.h"
+#include "OpenGLTexture.h"
+#include "Utils/AssetLoader.h"
 #include <glad/glad.h>
 
 namespace Ethereal

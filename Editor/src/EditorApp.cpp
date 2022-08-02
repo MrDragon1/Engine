@@ -1,14 +1,14 @@
-#include <Ethereal.hpp>
-#include <Ethereal/Core/EntryPoint.hpp>
+#include <Ethereal.h>
+#include "Core/EntryPoint.h"
 
-#include "Platform/Linux/OpenGL/OpenGLShader.hpp"
+#include "Platform/Linux/OpenGL/OpenGLShader.h"
 
 #include "imgui.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "EditorLayer.hpp"
+#include "EditorLayer.h"
 
 namespace Ethereal
 {

@@ -1,8 +1,8 @@
-#include "pch.hpp"
-#include "OpenGLFramebuffer.hpp"
+#include "pch.h"
+#include "OpenGLFramebuffer.h"
 
 #include <glad/glad.h>
-#include "Ethereal/Core/Log.hpp"
+#include "Core/Log.h"
 
 namespace Ethereal
 {

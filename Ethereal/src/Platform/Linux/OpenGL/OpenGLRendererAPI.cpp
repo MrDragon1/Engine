@@ -1,5 +1,5 @@
-#include "pch.hpp"
-#include "OpenGLRendererAPI.hpp"
+#include "pch.h"
+#include "OpenGLRendererAPI.h"
 
 #include <glad/glad.h>
 

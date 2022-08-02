@@ -1,9 +1,9 @@
-#include "pch.hpp"
-#include "LinuxWindow.hpp"
+#include "pch.h"
+#include "LinuxWindow.h"
 
-#include "Ethereal/Event/ApplicationEvent.hpp"
-#include "Ethereal/Event/KeyEvent.hpp"
-#include "Ethereal/Event/MouseEvent.hpp"
+#include "Event/ApplicationEvent.h"
+#include "Event/KeyEvent.h"
+#include "Event/MouseEvent.h"
 #include "glad/glad.h"
 
 namespace Ethereal

@@ -1,5 +1,5 @@
-#include "pch.hpp"
-#include "ContentBrowserPanel.hpp"
+#include "pch.h"
+#include "ContentBrowserPanel.h"
 
 #include "imgui.h"
 
