@@ -184,7 +184,8 @@ namespace Ethereal
         }
         uint64_t textureID = GlobalContext::GetRenderSystem().GetMainImage();
         // ET_CORE_INFO("texture ID {}", textureID);
-        ImGui::Image(reinterpret_cast<void*>(textureID), ImVec2{GlobalContext::GetViewportSize().x, GlobalContext::GetViewportSize().y}, ImVec2{0, 1}, ImVec2{1, 0});
+        ImGui::Image(reinterpret_cast<void*>(textureID), ImVec2{GlobalContext::GetViewportSize().x, GlobalContext::GetViewportSize().y}, ImVec2{0, 1},
+                     ImVec2{1, 0});
 
         if (ImGui::BeginDragDropTarget()) {
             if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {

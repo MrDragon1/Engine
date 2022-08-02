@@ -2,7 +2,6 @@
 
 #include <stdint.h>
 #include <atomic>
-#include "Memory.h"
 
 namespace Ethereal
 {
