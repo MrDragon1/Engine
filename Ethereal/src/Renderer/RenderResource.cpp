@@ -37,7 +37,8 @@ namespace Ethereal
             temp_mesh.m_VBO->SetData(RenderMeshData.m_static_mesh_data.m_vertex_buffer->m_data, temp_mesh.m_VertexCount * sizeof(MeshVertex));
             temp_mesh.m_VAO->AddVertexBuffer(temp_mesh.m_VBO);
 
-            temp_mesh.m_IBO = IndexBuffer::Create((uint32_t*)RenderMeshData.m_static_mesh_data.m_index_buffer->m_data, temp_mesh.m_IndexCount);
+            temp_mesh.m_IBO =
+                IndexBuffer::Create((uint32_t*)RenderMeshData.m_static_mesh_data.m_index_buffer->m_data, temp_mesh.m_IndexCount * sizeof(uint32_t));
             temp_mesh.m_VAO->SetIndexBuffer(temp_mesh.m_IBO);
 
             auto res = m_Mesh_Map.insert(std::make_pair(meshAssetId, std::move(temp_mesh)));

@@ -6,6 +6,7 @@
 #include "Event/ApplicationEvent.h"
 #include "Utils/PlatformUtils.h"
 #include "Core/GlobalContext.h"
+#include "Project/Project.h"
 namespace Ethereal
 {
     Application* Application::s_Instance = nullptr;
@@ -18,12 +19,12 @@ namespace Ethereal
 
         RenderCommand::Init();
         GlobalContext::Reset();
-        
+
         m_ImGuiLayer = new ImGuiLayer();
         PushOverlay(m_ImGuiLayer);
     }
 
-    Application::~Application() {}
+    Application::~Application() { Project::SetActive(nullptr); }
 
     void Application::PushLayer(Layer* layer) {
         m_LayerStack.PushLayer(layer);

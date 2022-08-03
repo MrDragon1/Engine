@@ -10,12 +10,10 @@ namespace Ethereal
         std::string Name;
 
         std::string AssetDirectory = "assets";
-        std::string AssetRegistryPath = "assets/AssetRegistry.hzr";
+        std::string AssetRegistryPath = "AssetRegistry.hzr";
 
-        std::string AudioCommandsRegistryPath = "Assets/AudioCommandsRegistry.hzr";
-
-        std::string MeshPath = "assets/meshes";
-        std::string MeshSourcePath = "assets/models";
+        std::string MeshPath = "meshes";
+        std::string MeshSourcePath = "models";
 
         std::string StartScene;
 
@@ -26,7 +24,7 @@ namespace Ethereal
 
         // Not serialized
         std::string ProjectFileName = "Default Project";
-        std::string ProjectDirectory = "G:\\Code\\Engine\\Editor\\assets";
+        std::string ProjectDirectory = "G:/Code/Engine/Editor";
     };
 
     class Project : public RefCounted {
@@ -38,7 +36,7 @@ namespace Ethereal
 
         static Ref<Project> GetActive() { return s_ActiveProject; }
         static void SetActive(Ref<Project> project);
-
+        static void Init();
         static const std::string& GetProjectName() {
             ET_CORE_ASSERT(s_ActiveProject);
             return s_ActiveProject->GetConfig().Name;
@@ -62,11 +60,6 @@ namespace Ethereal
         static std::filesystem::path GetMeshPath() {
             ET_CORE_ASSERT(s_ActiveProject);
             return std::filesystem::path(s_ActiveProject->GetConfig().ProjectDirectory) / s_ActiveProject->GetConfig().MeshPath;
-        }
-
-        static std::filesystem::path GetAudioCommandsRegistryPath() {
-            ET_CORE_ASSERT(s_ActiveProject);
-            return std::filesystem::path(s_ActiveProject->GetConfig().ProjectDirectory) / s_ActiveProject->GetConfig().AudioCommandsRegistryPath;
         }
 
         static std::filesystem::path GetCacheDirectory() {
