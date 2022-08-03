@@ -1,9 +1,10 @@
 #pragma once
-
 #include "Renderer/SceneCamera.h"
 #include "Renderer/Texture.h"
 #include "Core/UUID.h"
 #include "Renderer/Common.h"
+#include "Renderer/Mesh.h"
+#include "Renderer/MaterialAsset.h"
 
 #include <functional>
 #include <glm/glm.hpp>
@@ -39,6 +40,16 @@ namespace Ethereal
             glm::mat4 rotation = glm::toMat4(glm::quat(Rotation));
             return glm::translate(glm::mat4(1.0f), Translation) * rotation * glm::scale(glm::mat4(1.0f), Scale);
         }
+    };
+
+    struct StaticMeshComponent {
+        AssetHandle StaticMesh;
+        Ref<Ethereal::MaterialTable> MaterialTable = Ref<Ethereal::MaterialTable>::Create();
+
+        StaticMeshComponent() = default;
+        StaticMeshComponent(const StaticMeshComponent& other)
+            : StaticMesh(other.StaticMesh), MaterialTable(Ref<Ethereal::MaterialTable>::Create(other.MaterialTable)) {}
+        StaticMeshComponent(AssetHandle staticMesh) : StaticMesh(staticMesh) {}
     };
 
     struct MeshComponent {

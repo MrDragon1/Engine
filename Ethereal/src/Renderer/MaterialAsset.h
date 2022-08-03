@@ -66,8 +66,8 @@ namespace Ethereal
 
     class MaterialTable : public RefCounted {
       public:
-        MaterialTable(uint32_t materialCount = 1);
-        MaterialTable(Ref<MaterialTable> other);
+        explicit MaterialTable(uint32_t materialCount = 1);
+        explicit MaterialTable(Ref<MaterialTable> other);
         ~MaterialTable() = default;
 
         bool HasMaterial(uint32_t materialIndex) const { return m_Materials.find(materialIndex) != m_Materials.end(); }

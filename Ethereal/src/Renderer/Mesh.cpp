@@ -358,4 +358,85 @@ namespace Ethereal
 
         for (uint32_t i = 0; i < node->mNumChildren; i++) TraverseNodes(node->mChildren[i], transform, level + 1);
     }
+
+    MeshSource::MeshSource(const std::vector<Vertex>& vertices, const std::vector<Index>& indices, const glm::mat4& transform)
+        : m_StaticVertices(vertices), m_Indices(indices) {
+        // Generate a new asset handle
+        Handle = {};
+
+        Submesh submesh;
+        submesh.BaseVertex = 0;
+        submesh.BaseIndex = 0;
+        submesh.IndexCount = (uint32_t)indices.size() * 3u;
+        submesh.Transform = transform;
+        m_Submeshes.push_back(submesh);
+
+        m_VertexBuffer = VertexBuffer::Create(m_StaticVertices.data(), (uint32_t)(m_StaticVertices.size() * sizeof(Vertex)));
+        m_IndexBuffer = IndexBuffer::Create(m_Indices.data(), (uint32_t)(m_Indices.size() * sizeof(Index)));
+        m_VertexBufferLayout = {
+            {ShaderDataType::Float3, "a_Position"}, {ShaderDataType::Float3, "a_Normal"},   {ShaderDataType::Float3, "a_Tangent"},
+            {ShaderDataType::Float3, "a_Binormal"}, {ShaderDataType::Float2, "a_TexCoord"},
+        };
+    }
+
+    MeshSource::MeshSource(const std::vector<Vertex>& vertices, const std::vector<Index>& indices, const std::vector<Submesh>& submeshes)
+        : m_StaticVertices(vertices), m_Indices(indices), m_Submeshes(submeshes) {
+        // Generate a new asset handle
+        Handle = {};
+
+        m_VertexBuffer = VertexBuffer::Create(m_StaticVertices.data(), (uint32_t)(m_StaticVertices.size() * sizeof(Vertex)));
+        m_IndexBuffer = IndexBuffer::Create(m_Indices.data(), (uint32_t)(m_Indices.size() * sizeof(Index)));
+        m_VertexBufferLayout = {
+            {ShaderDataType::Float3, "a_Position"}, {ShaderDataType::Float3, "a_Normal"},   {ShaderDataType::Float3, "a_Tangent"},
+            {ShaderDataType::Float3, "a_Binormal"}, {ShaderDataType::Float2, "a_TexCoord"},
+        };
+
+        // TODO: generate bounding box for submeshes, etc.
+    }
+
+    MeshSource::~MeshSource() {}
+
+    static std::string LevelToSpaces(uint32_t level) {
+        std::string result = "";
+        for (uint32_t i = 0; i < level; i++) result += "--";
+        return result;
+    }
+
+    StaticMesh::StaticMesh(Ref<MeshSource> meshSource) : m_MeshSource(meshSource) {
+        // Generate a new asset handle
+        Handle = {};
+
+        SetSubmeshes({});
+
+        const auto& meshMaterials = meshSource->GetMaterials();
+        m_Materials = Ref<MaterialTable>::Create(meshMaterials.size());
+        for (size_t i = 0; i < meshMaterials.size(); i++) m_Materials->SetMaterial(i, Ref<MaterialAsset>::Create(meshMaterials[i]));
+    }
+
+    StaticMesh::StaticMesh(Ref<MeshSource> meshSource, const std::vector<uint32_t>& submeshes) : m_MeshSource(meshSource) {
+        // Generate a new asset handle
+        Handle = {};
+
+        SetSubmeshes(submeshes);
+
+        const auto& meshMaterials = meshSource->GetMaterials();
+        m_Materials = Ref<MaterialTable>::Create(meshMaterials.size());
+        for (size_t i = 0; i < meshMaterials.size(); i++) m_Materials->SetMaterial(i, Ref<MaterialAsset>::Create(meshMaterials[i]));
+    }
+
+    StaticMesh::StaticMesh(const Ref<StaticMesh>& other) : m_MeshSource(other->m_MeshSource), m_Materials(other->m_Materials) {
+        SetSubmeshes(other->m_Submeshes);
+    }
+
+    StaticMesh::~StaticMesh() {}
+
+    void StaticMesh::SetSubmeshes(const std::vector<uint32_t>& submeshes) {
+        if (!submeshes.empty()) {
+            m_Submeshes = submeshes;
+        } else {
+            const auto& submeshes = m_MeshSource->GetSubmeshes();
+            m_Submeshes.resize(submeshes.size());
+            for (uint32_t i = 0; i < submeshes.size(); i++) m_Submeshes[i] = i;
+        }
+    }
 }  // namespace Ethereal

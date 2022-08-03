@@ -1,6 +1,7 @@
 #pragma once
 //#include "pch.h"
 #include <string>
+#include <Asset/Asset.h>
 #include "Core/Utils.h"
 #include "Utils/Macro.h"
 
@@ -29,7 +30,7 @@ namespace Ethereal
         bool isValid() const { return m_pixels != nullptr; }
     };
 
-    class Texture : public RefCounted {
+    class Texture : public Asset {
       public:
         virtual ~Texture() = default;
 
