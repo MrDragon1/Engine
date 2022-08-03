@@ -319,6 +319,8 @@ namespace Ethereal
     template <>
     void Scene::OnComponentAdded<TransformComponent>(Entity entity, TransformComponent& component) {}
     template <>
+    void Scene::OnComponentAdded<StaticMeshComponent>(Entity entity, StaticMeshComponent& component) {}
+    template <>
     void Scene::OnComponentAdded<MeshComponent>(Entity entity, MeshComponent& component) {}
     template <>
     void Scene::OnComponentAdded<MaterialComponent>(Entity entity, MaterialComponent& component) {}

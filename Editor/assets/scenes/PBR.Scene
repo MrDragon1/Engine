@@ -1,5 +1,5 @@
 Scene:
-  Name: Test Scene
+  Name: PBR Scene
   Skybox: G:\Code\Engine\Editor\assets\skyboxs\Hollywood_Sign\Hollywood_Sign.ibl
 Entities:
   - Entity: 15952522535893857515
