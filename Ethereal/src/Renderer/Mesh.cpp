@@ -1,12 +1,6 @@
 #include "pch.h"
 #include "Mesh.h"
-
-#include <glm/ext/matrix_transform.hpp>
-#include <glm/gtc/quaternion.hpp>
-
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtx/quaternion.hpp>
-#include <glm/gtx/matrix_decompose.hpp>
+#include "Utils/AssetManager.h"
 
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
@@ -15,6 +9,7 @@
 #include <assimp/LogStream.hpp>
 
 #include "imgui.h"
+#include <filesystem>
 
 #define MESH_DEBUG_LOG 0
 #if MESH_DEBUG_LOG
@@ -74,156 +69,293 @@ namespace Ethereal
         virtual void write(const char* message) override { ET_MESH_ERROR("Assimp error: {0}", message); }
     };
 
-//    MeshSource::MeshSource(const std::string& filename) : m_FilePath(filename) {
-//        LogStream::Initialize();
-//
-//        ET_CORE_INFO("Loading mesh: {0}", filename.c_str());
-//
-//        m_Importer = std::make_unique<Assimp::Importer>();
-//
-//        const aiScene* scene = m_Importer->ReadFile(filename, s_MeshImportFlags);
-//        if (!scene || !scene->HasMeshes()) {
-//            ET_CORE_ERROR("Failed to load mesh file: {0}", filename);
-//            SetFlag(AssetFlag::Invalid);
-//            return;
-//        }
-//
-//        m_Scene = scene;
-//
-//        m_MeshShader = Renderer::GetShaderLibrary()->Get("HazelPBR_Static");
-//        m_InverseTransform = glm::inverse(Utils::Mat4FromAssimpMat4(scene->mRootNode->mTransformation));
-//
-//        uint32_t vertexCount = 0;
-//        uint32_t indexCount = 0;
-//
-//        m_BoundingBox.Min = {FLT_MAX, FLT_MAX, FLT_MAX};
-//        m_BoundingBox.Max = {-FLT_MAX, -FLT_MAX, -FLT_MAX};
-//
-//        m_Submeshes.reserve(scene->mNumMeshes);
-//
-//        for (unsigned m = 0; m < scene->mNumMeshes; m++) {
-//            aiMesh* mesh = scene->mMeshes[m];
-//
-//            Submesh& submesh = m_Submeshes.emplace_back();
-//            submesh.BaseVertex = vertexCount;
-//            submesh.BaseIndex = indexCount;
-//            submesh.MaterialIndex = mesh->mMaterialIndex;
-//            submesh.VertexCount = mesh->mNumVertices;
-//            submesh.IndexCount = mesh->mNumFaces * 3;
-//            submesh.MeshName = mesh->mName.C_Str();
-//
-//            vertexCount += mesh->mNumVertices;
-//            indexCount += submesh.IndexCount;
-//
-//            ET_CORE_ASSERT(mesh->HasPositions(), "Meshes require positions.");
-//            ET_CORE_ASSERT(mesh->HasNormals(), "Meshes require normals.");
-//
-//            // Vertices
-//            if (m_IsAnimated) {
-//                for (size_t i = 0; i < mesh->mNumVertices; i++) {
-//                    AnimatedVertex vertex;
-//                    vertex.Position = {mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z};
-//                    vertex.Normal = {mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z};
-//
-//                    if (mesh->HasTangentsAndBitangents()) {
-//                        vertex.Tangent = {mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z};
-//                        vertex.Binormal = {mesh->mBitangents[i].x, mesh->mBitangents[i].y, mesh->mBitangents[i].z};
-//                    }
-//
-//                    if (mesh->HasTextureCoords(0)) vertex.Texcoord = {mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y};
-//
-//                    m_AnimatedVertices.push_back(vertex);
-//                }
-//            } else {
-//                auto& aabb = submesh.BoundingBox;
-//                aabb.Min = {FLT_MAX, FLT_MAX, FLT_MAX};
-//                aabb.Max = {-FLT_MAX, -FLT_MAX, -FLT_MAX};
-//                for (size_t i = 0; i < mesh->mNumVertices; i++) {
-//                    Vertex vertex;
-//                    vertex.Position = {mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z};
-//                    vertex.Normal = {mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z};
-//                    aabb.Min.x = glm::min(vertex.Position.x, aabb.Min.x);
-//                    aabb.Min.y = glm::min(vertex.Position.y, aabb.Min.y);
-//                    aabb.Min.z = glm::min(vertex.Position.z, aabb.Min.z);
-//                    aabb.Max.x = glm::max(vertex.Position.x, aabb.Max.x);
-//                    aabb.Max.y = glm::max(vertex.Position.y, aabb.Max.y);
-//                    aabb.Max.z = glm::max(vertex.Position.z, aabb.Max.z);
-//
-//                    if (mesh->HasTangentsAndBitangents()) {
-//                        vertex.Tangent = {mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z};
-//                        vertex.Binormal = {mesh->mBitangents[i].x, mesh->mBitangents[i].y, mesh->mBitangents[i].z};
-//                    }
-//
-//                    if (mesh->HasTextureCoords(0)) vertex.Texcoord = {mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y};
-//
-//                    m_StaticVertices.push_back(vertex);
-//                }
-//            }
-//
-//            // Indices
-//            for (size_t i = 0; i < mesh->mNumFaces; i++) {
-//                ET_CORE_ASSERT(mesh->mFaces[i].mNumIndices == 3, "Must have 3 indices.");
-//                Index index = {mesh->mFaces[i].mIndices[0], mesh->mFaces[i].mIndices[1], mesh->mFaces[i].mIndices[2]};
-//                m_Indices.push_back(index);
-//
-//                if (!m_IsAnimated)
-//                    m_TriangleCache[m].emplace_back(m_StaticVertices[index.V1 + submesh.BaseVertex], m_StaticVertices[index.V2 + submesh.BaseVertex],
-//                                                    m_StaticVertices[index.V3 + submesh.BaseVertex]);
-//            }
-//        }
-//
-//        TraverseNodes(scene->mRootNode);
-//
-//        for (const auto& submesh : m_Submeshes) {
-//            AABB transformedSubmeshAABB = submesh.BoundingBox;
-//            glm::vec3 min = glm::vec3(submesh.Transform * glm::vec4(transformedSubmeshAABB.Min, 1.0f));
-//            glm::vec3 max = glm::vec3(submesh.Transform * glm::vec4(transformedSubmeshAABB.Max, 1.0f));
-//
-//            m_BoundingBox.Min.x = glm::min(m_BoundingBox.Min.x, min.x);
-//            m_BoundingBox.Min.y = glm::min(m_BoundingBox.Min.y, min.y);
-//            m_BoundingBox.Min.z = glm::min(m_BoundingBox.Min.z, min.z);
-//            m_BoundingBox.Max.x = glm::max(m_BoundingBox.Max.x, max.x);
-//            m_BoundingBox.Max.y = glm::max(m_BoundingBox.Max.y, max.y);
-//            m_BoundingBox.Max.z = glm::max(m_BoundingBox.Max.z, max.z);
-//        }
-//
-//        // Materials
-//        Ref<Texture2D> whiteTexture = Renderer::GetWhiteTexture();
-//        if (scene->HasMaterials()) {
-//            ET_MESH_LOG("---- Materials - {0} ----", filename);
-//
-//            m_Textures.resize(scene->mNumMaterials);
-//            m_Materials.resize(scene->mNumMaterials);
-//            ET_MESH_LOG("------------------------");
-//        } else {
-//            auto mi = Material::Create(m_MeshShader, "Hazel-Default");
-//            mi->Set("u_MaterialUniforms.AlbedoColor", glm::vec3(0.8f));
-//            mi->Set("u_MaterialUniforms.Emission", 0.0f);
-//            mi->Set("u_MaterialUniforms.Metalness", 0.0f);
-//            mi->Set("u_MaterialUniforms.Roughness", 0.8f);
-//            mi->Set("u_MaterialUniforms.UseNormalMap", false);
-//
-//            mi->Set("u_AlbedoTexture", whiteTexture);
-//            mi->Set("u_MetalnessTexture", whiteTexture);
-//            mi->Set("u_RoughnessTexture", whiteTexture);
-//            m_Materials.push_back(mi);
-//        }
-//
-//        if (m_IsAnimated) {
-//            m_VertexBuffer = VertexBuffer::Create(m_AnimatedVertices.data(), (uint32_t)(m_AnimatedVertices.size() * sizeof(AnimatedVertex)));
-//            m_VertexBufferLayout = {
-//                {ShaderDataType::Float3, "a_Position"},    {ShaderDataType::Float3, "a_Normal"},   {ShaderDataType::Float3, "a_Tangent"},
-//                {ShaderDataType::Float3, "a_Binormal"},    {ShaderDataType::Float2, "a_TexCoord"}, {ShaderDataType::Int4, "a_BoneIDs"},
-//                {ShaderDataType::Float4, "a_BoneWeights"},
-//            };
-//        } else {
-//            m_VertexBuffer = VertexBuffer::Create(m_StaticVertices.data(), (uint32_t)(m_StaticVertices.size() * sizeof(Vertex)));
-//            m_VertexBufferLayout = {
-//                {ShaderDataType::Float3, "a_Position"}, {ShaderDataType::Float3, "a_Normal"},   {ShaderDataType::Float3, "a_Tangent"},
-//                {ShaderDataType::Float3, "a_Binormal"}, {ShaderDataType::Float2, "a_TexCoord"},
-//            };
-//        }
-//
-//        m_IndexBuffer = IndexBuffer::Create(m_Indices.data(), (uint32_t)(m_Indices.size() * sizeof(Index)));
-//    }
+    MeshSource::MeshSource(const std::string& filename) : m_FilePath(filename) {
+        LogStream::Initialize();
+
+        ET_CORE_INFO("Loading mesh: {0}", filename.c_str());
+
+        m_Importer = std::make_unique<Assimp::Importer>();
+
+        const aiScene* scene = m_Importer->ReadFile(filename, s_MeshImportFlags);
+        if (!scene || !scene->HasMeshes()) {
+            ET_CORE_ERROR("Failed to load mesh file: {0}", filename);
+            SetFlag(AssetFlag::Invalid);
+            return;
+        }
+
+        m_Scene = scene;
+
+        //        m_MeshShader = Renderer::GetShaderLibrary()->Get("HazelPBR_Static");
+        m_MeshShader = Shader::Create("assets/shaders/PBR.glsl");
+        m_InverseTransform = glm::inverse(Utils::Mat4FromAssimpMat4(scene->mRootNode->mTransformation));
+
+        uint32_t vertexCount = 0;
+        uint32_t indexCount = 0;
+
+        m_BoundingBox.Min = {FLT_MAX, FLT_MAX, FLT_MAX};
+        m_BoundingBox.Max = {-FLT_MAX, -FLT_MAX, -FLT_MAX};
+
+        m_Submeshes.reserve(scene->mNumMeshes);
+
+        for (unsigned m = 0; m < scene->mNumMeshes; m++) {
+            aiMesh* mesh = scene->mMeshes[m];
+
+            Submesh& submesh = m_Submeshes.emplace_back();
+            submesh.BaseVertex = vertexCount;
+            submesh.BaseIndex = indexCount;
+            submesh.MaterialIndex = mesh->mMaterialIndex;
+            submesh.VertexCount = mesh->mNumVertices;
+            submesh.IndexCount = mesh->mNumFaces * 3;
+            submesh.MeshName = mesh->mName.C_Str();
+
+            vertexCount += mesh->mNumVertices;
+            indexCount += submesh.IndexCount;
+
+            ET_CORE_ASSERT(mesh->HasPositions(), "Meshes require positions.");
+            ET_CORE_ASSERT(mesh->HasNormals(), "Meshes require normals.");
+
+            auto& aabb = submesh.BoundingBox;
+            aabb.Min = {FLT_MAX, FLT_MAX, FLT_MAX};
+            aabb.Max = {-FLT_MAX, -FLT_MAX, -FLT_MAX};
+            for (size_t i = 0; i < mesh->mNumVertices; i++) {
+                Vertex vertex;
+                vertex.Position = {mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z};
+                vertex.Normal = {mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z};
+                aabb.Min.x = glm::min(vertex.Position.x, aabb.Min.x);
+                aabb.Min.y = glm::min(vertex.Position.y, aabb.Min.y);
+                aabb.Min.z = glm::min(vertex.Position.z, aabb.Min.z);
+                aabb.Max.x = glm::max(vertex.Position.x, aabb.Max.x);
+                aabb.Max.y = glm::max(vertex.Position.y, aabb.Max.y);
+                aabb.Max.z = glm::max(vertex.Position.z, aabb.Max.z);
+
+                if (mesh->HasTangentsAndBitangents()) {
+                    vertex.Tangent = {mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z};
+                    vertex.Binormal = {mesh->mBitangents[i].x, mesh->mBitangents[i].y, mesh->mBitangents[i].z};
+                }
+
+                if (mesh->HasTextureCoords(0)) vertex.Texcoord = {mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y};
+
+                m_StaticVertices.push_back(vertex);
+            }
+
+            // Indices
+            for (size_t i = 0; i < mesh->mNumFaces; i++) {
+                ET_CORE_ASSERT(mesh->mFaces[i].mNumIndices == 3, "Must have 3 indices.");
+                Index index = {mesh->mFaces[i].mIndices[0], mesh->mFaces[i].mIndices[1], mesh->mFaces[i].mIndices[2]};
+                m_Indices.push_back(index);
+            }
+        }
+
+        TraverseNodes(scene->mRootNode);
+
+        for (const auto& submesh : m_Submeshes) {
+            AABB transformedSubmeshAABB = submesh.BoundingBox;
+            glm::vec3 min = glm::vec3(submesh.Transform * glm::vec4(transformedSubmeshAABB.Min, 1.0f));
+            glm::vec3 max = glm::vec3(submesh.Transform * glm::vec4(transformedSubmeshAABB.Max, 1.0f));
+
+            m_BoundingBox.Min.x = glm::min(m_BoundingBox.Min.x, min.x);
+            m_BoundingBox.Min.y = glm::min(m_BoundingBox.Min.y, min.y);
+            m_BoundingBox.Min.z = glm::min(m_BoundingBox.Min.z, min.z);
+            m_BoundingBox.Max.x = glm::max(m_BoundingBox.Max.x, max.x);
+            m_BoundingBox.Max.y = glm::max(m_BoundingBox.Max.y, max.y);
+            m_BoundingBox.Max.z = glm::max(m_BoundingBox.Max.z, max.z);
+        }
+
+        // Materials
+        Ref<Texture2D> whiteTexture = TextureManager::AddTexture("assets/textures/default/default_diffuse.png");
+        if (scene->HasMaterials()) {
+            ET_MESH_LOG("---- Materials - {0} ----", filename);
+
+            m_Textures.resize(scene->mNumMaterials);
+            m_Materials.resize(scene->mNumMaterials);
+            for (uint32_t i = 0; i < scene->mNumMaterials; i++) {
+                auto aiMaterial = scene->mMaterials[i];
+                auto aiMaterialName = aiMaterial->GetName();
+
+                auto mi = Material::Create(m_MeshShader, aiMaterialName.data);
+                m_Materials[i] = mi;
+
+                ET_MESH_LOG("  {0} (Index = {1})", aiMaterialName.data, i);
+                aiString aiTexPath;
+                uint32_t textureCount = aiMaterial->GetTextureCount(aiTextureType_DIFFUSE);
+                ET_MESH_LOG("    TextureCount = {0}", textureCount);
+
+                glm::vec3 albedoColor(0.8f);
+                float emission = 0.0f;
+                aiColor3D aiColor, aiEmission;
+                if (aiMaterial->Get(AI_MATKEY_COLOR_DIFFUSE, aiColor) == AI_SUCCESS) albedoColor = {aiColor.r, aiColor.g, aiColor.b};
+
+                if (aiMaterial->Get(AI_MATKEY_COLOR_EMISSIVE, aiEmission) == AI_SUCCESS) emission = aiEmission.r;
+
+                mi->SetAlbedo(albedoColor);
+                mi->SetEmission(emission);
+
+                float shininess, metalness;
+                if (aiMaterial->Get(AI_MATKEY_SHININESS, shininess) != aiReturn_SUCCESS) shininess = 80.0f;  // Default value
+
+                if (aiMaterial->Get(AI_MATKEY_REFLECTIVITY, metalness) != aiReturn_SUCCESS) metalness = 0.0f;
+
+                float roughness = 1.0f - glm::sqrt(shininess / 100.0f);
+                ET_MESH_LOG("    COLOR = {0}, {1}, {2}", aiColor.r, aiColor.g, aiColor.b);
+                ET_MESH_LOG("    ROUGHNESS = {0}", roughness);
+                ET_MESH_LOG("    METALNESS = {0}", metalness);
+                bool hasAlbedoMap = aiMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &aiTexPath) == AI_SUCCESS;
+                bool fallback = !hasAlbedoMap;
+                if (hasAlbedoMap) {
+                    // TODO: Temp - this should be handled by Hazel's filesystem
+                    std::filesystem::path path = filename;
+                    auto parentPath = path.parent_path();
+                    parentPath /= std::string(aiTexPath.data);
+                    std::string texturePath = parentPath.string();
+                    ET_MESH_LOG("    Albedo map path = {0}", texturePath);
+                    auto texture = TextureManager::AddTexture(texturePath).As<Texture2D>();
+                    if (texture->IsLoaded()) {
+                        m_Textures[i] = texture;
+
+                        mi->SetAlbedoMap(texture);
+                        mi->SetAlbedo(glm::vec3(1.0f));
+                    } else {
+                        ET_CORE_ERROR("Could not load texture: {0}", texturePath);
+                        m_Textures[i] = whiteTexture;
+                        fallback = true;
+                    }
+                }
+
+                if (fallback) {
+                    ET_MESH_LOG("    No albedo map");
+                    mi->SetAlbedoMap(whiteTexture);
+                }
+
+                // Normal maps
+                bool hasNormalMap = aiMaterial->GetTexture(aiTextureType_NORMALS, 0, &aiTexPath) == AI_SUCCESS;
+                fallback = !hasNormalMap;
+                if (hasNormalMap) {
+                    // TODO: Temp - this should be handled by Hazel's filesystem
+                    std::filesystem::path path = filename;
+                    auto parentPath = path.parent_path();
+                    parentPath /= std::string(aiTexPath.data);
+                    std::string texturePath = parentPath.string();
+                    ET_MESH_LOG("    Normal map path = {0}", texturePath);
+                    auto texture = TextureManager::AddTexture(texturePath);
+                    if (texture->IsLoaded()) {
+                        m_Textures.push_back(texture);
+                        mi->SetNormalMap(texture);
+                        mi->SetUseNormalMap(true);
+                    } else {
+                        ET_CORE_ERROR("    Could not load texture: {0}", texturePath);
+                        fallback = true;
+                    }
+                }
+
+                if (fallback) {
+                    ET_MESH_LOG("    No normal map");
+                    mi->SetNormalMap(whiteTexture);
+                    mi->SetUseNormalMap(false);
+                }
+
+                // Roughness map
+                bool hasRoughnessMap = aiMaterial->GetTexture(aiTextureType_SHININESS, 0, &aiTexPath) == AI_SUCCESS;
+                fallback = !hasRoughnessMap;
+                if (hasRoughnessMap) {
+                    // TODO: Temp - this should be handled by Hazel's filesystem
+                    std::filesystem::path path = filename;
+                    auto parentPath = path.parent_path();
+                    parentPath /= std::string(aiTexPath.data);
+                    std::string texturePath = parentPath.string();
+                    ET_MESH_LOG("    Roughness map path = {0}", texturePath);
+                    auto texture = TextureManager::AddTexture(texturePath);
+                    if (texture->IsLoaded()) {
+                        m_Textures.push_back(texture);
+                        mi->SetRoughnessMap(texture);
+                        mi->SetRoughness(1.0f);
+                    } else {
+                        ET_CORE_ERROR("    Could not load texture: {0}", texturePath);
+                        fallback = true;
+                    }
+                }
+
+                if (fallback) {
+                    ET_MESH_LOG("    No roughness map");
+                    mi->SetRoughnessMap(whiteTexture);
+                    mi->SetRoughness(roughness);
+                }
+
+                bool metalnessTextureFound = false;
+                for (uint32_t p = 0; p < aiMaterial->mNumProperties; p++) {
+                    auto prop = aiMaterial->mProperties[p];
+
+                    if (prop->mType == aiPTI_String) {
+                        uint32_t strLength = *(uint32_t*)prop->mData;
+                        std::string str(prop->mData + 4, strLength);
+
+                        std::string key = prop->mKey.data;
+                        if (key == "$raw.ReflectionFactor|file") {
+                            // TODO: Temp - this should be handled by Hazel's filesystem
+                            std::filesystem::path path = filename;
+                            auto parentPath = path.parent_path();
+                            parentPath /= str;
+                            std::string texturePath = parentPath.string();
+                            ET_MESH_LOG("    Metalness map path = {0}", texturePath);
+                            auto texture = TextureManager::AddTexture(texturePath);
+                            if (texture->IsLoaded()) {
+                                metalnessTextureFound = true;
+                                m_Textures.push_back(texture);
+                                mi->SetMetallicMap(texture);
+                                mi->SetMetallic(1.0f);
+                            } else {
+                                ET_CORE_ERROR("    Could not load texture: {0}", texturePath);
+                            }
+                            break;
+                        }
+                    }
+                }
+
+                fallback = !metalnessTextureFound;
+                if (fallback) {
+                    ET_MESH_LOG("    No metalness map");
+                    mi->SetMetallicMap(whiteTexture);
+                    mi->SetMetallic(metalness);
+                }
+            }
+            ET_MESH_LOG("------------------------");
+        } else {
+            auto mi = Material::Create(m_MeshShader, "Hazel-Default");
+            mi->SetAlbedo(glm::vec3(0.8f));
+            mi->SetEmission(0.0f);
+            mi->SetMetallic(0.0f);
+            mi->SetRoughness(0.8f);
+            mi->SetUseNormalMap(false);
+
+            mi->SetAlbedoMap(whiteTexture);
+            mi->SetMetallicMap(whiteTexture);
+            mi->SetRoughnessMap(whiteTexture);
+            m_Materials.push_back(mi);
+        }
+
+        m_VertexBuffer = VertexBuffer::Create(m_StaticVertices.data(), (uint32_t)(m_StaticVertices.size() * sizeof(Vertex)));
+        m_VertexBufferLayout = {
+            {ShaderDataType::Float3, "a_Position"}, {ShaderDataType::Float3, "a_Normal"},   {ShaderDataType::Float3, "a_Tangent"},
+            {ShaderDataType::Float3, "a_Binormal"}, {ShaderDataType::Float2, "a_TexCoord"},
+        };
+
+        m_IndexBuffer = IndexBuffer::Create(m_Indices.data(), (uint32_t)(m_Indices.size() * sizeof(Index)));
+    }
+
+    void MeshSource::TraverseNodes(aiNode* node, const glm::mat4& parentTransform, uint32_t level) {
+        glm::mat4 localTransform = Utils::Mat4FromAssimpMat4(node->mTransformation);
+        glm::mat4 transform = parentTransform * localTransform;
+        m_NodeMap[node].resize(node->mNumMeshes);
+        for (uint32_t i = 0; i < node->mNumMeshes; i++) {
+            uint32_t mesh = node->mMeshes[i];
+            auto& submesh = m_Submeshes[mesh];
+            submesh.NodeName = node->mName.C_Str();
+            submesh.Transform = transform;
+            submesh.LocalTransform = localTransform;
+            m_NodeMap[node][i] = mesh;
+        }
+
+        // ET_MESH_LOG("{0} {1}", LevelToSpaces(level), node->mName.C_Str());
+
+        for (uint32_t i = 0; i < node->mNumChildren; i++) TraverseNodes(node->mChildren[i], transform, level + 1);
+    }
 }  // namespace Ethereal

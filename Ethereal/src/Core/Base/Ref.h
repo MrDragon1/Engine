@@ -114,7 +114,7 @@ namespace Ethereal
 
         template <typename... Args>
         static Ref<T> Create(Args&&... args) {
-#if HZ_TRACK_MEMORY
+#if ET_TRACK_MEMORY
             return Ref<T>(new (typeid(T).name()) T(std::forward<Args>(args)...));
 #else
             return Ref<T>(new T(std::forward<Args>(args)...));
