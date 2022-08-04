@@ -7,6 +7,7 @@ cmake-build-debug/
 
 *.pdb
 *.obj
+*.bak
 
 # MacOS Cache
 .DS_Store

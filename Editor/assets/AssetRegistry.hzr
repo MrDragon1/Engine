@@ -20,6 +20,9 @@ Assets:
   - Handle: 629411682878170321
     FilePath: skyboxs/Barcelona_Rooftops/Barce_Rooftop_C_3k.hdr
     Type: EnvMap
+  - Handle: 1037068063489120142
+    FilePath: meshes/source/cube (01).obj
+    Type: StaticMesh
   - Handle: 1054464911694362430
     FilePath: skyboxs/Hollywood_Sign/HWSign3-Fence_Thumb.jpg
     Type: Texture

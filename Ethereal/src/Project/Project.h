@@ -12,8 +12,8 @@ namespace Ethereal
         std::string AssetDirectory = "assets";
         std::string AssetRegistryPath = "assets/AssetRegistry.hzr";
 
-        std::string MeshPath = "meshes";
-        std::string MeshSourcePath = "meshes/source";
+        std::string MeshPath = "assets/meshes";
+        std::string MeshSourcePath = "assets/meshes/source";
 
         std::string StartScene;
 

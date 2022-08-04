@@ -95,31 +95,31 @@ namespace Ethereal
         std::string name;
         switch (type) {
             case ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_CUBE:
-                filePath = "assets/buildin/models/cube.obj";
+                filePath = "source/cube.obj";
                 name = "Cube";
                 break;
             case ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_SPHERE:
-                filePath = "assets/buildin/models/sphere.obj";
+                filePath = "source/sphere.obj";
                 name = "Sphere";
                 break;
             case ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_CYLINDER:
-                filePath = "assets/buildin/models/cylinder.obj";
+                filePath = "source/cylinder.obj";
                 name = "Cylinder";
                 break;
             case ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_CONE:
-                filePath = "assets/buildin/models/cone.obj";
+                filePath = "source/cone.obj";
                 name = "Cone";
                 break;
             case ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_TORUS:
-                filePath = "assets/buildin/models/torus.obj";
+                filePath = "source/torus.obj";
                 name = "Torus";
                 break;
             case ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_PLANE:
-                filePath = "assets/buildin/models/plane.obj";
+                filePath = "source/plane.obj";
                 name = "Plane";
                 break;
             case ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_MONKEY:
-                filePath = "assets/buildin/models/monkey.obj";
+                filePath = "source/monkey.obj";
                 name = "Monkey";
                 break;
             default:
@@ -128,9 +128,13 @@ namespace Ethereal
         }
 
         Entity Object = CreateEntity(name);
-        auto& materialComponent = Object.AddComponent<MaterialComponent>();
-        auto& meshComponent = Object.AddComponent<MeshComponent>();
-        meshComponent.Desc.m_filePath = filePath;
+        std::filesystem::path path = Project::GetActive()->GetMeshPath() / filePath;
+        auto meshSource = Ref<MeshSource>::Create(path.string());
+        Ref<StaticMesh> mesh = AssetManager::CreateNewAsset<StaticMesh>(path.filename().string(), path.parent_path().string(), meshSource);
+
+        auto& staticMeshComponent = Object.AddComponent<StaticMeshComponent>();
+        staticMeshComponent.StaticMesh = mesh->Handle;
+        staticMeshComponent.MaterialTable = Ref<MaterialTable>::Create(mesh->GetMaterials());
 
         return Object;
     }
