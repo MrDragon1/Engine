@@ -56,12 +56,13 @@ namespace Ethereal
         float m_Emisstion = 0.0f;
         float m_Transparency = 0.0f;
 
-        bool b_Albedo = false;
-        bool b_Metallic = false;
-        bool b_Roughness = false;
-        bool b_Normal = false;
-        bool b_Occlusion = false;
-        bool b_Emissive = false;
+        // TODO : Fix this
+        bool b_Albedo = true;
+        bool b_Metallic = true;
+        bool b_Roughness = true;
+        bool b_Normal = true;
+        bool b_Occlusion = true;
+        bool b_Emissive = true;
 
         friend class MaterialAsset;
     };

@@ -18,32 +18,33 @@ namespace Ethereal
     }
 
     void RenderResource::UploadRenderMesh(RenderEntity& RenderEntity, RenderMeshData& RenderMeshData) {
-        size_t meshAssetId = RenderEntity.m_MeshAssetID;
-        auto it = m_Mesh_Map.find(meshAssetId);
-        if (it != m_Mesh_Map.end()) {
-            // TODO: move to dirty data update func
-            UpdateMesh(RenderEntity, RenderMeshData);
-            // Alread exist
-            // ET_CORE_INFO("Already exist {0}", assetid);
-        } else {
-            GLMesh temp_mesh;
-            temp_mesh.m_Layout = RenderMeshData.m_static_mesh_data.m_layout;
-            temp_mesh.m_VertexCount = RenderMeshData.m_static_mesh_data.m_vertex_buffer->m_count;
-            temp_mesh.m_IndexCount = RenderMeshData.m_static_mesh_data.m_index_buffer->m_count;
-
-            temp_mesh.m_VAO = VertexArray::Create();
-            temp_mesh.m_VBO = VertexBuffer::Create(temp_mesh.m_VertexCount * sizeof(MeshVertex));
-            temp_mesh.m_VBO->SetLayout(temp_mesh.m_Layout);
-            temp_mesh.m_VBO->SetData(RenderMeshData.m_static_mesh_data.m_vertex_buffer->m_data, temp_mesh.m_VertexCount * sizeof(MeshVertex));
-            temp_mesh.m_VAO->AddVertexBuffer(temp_mesh.m_VBO);
-
-            temp_mesh.m_IBO =
-                IndexBuffer::Create((uint32_t*)RenderMeshData.m_static_mesh_data.m_index_buffer->m_data, temp_mesh.m_IndexCount * sizeof(uint32_t));
-            temp_mesh.m_VAO->SetIndexBuffer(temp_mesh.m_IBO);
-
-            auto res = m_Mesh_Map.insert(std::make_pair(meshAssetId, std::move(temp_mesh)));
-            ET_CORE_ASSERT(res.second, "Failed to insert mesh into map");
-        }
+        //        size_t meshAssetId = RenderEntity.m_MeshAssetID;
+        //        auto it = m_Mesh_Map.find(meshAssetId);
+        //        if (it != m_Mesh_Map.end()) {
+        //            // TODO: move to dirty data update func
+        //            UpdateMesh(RenderEntity, RenderMeshData);
+        //            // Alread exist
+        //            // ET_CORE_INFO("Already exist {0}", assetid);
+        //        } else {
+        //            GLMesh temp_mesh;
+        //            temp_mesh.m_Layout = RenderMeshData.m_static_mesh_data.m_layout;
+        //            temp_mesh.m_VertexCount = RenderMeshData.m_static_mesh_data.m_vertex_buffer->m_count;
+        //            temp_mesh.m_IndexCount = RenderMeshData.m_static_mesh_data.m_index_buffer->m_count;
+        //
+        //            temp_mesh.m_VAO = VertexArray::Create();
+        //            temp_mesh.m_VBO = VertexBuffer::Create(temp_mesh.m_VertexCount * sizeof(MeshVertex));
+        //            temp_mesh.m_VBO->SetLayout(temp_mesh.m_Layout);
+        //            temp_mesh.m_VBO->SetData(RenderMeshData.m_static_mesh_data.m_vertex_buffer->m_data, temp_mesh.m_VertexCount *
+        //            sizeof(MeshVertex)); temp_mesh.m_VAO->AddVertexBuffer(temp_mesh.m_VBO);
+        //
+        //            temp_mesh.m_IBO =
+        //                IndexBuffer::Create((uint32_t*)RenderMeshData.m_static_mesh_data.m_index_buffer->m_data, temp_mesh.m_IndexCount *
+        //                sizeof(uint32_t));
+        //            temp_mesh.m_VAO->SetIndexBuffer(temp_mesh.m_IBO);
+        //
+        //            auto res = m_Mesh_Map.insert(std::make_pair(meshAssetId, std::move(temp_mesh)));
+        //            ET_CORE_ASSERT(res.second, "Failed to insert mesh into map");
+        //        }
     }
 
     void RenderResource::UploadRenderMaterial(RenderEntity& RenderEntity, GameObjectMaterialDesc& GameObjectMaterialDesc) {
@@ -79,18 +80,18 @@ namespace Ethereal
     }
 
     void RenderResource::UpdateMesh(RenderEntity& RenderEntity, RenderMeshData& RenderMeshData) {
-        size_t meshAssetId = RenderEntity.m_MeshAssetID;
-        auto it = m_Mesh_Map.find(meshAssetId);
-        if (it != m_Mesh_Map.end()) {
-            GLMesh& mesh = it->second;
-            ET_CORE_ASSERT(mesh.m_VertexCount == RenderMeshData.m_static_mesh_data.m_vertex_buffer->m_count, "Vertex count mismatch");
-            ET_CORE_ASSERT(mesh.m_IndexCount == RenderMeshData.m_static_mesh_data.m_index_buffer->m_count, "Vertex count mismatch");
-
-            mesh.m_VBO->SetData(RenderMeshData.m_static_mesh_data.m_vertex_buffer->m_data, mesh.m_VertexCount * sizeof(MeshVertex));
-            mesh.m_VAO->SetIndexBuffer(mesh.m_IBO);
-        } else {
-            ET_CORE_ASSERT("Failed to find mesh in map");
-        }
+        //        size_t meshAssetId = RenderEntity.m_MeshAssetID;
+        //        auto it = m_Mesh_Map.find(meshAssetId);
+        //        if (it != m_Mesh_Map.end()) {
+        //            GLMesh& mesh = it->second;
+        //            ET_CORE_ASSERT(mesh.m_VertexCount == RenderMeshData.m_static_mesh_data.m_vertex_buffer->m_count, "Vertex count mismatch");
+        //            ET_CORE_ASSERT(mesh.m_IndexCount == RenderMeshData.m_static_mesh_data.m_index_buffer->m_count, "Vertex count mismatch");
+        //
+        //            mesh.m_VBO->SetData(RenderMeshData.m_static_mesh_data.m_vertex_buffer->m_data, mesh.m_VertexCount * sizeof(MeshVertex));
+        //            mesh.m_VAO->SetIndexBuffer(mesh.m_IBO);
+        //        } else {
+        //            ET_CORE_ASSERT("Failed to find mesh in map");
+        //        }
     }
 
     void RenderResource::UpdateMaterial(RenderEntity& RenderEntity, GameObjectMaterialDesc& GameObjectMaterialDesc) {

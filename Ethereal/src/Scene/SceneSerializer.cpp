@@ -11,23 +11,6 @@
 
 namespace Ethereal
 {
-    YAML::Emitter& operator<<(YAML::Emitter& out, const glm::vec2& v) {
-        out << YAML::Flow;
-        out << YAML::BeginSeq << v.x << v.y << YAML::EndSeq;
-        return out;
-    }
-
-    YAML::Emitter& operator<<(YAML::Emitter& out, const glm::vec3& v) {
-        out << YAML::Flow;
-        out << YAML::BeginSeq << v.x << v.y << v.z << YAML::EndSeq;
-        return out;
-    }
-
-    YAML::Emitter& operator<<(YAML::Emitter& out, const glm::vec4& v) {
-        out << YAML::Flow;
-        out << YAML::BeginSeq << v.x << v.y << v.z << v.w << YAML::EndSeq;
-        return out;
-    }
     static std::string RigidBody2DBodyTypeToString(Rigidbody2DComponent::BodyType bodyType) {
         switch (bodyType) {
             case Rigidbody2DComponent::BodyType::Static:
@@ -265,8 +248,8 @@ namespace Ethereal
                     if (staticMeshComponent["MaterialTable"]) {
                         YAML::Node materialTableNode = staticMeshComponent["MaterialTable"];
                         for (auto materialEntry : materialTableNode) {
-                            uint32_t index = materialEntry.first.as<uint32_t>();
-                            AssetHandle materialAsset = materialEntry.second.as<AssetHandle>();
+                            auto index = materialEntry.first.as<uint32_t>();
+                            auto materialAsset = materialEntry.second.as<AssetHandle>();
                             if (materialAsset && AssetManager::IsAssetHandleValid(materialAsset))
                                 component.MaterialTable->SetMaterial(index, AssetManager::GetAsset<MaterialAsset>(materialAsset));
                         }

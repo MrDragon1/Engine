@@ -1,6 +1,6 @@
 #include "EnvironmentMapRenderPass.h"
 #include "Utils/AssetManager.h"
-
+#include "Core/GlobalContext.h"
 namespace Ethereal
 {
 
@@ -10,13 +10,16 @@ namespace Ethereal
                               ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_DEPTH};
         fbSpec.Width = width;
         fbSpec.Height = height;
+
+        m_Cube = GlobalContext::GetRenderSystem().GetCubeStaticMesh();
+
         m_Framebuffer = Framebuffer::Create(fbSpec);
 
         m_EquirectangularToCubeMapShader = Shader::Create(m_EquirectangularToCubeMapShaderPath);
         m_EquirectangularToCubeMapShader->Bind();
         m_PrefilterShader = Shader::Create(m_PrefilterShaderPath);
         m_PrefilterShader->Bind();
-        
+
         Ref<TextureData> data512 = Ref<TextureData>::Create();
         data512->m_width = 512;
         data512->m_height = 512;

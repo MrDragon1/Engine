@@ -45,7 +45,11 @@ namespace Ethereal
 
             if (MaterialHandle > other.MaterialHandle) return false;
 
-            return IsSelected < other.IsSelected;
+            if (IsSelected < other.IsSelected) return true;
+
+            if (IsSelected < other.IsSelected) return false;
+
+            return EntityID < other.EntityID;
         }
     };
 

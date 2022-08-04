@@ -158,6 +158,9 @@ Assets:
   - Handle: 5760373433146932754
     FilePath: meshes/source/plane.obj
     Type: MeshSource
+  - Handle: 5831112817991928675
+    FilePath: materials/humanskin.hmaterial
+    Type: Material
   - Handle: 5943035821735123300
     FilePath: textures/RPGpack_sheet_2X.png
     Type: Texture
@@ -323,6 +326,9 @@ Assets:
   - Handle: 14416324310377128521
     FilePath: models/nanosuit/hand_dif.png
     Type: Texture
+  - Handle: 14433772216323180676
+    FilePath: meshes/source/Plane.gltf
+    Type: MeshSource
   - Handle: 14548924862517442210
     FilePath: textures/humanskin/human-skin1_metallic.png
     Type: Texture
@@ -350,6 +356,9 @@ Assets:
   - Handle: 15842485364540256151
     FilePath: meshes/source/monkey.obj
     Type: MeshSource
+  - Handle: 16114899070468696589
+    FilePath: materials/gold.hmaterial
+    Type: Material
   - Handle: 16580330108808779451
     FilePath: textures/humanskin/human-skin1_ao.png
     Type: Texture
@@ -389,6 +398,9 @@ Assets:
   - Handle: 17673943365005154986
     FilePath: meshes/default/cone.hsmesh
     Type: StaticMesh
+  - Handle: 17708780527190283076
+    FilePath: materials/rustediron.hmaterial
+    Type: Material
   - Handle: 18314576917670698223
     FilePath: textures/default/default_roughness.png
     Type: Texture

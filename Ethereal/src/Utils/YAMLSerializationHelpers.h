@@ -107,7 +107,7 @@ namespace YAML
 
 }  // namespace YAML
 
-namespace Hazel
+namespace Ethereal
 {
 
     inline YAML::Emitter& operator<<(YAML::Emitter& out, const glm::vec2& v) {

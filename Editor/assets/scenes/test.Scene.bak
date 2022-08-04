@@ -6,30 +6,24 @@ Entities:
     TagComponent:
       Tag: Plane
     StaticMeshComponent:
-      AssetID: 527243546043792276
+      AssetID: 1114330618090056849
       MaterialTable:
-        0: 0
+        0: 16114899070468696589
     TransformComponent:
       Translation: [2.94246364, -8.02337742, 4.48575401]
       Rotation: [0, 0, 0]
       Scale: [34.524498, 29.5867233, 26.7573967]
-    MeshComponent:
-      m_filePath: assets/buildin/models/plane.obj
-    MaterialComponent:
-      m_AlbedoFile: assets\models\cube\wall.jpg
-      m_MetallicFile: assets\textures\default\default_metallic.png
-      m_RoughnessFile: assets\textures\default\default_roughness.png
-      m_NormalFile: assets\textures\default\default_normal.png
-      m_OcclusionFile: assets\textures\default\default_occlusion.png
-      m_EmissiveFile: assets\textures\default\default_emissive.png
-      m_Albedo: [0.722007751, 0.722007751, 0.722007751]
-      m_Metallic: 0.119999997
-      m_Roughness: 0.25999999
-      b_Albedo: false
-      b_Normal: false
-      b_Metallic: false
-      b_Roughness: false
-      b_Occlusion: false
+  - Entity: 11171200316534182395
+    TagComponent:
+      Tag: Cube
+    StaticMeshComponent:
+      AssetID: 6425428808557104903
+      MaterialTable:
+        0: 16114899070468696589
+    TransformComponent:
+      Translation: [2.94246364, 0, 4.48575401]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
   - Entity: 15952522535893857515
     TagComponent:
       Tag: Camera

@@ -39,9 +39,6 @@ namespace Ethereal
         m_EnvironmentMapRenderPass = Ref<EnvironmentMapRenderPass>::Create();
         m_EnvironmentMapRenderPass->Init(m_Width, m_Height);
 
-        m_SkyboxRenderPass->m_Cube = this->GetCubeStaticMesh();
-        m_EnvironmentMapRenderPass->m_Cube = this->GetCubeStaticMesh();
-
         m_EnvironmentMapRenderPass->Reset();
     }
 
@@ -65,6 +62,9 @@ namespace Ethereal
         m_EnvironmentMapRenderPass->m_BackgroundCubeMap->Bind(0);
         m_SkyboxRenderPass->Draw();
         m_MainCameraRenderPass->m_Framebuffer->Unbind();
+
+        m_DrawLists->MeshTransformMap.clear();
+        m_DrawLists->StaticMeshDrawList.clear();
     }
 
     void RenderSystem::OnResize() {

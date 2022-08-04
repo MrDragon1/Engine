@@ -215,7 +215,7 @@ namespace Ethereal
             auto staticMesh = AssetManager::GetAsset<StaticMesh>(staticMeshComponent.StaticMesh);
             if (staticMesh && !staticMesh->IsFlagSet(AssetFlag::Missing)) {
                 Entity e = Entity(entity, this);
-                glm::mat4 transform = glm::mat4(1.0f);  // GetWorldSpaceTransformMatrix(e);
+                glm::mat4 transform = transformComponent.GetTransform();  // GetWorldSpaceTransformMatrix(e);
                 GlobalContext::GetRenderSystem().SubmitStaticMesh(staticMesh, staticMeshComponent.MaterialTable, (uint32_t)e, transform);
             }
         }

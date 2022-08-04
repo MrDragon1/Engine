@@ -1,8 +1,10 @@
 #include "SkyboxRenderPass.h"
-
+#include "Core/GlobalContext.h"
 namespace Ethereal
 {
     void SkyboxRenderPass::Init(uint32_t width, uint32_t height) {
+        m_Cube = GlobalContext::GetRenderSystem().GetCubeStaticMesh();
+
         m_SkyboxShader = Shader::Create(m_SkyboxShaderPath);
         m_SkyboxShader->Bind();
         m_SkyboxShader->SetInt("u_SkyboxTexture", 0);
