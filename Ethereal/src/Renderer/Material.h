@@ -61,6 +61,7 @@ namespace Ethereal
         bool b_Roughness = false;
         bool b_Normal = false;
         bool b_Occlusion = false;
+        bool b_Emissive = false;
 
         friend class MaterialAsset;
     };

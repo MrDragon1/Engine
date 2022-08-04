@@ -4,6 +4,8 @@
 #include "Core/GlobalContext.h"
 #include "Scene/ScriptableEntity.h"
 #include "Utils/IniParser.h"
+#include "Asset/AssetManager.h"
+
 #include "box2d/b2_body.h"
 #include "box2d/b2_fixture.h"
 #include "box2d/b2_polygon_shape.h"
@@ -205,25 +207,18 @@ namespace Ethereal
     }
 
     void Scene::SubmitRenderScene(RenderSceneData& renderSceneData) {
-        auto view = m_Registry.view<TransformComponent, MeshComponent, MaterialComponent>();
+        GlobalContext::GetRenderSystem().SubmitRenderSceneData(renderSceneData);
+
+        auto view = m_Registry.view<TransformComponent, StaticMeshComponent>();
         for (auto entity : view) {
-            const auto [transform, meshComponent, materialComponent] = view.get<TransformComponent, MeshComponent, MaterialComponent>(entity);
-            GameObjectTransformDesc transformDesc;
-            transformDesc.Translation = transform.Translation;
-            transformDesc.Rotation = transform.Rotation;
-            transformDesc.Scale = transform.Scale;
-            GameObjectMeshDesc meshDesc = meshComponent.Desc;
-            GameObjectMaterialDesc materialDesc = materialComponent.Desc;
-
-            EntityDataForRenderSystem entityData;
-            entityData.EntityID = (size_t)entity;
-            entityData.Transform = transformDesc;
-            entityData.Mesh = meshDesc;
-            entityData.Material = materialDesc;
-
-            renderSceneData.EntitiesData.push_back(entityData);
+            const auto [transformComponent, staticMeshComponent] = view.get<TransformComponent, StaticMeshComponent>(entity);
+            auto staticMesh = AssetManager::GetAsset<StaticMesh>(staticMeshComponent.StaticMesh);
+            if (staticMesh && !staticMesh->IsFlagSet(AssetFlag::Missing)) {
+                Entity e = Entity(entity, this);
+                glm::mat4 transform = glm::mat4(1.0f);  // GetWorldSpaceTransformMatrix(e);
+                GlobalContext::GetRenderSystem().SubmitStaticMesh(staticMesh, staticMeshComponent.MaterialTable, (uint32_t)e, transform);
+            }
         }
-        GlobalContext::GetRenderSystem().UpdateRenderScene(renderSceneData);
     }
 
     void Scene::DestroyEntity(Entity entity) { m_Registry.destroy(entity); }

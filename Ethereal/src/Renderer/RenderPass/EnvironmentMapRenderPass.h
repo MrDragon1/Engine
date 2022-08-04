@@ -38,7 +38,7 @@ namespace Ethereal
 
         std::string m_BRDFLUTTexturePath = "assets/textures/global/brdf_schilk.hdr";
 
-        GLMesh m_Cube;
+        Ref<StaticMesh> m_Cube;
 
         friend class RenderSystem;
     };

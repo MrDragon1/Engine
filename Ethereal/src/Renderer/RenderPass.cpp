@@ -2,5 +2,5 @@
 
 namespace Ethereal
 {
-    VisiableNodes RenderPass::m_VisiableNodes;
+    DrawLists RenderPass::m_DrawLists;
 }  // namespace Ethereal

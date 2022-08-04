@@ -7,6 +7,8 @@
 #include "Core/GlobalContext.h"
 // Temporary
 #include "Utils/AssetLoader.h"
+#include "Utils/AssetManager.h"
+
 #include "box2d/b2_body.h"
 #include "box2d/b2_fixture.h"
 #include "box2d/b2_polygon_shape.h"
@@ -14,13 +16,20 @@
 
 namespace Ethereal
 {
-    RenderSystem::RenderSystem() { }
+    RenderSystem::RenderSystem() {}
 
     void RenderSystem::Init() {
         m_Width = 1280;
         m_Height = 720;
-        m_RenderScene = Ref<RenderScene>::Create();
-        m_RenderResource = Ref<RenderResource>::Create();
+
+        m_DrawLists = &RenderPass::m_DrawLists;
+        m_BuildinData = new BuildinData();
+
+        m_BuildinData->WhiteTexture = TextureManager::AddTexture("assets/buildin/textures/white.png");
+        m_BuildinData->BlackTexture = TextureManager::AddTexture("assets/buildin/textures/black.png");
+        m_BuildinData->BRDFLutTexture = TextureManager::AddTexture("assets/buildin/textures/brdf_schilk.hdr");
+        m_BuildinData->Cube = Ref<StaticMesh>::Create(Ref<MeshSource>::Create("assets/meshes/source/cube.obj"));
+
         m_MainCameraRenderPass = Ref<MainCameraRenderPass>::Create();
         m_MainCameraRenderPass->Init(m_Width, m_Height);
         m_ShadowMapRenderPass = Ref<ShadowMapRenderPass>::Create();
@@ -30,26 +39,8 @@ namespace Ethereal
         m_EnvironmentMapRenderPass = Ref<EnvironmentMapRenderPass>::Create();
         m_EnvironmentMapRenderPass->Init(m_Width, m_Height);
 
-        m_RenderScene->SetVisiableNodeReference();
-
-        // ! This is not a good way to draw skybox cube
-        GameObjectMeshDesc desc;
-        desc.m_filePath = "assets/buildin/models/cube.obj";
-        RenderEntity renderEntity;
-        renderEntity.m_Mesh_Desc = desc;
-        renderEntity.m_InstanceID = 12345;
-        RenderMeshData renderMeshData;
-        bool is_MeshLoaded = m_RenderScene->getMeshAssetIdAllocator().hasElement(renderEntity.m_Mesh_Desc);
-        if (!is_MeshLoaded) {
-            renderMeshData = m_RenderResource->LoadMeshData(renderEntity.m_Mesh_Desc);
-        }
-        renderEntity.m_MeshAssetID = m_RenderScene->getMeshAssetIdAllocator().allocUUID(renderEntity.m_Mesh_Desc);
-        if (!is_MeshLoaded) {
-            m_RenderResource->UploadRenderResource(renderEntity, renderMeshData);
-        }
-
-        m_SkyboxRenderPass->m_Cube = m_RenderResource->GetGLMesh(renderEntity);
-        m_EnvironmentMapRenderPass->m_Cube = m_RenderResource->GetGLMesh(renderEntity);
+        m_SkyboxRenderPass->m_Cube = this->GetCubeStaticMesh();
+        m_EnvironmentMapRenderPass->m_Cube = this->GetCubeStaticMesh();
 
         m_EnvironmentMapRenderPass->Reset();
     }
@@ -76,54 +67,6 @@ namespace Ethereal
         m_MainCameraRenderPass->m_Framebuffer->Unbind();
     }
 
-    void RenderSystem::UpdateRenderScene(const RenderSceneData& renderSceneData) {
-        m_RenderScene->Clear();
-        for (const auto& data : renderSceneData.EntitiesData) {
-            RenderEntity renderEntity;
-            renderEntity.m_InstanceID = data.EntityID;
-            renderEntity.m_Transform_Desc = data.Transform;
-            renderEntity.m_Mesh_Desc = data.Mesh;
-            renderEntity.m_Material_Desc = data.Material;
-            // ET_CORE_INFO("m_Metallic {}",renderEntity.m_Material_Desc.m_Metallic);
-            //* Load Mesh Data
-            RenderMeshData renderMeshData;
-            bool is_MeshLoaded = m_RenderScene->getMeshAssetIdAllocator().hasElement(renderEntity.m_Mesh_Desc);
-            if (!is_MeshLoaded) {
-                renderMeshData = m_RenderResource->LoadMeshData(renderEntity.m_Mesh_Desc);
-            }
-            renderEntity.m_MeshAssetID = m_RenderScene->getMeshAssetIdAllocator().allocUUID(renderEntity.m_Mesh_Desc);
-            if (!is_MeshLoaded) {
-                m_RenderResource->UploadRenderResource(renderEntity, renderMeshData);
-            }
-
-            //* Load Material Data
-            bool is_MaterialLoaded = m_RenderScene->getMaterialAssetIdAllocator().hasElement(renderEntity.m_Material_Desc);
-            if (!is_MaterialLoaded) {
-                m_RenderResource->LoadMaterialData(renderEntity.m_Material_Desc);
-            }
-            renderEntity.m_MaterialAssetID = m_RenderScene->getMaterialAssetIdAllocator().allocUUID(renderEntity.m_Material_Desc);
-            if (!is_MaterialLoaded) {
-                m_RenderResource->UploadRenderResource(renderEntity, renderEntity.m_Material_Desc);
-            }
-
-            Ref<GameObject> gameObject = Ref<GameObject>::Create();
-            gameObject->AddRenderEntity(renderEntity);
-            m_RenderScene->AddGameObject(gameObject);
-        }
-        m_RenderScene->UpdateVisiableMeshNode(m_RenderResource);
-
-        m_MainCameraRenderPass->SetCameraPosition(renderSceneData.CameraPosition);
-        m_SkyboxRenderPass->SetSkyboxProjection(renderSceneData.ProjectionMatrix);
-        m_SkyboxRenderPass->SetSkyboxView(renderSceneData.ViewMatrix);
-
-        m_EnvironmentMapRenderPass->m_BackgroundTexturePath = renderSceneData.Skybox.BackgroundMapPath;
-
-        m_EnvironmentMapRenderPass->m_EnvironmentTexturePath = renderSceneData.Skybox.EnvironmentMapPath;
-        m_EnvironmentMapRenderPass->m_ReflectionTexturePath = renderSceneData.Skybox.ReflectionMapPath;
-
-        m_MainCameraRenderPass->SetViewProjectionMatrix(renderSceneData.ViewProjectionMatrix);
-    }
-
     void RenderSystem::OnResize() {
         m_Height = GlobalContext::GetViewportSize().y;
         m_Width = GlobalContext::GetViewportSize().x;
@@ -134,4 +77,46 @@ namespace Ethereal
     uint64_t RenderSystem::GetMainImage() { return m_MainCameraRenderPass->m_Framebuffer->GetColorAttachment(0)->GetRendererID(); }
 
     int RenderSystem::GetMousePicking(int x, int y) { return m_MainCameraRenderPass->GetMousePicking(x, y); }
+
+    void RenderSystem::SubmitStaticMesh(Ref<StaticMesh> staticMesh, Ref<MaterialTable> materialTable, uint32_t EntityID, const glm::mat4& transform,
+                                        Ref<Material> overrideMaterial) {
+        Ref<MeshSource> meshSource = staticMesh->GetMeshSource();
+        const auto& submeshData = meshSource->GetSubmeshes();
+        for (uint32_t submeshIndex : staticMesh->GetSubmeshes()) {
+            glm::mat4 submeshTransform = transform * submeshData[submeshIndex].Transform;
+
+            const auto& submeshes = staticMesh->GetMeshSource()->GetSubmeshes();
+            uint32_t materialIndex = submeshes[submeshIndex].MaterialIndex;
+            Ref<MaterialAsset> material = materialTable->HasMaterial(materialIndex) ? materialTable->GetMaterial(materialIndex)
+                                                                                    : staticMesh->GetMaterials()->GetMaterial(materialIndex);
+            AssetHandle materialHandle = material->Handle;
+
+            MeshKey meshKey = {staticMesh->Handle, materialHandle, submeshIndex, false, EntityID};
+            auto& transformStorage = m_DrawLists->MeshTransformMap[meshKey].Transforms.emplace_back();
+            transformStorage.Transform = submeshTransform;
+            // Main geo
+            {
+                bool isTransparent = material->IsTransparent();
+                if (isTransparent) ET_CORE_WARN("Only support untransparent material");
+                auto& destDrawList = m_DrawLists->StaticMeshDrawList;
+                auto& dc = destDrawList[meshKey];
+                dc.StaticMesh = staticMesh;
+                dc.SubmeshIndex = submeshIndex;
+                dc.MaterialTable = materialTable;
+                dc.OverrideMaterial = overrideMaterial;
+                dc.InstanceCount++;
+            }
+        }
+    }
+    void RenderSystem::SubmitRenderSceneData(const RenderSceneData& data) {
+        m_MainCameraRenderPass->SetCameraPosition(data.CameraPosition);
+        m_SkyboxRenderPass->SetSkyboxProjection(data.ProjectionMatrix);
+        m_SkyboxRenderPass->SetSkyboxView(data.ViewMatrix);
+
+        m_EnvironmentMapRenderPass->m_BackgroundTexturePath = data.Skybox.BackgroundMapPath;
+        m_EnvironmentMapRenderPass->m_EnvironmentTexturePath = data.Skybox.EnvironmentMapPath;
+        m_EnvironmentMapRenderPass->m_ReflectionTexturePath = data.Skybox.ReflectionMapPath;
+
+        m_MainCameraRenderPass->SetViewProjectionMatrix(data.ViewProjectionMatrix);
+    }
 }  // namespace Ethereal

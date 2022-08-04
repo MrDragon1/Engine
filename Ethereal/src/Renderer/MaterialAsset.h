@@ -23,24 +23,39 @@ namespace Ethereal
         float& GetEmission();
         void SetEmission(float value);
 
+        bool& IsUseAlbedoMap() { return m_Material->b_Albedo; };
+        bool& IsUseMetallicMap() { return m_Material->b_Metallic; };
+        bool& IsUseNormalMap() { return m_Material->b_Normal; };
+        bool& IsUseOcclusionMap() { return m_Material->b_Occlusion; };
+        bool& IsUseRoughnessMap() { return m_Material->b_Roughness; };
+        bool& IsUseEmissiveMap() { return m_Material->b_Emissive; };
+
         // Textures
-        Ref<Texture2D> GetAlbedoMap();
-        void SetAlbedoMap(Ref<Texture2D> texture);
+        Ref<Texture> GetAlbedoMap();
+        void SetAlbedoMap(Ref<Texture> texture);
         void ClearAlbedoMap();
 
-        Ref<Texture2D> GetNormalMap();
-        void SetNormalMap(Ref<Texture2D> texture);
+        Ref<Texture> GetNormalMap();
+        void SetNormalMap(Ref<Texture> texture);
         bool IsUsingNormalMap();
         void SetUseNormalMap(bool value);
         void ClearNormalMap();
 
-        Ref<Texture2D> GetMetalnessMap();
-        void SetMetalnessMap(Ref<Texture2D> texture);
+        Ref<Texture> GetMetalnessMap();
+        void SetMetalnessMap(Ref<Texture> texture);
         void ClearMetalnessMap();
 
-        Ref<Texture2D> GetRoughnessMap();
-        void SetRoughnessMap(Ref<Texture2D> texture);
+        Ref<Texture> GetRoughnessMap();
+        void SetRoughnessMap(Ref<Texture> texture);
         void ClearRoughnessMap();
+
+        Ref<Texture> GetOcclusionMap();
+        void SetOcclusionMap(Ref<Texture> texture);
+        void ClearOcclusionMap();
+
+        Ref<Texture> GetEmissiveMap();
+        void SetEmissiveMap(Ref<Texture> texture);
+        void ClearEmissiveMap();
 
         float& GetTransparency();
         void SetTransparency(float transparency);

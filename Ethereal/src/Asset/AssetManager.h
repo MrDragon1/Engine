@@ -162,8 +162,6 @@ namespace Ethereal
 
       private:
         friend class ContentBrowserPanel;
-        friend class ContentBrowserAsset;
-        friend class ContentBrowserDirectory;
     };
 
 }  // namespace Ethereal

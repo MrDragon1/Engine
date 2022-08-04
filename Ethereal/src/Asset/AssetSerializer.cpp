@@ -11,6 +11,7 @@
 
 #include "yaml-cpp/yaml.h"
 #include <fstream>
+#include <Core/GlobalContext.h>
 
 #define ET_SERIALIZE_PROPERTY(propName, propVal, outputNode) outputNode << YAML::Key << #propName << YAML::Value << propVal
 
@@ -51,7 +52,7 @@ namespace Ethereal
     }
 
     void MaterialAssetSerializer::Serialize(const AssetMetaData& metadata, const Ref<Asset>& asset) const {
-        Ref<Texture2D> whiteTexture = TextureManager::AddTexture("assets/textures/default/default_diffuse.png");
+        Ref<Texture2D> whiteTexture = GlobalContext::GetRenderSystem().GetWhiteTexture();
         Ref<MaterialAsset> material = asset.As<MaterialAsset>();
 
         YAML::Emitter out;

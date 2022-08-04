@@ -26,10 +26,4 @@ namespace Ethereal
         m_MainCameraVisiableNodes.clear();
         m_GameObjects.clear();
     }
-    
-    void RenderScene::SetVisiableNodeReference()
-    {
-        RenderPass::m_VisiableNodes.p_main_camera_visible_mesh_nodes = &m_MainCameraVisiableNodes;
-    }
-
 }  // namespace Ethereal

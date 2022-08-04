@@ -21,7 +21,6 @@ namespace Ethereal
         void AddGameObject(const Ref<GameObject>& gameObject);
 
         void SetViewProjectionMatrix(const glm::mat4& matrix);
-        void SetVisiableNodeReference();
 
         void BeginRender();
 

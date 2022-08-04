@@ -64,7 +64,7 @@ namespace Ethereal
             m_EquirectangularToCubeMapShader->SetMat4("u_View", captureViews[i]);
             m_BackgroundCubeMap->BindToFramebuffer(0, i);
             RenderCommand::Clear();
-            RenderCommand::DrawIndexed(m_Cube.m_VAO, m_Cube.m_IndexCount);
+            RenderCommand::DrawIndexed(m_Cube->GetMeshSource()->GetVertexArray(), m_Cube->GetMeshSource()->GetIndexBuffer()->GetCount());
         }
 
         // Generate Environment CubeMap
@@ -75,7 +75,7 @@ namespace Ethereal
             m_EquirectangularToCubeMapShader->SetMat4("u_View", captureViews[i]);
             m_EnvironmentCubeMap->BindToFramebuffer(0, i);
             RenderCommand::Clear();
-            RenderCommand::DrawIndexed(m_Cube.m_VAO, m_Cube.m_IndexCount);
+            RenderCommand::DrawIndexed(m_Cube->GetMeshSource()->GetVertexArray(), m_Cube->GetMeshSource()->GetIndexBuffer()->GetCount());
         }
 
         // Generate Reflection CubeMap
@@ -86,7 +86,7 @@ namespace Ethereal
             m_EquirectangularToCubeMapShader->SetMat4("u_View", captureViews[i]);
             m_ReflectionCubeMapNoMipmaps->BindToFramebuffer(0, i);
             RenderCommand::Clear();
-            RenderCommand::DrawIndexed(m_Cube.m_VAO, m_Cube.m_IndexCount);
+            RenderCommand::DrawIndexed(m_Cube->GetMeshSource()->GetVertexArray(), m_Cube->GetMeshSource()->GetIndexBuffer()->GetCount());
         }
 
         // Generate Prefilter CubeMap
@@ -112,7 +112,7 @@ namespace Ethereal
                 m_PrefilterShader->SetMat4("u_View", captureViews[i]);
                 m_ReflectionCubeMap->BindToFramebuffer(0, i, mip);
                 RenderCommand::Clear();
-                RenderCommand::DrawIndexed(m_Cube.m_VAO, m_Cube.m_IndexCount);
+                RenderCommand::DrawIndexed(m_Cube->GetMeshSource()->GetVertexArray(), m_Cube->GetMeshSource()->GetIndexBuffer()->GetCount());
             }
         }
         m_Framebuffer->Unbind();

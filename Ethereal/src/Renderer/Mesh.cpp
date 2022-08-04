@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Mesh.h"
 #include "Utils/AssetManager.h"
+#include "Core/GlobalContext.h"
 
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
@@ -162,7 +163,7 @@ namespace Ethereal
         }
 
         // Materials
-        Ref<Texture2D> whiteTexture = TextureManager::AddTexture("assets/textures/default/default_diffuse.png");
+        Ref<Texture2D> whiteTexture = GlobalContext::GetRenderSystem().GetWhiteTexture();
         if (scene->HasMaterials()) {
             ET_MESH_LOG("---- Materials - {0} ----", filename);
 
@@ -339,6 +340,11 @@ namespace Ethereal
         };
 
         m_IndexBuffer = IndexBuffer::Create(m_Indices.data(), (uint32_t)(m_Indices.size() * sizeof(Index)));
+
+        m_VertexArray = VertexArray::Create();
+        m_VertexBuffer->SetLayout(m_VertexBufferLayout);
+        m_VertexArray->AddVertexBuffer(m_VertexBuffer);
+        m_VertexArray->SetIndexBuffer(m_IndexBuffer);
     }
 
     void MeshSource::TraverseNodes(aiNode* node, const glm::mat4& parentTransform, uint32_t level) {
@@ -377,6 +383,11 @@ namespace Ethereal
             {ShaderDataType::Float3, "a_Position"}, {ShaderDataType::Float3, "a_Normal"},   {ShaderDataType::Float3, "a_Tangent"},
             {ShaderDataType::Float3, "a_Binormal"}, {ShaderDataType::Float2, "a_TexCoord"},
         };
+
+        m_VertexArray = VertexArray::Create();
+        m_VertexBuffer->SetLayout(m_VertexBufferLayout);
+        m_VertexArray->AddVertexBuffer(m_VertexBuffer);
+        m_VertexArray->SetIndexBuffer(m_IndexBuffer);
     }
 
     MeshSource::MeshSource(const std::vector<Vertex>& vertices, const std::vector<Index>& indices, const std::vector<Submesh>& submeshes)
@@ -391,6 +402,10 @@ namespace Ethereal
             {ShaderDataType::Float3, "a_Binormal"}, {ShaderDataType::Float2, "a_TexCoord"},
         };
 
+        m_VertexArray = VertexArray::Create();
+        m_VertexBuffer->SetLayout(m_VertexBufferLayout);
+        m_VertexArray->AddVertexBuffer(m_VertexBuffer);
+        m_VertexArray->SetIndexBuffer(m_IndexBuffer);
         // TODO: generate bounding box for submeshes, etc.
     }
 

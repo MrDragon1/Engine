@@ -22,14 +22,24 @@ namespace Ethereal
         RenderCommand::Clear();
         RenderCommand::SetCullFace(ETHEREAL_CULLFACE_TYPE::FRONT);
 
-        const auto& visiableRenderNode = *m_VisiableNodes.p_main_camera_visible_mesh_nodes;
+        const auto& staticMeshDrawList = m_DrawLists.StaticMeshDrawList;
+        const auto& meshTransformMap = m_DrawLists.MeshTransformMap;
+
         m_Shader->Bind();
         m_Shader->SetMat4("u_ViewProjection", m_ViewProjectionMatrix);
-        if (!visiableRenderNode.empty()) {
-            for (auto& RenderNode : visiableRenderNode) {
-                RenderNode.ref_mesh->m_VAO->Bind();
-                m_Shader->SetMat4("u_Model", RenderNode.model_matrix);
-                RenderCommand::DrawIndexed(RenderNode.ref_mesh->m_VAO, RenderNode.ref_mesh->m_IndexCount);
+        if (!staticMeshDrawList.empty()) {
+            for (auto& [mk, dc] : staticMeshDrawList) {
+                Ref<MeshSource> ms = dc.StaticMesh->GetMeshSource();
+                Ref<MaterialTable> mt = dc.MaterialTable;
+                const auto& meshMaterialTable = dc.StaticMesh->GetMaterials();
+                uint32_t materialCount = meshMaterialTable->GetMaterialCount();
+                Ref<MaterialAsset> material =
+                    mt->HasMaterial(dc.SubmeshIndex) ? mt->GetMaterial(dc.SubmeshIndex) : meshMaterialTable->GetMaterial(dc.SubmeshIndex);
+
+                ms->GetVertexArray()->Bind();
+                m_Shader->SetMat4("u_Model", meshTransformMap.at(mk).Transforms[dc.SubmeshIndex].Transform);
+
+                RenderCommand::DrawIndexed(ms->GetVertexArray(), ms->GetVertexArray()->GetIndexBuffer()->GetCount());
             }
         }
 

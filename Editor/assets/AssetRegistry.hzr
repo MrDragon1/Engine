@@ -74,6 +74,9 @@ Assets:
   - Handle: 2579664513155074847
     FilePath: icons/StopButton.png
     Type: Texture
+  - Handle: 3092857227757887886
+    FilePath: buildin/textures/black.png
+    Type: Texture
   - Handle: 3103547520208750469
     FilePath: skyboxs/Alexs_Apartment/Alexs_Apt_Env.hdr
     Type: EnvMap
@@ -101,6 +104,9 @@ Assets:
   - Handle: 3784580285054991874
     FilePath: fonts/opensans/OpenSans-BoldItalic.ttf
     Type: Font
+  - Handle: 3855904369963514504
+    FilePath: buildin/textures/white.png
+    Type: Texture
   - Handle: 3874654037901540705
     FilePath: models/nanosuit/body_showroom_ddn.png
     Type: Texture
@@ -224,6 +230,9 @@ Assets:
   - Handle: 8799728356882858997
     FilePath: textures/default/default_metallic.png
     Type: Texture
+  - Handle: 8808003571271368113
+    FilePath: buildin/textures/brdf_schilk.hdr
+    Type: EnvMap
   - Handle: 9176159955523865476
     FilePath: models/nanosuit/hand_showroom_ddn.png
     Type: Texture

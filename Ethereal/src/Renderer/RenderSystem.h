@@ -1,11 +1,9 @@
 #pragma once
 
 #include "Core/Utils.h"
-#include "Renderer/RenderResource.h"
-#include "Renderer/RenderScene.h"
-#include "Renderer/RenderPass.h"
+#include "RenderPass.h"
+#include "Mesh.h"
 #include "Scene/Scene.h"
-#include "Common.h"
 #include "Core/Timestep.h"
 
 #include "Renderer/RenderPass/EnvironmentMapRenderPass.h"
@@ -15,13 +13,6 @@
 
 namespace Ethereal
 {
-    struct EntityDataForRenderSystem {
-        size_t EntityID;
-        GameObjectTransformDesc Transform;
-        GameObjectMeshDesc Mesh;
-        GameObjectMaterialDesc Material;
-    };
-
     struct RenderSceneData {
         glm::mat4 ViewProjectionMatrix;
         glm::mat4 ViewMatrix;
@@ -29,18 +20,30 @@ namespace Ethereal
         glm::vec3 CameraPosition;
         SkyboxData Skybox;
 
-        std::vector<EntityDataForRenderSystem> EntitiesData;
         // TODO: Lights
     };
 
-    class RenderSystem : public RefCounted{
+    struct BuildinData {
+        Ref<Texture> WhiteTexture;
+        Ref<Texture> BlackTexture;
+        Ref<Texture> BRDFLutTexture;
+        Ref<StaticMesh> Cube;
+    };
+
+    class RenderSystem : public RefCounted {
       public:
         RenderSystem();
         void Init();
         void Draw(Timestep ts);
-        void UpdateRenderScene(const RenderSceneData& renderSceneData);
-
+        void SubmitStaticMesh(Ref<StaticMesh> staticMesh, Ref<MaterialTable> materialTabel, uint32_t EntityID,
+                              const glm::mat4& transform = glm::mat4(1.0f), Ref<Material> overrideMaterial = nullptr);
+        void SubmitRenderSceneData(const RenderSceneData& data);
         void OnResize();
+
+        Ref<StaticMesh> GetCubeStaticMesh() { return m_BuildinData->Cube; }
+        Ref<Texture> GetWhiteTexture() { return m_BuildinData->WhiteTexture; }
+        Ref<Texture> GetBlackTexture() { return m_BuildinData->BlackTexture; }
+        Ref<Texture> GetBRDFLutTexture() { return m_BuildinData->BRDFLutTexture; }
 
         uint32_t GetMainImageHeight() { return m_Height; };
         uint32_t GetMainImageWidth() { return m_Width; };
@@ -48,15 +51,13 @@ namespace Ethereal
         uint64_t GetSkyboxImage() { return m_EnvironmentMapRenderPass->m_BackgroundTexture->GetRendererID(); };
         int GetMousePicking(int x, int y);
 
-        Ref<RenderScene> m_RenderScene;
-        Ref<RenderResource> m_RenderResource;  // All the mesh in scene
         Ref<MainCameraRenderPass> m_MainCameraRenderPass;
         Ref<ShadowMapRenderPass> m_ShadowMapRenderPass;
         Ref<SkyboxRenderPass> m_SkyboxRenderPass;
         Ref<EnvironmentMapRenderPass> m_EnvironmentMapRenderPass;
         // TODO: Ref<RenderContent>;
         uint32_t m_Height, m_Width;
-
-      private:
+        DrawLists* m_DrawLists;
+        BuildinData* m_BuildinData;
     };
 }  // namespace Ethereal

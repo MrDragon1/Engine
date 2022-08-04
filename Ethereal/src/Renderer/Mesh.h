@@ -6,6 +6,7 @@
 #include "Shader.h"
 #include "Texture.h"
 #include "MaterialAsset.h"
+#include "VertexArray.h"
 
 #include <vector>
 #include <glm/glm.hpp>
@@ -83,6 +84,7 @@ namespace Ethereal
 
         Ref<VertexBuffer> GetVertexBuffer() { return m_VertexBuffer; }
         Ref<IndexBuffer> GetIndexBuffer() { return m_IndexBuffer; }
+        Ref<VertexArray> GetVertexArray() { return m_VertexArray; }
         const BufferLayout& GetVertexBufferLayout() const { return m_VertexBufferLayout; }
 
         static AssetType GetStaticType() { return AssetType::MeshSource; }
@@ -100,6 +102,7 @@ namespace Ethereal
 
         glm::mat4 m_InverseTransform;
 
+        Ref<VertexArray> m_VertexArray;
         Ref<VertexBuffer> m_VertexBuffer;
         Ref<IndexBuffer> m_IndexBuffer;
         BufferLayout m_VertexBufferLayout;

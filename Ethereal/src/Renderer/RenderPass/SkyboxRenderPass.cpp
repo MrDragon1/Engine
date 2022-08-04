@@ -15,8 +15,7 @@ namespace Ethereal
         m_SkyboxShader->SetMat4("u_Projection", m_SkyboxProjection);
         m_SkyboxShader->SetMat4("u_View", m_SkyboxView);
 
-        RenderCommand::DrawIndexed(m_Cube.m_VAO, m_Cube.m_IndexCount);
-
+        RenderCommand::DrawIndexed(m_Cube->GetMeshSource()->GetVertexArray(), m_Cube->GetMeshSource()->GetIndexBuffer()->GetCount());
         RenderCommand::SetDepthFunc(ETHEREAL_DEPTH_FUNC::LESS);
     }
 

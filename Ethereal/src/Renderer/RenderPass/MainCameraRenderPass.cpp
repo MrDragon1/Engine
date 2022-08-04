@@ -39,7 +39,9 @@ namespace Ethereal
         // Clear our entity ID attachment to -1
         m_Framebuffer->ClearAttachment(1, -1);
 
-        const auto& visiableRenderNode = *m_VisiableNodes.p_main_camera_visible_mesh_nodes;
+        const auto& staticMeshDrawList = m_DrawLists.StaticMeshDrawList;
+        const auto& meshTransformMap = m_DrawLists.MeshTransformMap;
+
         m_Shader->Bind();
         m_Shader->SetMat4("u_ViewProjection", m_ViewProjectionMatrix);
         m_Shader->SetMat4("u_LightSpaceMatrix", m_LightSpaceMatrix);
@@ -60,30 +62,38 @@ namespace Ethereal
             m_Shader->SetFloat3("lightColors[" + std::to_string(i) + "]", lightColors[i]);
         }
 
-        if (!visiableRenderNode.empty()) {
-            for (auto& RenderNode : visiableRenderNode) {
-                RenderNode.ref_mesh->m_VAO->Bind();
-                m_Shader->SetMat4("u_Model", RenderNode.model_matrix);
-                m_Shader->SetInt("u_EntityID", RenderNode.EntityID);
-                
-                RenderNode.ref_material->m_AlbedoMap->Bind(0);
-                RenderNode.ref_material->m_NormalMap->Bind(1);
-                RenderNode.ref_material->m_MetallicMap->Bind(2);
-                RenderNode.ref_material->m_RoughnessMap->Bind(3);
-                RenderNode.ref_material->m_OcclusionMap->Bind(4);
-                RenderNode.ref_material->m_EmissiveMap->Bind(5);
+        // Draw Static Mesh
+        if (!staticMeshDrawList.empty()) {
+            for (auto& [mk, dc] : staticMeshDrawList) {
+                Ref<MeshSource> ms = dc.StaticMesh->GetMeshSource();
+                Ref<MaterialTable> mt = dc.MaterialTable;
+                const auto& meshMaterialTable = dc.StaticMesh->GetMaterials();
+                uint32_t materialCount = meshMaterialTable->GetMaterialCount();
+                Ref<MaterialAsset> material =
+                    mt->HasMaterial(dc.SubmeshIndex) ? mt->GetMaterial(dc.SubmeshIndex) : meshMaterialTable->GetMaterial(dc.SubmeshIndex);
 
-                m_Shader->SetFloat3("u_Albedo", RenderNode.ref_material->m_Albedo);
-                m_Shader->SetFloat("u_Roughness", RenderNode.ref_material->m_Roughness);
-                m_Shader->SetFloat("u_Metallic", RenderNode.ref_material->m_Metallic);
+                ms->GetVertexArray()->Bind();
+                m_Shader->SetMat4("u_Model", meshTransformMap.at(mk).Transforms[dc.SubmeshIndex].Transform);
+                m_Shader->SetInt("u_EntityID", mk.EntityID);
 
-                m_Shader->SetInt("u_UseAlbedoMap", RenderNode.ref_material->b_Albedo);
-                m_Shader->SetInt("u_UseNormalMap", RenderNode.ref_material->b_Normal);
-                m_Shader->SetInt("u_UseMetallicMap", RenderNode.ref_material->b_Metallic);
-                m_Shader->SetInt("u_UseRoughnessMap", RenderNode.ref_material->b_Roughness);
-                m_Shader->SetInt("u_UseOcclusionMap", RenderNode.ref_material->b_Occlusion);
+                material->GetAlbedoMap()->Bind(0);
+                material->GetNormalMap()->Bind(1);
+                material->GetMetalnessMap()->Bind(2);
+                material->GetRoughnessMap()->Bind(3);
+                material->GetOcclusionMap()->Bind(4);
+                material->GetEmissiveMap()->Bind(5);
 
-                RenderCommand::DrawIndexed(RenderNode.ref_mesh->m_VAO, RenderNode.ref_mesh->m_IndexCount);
+                m_Shader->SetFloat3("u_Albedo", material->GetAlbedoColor());
+                m_Shader->SetFloat("u_Roughness", material->GetRoughness());
+                m_Shader->SetFloat("u_Metallic", material->GetMetalness());
+
+                m_Shader->SetInt("u_UseAlbedoMap", material->IsUseAlbedoMap());
+                m_Shader->SetInt("u_UseNormalMap", material->IsUseNormalMap());
+                m_Shader->SetInt("u_UseMetallicMap", material->IsUseMetallicMap());
+                m_Shader->SetInt("u_UseRoughnessMap", material->IsUseRoughnessMap());
+                m_Shader->SetInt("u_UseOcclusionMap", material->IsUseOcclusionMap());
+
+                RenderCommand::DrawIndexed(ms->GetVertexArray(), ms->GetVertexArray()->GetIndexBuffer()->GetCount());
             }
         }
 

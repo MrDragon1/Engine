@@ -1,3 +1,4 @@
+#include <Core/GlobalContext.h>
 #include "MaterialAsset.h"
 #include "Utils/AssetManager.h"
 
@@ -12,7 +13,16 @@ namespace Ethereal
 
         SetDefaults();
     }
-    MaterialAsset::MaterialAsset(Ref<Material> material) { m_Material = Material::Copy(material); }
+    MaterialAsset::MaterialAsset(Ref<Material> material) {
+        m_Material = Material::Copy(material);
+        Ref<Texture> whiteTexture = GlobalContext::GetRenderSystem().GetWhiteTexture();
+        if (!m_Material->m_AlbedoMap) SetAlbedoMap(whiteTexture);
+        if (!m_Material->m_NormalMap) SetNormalMap(whiteTexture);
+        if (!m_Material->m_MetallicMap) SetMetalnessMap(whiteTexture);
+        if (!m_Material->m_RoughnessMap) SetRoughnessMap(whiteTexture);
+        if (!m_Material->m_OcclusionMap) SetOcclusionMap(whiteTexture);
+        if (!m_Material->m_EmissiveMap) SetEmissiveMap(whiteTexture);
+    }
 
     MaterialAsset::~MaterialAsset() {}
 
@@ -32,41 +42,41 @@ namespace Ethereal
 
     void MaterialAsset::SetEmission(float value) { m_Material->SetEmission(value); }
 
-    Ref<Texture2D> MaterialAsset::GetAlbedoMap() { return m_Material->m_AlbedoMap; }
+    Ref<Texture> MaterialAsset::GetAlbedoMap() { return m_Material->m_AlbedoMap; }
 
-    void MaterialAsset::SetAlbedoMap(Ref<Texture2D> texture) { m_Material->SetAlbedoMap(texture); }
+    void MaterialAsset::SetAlbedoMap(Ref<Texture> texture) { m_Material->SetAlbedoMap(texture); }
 
     void MaterialAsset::ClearAlbedoMap() {
-        Ref<Texture2D> whiteTexture = TextureManager::AddTexture("assets/textures/default/default_diffuse.png");
+        Ref<Texture> whiteTexture = GlobalContext::GetRenderSystem().GetWhiteTexture();
         SetAlbedoMap(whiteTexture);
     }
 
-    Ref<Texture2D> MaterialAsset::GetNormalMap() { return Ref<Texture2D>(); }
+    Ref<Texture> MaterialAsset::GetNormalMap() { return m_Material->m_NormalMap; }
 
-    void MaterialAsset::SetNormalMap(Ref<Texture2D> texture) { m_Material->SetNormalMap(texture); }
+    void MaterialAsset::SetNormalMap(Ref<Texture> texture) { m_Material->SetNormalMap(texture); }
 
     bool MaterialAsset::IsUsingNormalMap() { return m_Material->b_Normal; }
 
     void MaterialAsset::SetUseNormalMap(bool value) { m_Material->SetUseNormalMap(value); }
 
     void MaterialAsset::ClearNormalMap() {
-        Ref<Texture2D> whiteTexture = TextureManager::AddTexture("assets/textures/default/default_diffuse.png");
+        Ref<Texture> whiteTexture = GlobalContext::GetRenderSystem().GetWhiteTexture();
         SetNormalMap(whiteTexture);
     }
-    Ref<Texture2D> MaterialAsset::GetMetalnessMap() { return Ref<Texture2D>(); }
+    Ref<Texture> MaterialAsset::GetMetalnessMap() { return m_Material->m_MetallicMap; }
 
-    void MaterialAsset::SetMetalnessMap(Ref<Texture2D> texture) { m_Material->SetMetallicMap(texture); }
+    void MaterialAsset::SetMetalnessMap(Ref<Texture> texture) { m_Material->SetMetallicMap(texture); }
 
     void MaterialAsset::ClearMetalnessMap() {
-        Ref<Texture2D> whiteTexture = TextureManager::AddTexture("assets/textures/default/default_diffuse.png");
+        Ref<Texture> whiteTexture = GlobalContext::GetRenderSystem().GetWhiteTexture();
         SetMetalnessMap(whiteTexture);
     }
-    Ref<Texture2D> MaterialAsset::GetRoughnessMap() { return Ref<Texture2D>(); }
+    Ref<Texture> MaterialAsset::GetRoughnessMap() { return m_Material->m_RoughnessMap; }
 
-    void MaterialAsset::SetRoughnessMap(Ref<Texture2D> texture) { m_Material->SetRoughnessMap(texture); }
+    void MaterialAsset::SetRoughnessMap(Ref<Texture> texture) { m_Material->SetRoughnessMap(texture); }
 
     void MaterialAsset::ClearRoughnessMap() {
-        Ref<Texture2D> whiteTexture = TextureManager::AddTexture("assets/textures/default/default_diffuse.png");
+        Ref<Texture> whiteTexture = GlobalContext::GetRenderSystem().GetWhiteTexture();
         SetRoughnessMap(whiteTexture);
     }
     float &MaterialAsset::GetTransparency() { return m_Material->m_Transparency; }
@@ -74,28 +84,39 @@ namespace Ethereal
     void MaterialAsset::SetTransparency(float transparency) { m_Material->SetTransparency(transparency); }
 
     void MaterialAsset::SetDefaults() {
-        Ref<Texture2D> whiteTexture = TextureManager::AddTexture("assets/textures/default/default_diffuse.png");
-        if (m_Transparent) {
-            // Set defaults
-            SetAlbedoColor(glm::vec3(0.8f));
+        Ref<Texture> whiteTexture = GlobalContext::GetRenderSystem().GetWhiteTexture();
+        // Set defaults
+        SetAlbedoColor(glm::vec3(0.8f));
+        SetEmission(0.0f);
+        SetUseNormalMap(false);
+        SetMetalness(0.0f);
+        SetRoughness(0.4f);
 
-            // Maps
-            SetAlbedoMap(whiteTexture);
-        } else {
-            // Set defaults
-            SetAlbedoColor(glm::vec3(0.8f));
-            SetEmission(0.0f);
-            SetUseNormalMap(false);
-            SetMetalness(0.0f);
-            SetRoughness(0.4f);
-
-            // Maps
-            SetAlbedoMap(whiteTexture);
-            SetNormalMap(whiteTexture);
-            SetMetalnessMap(whiteTexture);
-            SetRoughnessMap(whiteTexture);
-        }
+        // Maps
+        SetAlbedoMap(whiteTexture);
+        SetNormalMap(whiteTexture);
+        SetMetalnessMap(whiteTexture);
+        SetRoughnessMap(whiteTexture);
+        SetOcclusionMap(whiteTexture);
+        SetEmissiveMap(whiteTexture);
     }
+    Ref<Texture> MaterialAsset::GetOcclusionMap() { return m_Material->m_OcclusionMap; }
+
+    void MaterialAsset::SetOcclusionMap(Ref<Texture> texture) { m_Material->SetOcclusionMap(texture); }
+
+    void MaterialAsset::ClearOcclusionMap() {
+        Ref<Texture> whiteTexture = GlobalContext::GetRenderSystem().GetWhiteTexture();
+        SetOcclusionMap(whiteTexture);
+    }
+    Ref<Texture> MaterialAsset::GetEmissiveMap() { return m_Material->m_EmissiveMap; }
+
+    void MaterialAsset::SetEmissiveMap(Ref<Texture> texture) { m_Material->SetEmissiveMap(texture); }
+
+    void MaterialAsset::ClearEmissiveMap() {
+        Ref<Texture> whiteTexture = GlobalContext::GetRenderSystem().GetWhiteTexture();
+        SetEmissiveMap(whiteTexture);
+    }
+
     MaterialTable::MaterialTable(uint32_t materialCount) : m_MaterialCount(materialCount) {}
 
     MaterialTable::MaterialTable(Ref<MaterialTable> other) : m_MaterialCount(other->m_MaterialCount) {

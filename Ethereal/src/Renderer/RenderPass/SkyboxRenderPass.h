@@ -18,7 +18,7 @@ namespace Ethereal {
         std::string m_SkyboxShaderPath = "assets/shaders/Skybox.glsl";
         glm::mat4 m_SkyboxProjection;
         glm::mat4 m_SkyboxView;
-        GLMesh m_Cube;
+        Ref<StaticMesh> m_Cube;
 
         friend class RenderSystem;
     };

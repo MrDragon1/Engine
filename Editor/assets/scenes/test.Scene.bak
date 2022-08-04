@@ -6,7 +6,7 @@ Entities:
     TagComponent:
       Tag: Plane
     StaticMeshComponent:
-      AssetID: 9553929039118816042
+      AssetID: 527243546043792276
       MaterialTable:
         0: 0
     TransformComponent:
