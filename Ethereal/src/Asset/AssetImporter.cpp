@@ -10,6 +10,7 @@ namespace Ethereal
         s_Serializers[AssetType::StaticMesh] = CreateScope<StaticMeshSerializer>();
         s_Serializers[AssetType::MeshSource] = CreateScope<MeshAssetSerializer>();
         s_Serializers[AssetType::Material] = CreateScope<MaterialAssetSerializer>();
+        s_Serializers[AssetType::EnvMap] = CreateScope<EnvironmentSerializer>();
     }
 
     void AssetImporter::Serialize(const AssetMetaData& metadata, const Ref<Asset>& asset) {

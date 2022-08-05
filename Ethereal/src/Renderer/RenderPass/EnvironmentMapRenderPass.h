@@ -11,10 +11,7 @@ namespace Ethereal
         void Draw() override;
         void OnResize(uint32_t width, uint32_t height) override;
 
-        void Reset() { m_IsFirstCall = true; };
-
       private:
-        bool m_IsFirstCall = true;
         Ref<Framebuffer> m_Framebuffer;
 
         Ref<Shader> m_EquirectangularToCubeMapShader;

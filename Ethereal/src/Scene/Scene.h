@@ -3,22 +3,17 @@
 #include "Core/UUID.h"
 #include "Core/Timestep.h"
 #include "Renderer/EditorCamera.h"
+#include "Renderer/Environment.h"
 #include "Utils/Macro.h"
 #include "entt/entt.hpp"
 
 class b2World;
 namespace Ethereal
 {
-    struct SkyboxData {
-        std::string BackgroundMapPath = "assets/skyboxs/Newport_Loft/Newport_Loft_8k.jpg";
-        std::string EnvironmentMapPath = "assets/skyboxs/Newport_Loft/Newport_Loft_Env.hdr";
-        std::string ReflectionMapPath = "assets/skyboxs/Newport_Loft/Newport_Loft_Ref.hdr";
-    };
-
     class RenderSystem;
     class Entity;
     struct RenderSceneData;
-    class Scene : public RefCounted{
+    class Scene : public RefCounted {
       public:
         Scene();
         ~Scene();
@@ -44,9 +39,9 @@ namespace Ethereal
 
         entt::registry& GetRegistry() { return m_Registry; }
         const std::string& GetName() const { return m_SceneName; }
-        const std::string& GetSkybox() const { return m_SkyboxPath; }
+        Ref<Environment> GetEnvironment() const { return m_Environment; }
         void SetName(const std::string& name) { m_SceneName = name; }
-        void SetSkybox(const std::string& path);
+        void SetEnvironment(Ref<Environment> env) { m_Environment = env; }
 
       private:
         template <typename T>
@@ -57,8 +52,7 @@ namespace Ethereal
         uint32_t m_ViewportWidth = 0, m_ViewportHeight = 0;
         std::string m_SceneName = "Untitled";
 
-        std::string m_SkyboxPath;
-        SkyboxData m_SkyboxData;
+        Ref<Environment> m_Environment;
 
         b2World* m_PhysicsWorld = nullptr;
 

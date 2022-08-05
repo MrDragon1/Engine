@@ -29,6 +29,8 @@ namespace Ethereal
         m_BuildinData->BlackTexture = TextureManager::AddTexture("assets/buildin/textures/black.png");
         m_BuildinData->BRDFLutTexture = TextureManager::AddTexture("assets/buildin/textures/brdf_schilk.hdr");
         m_BuildinData->Cube = Ref<StaticMesh>::Create(Ref<MeshSource>::Create("assets/meshes/source/cube.obj"));
+        //        auto [radiance, irradiance] = CreateEnvironmentMap("assets/skyboxs/Newport_Loft/Newport_Loft_Env.hdr");
+        //        m_BuildinData->Environment = Ref<Environment>::Create(radiance, irradiance);
 
         m_MainCameraRenderPass = Ref<MainCameraRenderPass>::Create();
         m_MainCameraRenderPass->Init(m_Width, m_Height);
@@ -38,28 +40,23 @@ namespace Ethereal
         m_SkyboxRenderPass->Init(m_Width, m_Height);
         m_EnvironmentMapRenderPass = Ref<EnvironmentMapRenderPass>::Create();
         m_EnvironmentMapRenderPass->Init(m_Width, m_Height);
-
-        m_EnvironmentMapRenderPass->Reset();
     }
 
     void RenderSystem::Draw(Timestep ts) {
-        // Only draw once
-        m_EnvironmentMapRenderPass->Draw();
-
         // m_ShadowMapRenderPass->SetLightPosition();
         m_MainCameraRenderPass->SetLightSpaceMatrix(m_ShadowMapRenderPass->m_ViewProjectionMatrix);
 
         // m_ShadowMapRenderPass->Draw();
         // m_ShadowMapRenderPass->m_Framebuffer->GetDepthAttachment()->Bind(5);
 
-        m_EnvironmentMapRenderPass->m_EnvironmentCubeMap->Bind(6);
-        m_EnvironmentMapRenderPass->m_ReflectionCubeMap->Bind(7);
+        m_Environment->RadianceMap->Bind(6);
+        m_Environment->IrradianceMap->Bind(7);
         GlobalContext::GetRenderSystem().GetBRDFLutTexture()->Bind(8);
         m_MainCameraRenderPass->Draw();
 
         // TODO : make skybox render pass a subpass of main camera render pass
         m_MainCameraRenderPass->m_Framebuffer->Bind();
-        m_EnvironmentMapRenderPass->m_ReflectionCubeMap->Bind(0);
+        m_Environment->IrradianceMap->Bind(0);
         m_SkyboxRenderPass->Draw();
         m_MainCameraRenderPass->m_Framebuffer->Unbind();
 
@@ -113,16 +110,15 @@ namespace Ethereal
         m_MainCameraRenderPass->SetCameraPosition(data.CameraPosition);
         m_SkyboxRenderPass->SetSkyboxProjection(data.ProjectionMatrix);
         m_SkyboxRenderPass->SetSkyboxView(data.ViewMatrix);
-
-        m_EnvironmentMapRenderPass->m_Path = data.Skybox.ReflectionMapPath;
+        m_Environment = data.Environment;
 
         m_MainCameraRenderPass->SetViewProjectionMatrix(data.ViewProjectionMatrix);
     }
 
     std::pair<Ref<TextureCube>, Ref<TextureCube>> RenderSystem::CreateEnvironmentMap(const std::string& path) {
-        m_EnvironmentMapRenderPass->Reset();
         m_EnvironmentMapRenderPass->m_Path = path;
         m_EnvironmentMapRenderPass->Draw();
+        // TODO: Copy the Ref<TextureCube> otherwise every Environment will point to the same Ref
         return {m_EnvironmentMapRenderPass->m_EnvironmentCubeMap, m_EnvironmentMapRenderPass->m_ReflectionCubeMap};
     }
 }  // namespace Ethereal

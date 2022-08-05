@@ -36,7 +36,6 @@ namespace Ethereal
     }
 
     void EnvironmentMapRenderPass::Draw() {
-        if (!m_IsFirstCall) return;
         ET_CORE_INFO("EnvironmentMapRenderPass::Draw()");
         m_Texture = TextureManager::AddTexture(m_Path);
 
@@ -114,7 +113,6 @@ namespace Ethereal
         }
         m_Framebuffer->Unbind();
         RenderCommand::SetDepthFunc(ETHEREAL_DEPTH_FUNC::LESS);
-        m_IsFirstCall = false;
     }
 
     void EnvironmentMapRenderPass::OnResize(uint32_t width, uint32_t height) {}

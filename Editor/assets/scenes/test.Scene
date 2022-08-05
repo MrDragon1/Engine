@@ -1,6 +1,6 @@
 Scene:
   Name: PBR Scene
-  Skybox: G:\Code\Engine\Editor\assets\skyboxs\Hollywood_Sign\Hollywood_Sign.ibl
+  Environment: 10076672099001784072
 Entities:
   - Entity: 11171200316534182395
     TagComponent:

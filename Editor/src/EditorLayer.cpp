@@ -429,7 +429,7 @@ namespace Ethereal
                 if (!filepath.empty()) {
                     if (m_EditorScene) {
                         ET_CORE_INFO("Open Skybox {0}", filepath);
-                        m_EditorScene->SetSkybox(filepath);
+                        //                        m_EditorScene->SetSkybox(filepath);
                     }
                 }
             }

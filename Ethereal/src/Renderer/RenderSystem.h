@@ -18,7 +18,7 @@ namespace Ethereal
         glm::mat4 ViewMatrix;
         glm::mat4 ProjectionMatrix;
         glm::vec3 CameraPosition;
-        SkyboxData Skybox;
+        Ref<Environment> Environment;
 
         // TODO: Lights
     };
@@ -28,6 +28,7 @@ namespace Ethereal
         Ref<Texture> BlackTexture;
         Ref<Texture> BRDFLutTexture;
         Ref<StaticMesh> Cube;
+        Ref<Environment> Environment;
     };
 
     class RenderSystem : public RefCounted {
@@ -46,6 +47,10 @@ namespace Ethereal
         Ref<Texture> GetWhiteTexture() { return m_BuildinData->WhiteTexture; }
         Ref<Texture> GetBlackTexture() { return m_BuildinData->BlackTexture; }
         Ref<Texture> GetBRDFLutTexture() { return m_BuildinData->BRDFLutTexture; }
+        Ref<Environment> GetDefaultEnvironment() {
+            auto [radiance, irradiance] = CreateEnvironmentMap("assets/skyboxs/Newport_Loft_Ref.hdr");
+            return Ref<Environment>::Create(radiance, irradiance);
+        }
 
         uint32_t GetMainImageHeight() { return m_Height; };
         uint32_t GetMainImageWidth() { return m_Width; };
@@ -61,5 +66,6 @@ namespace Ethereal
         uint32_t m_Height, m_Width;
         DrawLists* m_DrawLists;
         BuildinData* m_BuildinData;
+        Ref<Environment> m_Environment;
     };
 }  // namespace Ethereal

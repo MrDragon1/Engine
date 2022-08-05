@@ -141,7 +141,7 @@ namespace Ethereal
         out << YAML::Key << "Scene";
         out << YAML::BeginMap;  // TransformComponent
         out << YAML::Key << "Name" << YAML::Value << m_Scene->GetName();
-        out << YAML::Key << "Skybox" << YAML::Value << m_Scene->GetSkybox();
+        out << YAML::Key << "Environment" << YAML::Value << m_Scene->GetEnvironment()->Handle;
         out << YAML::EndMap;  // TransformComponent
 
         out << YAML::Key << "Entities" << YAML::Value << YAML::BeginSeq;
@@ -175,9 +175,15 @@ namespace Ethereal
 
         std::string sceneName = data["Scene"]["Name"].as<std::string>();
         m_Scene->SetName(sceneName);
-        m_Scene->SetSkybox(data["Scene"]["Skybox"].as<std::string>());
+        AssetHandle assetHandle = data["Scene"]["Environment"].as<uint64_t>();
+        if (AssetManager::IsAssetHandleValid(assetHandle)) {
+            const AssetMetaData& metadata = AssetManager::GetMetadata(assetHandle);
+            m_Scene->SetEnvironment(AssetManager::GetAsset<Environment>(assetHandle));
+        } else {
+            ET_CORE_WARN("No Environment Loaded");
+        }
 
-        ET_CORE_TRACE("Deserializing scene '{0}' {1}", sceneName,data["Scene"]["Skybox"].as<std::string>());
+        ET_CORE_TRACE("Deserializing scene '{0}' {1}", sceneName, assetHandle);
 
         auto entities = data["Entities"];
         if (entities) {

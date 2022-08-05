@@ -193,7 +193,8 @@ namespace Ethereal
             renderSceneData.ViewMatrix = glm::inverse(cameraTransform);
             renderSceneData.ProjectionMatrix = mainCamera->GetProjection();
             renderSceneData.CameraPosition = cameraPosition;
-            renderSceneData.Skybox = m_SkyboxData;
+            if (!m_Environment) m_Environment = GlobalContext::GetRenderSystem().GetDefaultEnvironment();
+            renderSceneData.Environment = m_Environment;
             SubmitRenderScene(renderSceneData);
         }
     }
@@ -204,7 +205,8 @@ namespace Ethereal
         renderSceneData.ViewMatrix = editorCamera.GetViewMatrix();
         renderSceneData.ProjectionMatrix = editorCamera.GetProjection();
         renderSceneData.CameraPosition = editorCamera.GetPosition();
-        renderSceneData.Skybox = m_SkyboxData;
+        if (!m_Environment) m_Environment = GlobalContext::GetRenderSystem().GetDefaultEnvironment();
+        renderSceneData.Environment = m_Environment;
 
         SubmitRenderScene(renderSceneData);
     }
@@ -291,21 +293,6 @@ namespace Ethereal
             if (camera.Primary) return Entity{entity, this};
         }
         return {};
-    }
-
-    void Scene::SetSkybox(const std::string& path) {
-        m_SkyboxPath = path;
-        GlobalContext::GetRenderSystem().m_EnvironmentMapRenderPass->Reset();
-        mINI::INIFile file(path);
-        mINI::INIStructure ini;
-        file.read(ini);
-
-        std::string tmppath = path;
-        replace(tmppath.begin(), tmppath.end(), '\\', '/');  //替换'\'为'/'
-        std::string path_prefix = tmppath.substr(0, tmppath.find_last_of('/') + 1);
-        m_SkyboxData.BackgroundMapPath = path_prefix + ini["Background"]["BGfile"].substr(1, ini["Background"]["BGfile"].length() - 2);
-        m_SkyboxData.EnvironmentMapPath = path_prefix + ini["Enviroment"]["EVfile"].substr(1, ini["Enviroment"]["EVfile"].length() - 2);
-        m_SkyboxData.ReflectionMapPath = path_prefix + ini["Reflection"]["REFfile"].substr(1, ini["Reflection"]["REFfile"].length() - 2);
     }
 
     template <typename T>
