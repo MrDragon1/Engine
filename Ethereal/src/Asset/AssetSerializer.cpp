@@ -1,13 +1,14 @@
 #include "pch.h"
 #include "AssetSerializer.h"
+#include "AssetManager.h"
 #include "Utils/StringUtils.h"
 #include "Utils/FileSystem.h"
-#include "AssetManager.h"
 #include "Utils/AssetManager.h"
 #include "Utils/YAMLSerializationHelpers.h"
 
 #include "Renderer/Mesh.h"
 #include "Renderer/MaterialAsset.h"
+#include "Renderer/Environment.h"
 
 #include "yaml-cpp/yaml.h"
 #include <fstream>
@@ -162,6 +163,17 @@ namespace Ethereal
         if (materialNode["MaterialFlags"]) material->GetMaterial()->SetFlags(materialNode["MaterialFlags"].as<uint32_t>());
 
         asset = material;
+        asset->Handle = metadata.Handle;
+
+        return true;
+    }
+
+    bool EnvironmentSerializer::TryLoadData(const AssetMetaData& metadata, Ref<Asset>& asset) const {
+        auto [radiance, irradiance] = GlobalContext::GetRenderSystem().CreateEnvironmentMap(AssetManager::GetFileSystemPathString(metadata));
+
+        if (!radiance || !irradiance) return false;
+
+        asset = Ref<Environment>::Create(radiance, irradiance);
         asset->Handle = metadata.Handle;
 
         return true;
