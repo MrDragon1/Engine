@@ -10,10 +10,10 @@ namespace Ethereal
         std::string Name;
 
         std::string AssetDirectory = "assets";
-        std::string AssetRegistryPath = "assets/AssetRegistry.etr";
+        std::string AssetRegistryPath = "assets\\AssetRegistry.etr";
 
-        std::string MeshPath = "assets/meshes";
-        std::string MeshSourcePath = "assets/meshes/source";
+        std::string MeshPath = "assets\\meshes";
+        std::string MeshSourcePath = "assets\\meshes\\source";
 
         std::string StartScene;
 
@@ -24,7 +24,7 @@ namespace Ethereal
 
         // Not serialized
         std::string ProjectFileName = "Default Project";
-        std::string ProjectDirectory = "G:/Code/Engine/Editor";
+        std::string ProjectDirectory = "G:\\Code\\Engine\\Editor";
     };
 
     class Project : public RefCounted {
@@ -36,7 +36,6 @@ namespace Ethereal
 
         static Ref<Project> GetActive() { return s_ActiveProject; }
         static void SetActive(Ref<Project> project);
-        static void Init();
         static const std::string& GetProjectName() {
             ET_CORE_ASSERT(s_ActiveProject);
             return s_ActiveProject->GetConfig().Name;

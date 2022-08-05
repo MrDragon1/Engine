@@ -1,6 +1,5 @@
 #include <Core/GlobalContext.h>
 #include "MaterialAsset.h"
-#include "Utils/AssetManager.h"
 
 namespace Ethereal
 {

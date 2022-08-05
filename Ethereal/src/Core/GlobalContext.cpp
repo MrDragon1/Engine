@@ -8,8 +8,9 @@ namespace Ethereal
     }
 
     void GlobalContext::Reset() {
-        m_RenderSystem.Init();
         Ref<Project> project = Ref<Project>::Create();
         Project::SetActive(project);  // Set nullptr when Application deconstruct
+
+        m_RenderSystem.Init();
     }
 }

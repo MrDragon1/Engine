@@ -47,10 +47,7 @@ namespace Ethereal
         Ref<Texture> GetWhiteTexture() { return m_BuildinData->WhiteTexture; }
         Ref<Texture> GetBlackTexture() { return m_BuildinData->BlackTexture; }
         Ref<Texture> GetBRDFLutTexture() { return m_BuildinData->BRDFLutTexture; }
-        Ref<Environment> GetDefaultEnvironment() {
-            auto [radiance, irradiance] = CreateEnvironmentMap("assets/skyboxs/Newport_Loft_Ref.hdr");
-            return Ref<Environment>::Create(radiance, irradiance);
-        }
+        Ref<Environment> GetDefaultEnvironment() { return m_BuildinData->Environment; }
 
         uint32_t GetMainImageHeight() { return m_Height; };
         uint32_t GetMainImageWidth() { return m_Width; };

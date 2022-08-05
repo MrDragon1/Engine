@@ -42,7 +42,6 @@ namespace Ethereal
         Ref<Environment> GetEnvironment() const { return m_Environment; }
         void SetName(const std::string& name) { m_SceneName = name; }
         void SetEnvironment(Ref<Environment> env) { m_Environment = env; }
-
       private:
         template <typename T>
         void OnComponentAdded(Entity entity, T& component);

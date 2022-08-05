@@ -1,5 +1,4 @@
 #include "EnvironmentMapRenderPass.h"
-#include "Utils/AssetManager.h"
 #include "Core/GlobalContext.h"
 namespace Ethereal
 {
@@ -37,7 +36,7 @@ namespace Ethereal
 
     void EnvironmentMapRenderPass::Draw() {
         ET_CORE_INFO("EnvironmentMapRenderPass::Draw()");
-        m_Texture = TextureManager::AddTexture(m_Path);
+        m_Texture = Texture2D::Create(m_Path);
 
         glm::mat4 captureProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
         glm::mat4 captureViews[] = {glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)),

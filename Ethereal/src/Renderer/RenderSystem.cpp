@@ -5,9 +5,9 @@
 #include "Scene/Scene.h"
 #include "Scene/ScriptableEntity.h"
 #include "Core/GlobalContext.h"
+#include "Asset/AssetManager.h"
 // Temporary
 #include "Utils/AssetLoader.h"
-#include "Utils/AssetManager.h"
 
 #include "box2d/b2_body.h"
 #include "box2d/b2_fixture.h"
@@ -23,23 +23,24 @@ namespace Ethereal
         m_Height = 720;
 
         m_DrawLists = &RenderPass::m_DrawLists;
+
         m_BuildinData = new BuildinData();
+        m_BuildinData->WhiteTexture = AssetManager::GetAsset<Texture>("buildin/textures/white.png");
+        m_BuildinData->BlackTexture = AssetManager::GetAsset<Texture>("buildin/textures/black.png");
+        m_BuildinData->BRDFLutTexture = AssetManager::GetAsset<Texture>("buildin/textures/BRDF_LUT.tga");
+        m_BuildinData->Cube = AssetManager::GetAsset<StaticMesh>("meshes/default/cube.hsmesh");
 
-        m_BuildinData->WhiteTexture = TextureManager::AddTexture("assets/buildin/textures/white.png");
-        m_BuildinData->BlackTexture = TextureManager::AddTexture("assets/buildin/textures/black.png");
-        m_BuildinData->BRDFLutTexture = TextureManager::AddTexture("assets/buildin/textures/brdf_schilk.hdr");
-        m_BuildinData->Cube = Ref<StaticMesh>::Create(Ref<MeshSource>::Create("assets/meshes/source/cube.obj"));
-        //        auto [radiance, irradiance] = CreateEnvironmentMap("assets/skyboxs/Newport_Loft/Newport_Loft_Env.hdr");
-        //        m_BuildinData->Environment = Ref<Environment>::Create(radiance, irradiance);
-
+        m_EnvironmentMapRenderPass = Ref<EnvironmentMapRenderPass>::Create();
+        m_EnvironmentMapRenderPass->Init(m_Width, m_Height);
         m_MainCameraRenderPass = Ref<MainCameraRenderPass>::Create();
         m_MainCameraRenderPass->Init(m_Width, m_Height);
         m_ShadowMapRenderPass = Ref<ShadowMapRenderPass>::Create();
         m_ShadowMapRenderPass->Init(m_Width, m_Height);
         m_SkyboxRenderPass = Ref<SkyboxRenderPass>::Create();
         m_SkyboxRenderPass->Init(m_Width, m_Height);
-        m_EnvironmentMapRenderPass = Ref<EnvironmentMapRenderPass>::Create();
-        m_EnvironmentMapRenderPass->Init(m_Width, m_Height);
+
+        // Must after m_EnvironmentMapRenderPass Init
+        m_BuildinData->Environment = AssetManager::GetAsset<Environment>("skyboxs/Newport_Loft_Ref.hdr");
     }
 
     void RenderSystem::Draw(Timestep ts) {

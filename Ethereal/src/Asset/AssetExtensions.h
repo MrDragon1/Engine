@@ -22,6 +22,7 @@ namespace Ethereal
         {".png", AssetType::Texture},
         {".jpg", AssetType::Texture},
         {".jpeg", AssetType::Texture},
+        {".tga", AssetType::Texture},
         {".hdr", AssetType::EnvMap},
 
         // Fonts

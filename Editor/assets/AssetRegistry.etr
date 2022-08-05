@@ -1,223 +1,223 @@
 Assets:
   - Handle: 23821705419647799
-    FilePath: textures/default/default_emissive.png
+    FilePath: textures\default\default_emissive.png
+    Type: Texture
+  - Handle: 42338022682208424
+    FilePath: buildin\textures\BRDF_LUT.tga
     Type: Texture
   - Handle: 112827165426887902
-    FilePath: meshes/default/cylinder.hsmesh
+    FilePath: meshes\default\cylinder.hsmesh
     Type: StaticMesh
   - Handle: 257226758694430484
-    FilePath: fonts/opensans/OpenSans-BoldItalic.ttf
+    FilePath: fonts\opensans\OpenSans-BoldItalic.ttf
     Type: Font
   - Handle: 472868447295227411
-    FilePath: fonts/opensans/OpenSans-MediumItalic.ttf
+    FilePath: fonts\opensans\OpenSans-MediumItalic.ttf
     Type: Font
   - Handle: 907565599402912077
-    FilePath: materials/rustediron.hmaterial
+    FilePath: materials\rustediron.hmaterial
     Type: Material
   - Handle: 1850952412942147138
-    FilePath: textures/default/default_occlusion.png
+    FilePath: textures\default\default_occlusion.png
     Type: Texture
   - Handle: 1864105716926570769
-    FilePath: textures/gold/albedo.png
+    FilePath: textures\gold\albedo.png
     Type: Texture
   - Handle: 2075871574199264738
-    FilePath: meshes/source/cone.obj
+    FilePath: meshes\source\cone.obj
     Type: MeshSource
   - Handle: 2129339068717190932
-    FilePath: fonts/opensans/OpenSans-SemiBoldItalic.ttf
+    FilePath: fonts\opensans\OpenSans-SemiBoldItalic.ttf
     Type: Font
   - Handle: 2801276543070836935
-    FilePath: fonts/opensans/OpenSans-Medium.ttf
+    FilePath: fonts\opensans\OpenSans-Medium.ttf
     Type: Font
   - Handle: 3184234908745819317
-    FilePath: textures/humanskin/human-skin1_preview3.jpg
+    FilePath: textures\humanskin\human-skin1_preview3.jpg
     Type: Texture
   - Handle: 3684156870783348000
-    FilePath: textures/rustediron/rustediron2_normal.png
+    FilePath: textures\rustediron\rustediron2_normal.png
     Type: Texture
   - Handle: 4209009144955814373
-    FilePath: icons/ContentBrowser/FileIcon.png
+    FilePath: icons\ContentBrowser\FileIcon.png
     Type: Texture
   - Handle: 4437595807192615377
-    FilePath: textures/gold/normal.png
+    FilePath: textures\gold\normal.png
     Type: Texture
-  - Handle: 4917437380343700167
-    FilePath: buildin/textures/brdf_schilk.hdr
-    Type: EnvMap
   - Handle: 4956907738453405018
-    FilePath: meshes/default/cone.hsmesh
+    FilePath: meshes\default\cone.hsmesh
     Type: StaticMesh
   - Handle: 5095451425471151322
-    FilePath: fonts/opensans/OpenSans-Bold.ttf
+    FilePath: fonts\opensans\OpenSans-Bold.ttf
     Type: Font
   - Handle: 5103235480894822041
-    FilePath: textures/humanskin/human-skin1_roughness.png
+    FilePath: textures\humanskin\human-skin1_roughness.png
     Type: Texture
   - Handle: 5158575785993661850
-    FilePath: materials/humanskin.hmaterial
+    FilePath: materials\humanskin.hmaterial
     Type: Material
   - Handle: 5164372370771938880
-    FilePath: meshes/default/torus.hsmesh
+    FilePath: meshes\default\torus.hsmesh
     Type: StaticMesh
   - Handle: 5521013208314249089
-    FilePath: materials/gold.hmaterial
+    FilePath: materials\gold.hmaterial
     Type: Material
   - Handle: 5606263654804138419
-    FilePath: textures/humanskin/human-skin1_preview2.jpg
+    FilePath: textures\humanskin\human-skin1_preview2.jpg
     Type: Texture
   - Handle: 5625367680056497915
-    FilePath: textures/humanskin/human-skin1_ao.png
+    FilePath: textures\humanskin\human-skin1_ao.png
     Type: Texture
   - Handle: 5643262825732316959
-    FilePath: fonts/opensans/OpenSans-Light.ttf
+    FilePath: fonts\opensans\OpenSans-Light.ttf
     Type: Font
   - Handle: 6560143709909394794
-    FilePath: icons/PlayButton.png
+    FilePath: icons\PlayButton.png
     Type: Texture
   - Handle: 6607202353073020882
-    FilePath: icons/ContentBrowser/DirectoryIcon.png
+    FilePath: icons\ContentBrowser\DirectoryIcon.png
     Type: Texture
   - Handle: 7309008298981451249
-    FilePath: buildin/textures/white.png
+    FilePath: buildin\textures\white.png
     Type: Texture
   - Handle: 7567381472881404084
-    FilePath: textures/global/brdf_schilk.hdr
+    FilePath: textures\global\brdf_schilk.hdr
     Type: EnvMap
   - Handle: 7714422435788874728
-    FilePath: textures/humanskin/human-skin1_preview.jpg
+    FilePath: textures\humanskin\human-skin1_preview.jpg
     Type: Texture
   - Handle: 7860783800334730501
-    FilePath: textures/gold/gold-scuffed_basecolor-boosted.png
+    FilePath: textures\gold\gold-scuffed_basecolor-boosted.png
     Type: Texture
   - Handle: 8178794584538088286
-    FilePath: fonts/opensans/OpenSans-SemiBold.ttf
+    FilePath: fonts\opensans\OpenSans-SemiBold.ttf
     Type: Font
   - Handle: 8608469292623611980
-    FilePath: meshes/source/sphere.obj
+    FilePath: meshes\source\sphere.obj
     Type: MeshSource
   - Handle: 8791887480241883289
-    FilePath: meshes/default/monkey.hsmesh
+    FilePath: meshes\default\monkey.hsmesh
     Type: StaticMesh
   - Handle: 9082851471189368623
-    FilePath: textures/humanskin/human-skin1_albedo_5.png
+    FilePath: textures\humanskin\human-skin1_albedo_5.png
     Type: Texture
   - Handle: 9088285154242030299
-    FilePath: icons/StopButton.png
+    FilePath: icons\StopButton.png
     Type: Texture
   - Handle: 9144879518730628124
-    FilePath: meshes/default/plane.hsmesh
+    FilePath: meshes\default\plane.hsmesh
     Type: StaticMesh
   - Handle: 9179399177065297379
-    FilePath: textures/rustediron/rustediron2_metallic.png
+    FilePath: textures\rustediron\rustediron2_metallic.png
     Type: Texture
   - Handle: 9998164968944880493
-    FilePath: textures/default/default_diffuse.png
+    FilePath: textures\default\default_diffuse.png
     Type: Texture
   - Handle: 10076672099001784072
-    FilePath: skyboxs/Mans_Outside_2k.hdr
+    FilePath: skyboxs\Mans_Outside_2k.hdr
     Type: EnvMap
   - Handle: 10111825085121754573
-    FilePath: skyboxs/Newport_Loft_Ref.hdr
+    FilePath: skyboxs\Newport_Loft_Ref.hdr
     Type: EnvMap
   - Handle: 10159681062242942540
-    FilePath: textures/rustediron/rustediron2_albedo.png
+    FilePath: textures\rustediron\rustediron2_albedo.png
     Type: Texture
   - Handle: 10396357330847663768
-    FilePath: textures/humanskin/human-skin1_metallic.png
+    FilePath: textures\humanskin\human-skin1_metallic.png
     Type: Texture
   - Handle: 10755097151186722102
-    FilePath: textures/humanskin/human-skin1_height.png
+    FilePath: textures\humanskin\human-skin1_height.png
     Type: Texture
   - Handle: 10827238871968035892
-    FilePath: meshes/source/monkey.obj
+    FilePath: meshes\source\monkey.obj
     Type: MeshSource
   - Handle: 11040801240512034961
-    FilePath: textures/humanskin/human-skin1_albedo_1.png
+    FilePath: textures\humanskin\human-skin1_albedo_1.png
     Type: Texture
   - Handle: 11116514864426116313
-    FilePath: textures/humanskin/human-skin1_albedo_3.png
+    FilePath: textures\humanskin\human-skin1_albedo_3.png
     Type: Texture
   - Handle: 11435407174954141404
-    FilePath: textures/default/default_metallic.png
+    FilePath: textures\default\default_metallic.png
     Type: Texture
   - Handle: 11961565015974153655
-    FilePath: textures/rustediron/rustediron2_roughness.png
+    FilePath: textures\rustediron\rustediron2_roughness.png
     Type: Texture
   - Handle: 12447451253582744139
-    FilePath: skyboxs/HWSign3-Fence_2k.hdr
+    FilePath: skyboxs\HWSign3-Fence_2k.hdr
     Type: EnvMap
   - Handle: 12492224228890339769
-    FilePath: meshes/source/torus.obj
+    FilePath: meshes\source\torus.obj
     Type: MeshSource
   - Handle: 12544758060547106188
-    FilePath: fonts/opensans/OpenSans-Regular.ttf
+    FilePath: fonts\opensans\OpenSans-Regular.ttf
     Type: Font
   - Handle: 12778708817804711261
-    FilePath: meshes/source/plane.obj
+    FilePath: meshes\source\plane.obj
     Type: MeshSource
   - Handle: 12991496061341425589
-    FilePath: fonts/opensans/OpenSans-LightItalic.ttf
+    FilePath: fonts\opensans\OpenSans-LightItalic.ttf
     Type: Font
   - Handle: 13088833478060461387
-    FilePath: skyboxs/Ridgecrest_Road_Ref.hdr
+    FilePath: skyboxs\Ridgecrest_Road_Ref.hdr
     Type: EnvMap
   - Handle: 13437552004259238276
-    FilePath: meshes/default/sphere.hsmesh
+    FilePath: meshes\default\sphere.hsmesh
     Type: StaticMesh
   - Handle: 13733117128754555817
-    FilePath: textures/humanskin/human-skin1_albedo.png
+    FilePath: textures\humanskin\human-skin1_albedo.png
     Type: Texture
   - Handle: 13741325085810708696
-    FilePath: textures/gold/roughness.png
+    FilePath: textures\gold\roughness.png
     Type: Texture
   - Handle: 13896290564190477560
-    FilePath: textures/default/default_normal.png
+    FilePath: textures\default\default_normal.png
     Type: Texture
   - Handle: 14180194868529914398
-    FilePath: textures/default/default_roughness.png
+    FilePath: textures\default\default_roughness.png
     Type: Texture
   - Handle: 14473103724496630534
-    FilePath: textures/gold/metallic.png
+    FilePath: textures\gold\metallic.png
     Type: Texture
   - Handle: 15298088384928640906
-    FilePath: skyboxs/Factory_Catwalk_2k.hdr
+    FilePath: skyboxs\Factory_Catwalk_2k.hdr
     Type: EnvMap
   - Handle: 15629598353572669012
-    FilePath: meshes/cornell_box/cornell_box.obj
+    FilePath: meshes\cornell_box\cornell_box.obj
     Type: MeshSource
   - Handle: 15831349221331264664
-    FilePath: textures/humanskin/human-skin1_albedo_4.png
+    FilePath: textures\humanskin\human-skin1_albedo_4.png
     Type: Texture
   - Handle: 16016150646620525778
-    FilePath: textures/humanskin/human-skin1_normal-ogl.png
+    FilePath: textures\humanskin\human-skin1_normal-ogl.png
     Type: Texture
   - Handle: 16437378090492961126
-    FilePath: meshes/source/cylinder.obj
+    FilePath: meshes\source\cylinder.obj
     Type: MeshSource
   - Handle: 16686991826098416408
-    FilePath: fonts/opensans/OpenSans-ExtraBoldItalic.ttf
+    FilePath: fonts\opensans\OpenSans-ExtraBoldItalic.ttf
     Type: Font
   - Handle: 16817130134590078098
-    FilePath: skyboxs/Alexs_Apt_2k.hdr
+    FilePath: skyboxs\Alexs_Apt_2k.hdr
     Type: EnvMap
   - Handle: 17060509455937462602
-    FilePath: meshes/default/cube.hsmesh
+    FilePath: meshes\default\cube.hsmesh
     Type: StaticMesh
   - Handle: 17079521824983022135
-    FilePath: fonts/opensans/OpenSans-ExtraBold.ttf
+    FilePath: fonts\opensans\OpenSans-ExtraBold.ttf
     Type: Font
   - Handle: 17214649529135449328
-    FilePath: skyboxs/Barce_Rooftop_C_3k.hdr
+    FilePath: skyboxs\Barce_Rooftop_C_3k.hdr
     Type: EnvMap
   - Handle: 17215697492875319916
-    FilePath: textures/humanskin/human-skin1_albedo_2.png
+    FilePath: textures\humanskin\human-skin1_albedo_2.png
     Type: Texture
   - Handle: 17356469065209931330
-    FilePath: fonts/opensans/OpenSans-Italic.ttf
+    FilePath: fonts\opensans\OpenSans-Italic.ttf
     Type: Font
   - Handle: 17640276763115080433
-    FilePath: meshes/source/cube.obj
+    FilePath: meshes\source\cube.obj
     Type: MeshSource
   - Handle: 18285469331499724907
-    FilePath: buildin/textures/black.png
+    FilePath: buildin\textures\black.png
     Type: Texture

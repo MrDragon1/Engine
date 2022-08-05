@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "Mesh.h"
-#include "Utils/AssetManager.h"
 #include "Core/GlobalContext.h"
 
 #include <assimp/scene.h>
@@ -11,6 +10,7 @@
 
 #include "imgui.h"
 #include <filesystem>
+#include <Asset/AssetManager.h>
 
 #define MESH_DEBUG_LOG 0
 #if MESH_DEBUG_LOG
@@ -204,7 +204,7 @@ namespace Ethereal
                     parentPath /= std::string(aiTexPath.data);
                     std::string texturePath = parentPath.string();
                     ET_MESH_LOG("    Albedo map path = {0}", texturePath);
-                    auto texture = TextureManager::AddTexture(texturePath).As<Texture2D>();
+                    auto texture = AssetManager::GetAsset<Texture>(texturePath);
                     if (texture->IsLoaded()) {
                         mi->SetAlbedoMap(texture);
                         mi->SetAlbedo(glm::vec3(1.0f));
@@ -229,7 +229,7 @@ namespace Ethereal
                     parentPath /= std::string(aiTexPath.data);
                     std::string texturePath = parentPath.string();
                     ET_MESH_LOG("    Normal map path = {0}", texturePath);
-                    auto texture = TextureManager::AddTexture(texturePath);
+                    auto texture = AssetManager::GetAsset<Texture>(texturePath);
                     if (texture->IsLoaded()) {
                         mi->SetNormalMap(texture);
                         mi->SetUseNormalMap(true);
@@ -255,7 +255,7 @@ namespace Ethereal
                     parentPath /= std::string(aiTexPath.data);
                     std::string texturePath = parentPath.string();
                     ET_MESH_LOG("    Roughness map path = {0}", texturePath);
-                    auto texture = TextureManager::AddTexture(texturePath);
+                    auto texture = AssetManager::GetAsset<Texture>(texturePath);
                     if (texture->IsLoaded()) {
                         mi->SetRoughnessMap(texture);
                         mi->SetRoughness(1.0f);
@@ -287,7 +287,7 @@ namespace Ethereal
                             parentPath /= str;
                             std::string texturePath = parentPath.string();
                             ET_MESH_LOG("    Metalness map path = {0}", texturePath);
-                            auto texture = TextureManager::AddTexture(texturePath);
+                            auto texture = AssetManager::GetAsset<Texture>(texturePath);
                             if (texture->IsLoaded()) {
                                 metalnessTextureFound = true;
                                 mi->SetMetallicMap(texture);

@@ -54,6 +54,7 @@ namespace Ethereal
     std::filesystem::path AssetManager::GetRelativePath(const std::filesystem::path& filepath) {
         std::filesystem::path relativePath = filepath.lexically_normal();
         std::string temp = filepath.string();
+        ET_CORE_INFO("Asset Dir" + Project::GetAssetDirectory().string());
         if (temp.find(Project::GetAssetDirectory().string()) != std::string::npos) {
             relativePath = std::filesystem::relative(filepath, Project::GetAssetDirectory());
             if (relativePath.empty()) {
@@ -183,9 +184,7 @@ namespace Ethereal
 
             if (metadata.IsMemoryAsset) continue;
 
-            std::string pathToSerialize = metadata.FilePath.string();
-            // NOTE(Yan): if Windows
-            std::replace(pathToSerialize.begin(), pathToSerialize.end(), '\\', '/');
+            std::string pathToSerialize = metadata.FilePath.lexically_normal().string();
             sortedMap[metadata.Handle] = {pathToSerialize, metadata.Type};
         }
 

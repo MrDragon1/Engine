@@ -10,8 +10,6 @@ namespace Ethereal
 
     Project::~Project() {}
 
-    void Project::Init() {}
-
     void Project::SetActive(Ref<Project> project) {
         if (s_ActiveProject) {
             AssetManager::Shutdown();

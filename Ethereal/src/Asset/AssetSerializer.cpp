@@ -3,7 +3,6 @@
 #include "AssetManager.h"
 #include "Utils/StringUtils.h"
 #include "Utils/FileSystem.h"
-#include "Utils/AssetManager.h"
 #include "Utils/YAMLSerializationHelpers.h"
 
 #include "Renderer/Mesh.h"

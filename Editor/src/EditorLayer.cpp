@@ -1,3 +1,4 @@
+#include <Asset/AssetManager.h>
 #include "EditorLayer.h"
 #include "pch.h"
 
@@ -425,11 +426,11 @@ namespace Ethereal
             ImGui::Image(reinterpret_cast<void*>(GlobalContext::GetRenderSystem().GetSkyboxImage()), ImVec2(256, 128), ImVec2(0, 1), ImVec2(1, 0));
             ImGui::Separator();
             if (ImGui::Button("Load Skybox")) {
-                std::string filepath = FileDialogs::OpenFile("Skybox (*.ibl)\0*.ibl\0");
+                std::string filepath = FileDialogs::OpenFile("Skybox (*.hdr)\0*.hdr\0");
                 if (!filepath.empty()) {
                     if (m_EditorScene) {
                         ET_CORE_INFO("Open Skybox {0}", filepath);
-                        //                        m_EditorScene->SetSkybox(filepath);
+                        m_EditorScene->SetEnvironment(AssetManager::GetAsset<Environment>(filepath));
                     }
                 }
             }
