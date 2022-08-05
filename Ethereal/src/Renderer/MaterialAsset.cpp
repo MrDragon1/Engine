@@ -9,7 +9,7 @@ namespace Ethereal
             // Use Transparent shader
             // m_Material = Material::Create();
         } else
-            m_Material = Material::Create(Shader::Create("assets/shaders/PBR.glsl"));
+            m_Material = Material::Create();
 
         SetDefaults();
     }

@@ -1,7 +1,5 @@
 #pragma once
-
 #include "Renderer/Texture.h"
-#include "Renderer/Common.h"
 #include "Core/Base/Singleton.h"
 namespace Ethereal
 {

@@ -5,12 +5,12 @@
 #include "RendererAPI.h"
 namespace Ethereal
 {
-    Ref<Material> Material::Create(const Ref<Shader>& shader, const std::string& name) {
+    Ref<Material> Material::Create(const std::string& name) {
         switch (RendererAPI::GetAPI()) {
             case RendererAPI::API::None:
                 return nullptr;
             case RendererAPI::API::OpenGL:
-                return Ref<OpenGLMaterial>::Create(shader, name);
+                return Ref<OpenGLMaterial>::Create(name);
         }
         ET_CORE_ASSERT(false, "Unknown RendererAPI");
         return nullptr;

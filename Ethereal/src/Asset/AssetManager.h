@@ -111,37 +111,6 @@ namespace Ethereal
         static const AssetRegistry& GetAssetRegistry() { return s_AssetRegistry; }
         static const std::unordered_map<AssetHandle, Ref<Asset>>& GetMemoryOnlyAssets() { return s_MemoryAssets; }
 
-        template <typename TAsset, typename... TArgs>
-        static AssetHandle CreateMemoryOnlyAsset(TArgs&&... args) {
-            static_assert(std::is_base_of<Asset, TAsset>::value, "CreateMemoryOnlyAsset only works for types derived from Asset");
-
-            Ref<TAsset> asset = Ref<TAsset>::Create(std::forward<TArgs>(args)...);
-            asset->Handle = AssetHandle();
-
-            s_MemoryAssets[asset->Handle] = asset;
-            return asset->Handle;
-        }
-
-        template <typename TAsset, typename... TArgs>
-        static AssetHandle CreateNamedMemoryOnlyAsset(const std::string& name, TArgs&&... args) {
-            static_assert(std::is_base_of<Asset, TAsset>::value, "CreateMemoryOnlyAsset only works for types derived from Asset");
-
-            Ref<TAsset> asset = Ref<TAsset>::Create(std::forward<TArgs>(args)...);
-            asset->Handle = Hash::GenerateFNVHash(name);
-
-            AssetMetaData metadata;
-            metadata.Handle = asset->Handle;
-            metadata.FilePath = name;
-            metadata.IsDataLoaded = true;
-            metadata.Type = TAsset::GetStaticType();
-            metadata.IsMemoryAsset = true;
-
-            s_AssetRegistry[metadata.Handle] = metadata;
-
-            s_MemoryAssets[asset->Handle] = asset;
-            return asset->Handle;
-        }
-
         static bool IsMemoryAsset(AssetHandle handle) { return s_MemoryAssets.find(handle) != s_MemoryAssets.end(); }
 
       private:
@@ -151,10 +120,6 @@ namespace Ethereal
         static void WriteRegistryToFile();
 
         static AssetMetaData& GetMetadataInternal(AssetHandle handle);
-
-        static void OnAssetRenamed(AssetHandle assetHandle, const std::filesystem::path& newFilePath);
-        static void OnAssetDeleted(AssetHandle assetHandle);
-
       private:
         static std::unordered_map<AssetHandle, Ref<Asset>> s_LoadedAssets;
         static std::unordered_map<AssetHandle, Ref<Asset>> s_MemoryAssets;

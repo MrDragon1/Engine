@@ -85,9 +85,6 @@ namespace Ethereal
         }
 
         m_Scene = scene;
-
-        //        m_MeshShader = Renderer::GetShaderLibrary()->Get("HazelPBR_Static");
-        m_MeshShader = Shader::Create("assets/shaders/PBR.glsl");
         m_InverseTransform = glm::inverse(Utils::Mat4FromAssimpMat4(scene->mRootNode->mTransformation));
 
         uint32_t vertexCount = 0;
@@ -166,14 +163,12 @@ namespace Ethereal
         Ref<Texture2D> whiteTexture = GlobalContext::GetRenderSystem().GetWhiteTexture();
         if (scene->HasMaterials()) {
             ET_MESH_LOG("---- Materials - {0} ----", filename);
-
-            m_Textures.resize(scene->mNumMaterials);
             m_Materials.resize(scene->mNumMaterials);
             for (uint32_t i = 0; i < scene->mNumMaterials; i++) {
                 auto aiMaterial = scene->mMaterials[i];
                 auto aiMaterialName = aiMaterial->GetName();
 
-                auto mi = Material::Create(m_MeshShader, aiMaterialName.data);
+                auto mi = Material::Create(aiMaterialName.data);
                 m_Materials[i] = mi;
 
                 ET_MESH_LOG("  {0} (Index = {1})", aiMaterialName.data, i);
@@ -211,13 +206,10 @@ namespace Ethereal
                     ET_MESH_LOG("    Albedo map path = {0}", texturePath);
                     auto texture = TextureManager::AddTexture(texturePath).As<Texture2D>();
                     if (texture->IsLoaded()) {
-                        m_Textures[i] = texture;
-
                         mi->SetAlbedoMap(texture);
                         mi->SetAlbedo(glm::vec3(1.0f));
                     } else {
                         ET_CORE_ERROR("Could not load texture: {0}", texturePath);
-                        m_Textures[i] = whiteTexture;
                         fallback = true;
                     }
                 }
@@ -239,7 +231,6 @@ namespace Ethereal
                     ET_MESH_LOG("    Normal map path = {0}", texturePath);
                     auto texture = TextureManager::AddTexture(texturePath);
                     if (texture->IsLoaded()) {
-                        m_Textures.push_back(texture);
                         mi->SetNormalMap(texture);
                         mi->SetUseNormalMap(true);
                     } else {
@@ -266,7 +257,6 @@ namespace Ethereal
                     ET_MESH_LOG("    Roughness map path = {0}", texturePath);
                     auto texture = TextureManager::AddTexture(texturePath);
                     if (texture->IsLoaded()) {
-                        m_Textures.push_back(texture);
                         mi->SetRoughnessMap(texture);
                         mi->SetRoughness(1.0f);
                     } else {
@@ -300,7 +290,6 @@ namespace Ethereal
                             auto texture = TextureManager::AddTexture(texturePath);
                             if (texture->IsLoaded()) {
                                 metalnessTextureFound = true;
-                                m_Textures.push_back(texture);
                                 mi->SetMetallicMap(texture);
                                 mi->SetMetallic(1.0f);
                             } else {
@@ -320,7 +309,7 @@ namespace Ethereal
             }
             ET_MESH_LOG("------------------------");
         } else {
-            auto mi = Material::Create(m_MeshShader, "Hazel-Default");
+            auto mi = Material::Create("Hazel-Default");
             mi->SetAlbedo(glm::vec3(0.8f));
             mi->SetEmission(0.0f);
             mi->SetMetallic(0.0f);

@@ -1,5 +1,4 @@
 #pragma once
-#include "Common.h"
 #include "Shader.h"
 #include "FrameBuffer.h"
 #include "RenderCommand.h"

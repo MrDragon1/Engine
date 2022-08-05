@@ -4,7 +4,7 @@ namespace Ethereal
 {
     class OpenGLMaterial : public Material {
       public:
-        OpenGLMaterial(const Ref<Shader>& shader, const std::string& name = "");
+        OpenGLMaterial(const std::string& name = "");
         OpenGLMaterial(Ref<Material> material, const std::string& name = "");
         virtual ~OpenGLMaterial() override;
 
@@ -19,11 +19,9 @@ namespace Ethereal
             }
         }
 
-        virtual Ref<Shader> GetShader() override { return m_Shader; }
         virtual const std::string& GetName() const override { return m_Name; }
 
       private:
-        Ref<Shader> m_Shader;
         std::string m_Name;
 
         enum class PendingDescriptorType

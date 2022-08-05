@@ -82,41 +82,6 @@ namespace Ethereal
             out << YAML::EndMap;  // TransformComponent
         }
 
-        if (entity.HasComponent<MeshComponent>()) {
-            out << YAML::Key << "MeshComponent";
-            out << YAML::BeginMap;  // MeshComponent
-
-            auto& mesh = entity.GetComponent<MeshComponent>();
-            out << YAML::Key << "m_filePath" << YAML::Value << mesh.Desc.m_filePath;
-
-            out << YAML::EndMap;  // MeshComponent
-        }
-
-        if (entity.HasComponent<MaterialComponent>()) {
-            out << YAML::Key << "MaterialComponent";
-            out << YAML::BeginMap;  // MaterialComponent
-
-            auto& material = entity.GetComponent<MaterialComponent>();
-            out << YAML::Key << "m_AlbedoFile" << YAML::Value << material.Desc.m_AlbedoFile;
-            out << YAML::Key << "m_MetallicFile" << YAML::Value << material.Desc.m_MetallicFile;
-            out << YAML::Key << "m_RoughnessFile" << YAML::Value << material.Desc.m_RoughnessFile;
-            out << YAML::Key << "m_NormalFile" << YAML::Value << material.Desc.m_NormalFile;
-            out << YAML::Key << "m_OcclusionFile" << YAML::Value << material.Desc.m_OcclusionFile;
-            out << YAML::Key << "m_EmissiveFile" << YAML::Value << material.Desc.m_EmissiveFile;
-
-            out << YAML::Key << "m_Albedo" << YAML::Value << material.Desc.m_Albedo;
-            out << YAML::Key << "m_Metallic" << YAML::Value << material.Desc.m_Metallic;
-            out << YAML::Key << "m_Roughness" << YAML::Value << material.Desc.m_Roughness;
-
-            out << YAML::Key << "b_Albedo" << YAML::Value << material.Desc.b_Albedo;
-            out << YAML::Key << "b_Normal" << YAML::Value << material.Desc.b_Normal;
-            out << YAML::Key << "b_Metallic" << YAML::Value << material.Desc.b_Metallic;
-            out << YAML::Key << "b_Roughness" << YAML::Value << material.Desc.b_Roughness;
-            out << YAML::Key << "b_Occlusion" << YAML::Value << material.Desc.b_Occlusion;
-
-            out << YAML::EndMap;  // MaterialComponent
-        }
-
         if (entity.HasComponent<CameraComponent>()) {
             out << YAML::Key << "CameraComponent";
             out << YAML::BeginMap;  // CameraComponent
@@ -254,33 +219,6 @@ namespace Ethereal
                                 component.MaterialTable->SetMaterial(index, AssetManager::GetAsset<MaterialAsset>(materialAsset));
                         }
                     }
-                }
-
-                auto meshComponent = entity["MeshComponent"];
-                if (meshComponent) {
-                    auto& mesh = deserializedEntity.AddComponent<MeshComponent>();
-                    mesh.Desc.m_filePath = meshComponent["m_filePath"].as<std::string>();
-                }
-
-                auto materialComponent = entity["MaterialComponent"];
-                if (materialComponent) {
-                    auto& material = deserializedEntity.AddComponent<MaterialComponent>();
-                    material.Desc.m_AlbedoFile = materialComponent["m_AlbedoFile"].as<std::string>();
-                    material.Desc.m_MetallicFile = materialComponent["m_MetallicFile"].as<std::string>();
-                    material.Desc.m_RoughnessFile = materialComponent["m_RoughnessFile"].as<std::string>();
-                    material.Desc.m_NormalFile = materialComponent["m_NormalFile"].as<std::string>();
-                    material.Desc.m_OcclusionFile = materialComponent["m_OcclusionFile"].as<std::string>();
-                    material.Desc.m_EmissiveFile = materialComponent["m_EmissiveFile"].as<std::string>();
-
-                    material.Desc.m_Albedo = materialComponent["m_Albedo"].as<glm::vec3>();
-                    material.Desc.m_Metallic = materialComponent["m_Metallic"].as<float>();
-                    material.Desc.m_Roughness = materialComponent["m_Roughness"].as<float>();
-
-                    material.Desc.b_Albedo = materialComponent["b_Albedo"].as<bool>();
-                    material.Desc.b_Normal = materialComponent["b_Normal"].as<bool>();
-                    material.Desc.b_Metallic = materialComponent["b_Metallic"].as<bool>();
-                    material.Desc.b_Roughness = materialComponent["b_Roughness"].as<bool>();
-                    material.Desc.b_Occlusion = materialComponent["b_Occlusion"].as<bool>();
                 }
 
                 auto cameraComponent = entity["CameraComponent"];

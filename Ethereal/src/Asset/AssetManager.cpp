@@ -65,23 +65,6 @@ namespace Ethereal
 
     AssetHandle AssetManager::GetAssetHandleFromFilePath(const std::filesystem::path& filepath) { return GetMetadata(filepath).Handle; }
 
-    void AssetManager::OnAssetRenamed(AssetHandle assetHandle, const std::filesystem::path& newFilePath) {
-        AssetMetaData metadata = GetMetadata(assetHandle);
-        if (!metadata.IsValid()) return;
-
-        metadata.FilePath = GetRelativePath(newFilePath);
-        WriteRegistryToFile();
-    }
-
-    void AssetManager::OnAssetDeleted(AssetHandle assetHandle) {
-        AssetMetaData metadata = GetMetadata(assetHandle);
-        if (!metadata.IsValid()) return;
-
-        s_AssetRegistry.Remove(assetHandle);
-        s_LoadedAssets.erase(assetHandle);
-        WriteRegistryToFile();
-    }
-
     AssetType AssetManager::GetAssetTypeFromExtension(const std::string& extension) {
         std::string ext = Utils::String::ToLowerCopy(extension);
         if (s_AssetExtensionMap.find(ext) == s_AssetExtensionMap.end()) return AssetType::None;
@@ -121,46 +104,8 @@ namespace Ethereal
             if (metadata.Type == AssetType::None) continue;
 
             if (!FileSystem::Exists(AssetManager::GetFileSystemPath(metadata))) {
-                ET_CORE_WARN("[AssetManager] Missing asset '{0}' detected in registry file, trying to locate...", metadata.FilePath);
-
-                std::string mostLikelyCandidate;
-                uint32_t bestScore = 0;
-
-                for (auto& pathEntry : std::filesystem::recursive_directory_iterator(Project::GetAssetDirectory())) {
-                    const std::filesystem::path& path = pathEntry.path();
-
-                    if (path.filename() != metadata.FilePath.filename()) continue;
-
-                    if (bestScore > 0) ET_CORE_WARN("[AssetManager] Multiple candidates found...");
-
-                    std::vector<std::string> candiateParts = Utils::SplitString(path.string(), "/\\");
-
-                    uint32_t score = 0;
-                    for (const auto& part : candiateParts) {
-                        if (filepath.find(part) != std::string::npos) score++;
-                    }
-
-                    ET_CORE_WARN("'{0}' has a score of {1}, best score is {2}", path.string(), score, bestScore);
-
-                    if (bestScore > 0 && score == bestScore) {
-                        // TODO: How do we handle this?
-                        // Probably prompt the user at this point?
-                    }
-
-                    if (score <= bestScore) continue;
-
-                    bestScore = score;
-                    mostLikelyCandidate = path.string();
-                }
-
-                if (mostLikelyCandidate.empty() && bestScore == 0) {
-                    ET_CORE_ERROR("[AssetManager] Failed to locate a potential match for '{0}'", metadata.FilePath);
-                    continue;
-                }
-
-                std::replace(mostLikelyCandidate.begin(), mostLikelyCandidate.end(), '\\', '/');
-                metadata.FilePath = std::filesystem::relative(mostLikelyCandidate, Project::GetActive()->GetAssetDirectory());
-                ET_CORE_WARN("[AssetManager] Found most likely match '{0}'", metadata.FilePath);
+                ET_CORE_WARN("[AssetManager] Missing asset '{0}' detected in registry file", metadata.FilePath);
+                continue;
             }
 
             if (metadata.Handle == 0) {

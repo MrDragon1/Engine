@@ -74,13 +74,9 @@ namespace Ethereal
         const std::vector<Vertex>& GetVertices() const { return m_StaticVertices; }
         const std::vector<Index>& GetIndices() const { return m_Indices; }
 
-        Ref<Shader> GetMeshShader() { return m_MeshShader; }
         std::vector<Ref<Material>>& GetMaterials() { return m_Materials; }
         const std::vector<Ref<Material>>& GetMaterials() const { return m_Materials; }
-        const std::vector<Ref<Texture2D>>& GetTextures() const { return m_Textures; }
         const std::string& GetFilePath() const { return m_FilePath; }
-
-        const std::vector<Triangle> GetTriangleCache(uint32_t index) const { return m_TriangleCache.at(index); }
 
         Ref<VertexBuffer> GetVertexBuffer() { return m_VertexBuffer; }
         Ref<IndexBuffer> GetIndexBuffer() { return m_IndexBuffer; }
@@ -96,9 +92,9 @@ namespace Ethereal
         void TraverseNodes(aiNode* node, const glm::mat4& parentTransform = glm::mat4(1.0f), uint32_t level = 0);
 
       private:
-        std::vector<Submesh> m_Submeshes;
-
         std::unique_ptr<Assimp::Importer> m_Importer;
+        const aiScene* m_Scene;
+        std::string m_FilePath;
 
         glm::mat4 m_InverseTransform;
 
@@ -107,23 +103,15 @@ namespace Ethereal
         Ref<IndexBuffer> m_IndexBuffer;
         BufferLayout m_VertexBufferLayout;
 
-        std::vector<Vertex> m_StaticVertices;
-        std::vector<Index> m_Indices;
-        std::unordered_map<std::string, uint32_t> m_BoneMapping;
-        std::unordered_map<aiNode*, std::vector<uint32_t>> m_NodeMap;
-        const aiScene* m_Scene;
-
-        // Materials
-        Ref<Shader> m_MeshShader;
-        std::vector<Ref<Texture2D>> m_Textures;
-        std::vector<Ref<Texture2D>> m_NormalMaps;
-        std::vector<Ref<Material>> m_Materials;
-
-        std::unordered_map<uint32_t, std::vector<Triangle>> m_TriangleCache;
-
+        std::vector<Submesh> m_Submeshes;
         AABB m_BoundingBox;
 
-        std::string m_FilePath;
+        std::vector<Vertex> m_StaticVertices;
+        std::vector<Index> m_Indices;
+        std::unordered_map<aiNode*, std::vector<uint32_t>> m_NodeMap;
+
+        // Materials
+        std::vector<Ref<Material>> m_Materials;
     };
 
     // Static Mesh - no skeletal animation, flattened hierarchy

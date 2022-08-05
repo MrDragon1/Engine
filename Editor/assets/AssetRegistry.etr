@@ -1,0 +1,316 @@
+Assets:
+  - Handle: 23821705419647799
+    FilePath: textures/default/default_emissive.png
+    Type: Texture
+  - Handle: 24574858504558581
+    FilePath: skyboxs/Factory_Catwalk/Factory_Catwalk_preview.jpg
+    Type: Texture
+  - Handle: 112827165426887902
+    FilePath: meshes/default/cylinder.hsmesh
+    Type: StaticMesh
+  - Handle: 257226758694430484
+    FilePath: fonts/opensans/OpenSans-BoldItalic.ttf
+    Type: Font
+  - Handle: 472868447295227411
+    FilePath: fonts/opensans/OpenSans-MediumItalic.ttf
+    Type: Font
+  - Handle: 907565599402912077
+    FilePath: materials/rustediron.hmaterial
+    Type: Material
+  - Handle: 1328651456670940033
+    FilePath: skyboxs/Barcelona_Rooftops/Barce_Rooftop_C_thumb.jpg
+    Type: Texture
+  - Handle: 1577521129217734760
+    FilePath: skyboxs/Factory_Catwalk/Factory_Catwalk_Thumb.jpg
+    Type: Texture
+  - Handle: 1850952412942147138
+    FilePath: textures/default/default_occlusion.png
+    Type: Texture
+  - Handle: 1864105716926570769
+    FilePath: textures/gold/albedo.png
+    Type: Texture
+  - Handle: 2075871574199264738
+    FilePath: meshes/source/cone.obj
+    Type: MeshSource
+  - Handle: 2100127453887987620
+    FilePath: skyboxs/Newport_Loft/Newport_Loft_Thumb.jpg
+    Type: Texture
+  - Handle: 2129339068717190932
+    FilePath: fonts/opensans/OpenSans-SemiBoldItalic.ttf
+    Type: Font
+  - Handle: 2169110008161973292
+    FilePath: skyboxs/Walk_Of_Fame/Mans_Outside_Env.hdr
+    Type: EnvMap
+  - Handle: 2477292118771058106
+    FilePath: skyboxs/Factory_Catwalk/Factory_Catwalk_2k.hdr
+    Type: EnvMap
+  - Handle: 2757977237906640774
+    FilePath: skyboxs/Newport_Loft/Newport_Loft_Env.hdr
+    Type: EnvMap
+  - Handle: 2801276543070836935
+    FilePath: fonts/opensans/OpenSans-Medium.ttf
+    Type: Font
+  - Handle: 2848405758049274851
+    FilePath: skyboxs/Walk_Of_Fame/Mans_Outside_2k.hdr
+    Type: EnvMap
+  - Handle: 2928844120569273123
+    FilePath: skyboxs/Hollywood_Sign/HWSign3-Fence_2k.hdr
+    Type: EnvMap
+  - Handle: 3184234908745819317
+    FilePath: textures/humanskin/human-skin1_preview3.jpg
+    Type: Texture
+  - Handle: 3228545727848507604
+    FilePath: skyboxs/Newport_Loft/Newport_Loft_8k.jpg
+    Type: Texture
+  - Handle: 3684156870783348000
+    FilePath: textures/rustediron/rustediron2_normal.png
+    Type: Texture
+  - Handle: 4209009144955814373
+    FilePath: icons/ContentBrowser/FileIcon.png
+    Type: Texture
+  - Handle: 4437595807192615377
+    FilePath: textures/gold/normal.png
+    Type: Texture
+  - Handle: 4517872355820786533
+    FilePath: skyboxs/Newport_Loft/Newport_Loft_preview.jpg
+    Type: Texture
+  - Handle: 4917437380343700167
+    FilePath: buildin/textures/brdf_schilk.hdr
+    Type: EnvMap
+  - Handle: 4956907738453405018
+    FilePath: meshes/default/cone.hsmesh
+    Type: StaticMesh
+  - Handle: 5095451425471151322
+    FilePath: fonts/opensans/OpenSans-Bold.ttf
+    Type: Font
+  - Handle: 5103235480894822041
+    FilePath: textures/humanskin/human-skin1_roughness.png
+    Type: Texture
+  - Handle: 5158575785993661850
+    FilePath: materials/humanskin.hmaterial
+    Type: Material
+  - Handle: 5164372370771938880
+    FilePath: meshes/default/torus.hsmesh
+    Type: StaticMesh
+  - Handle: 5250206943966584822
+    FilePath: skyboxs/Alexs_Apartment/Alexs_Apt_8k.jpg
+    Type: Texture
+  - Handle: 5521013208314249089
+    FilePath: materials/gold.hmaterial
+    Type: Material
+  - Handle: 5606263654804138419
+    FilePath: textures/humanskin/human-skin1_preview2.jpg
+    Type: Texture
+  - Handle: 5625367680056497915
+    FilePath: textures/humanskin/human-skin1_ao.png
+    Type: Texture
+  - Handle: 5643262825732316959
+    FilePath: fonts/opensans/OpenSans-Light.ttf
+    Type: Font
+  - Handle: 5961891465770274948
+    FilePath: skyboxs/Alexs_Apartment/Alexs_Apt_Env.hdr
+    Type: EnvMap
+  - Handle: 6197459014497396821
+    FilePath: skyboxs/Ridgecrest_Road/Ridgecrest_Road_4k_Bg.jpg
+    Type: Texture
+  - Handle: 6325106659910092161
+    FilePath: skyboxs/Ridgecrest_Road/Ridgecrest_Road_preview.jpg
+    Type: Texture
+  - Handle: 6425431765899118019
+    FilePath: skyboxs/Barcelona_Rooftops/Barce_Rooftop_C_8k.jpg
+    Type: Texture
+  - Handle: 6515493406407555044
+    FilePath: textures/white.png
+    Type: Texture
+  - Handle: 6560143709909394794
+    FilePath: icons/PlayButton.png
+    Type: Texture
+  - Handle: 6607202353073020882
+    FilePath: icons/ContentBrowser/DirectoryIcon.png
+    Type: Texture
+  - Handle: 6626412066662360213
+    FilePath: skyboxs/Walk_Of_Fame/Mans_Outside_8k_preview.jpg
+    Type: Texture
+  - Handle: 7309008298981451249
+    FilePath: buildin/textures/white.png
+    Type: Texture
+  - Handle: 7567381472881404084
+    FilePath: textures/global/brdf_schilk.hdr
+    Type: EnvMap
+  - Handle: 7714422435788874728
+    FilePath: textures/humanskin/human-skin1_preview.jpg
+    Type: Texture
+  - Handle: 7860783800334730501
+    FilePath: textures/gold/gold-scuffed_basecolor-boosted.png
+    Type: Texture
+  - Handle: 8178794584538088286
+    FilePath: fonts/opensans/OpenSans-SemiBold.ttf
+    Type: Font
+  - Handle: 8516239710670274643
+    FilePath: skyboxs/Hollywood_Sign/HWSign3-Fence_preview.jpg
+    Type: Texture
+  - Handle: 8608469292623611980
+    FilePath: meshes/source/sphere.obj
+    Type: MeshSource
+  - Handle: 8791887480241883289
+    FilePath: meshes/default/monkey.hsmesh
+    Type: StaticMesh
+  - Handle: 8810408666239921839
+    FilePath: skyboxs/Hollywood_Sign/HWSign3-Fence_TMap.jpg
+    Type: Texture
+  - Handle: 9082851471189368623
+    FilePath: textures/humanskin/human-skin1_albedo_5.png
+    Type: Texture
+  - Handle: 9088285154242030299
+    FilePath: icons/StopButton.png
+    Type: Texture
+  - Handle: 9144879518730628124
+    FilePath: meshes/default/plane.hsmesh
+    Type: StaticMesh
+  - Handle: 9179399177065297379
+    FilePath: textures/rustediron/rustediron2_metallic.png
+    Type: Texture
+  - Handle: 9480944870166256504
+    FilePath: skyboxs/Factory_Catwalk/Factory_Catwalk_Env.hdr
+    Type: EnvMap
+  - Handle: 9726347460595427545
+    FilePath: skyboxs/Ridgecrest_Road/Ridgecrest_Road_Env.hdr
+    Type: EnvMap
+  - Handle: 9998164968944880493
+    FilePath: textures/default/default_diffuse.png
+    Type: Texture
+  - Handle: 10159681062242942540
+    FilePath: textures/rustediron/rustediron2_albedo.png
+    Type: Texture
+  - Handle: 10396357330847663768
+    FilePath: textures/humanskin/human-skin1_metallic.png
+    Type: Texture
+  - Handle: 10673619748993097615
+    FilePath: skyboxs/Barcelona_Rooftops/Barce_Rooftop_C_preview.jpg
+    Type: Texture
+  - Handle: 10755097151186722102
+    FilePath: textures/humanskin/human-skin1_height.png
+    Type: Texture
+  - Handle: 10827238871968035892
+    FilePath: meshes/source/monkey.obj
+    Type: MeshSource
+  - Handle: 11040801240512034961
+    FilePath: textures/humanskin/human-skin1_albedo_1.png
+    Type: Texture
+  - Handle: 11116514864426116313
+    FilePath: textures/humanskin/human-skin1_albedo_3.png
+    Type: Texture
+  - Handle: 11435407174954141404
+    FilePath: textures/default/default_metallic.png
+    Type: Texture
+  - Handle: 11593091220502510533
+    FilePath: skyboxs/Alexs_Apartment/Alexs_Apt_2k.hdr
+    Type: EnvMap
+  - Handle: 11626712188081872167
+    FilePath: skyboxs/Ridgecrest_Road/Ridgecrest_Road_Thumb.jpg
+    Type: Texture
+  - Handle: 11956152711082484854
+    FilePath: skyboxs/Ridgecrest_Road/Ridgecrest_Road_Ref.hdr
+    Type: EnvMap
+  - Handle: 11961565015974153655
+    FilePath: textures/rustediron/rustediron2_roughness.png
+    Type: Texture
+  - Handle: 12053255427280332144
+    FilePath: skyboxs/Alexs_Apartment/Alexs_Apt_Thumb.jpg
+    Type: Texture
+  - Handle: 12084342965582692036
+    FilePath: skyboxs/Newport_Loft/Newport_Loft_Ref.hdr
+    Type: EnvMap
+  - Handle: 12391301322273381165
+    FilePath: skyboxs/Walk_Of_Fame/Mans_Outside_Thumb.jpg
+    Type: Texture
+  - Handle: 12492224228890339769
+    FilePath: meshes/source/torus.obj
+    Type: MeshSource
+  - Handle: 12544758060547106188
+    FilePath: fonts/opensans/OpenSans-Regular.ttf
+    Type: Font
+  - Handle: 12569873190925796525
+    FilePath: skyboxs/Barcelona_Rooftops/Barce_Rooftop_C_3k.hdr
+    Type: EnvMap
+  - Handle: 12778708817804711261
+    FilePath: meshes/source/plane.obj
+    Type: MeshSource
+  - Handle: 12991496061341425589
+    FilePath: fonts/opensans/OpenSans-LightItalic.ttf
+    Type: Font
+  - Handle: 13244022969143416051
+    FilePath: skyboxs/Barcelona_Rooftops/Barce_Rooftop_C_Env.hdr
+    Type: EnvMap
+  - Handle: 13437552004259238276
+    FilePath: meshes/default/sphere.hsmesh
+    Type: StaticMesh
+  - Handle: 13733117128754555817
+    FilePath: textures/humanskin/human-skin1_albedo.png
+    Type: Texture
+  - Handle: 13741325085810708696
+    FilePath: textures/gold/roughness.png
+    Type: Texture
+  - Handle: 13896290564190477560
+    FilePath: textures/default/default_normal.png
+    Type: Texture
+  - Handle: 14180194868529914398
+    FilePath: textures/default/default_roughness.png
+    Type: Texture
+  - Handle: 14473103724496630534
+    FilePath: textures/gold/metallic.png
+    Type: Texture
+  - Handle: 15623300830082895076
+    FilePath: skyboxs/Factory_Catwalk/Factory_Catwalk_Bg.jpg
+    Type: Texture
+  - Handle: 15629598353572669012
+    FilePath: meshes/cornell_box/cornell_box.obj
+    Type: MeshSource
+  - Handle: 15831349221331264664
+    FilePath: textures/humanskin/human-skin1_albedo_4.png
+    Type: Texture
+  - Handle: 16016150646620525778
+    FilePath: textures/humanskin/human-skin1_normal-ogl.png
+    Type: Texture
+  - Handle: 16437378090492961126
+    FilePath: meshes/source/cylinder.obj
+    Type: MeshSource
+  - Handle: 16686991826098416408
+    FilePath: fonts/opensans/OpenSans-ExtraBoldItalic.ttf
+    Type: Font
+  - Handle: 17060509455937462602
+    FilePath: meshes/default/cube.hsmesh
+    Type: StaticMesh
+  - Handle: 17076178444519439476
+    FilePath: skyboxs/Walk_Of_Fame/Mans_Outside_8k_TMap.jpg
+    Type: Texture
+  - Handle: 17079521824983022135
+    FilePath: fonts/opensans/OpenSans-ExtraBold.ttf
+    Type: Font
+  - Handle: 17095400478119940330
+    FilePath: textures/RPGpack_sheet_2X.png
+    Type: Texture
+  - Handle: 17215697492875319916
+    FilePath: textures/humanskin/human-skin1_albedo_2.png
+    Type: Texture
+  - Handle: 17234684455061054296
+    FilePath: skyboxs/Hollywood_Sign/HWSign3-Fence_Thumb.jpg
+    Type: Texture
+  - Handle: 17263660939983109762
+    FilePath: skyboxs/Alexs_Apartment/Alexs_Apt_preview.jpg
+    Type: Texture
+  - Handle: 17356469065209931330
+    FilePath: fonts/opensans/OpenSans-Italic.ttf
+    Type: Font
+  - Handle: 17640276763115080433
+    FilePath: meshes/source/cube.obj
+    Type: MeshSource
+  - Handle: 17803756228948872685
+    FilePath: textures/Checkerboard.png
+    Type: Texture
+  - Handle: 18137982096947179002
+    FilePath: skyboxs/Hollywood_Sign/HWSign3-Fence_Env.hdr
+    Type: EnvMap
+  - Handle: 18285469331499724907
+    FilePath: buildin/textures/black.png
+    Type: Texture

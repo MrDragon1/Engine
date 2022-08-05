@@ -6,9 +6,9 @@ Entities:
     TagComponent:
       Tag: Plane
     StaticMeshComponent:
-      AssetID: 1114330618090056849
+      AssetID: 9144879518730628124
       MaterialTable:
-        0: 16114899070468696589
+        0: 5521013208314249089
     TransformComponent:
       Translation: [0, -10, 0]
       Rotation: [0, 0, 0]
@@ -17,9 +17,9 @@ Entities:
     TagComponent:
       Tag: Sphere0
     StaticMeshComponent:
-      AssetID: 6425428808557104903
+      AssetID: 13437552004259238276
       MaterialTable:
-        0: 16114899070468696589
+        0: 907565599402912077
     TransformComponent:
       Translation: [0, 0, 0]
       Rotation: [0, 0, 0]
@@ -28,9 +28,9 @@ Entities:
     TagComponent:
       Tag: Sphere1
     StaticMeshComponent:
-      AssetID: 6425428808557104903
+      AssetID: 13437552004259238276
       MaterialTable:
-        0: 17708780527190283076
+        0: 5521013208314249089
     TransformComponent:
       Translation: [-5, 0, 0]
       Rotation: [0, 0, 0]
@@ -39,9 +39,9 @@ Entities:
     TagComponent:
       Tag: Sphere2
     StaticMeshComponent:
-      AssetID: 6425428808557104903
+      AssetID: 13437552004259238276
       MaterialTable:
-        0: 5831112817991928675
+        0: 5158575785993661850
     TransformComponent:
       Translation: [5, 0, 0]
       Rotation: [0, 0, 0]

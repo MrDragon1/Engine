@@ -70,8 +70,7 @@ namespace Ethereal
 
         // Copy components (except IDComponent and TagComponent)
         CopyComponent<TransformComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
-        CopyComponent<MeshComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
-        CopyComponent<MaterialComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
+        CopyComponent<StaticMeshComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
         CopyComponent<CameraComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
         CopyComponent<NativeScriptComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
         CopyComponent<Rigidbody2DComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
@@ -319,10 +318,6 @@ namespace Ethereal
     void Scene::OnComponentAdded<TransformComponent>(Entity entity, TransformComponent& component) {}
     template <>
     void Scene::OnComponentAdded<StaticMeshComponent>(Entity entity, StaticMeshComponent& component) {}
-    template <>
-    void Scene::OnComponentAdded<MeshComponent>(Entity entity, MeshComponent& component) {}
-    template <>
-    void Scene::OnComponentAdded<MaterialComponent>(Entity entity, MaterialComponent& component) {}
     template <>
     void Scene::OnComponentAdded<CameraComponent>(Entity entity, CameraComponent& component) {
         component.Camera.SetViewportSize(m_ViewportWidth, m_ViewportHeight);

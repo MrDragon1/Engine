@@ -2,7 +2,6 @@
 #include "Renderer/SceneCamera.h"
 #include "Renderer/Texture.h"
 #include "Core/UUID.h"
-#include "Renderer/Common.h"
 #include "Renderer/Mesh.h"
 #include "Renderer/MaterialAsset.h"
 
@@ -50,22 +49,6 @@ namespace Ethereal
         StaticMeshComponent(const StaticMeshComponent& other)
             : StaticMesh(other.StaticMesh), MaterialTable(Ref<Ethereal::MaterialTable>::Create(other.MaterialTable)) {}
         StaticMeshComponent(AssetHandle staticMesh) : StaticMesh(staticMesh) {}
-    };
-
-    struct MeshComponent {
-        GameObjectMeshDesc Desc;
-
-        MeshComponent() = default;
-        MeshComponent(const MeshComponent&) = default;
-        MeshComponent(const GameObjectMeshDesc& desc) : Desc(desc) {}
-    };
-
-    struct MaterialComponent {
-        GameObjectMaterialDesc Desc;
-
-        MaterialComponent() = default;
-        MaterialComponent(const MaterialComponent&) = default;
-        MaterialComponent(const GameObjectMaterialDesc& desc) : Desc(desc) {}
     };
 
     struct CameraComponent {
