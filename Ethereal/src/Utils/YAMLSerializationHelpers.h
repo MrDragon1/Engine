@@ -134,4 +134,4 @@ namespace Ethereal
         return out;
     }
 
-}  // namespace Hazel
+}  // namespace Ethereal

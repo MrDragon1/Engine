@@ -2,7 +2,6 @@
 .xmake/
 build/
 note/
-cmake-build-debug/
 .cache/*
 
 *.pdb

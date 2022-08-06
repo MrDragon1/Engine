@@ -196,9 +196,10 @@ namespace Ethereal
                 ET_MESH_LOG("    ROUGHNESS = {0}", roughness);
                 ET_MESH_LOG("    METALNESS = {0}", metalness);
                 bool hasAlbedoMap = aiMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &aiTexPath) == AI_SUCCESS;
+                mi->SetUseAlbedoMap(hasAlbedoMap);
                 bool fallback = !hasAlbedoMap;
                 if (hasAlbedoMap) {
-                    // TODO: Temp - this should be handled by Hazel's filesystem
+                    // TODO: Temp - this should be handled by Filesystem
                     std::filesystem::path path = filename;
                     auto parentPath = path.parent_path();
                     parentPath /= std::string(aiTexPath.data);
@@ -221,9 +222,10 @@ namespace Ethereal
 
                 // Normal maps
                 bool hasNormalMap = aiMaterial->GetTexture(aiTextureType_NORMALS, 0, &aiTexPath) == AI_SUCCESS;
+                mi->SetUseNormalMap(hasNormalMap);
                 fallback = !hasNormalMap;
                 if (hasNormalMap) {
-                    // TODO: Temp - this should be handled by Hazel's filesystem
+                    // TODO: Temp - this should be handled by Filesystem
                     std::filesystem::path path = filename;
                     auto parentPath = path.parent_path();
                     parentPath /= std::string(aiTexPath.data);
@@ -247,9 +249,10 @@ namespace Ethereal
 
                 // Roughness map
                 bool hasRoughnessMap = aiMaterial->GetTexture(aiTextureType_SHININESS, 0, &aiTexPath) == AI_SUCCESS;
+                mi->SetRoughness(hasRoughnessMap);
                 fallback = !hasRoughnessMap;
                 if (hasRoughnessMap) {
-                    // TODO: Temp - this should be handled by Hazel's filesystem
+                    // TODO: Temp - this should be handled by Filesystem
                     std::filesystem::path path = filename;
                     auto parentPath = path.parent_path();
                     parentPath /= std::string(aiTexPath.data);
@@ -281,7 +284,7 @@ namespace Ethereal
 
                         std::string key = prop->mKey.data;
                         if (key == "$raw.ReflectionFactor|file") {
-                            // TODO: Temp - this should be handled by Hazel's filesystem
+                            // TODO: Temp - this should be handled by Filesystem
                             std::filesystem::path path = filename;
                             auto parentPath = path.parent_path();
                             parentPath /= str;
@@ -299,7 +302,7 @@ namespace Ethereal
                         }
                     }
                 }
-
+                mi->SetMetallic(metalnessTextureFound);
                 fallback = !metalnessTextureFound;
                 if (fallback) {
                     ET_MESH_LOG("    No metalness map");
@@ -309,7 +312,7 @@ namespace Ethereal
             }
             ET_MESH_LOG("------------------------");
         } else {
-            auto mi = Material::Create("Hazel-Default");
+            auto mi = Material::Create("Ethereal-Default");
             mi->SetAlbedo(glm::vec3(0.8f));
             mi->SetEmission(0.0f);
             mi->SetMetallic(0.0f);

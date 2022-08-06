@@ -319,7 +319,7 @@ namespace Ethereal
         m_ActiveScene->OnViewportResize((uint32_t)GlobalContext::GetViewportSize().x, (uint32_t)GlobalContext::GetViewportSize().y);
         m_SceneHierarchyPanel.SetContext(m_ActiveScene);
         m_EditorScenePath = std::filesystem::path();
-        m_EditorScene = m_ActiveScene;  // TODO: Save old scene before new scene is created
+        m_EditorScene = m_ActiveScene;
     }
 
     void EditorLayer::OpenScene() {

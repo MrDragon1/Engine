@@ -23,13 +23,6 @@ namespace Ethereal
 
       private:
         std::string m_Name;
-
-        enum class PendingDescriptorType
-        {
-            None = 0,
-            Texture2D,
-            TextureCube
-        };
         uint32_t m_MaterialFlags = 0;
 
         std::vector<Ref<Texture>> m_Textures;  // TODO: Texture should only be stored as images

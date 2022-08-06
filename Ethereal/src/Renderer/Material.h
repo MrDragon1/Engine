@@ -32,6 +32,11 @@ namespace Ethereal
         void SetEmissiveMap(Ref<Texture> value) { m_EmissiveMap = value; }
 
         void SetUseNormalMap(bool value) { b_Normal = value; }
+        void SetUseAlbedoMap(bool value) { b_Albedo = value; }
+        void SetUseMetallicMap(bool value) { b_Metallic = value; }
+        void SetUseRoughnessMap(bool value) { b_Roughness = value; }
+        void SetUseOcclusionMap(bool value) { b_Occlusion = value; }
+        void SetUseEmissiveMap(bool value) { b_Emissive = value; }
 
         virtual uint32_t GetFlags() const = 0;
         virtual void SetFlags(uint32_t flags) = 0;

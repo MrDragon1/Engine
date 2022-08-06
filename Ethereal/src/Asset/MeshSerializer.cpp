@@ -58,7 +58,7 @@ namespace Ethereal
 
         AssetHandle meshSourceHandle = rootNode["MeshSource"].as<uint64_t>();
         Ref<MeshSource> meshSource = AssetManager::GetAsset<MeshSource>(meshSourceHandle);
-        if (!meshSource) return false;  // TODO(Yan): feedback to the user
+        if (!meshSource) return false;
 
         auto submeshIndices = rootNode["SubmeshIndices"].as<std::vector<uint32_t>>();
         Ref<StaticMesh> mesh = Ref<StaticMesh>::Create(meshSource, submeshIndices);

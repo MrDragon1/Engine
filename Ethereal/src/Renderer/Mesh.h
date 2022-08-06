@@ -139,7 +139,7 @@ namespace Ethereal
 
       private:
         Ref<MeshSource> m_MeshSource;
-        std::vector<uint32_t> m_Submeshes;  // TODO(Yan): physics/render masks
+        std::vector<uint32_t> m_Submeshes;
 
         // Materials
         Ref<MaterialTable> m_Materials;

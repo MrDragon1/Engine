@@ -21,9 +21,7 @@ namespace Ethereal
         inline float GetDistance() const { return m_Distance; }
         inline void SetDistance(float distance) { m_Distance = distance; }
 
-        inline void SetViewportSize() {
-            UpdateProjection();
-        }
+        inline void SetViewportSize() { UpdateProjection(); }
 
         const glm::mat4& GetViewMatrix() const { return m_ViewMatrix; }
         glm::mat4 GetViewProjection() const { return m_Projection * m_ViewMatrix; }
@@ -66,4 +64,4 @@ namespace Ethereal
         float m_Pitch = 0.0f, m_Yaw = 0.0f;
     };
 
-}  // namespace Hazel
+}  // namespace Ethereal

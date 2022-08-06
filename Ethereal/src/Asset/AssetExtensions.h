@@ -7,7 +7,6 @@ namespace Ethereal
 {
 
     inline static std::unordered_map<std::string, AssetType> s_AssetExtensionMap = {
-        // Hazel types
         {".hscene", AssetType::Scene},
         {".hsmesh", AssetType::StaticMesh},
         {".hmaterial", AssetType::Material},
