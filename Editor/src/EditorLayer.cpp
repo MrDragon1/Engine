@@ -8,7 +8,7 @@
 #include "Utils/Math.h"
 #include "Utils/PlatformUtils.h"
 #include "imgui.h"
-#include "ImGuizmo.h"
+#include "ImGui/ImGuizmo.h"
 
 namespace Ethereal
 {

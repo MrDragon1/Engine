@@ -11,7 +11,7 @@
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
 
-#include "ImGuizmo.h"
+#include "ImGui/ImGuizmo.h"
 namespace Ethereal
 {
     ImGuiLayer::ImGuiLayer() : Layer("ImGuiLayer") {}
