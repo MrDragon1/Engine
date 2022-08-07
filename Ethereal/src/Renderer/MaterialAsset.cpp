@@ -115,6 +115,15 @@ namespace Ethereal
         Ref<Texture> whiteTexture = GlobalContext::GetRenderSystem().GetWhiteTexture();
         SetEmissiveMap(whiteTexture);
     }
+    void MaterialAsset::SetUseAlbedoMap(bool value) { m_Material->SetUseAlbedoMap(value); }
+
+    void MaterialAsset::SetUseMetalnessMap(bool value) { m_Material->SetUseMetallicMap(value); }
+
+    void MaterialAsset::SetUseRoughnessMap(bool value) { m_Material->SetUseRoughnessMap(value); }
+
+    void MaterialAsset::SetUseOcclusionMap(bool value) { m_Material->SetUseOcclusionMap(value); }
+
+    void MaterialAsset::SetUseEmissiveMap(bool value) { m_Material->SetUseEmissiveMap(value); }
 
     MaterialTable::MaterialTable(uint32_t materialCount) : m_MaterialCount(materialCount) {}
 

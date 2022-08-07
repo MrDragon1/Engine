@@ -33,6 +33,7 @@ namespace Ethereal
         // Textures
         Ref<Texture> GetAlbedoMap();
         void SetAlbedoMap(Ref<Texture> texture);
+        void SetUseAlbedoMap(bool value);
         void ClearAlbedoMap();
 
         Ref<Texture> GetNormalMap();
@@ -43,18 +44,22 @@ namespace Ethereal
 
         Ref<Texture> GetMetalnessMap();
         void SetMetalnessMap(Ref<Texture> texture);
+        void SetUseMetalnessMap(bool value);
         void ClearMetalnessMap();
 
         Ref<Texture> GetRoughnessMap();
         void SetRoughnessMap(Ref<Texture> texture);
+        void SetUseRoughnessMap(bool value);
         void ClearRoughnessMap();
 
         Ref<Texture> GetOcclusionMap();
         void SetOcclusionMap(Ref<Texture> texture);
+        void SetUseOcclusionMap(bool value);
         void ClearOcclusionMap();
 
         Ref<Texture> GetEmissiveMap();
         void SetEmissiveMap(Ref<Texture> texture);
+        void SetUseEmissiveMap(bool value);
         void ClearEmissiveMap();
 
         float& GetTransparency();

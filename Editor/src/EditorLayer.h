@@ -3,6 +3,8 @@
 #include "Ethereal.h"
 #include "Panels/SceneHierarchyPanel.h"
 #include "Panels/ContentBrowserPanel.h"
+#include "Panels/MaterialEditPanel.h"
+
 #include "Renderer/EditorCamera.h"
 #include "Core/Base/Ref.h"
 
@@ -59,6 +61,7 @@ namespace Ethereal
 
         SceneHierarchyPanel m_SceneHierarchyPanel;
         ContentBrowserPanel m_ContentBrowserPanel;
+        MaterialEditPanel m_MaterialEditPanel;
 
         int m_GizmoType = -1;
 

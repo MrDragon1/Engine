@@ -140,6 +140,7 @@ namespace Ethereal
 
         m_SceneHierarchyPanel.OnImGuiRender();
         m_ContentBrowserPanel.OnImGuiRender();
+        m_MaterialEditPanel.OnImGuiRender();
 
         ImGui::Begin("Stats");
         std::string name = "None";
@@ -166,80 +167,82 @@ namespace Ethereal
 
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
         ImGui::Begin("Viewport");
-        auto viewportOffset = ImGui::GetCursorPos();  // Includes tab bar
+        {
+            auto viewportOffset = ImGui::GetCursorPos();  // Includes tab bar
 
-        m_ViewportFocused = ImGui::IsWindowFocused();
-        m_ViewportHovered = ImGui::IsWindowHovered();
-        Application::Get().GetImGuiLayer()->BlockEvents(!m_ViewportFocused && !m_ViewportHovered);
+            m_ViewportFocused = ImGui::IsWindowFocused();
+            m_ViewportHovered = ImGui::IsWindowHovered();
+            Application::Get().GetImGuiLayer()->BlockEvents(!m_ViewportFocused && !m_ViewportHovered);
 
-        ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
-        GlobalContext::SetViewportSize({viewportPanelSize.x, viewportPanelSize.y});
-        // Resize
-        if (GlobalContext::GetViewportSize().x > 0.0f && GlobalContext::GetViewportSize().y > 0.0f &&  // zero sized framebuffer is invalid
-            (GlobalContext::GetRenderSystem().GetMainImageWidth() != GlobalContext::GetViewportSize().x ||
-             GlobalContext::GetRenderSystem().GetMainImageHeight() != GlobalContext::GetViewportSize().y)) {
-            GlobalContext::GetRenderSystem().OnResize();
-            // m_CameraController.OnResize(GlobalContext::GetViewportSize().x, GlobalContext::GetViewportSize().y);
-            m_EditorCamera.SetViewportSize();
-            m_ActiveScene->OnViewportResize((uint32_t)GlobalContext::GetViewportSize().x, (uint32_t)GlobalContext::GetViewportSize().y);
-        }
-        uint64_t textureID = GlobalContext::GetRenderSystem().GetMainImage();
-        // ET_CORE_INFO("texture ID {}", textureID);
-        ImGui::Image(reinterpret_cast<void*>(textureID), ImVec2{GlobalContext::GetViewportSize().x, GlobalContext::GetViewportSize().y}, ImVec2{0, 1},
-                     ImVec2{1, 0});
-
-        if (ImGui::BeginDragDropTarget()) {
-            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
-                const wchar_t* path = (const wchar_t*)payload->Data;
-                OpenScene(std::filesystem::path(g_AssetPath) / path);
+            ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
+            GlobalContext::SetViewportSize({viewportPanelSize.x, viewportPanelSize.y});
+            // Resize
+            if (GlobalContext::GetViewportSize().x > 0.0f && GlobalContext::GetViewportSize().y > 0.0f &&  // zero sized framebuffer is invalid
+                (GlobalContext::GetRenderSystem().GetMainImageWidth() != GlobalContext::GetViewportSize().x ||
+                 GlobalContext::GetRenderSystem().GetMainImageHeight() != GlobalContext::GetViewportSize().y)) {
+                GlobalContext::GetRenderSystem().OnResize();
+                // m_CameraController.OnResize(GlobalContext::GetViewportSize().x, GlobalContext::GetViewportSize().y);
+                m_EditorCamera.SetViewportSize();
+                m_ActiveScene->OnViewportResize((uint32_t)GlobalContext::GetViewportSize().x, (uint32_t)GlobalContext::GetViewportSize().y);
             }
-            ImGui::EndDragDropTarget();
-        }
+            uint64_t textureID = GlobalContext::GetRenderSystem().GetMainImage();
+            // ET_CORE_INFO("texture ID {}", textureID);
+            ImGui::Image(reinterpret_cast<void*>(textureID), ImVec2{GlobalContext::GetViewportSize().x, GlobalContext::GetViewportSize().y},
+                         ImVec2{0, 1}, ImVec2{1, 0});
 
-        ImVec2 minBound = ImGui::GetWindowPos();
-        minBound.x += viewportOffset.x;
-        minBound.y += viewportOffset.y;
+            if (ImGui::BeginDragDropTarget()) {
+                if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
+                    const wchar_t* path = (const wchar_t*)payload->Data;
+                    OpenScene(std::filesystem::path(g_AssetPath) / path);
+                }
+                ImGui::EndDragDropTarget();
+            }
 
-        ImVec2 maxBound = {minBound.x + GlobalContext::GetViewportSize().x, minBound.y + GlobalContext::GetViewportSize().y};
-        m_ViewportBounds[0] = {minBound.x, minBound.y};
-        m_ViewportBounds[1] = {maxBound.x, maxBound.y};
+            ImVec2 minBound = ImGui::GetWindowPos();
+            minBound.x += viewportOffset.x;
+            minBound.y += viewportOffset.y;
 
-        // Gizmos
-        Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
-        if (selectedEntity && m_GizmoType != -1) {
-            ImGuizmo::SetOrthographic(false);
-            ImGuizmo::SetDrawlist();
+            ImVec2 maxBound = {minBound.x + GlobalContext::GetViewportSize().x, minBound.y + GlobalContext::GetViewportSize().y};
+            m_ViewportBounds[0] = {minBound.x, minBound.y};
+            m_ViewportBounds[1] = {maxBound.x, maxBound.y};
 
-            float windowWidth = (float)ImGui::GetWindowWidth();
-            float windowHeight = (float)ImGui::GetWindowHeight();
-            ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
+            // Gizmos
+            Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
+            if (selectedEntity && m_GizmoType != -1) {
+                ImGuizmo::SetOrthographic(false);
+                ImGuizmo::SetDrawlist();
 
-            // Editor camera
-            const glm::mat4& cameraProjection = m_EditorCamera.GetProjection();
-            glm::mat4 cameraView = m_EditorCamera.GetViewMatrix();
+                float windowWidth = (float)ImGui::GetWindowWidth();
+                float windowHeight = (float)ImGui::GetWindowHeight();
+                ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
 
-            // Entity transform
-            auto& tc = selectedEntity.GetComponent<TransformComponent>();
-            glm::mat4 transform = tc.GetTransform();
+                // Editor camera
+                const glm::mat4& cameraProjection = m_EditorCamera.GetProjection();
+                glm::mat4 cameraView = m_EditorCamera.GetViewMatrix();
 
-            // Snapping
-            bool snap = Input::IsKeyPressed(Key::LeftControl);
-            float snapValue = 0.5f;  // Snap to 0.5m for translation/scale
-            // Snap to 45 degrees for rotation
-            if (m_GizmoType == ImGuizmo::OPERATION::ROTATE) snapValue = 45.0f;
+                // Entity transform
+                auto& tc = selectedEntity.GetComponent<TransformComponent>();
+                glm::mat4 transform = tc.GetTransform();
 
-            float snapValues[3] = {snapValue, snapValue, snapValue};
+                // Snapping
+                bool snap = Input::IsKeyPressed(Key::LeftControl);
+                float snapValue = 0.5f;  // Snap to 0.5m for translation/scale
+                // Snap to 45 degrees for rotation
+                if (m_GizmoType == ImGuizmo::OPERATION::ROTATE) snapValue = 45.0f;
 
-            ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(cameraProjection), (ImGuizmo::OPERATION)m_GizmoType, ImGuizmo::LOCAL,
-                                 glm::value_ptr(transform), nullptr, snap ? snapValues : nullptr);
-            if (ImGuizmo::IsUsing()) {
-                glm::vec3 translation, rotation, scale;
-                Math::DecomposeTransform(transform, translation, rotation, scale);
+                float snapValues[3] = {snapValue, snapValue, snapValue};
 
-                glm::vec3 deltaRotation = rotation - tc.Rotation;
-                tc.Translation = translation;
-                tc.Rotation += deltaRotation;
-                tc.Scale = scale;
+                ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(cameraProjection), (ImGuizmo::OPERATION)m_GizmoType, ImGuizmo::LOCAL,
+                                     glm::value_ptr(transform), nullptr, snap ? snapValues : nullptr);
+                if (ImGuizmo::IsUsing()) {
+                    glm::vec3 translation, rotation, scale;
+                    Math::DecomposeTransform(transform, translation, rotation, scale);
+
+                    glm::vec3 deltaRotation = rotation - tc.Rotation;
+                    tc.Translation = translation;
+                    tc.Rotation += deltaRotation;
+                    tc.Scale = scale;
+                }
             }
         }
 
@@ -308,8 +311,10 @@ namespace Ethereal
 
     bool EditorLayer::OnMouseButtonPressed(MouseButtonPressedEvent& e) {
         if (e.GetMouseButton() == Mouse::ButtonLeft) {
-            if (m_ViewportHovered && !ImGuizmo::IsOver() && !Input::IsKeyPressed(Key::LeftAlt))
+            if (m_ViewportHovered && !ImGuizmo::IsOver() && !Input::IsKeyPressed(Key::LeftAlt)) {
                 m_SceneHierarchyPanel.SetSelectedEntity(m_HoveredEntity);
+                m_MaterialEditPanel.SetSelectEntity(m_HoveredEntity);
+            }
         }
         return false;
     }

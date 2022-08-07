@@ -54,7 +54,6 @@ namespace Ethereal
     std::filesystem::path AssetManager::GetRelativePath(const std::filesystem::path& filepath) {
         std::filesystem::path relativePath = filepath.lexically_normal();
         std::string temp = filepath.string();
-        ET_CORE_INFO("Asset Dir" + Project::GetAssetDirectory().string());
         if (temp.find(Project::GetAssetDirectory().string()) != std::string::npos) {
             relativePath = std::filesystem::relative(filepath, Project::GetAssetDirectory());
             if (relativePath.empty()) {
