@@ -119,7 +119,6 @@ namespace Ethereal
                     if (hasAlbedoMap) {
                         ImGui::BeginTooltip();
                         ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-                        //                        ImGui::TextUnformatted(albedoMap->GetPath().c_str());
                         ImGui::PopTextWrapPos();
                         ImGui::Image((ImTextureID)albedoUITexture->GetRendererID(), ImVec2(384, 384));
                         ImGui::EndTooltip();
@@ -134,31 +133,27 @@ namespace Ethereal
                     }
                 }
 
-                ImVec2 nextRowCursorPos = ImGui::GetCursorPos();
                 ImGui::SameLine();
                 ImVec2 properCursorPos = ImGui::GetCursorPos();
                 ImGui::SetCursorPos(textureCursorPos);
                 ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
                 if (hasAlbedoMap && ImGui::Button("X", ImVec2(18, 18))) {
                     materialAsset->ClearAlbedoMap();
-                    // needsSerialize = true;
                 }
                 ImGui::PopStyleVar();
                 ImGui::SetCursorPos(properCursorPos);
 
                 ImGui::BeginGroup();
+                bool useAlbedoMap = material->IsUseAlbedoMap();
+                if (ImGui::Checkbox("Use##Albedo", &useAlbedoMap)) material->SetUseAlbedoMap(useAlbedoMap);
+
                 if (ImGui::ColorEdit3("Color##Albedo", glm::value_ptr(albedoColor), ImGuiColorEditFlags_NoInputs))
                     material->SetAlbedoColor(albedoColor);
                 float& emissive = material->GetEmission();
-                ImGui::SameLine();
+
                 ImGui::SetNextItemWidth(100.0f);
                 if (ImGui::DragFloat("Emission", &emissive, 0.1f, 0.0f, 20.0f)) material->SetEmission(emissive);  // Maybe SliderFloat better?
 
-                //                ImGui::SetCursorPos(nextRowCursorPos);
-                // TODO: Draw Checkbox in proper postition
-                bool useAlbedoMap = material->IsUseAlbedoMap();
-                if (ImGui::Checkbox("Use##Albedo", &useAlbedoMap)) material->SetUseAlbedoMap(useAlbedoMap);
-                //                ImGui::SetCursorPos(nextRowCursorPos);
                 ImGui::EndGroup();
             }
         }
@@ -193,7 +188,6 @@ namespace Ethereal
                                 normalMap = asset.As<Texture2D>();
                                 material->SetNormalMap(normalMap);
                                 material->SetUseNormalMap(true);
-                                // needsSerialize = true;
                             }
                         }
 
@@ -206,7 +200,6 @@ namespace Ethereal
                         if (hasNormalMap) {
                             ImGui::BeginTooltip();
                             ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-                            //                            ImGui::TextUnformatted(normalMap->GetPath().c_str());
                             ImGui::PopTextWrapPos();
                             ImGui::Image((ImTextureID)normalUITexture->GetRendererID(), ImVec2(384, 384));
                             ImGui::EndTooltip();
@@ -230,21 +223,17 @@ namespace Ethereal
                     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
                     if (hasNormalMap && ImGui::Button("X", ImVec2(18, 18))) {
                         materialAsset->ClearNormalMap();
-                        // needsSerialize = true;
                     }
                     ImGui::PopStyleVar();
                     ImGui::SetCursorPos(properCursorPos);
 
                     if (ImGui::Checkbox("Use##NormalMap", &useNormalMap)) material->SetUseNormalMap(useNormalMap);
-                    // if (ImGui::IsItemDeactivated())
-                    //	needsSerialize = true;
-
                     ImGui::SetCursorPos(nextRowCursorPos);
                 }
             }
             {
                 // Metalness
-                if (ImGui::CollapsingHeader("Metalness", nullptr, ImGuiTreeNodeFlags_DefaultOpen)) {
+                if (ImGui::CollapsingHeader("Metallic", nullptr, ImGuiTreeNodeFlags_DefaultOpen)) {
                     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, 10));
 
                     float& metalnessValue = material->GetMetalness();
@@ -271,7 +260,6 @@ namespace Ethereal
 
                                 metalnessMap = asset.As<Texture2D>();
                                 material->SetMetalnessMap(metalnessMap);
-                                // needsSerialize = true;
                             }
                         }
 
@@ -284,7 +272,6 @@ namespace Ethereal
                         if (hasMetalnessMap) {
                             ImGui::BeginTooltip();
                             ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-                            //                            ImGui::TextUnformatted(metalnessMap->GetPath().c_str());
                             ImGui::PopTextWrapPos();
                             ImGui::Image((ImTextureID)metalnessUITexture->GetRendererID(), ImVec2(384, 384));
                             ImGui::EndTooltip();
@@ -300,26 +287,21 @@ namespace Ethereal
                         }
                     }
 
-                    ImVec2 nextRowCursorPos = ImGui::GetCursorPos();
                     ImGui::SameLine();
                     ImVec2 properCursorPos = ImGui::GetCursorPos();
                     ImGui::SetCursorPos(textureCursorPos);
                     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
                     if (hasMetalnessMap && ImGui::Button("X", ImVec2(18, 18))) {
                         materialAsset->ClearMetalnessMap();
-                        // needsSerialize = true;
                     }
                     ImGui::PopStyleVar();
                     ImGui::SetCursorPos(properCursorPos);
 
                     ImGui::BeginGroup();
-                    ImGui::SetNextItemWidth(200.0f);
-                    if (ImGui::SliderFloat("Metalness Value##MetalnessInput", &metalnessValue, 0.0f, 1.0f)) material->SetMetalness(metalnessValue);
-                    // if (ImGui::IsItemDeactivated())
-                    //	needsSerialize = true;
-
                     bool useMetallicMap = material->IsUseMetallicMap();
                     if (ImGui::Checkbox("Use##Metallic", &useMetallicMap)) material->SetUseMetalnessMap(useMetallicMap);
+                    ImGui::SetNextItemWidth(200.0f);
+                    if (ImGui::SliderFloat("Metalness Value##MetalnessInput", &metalnessValue, 0.0f, 1.0f)) material->SetMetalness(metalnessValue);
                     ImGui::EndGroup();
                 }
             }
@@ -352,7 +334,6 @@ namespace Ethereal
 
                                 metalnessMap = asset.As<Texture2D>();
                                 material->SetRoughnessMap(metalnessMap);
-                                // needsSerialize = true;
                             }
                         }
 
@@ -365,7 +346,6 @@ namespace Ethereal
                         if (hasRoughnessMap) {
                             ImGui::BeginTooltip();
                             ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-                            //                            ImGui::TextUnformatted(metalnessMap->GetPath().c_str());
                             ImGui::PopTextWrapPos();
                             ImGui::Image((ImTextureID)metalnessUITexture->GetRendererID(), ImVec2(384, 384));
                             ImGui::EndTooltip();
@@ -381,25 +361,91 @@ namespace Ethereal
                         }
                     }
 
-                    ImVec2 nextRowCursorPos = ImGui::GetCursorPos();
                     ImGui::SameLine();
                     ImVec2 properCursorPos = ImGui::GetCursorPos();
                     ImGui::SetCursorPos(textureCursorPos);
                     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
                     if (hasRoughnessMap && ImGui::Button("X", ImVec2(18, 18))) {
                         materialAsset->ClearRoughnessMap();
-                        // needsSerialize = true;
+                    }
+                    ImGui::PopStyleVar();
+                    ImGui::SetCursorPos(properCursorPos);
+                    ImGui::BeginGroup();
+                    bool useRoughnessMap = material->IsUseRoughnessMap();
+                    if (ImGui::Checkbox("Use##Roughness", &useRoughnessMap)) material->SetUseRoughnessMap(useRoughnessMap);
+                    ImGui::SetNextItemWidth(200.0f);
+                    if (ImGui::SliderFloat("Roughness Value##RoughnessInput", &metalnessValue, 0.0f, 1.0f)) material->SetRoughness(metalnessValue);
+                    ImGui::EndGroup();
+                }
+            }
+            {
+                // Occlusion
+                if (ImGui::CollapsingHeader("Occlusion", nullptr, ImGuiTreeNodeFlags_DefaultOpen)) {
+                    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, 10));
+
+                    Ref<Texture2D> occlusionMap = material->GetOcclusionMap();
+
+                    bool hasRoughnessMap = occlusionMap && !occlusionMap.EqualsObject(GlobalContext::GetRenderSystem().GetWhiteTexture());
+                    Ref<Texture2D> occlusionUITexture = hasRoughnessMap ? occlusionMap : m_CheckerBoardTexture;
+
+                    ImVec2 textureCursorPos = ImGui::GetCursorPos();
+
+                    ImGui::Image((ImTextureID)occlusionUITexture->GetRendererID(), ImVec2(64, 64));
+
+                    if (ImGui::BeginDragDropTarget()) {
+                        auto data = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM");
+                        if (data) {
+                            int count = data->DataSize / sizeof(AssetHandle);
+
+                            for (int i = 0; i < count; i++) {
+                                if (count > 1) break;
+
+                                AssetHandle assetHandle = *(((AssetHandle*)data->Data) + i);
+                                Ref<Asset> asset = AssetManager::GetAsset<Asset>(assetHandle);
+                                if (!asset || asset->GetAssetType() != AssetType::Texture) break;
+
+                                occlusionMap = asset.As<Texture2D>();
+                                material->SetOcclusionMap(occlusionMap);
+                            }
+                        }
+
+                        ImGui::EndDragDropTarget();
+                    }
+
+                    ImGui::PopStyleVar();
+
+                    if (ImGui::IsItemHovered()) {
+                        if (hasRoughnessMap) {
+                            ImGui::BeginTooltip();
+                            ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+                            ImGui::PopTextWrapPos();
+                            ImGui::Image((ImTextureID)occlusionUITexture->GetRendererID(), ImVec2(384, 384));
+                            ImGui::EndTooltip();
+                        }
+
+                        if (ImGui::IsItemClicked()) {
+                            std::string filepath = FileSystem::OpenFileDialog("").string();
+
+                            if (!filepath.empty()) {
+                                occlusionMap = Texture2D::Create(filepath);
+                                material->SetOcclusionMap(occlusionMap);
+                            }
+                        }
+                    }
+
+                    ImGui::SameLine();
+                    ImVec2 properCursorPos = ImGui::GetCursorPos();
+                    ImGui::SetCursorPos(textureCursorPos);
+                    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
+                    if (hasRoughnessMap && ImGui::Button("X", ImVec2(18, 18))) {
+                        materialAsset->ClearRoughnessMap();
                     }
                     ImGui::PopStyleVar();
                     ImGui::SetCursorPos(properCursorPos);
                     ImGui::BeginGroup();
                     ImGui::SetNextItemWidth(200.0f);
-                    if (ImGui::SliderFloat("Roughness Value##RoughnessInput", &metalnessValue, 0.0f, 1.0f)) material->SetRoughness(metalnessValue);
-                    // if (ImGui::IsItemDeactivated())
-                    //	needsSerialize = true;
-
-                    bool useRoughnessMap = material->IsUseRoughnessMap();
-                    if (ImGui::Checkbox("Use##Roughness", &useRoughnessMap)) material->SetUseRoughnessMap(useRoughnessMap);
+                    bool useOcclusionMap = material->IsUseOcclusionMap();
+                    if (ImGui::Checkbox("Use##Occlusion", &useOcclusionMap)) material->SetUseOcclusionMap(useOcclusionMap);
                     ImGui::EndGroup();
                 }
             }
