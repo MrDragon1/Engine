@@ -98,14 +98,12 @@ namespace Ethereal
                 ImGui::Image((ImTextureID)albedoUITexture->GetRendererID(), ImVec2(64, 64));
 
                 if (ImGui::BeginDragDropTarget()) {
-                    auto data = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM");
-                    if (data) {
-                        int count = data->DataSize / sizeof(AssetHandle);
-                        for (int i = 0; i < count; i++) {
-                            if (count > 1) break;
-                            AssetHandle assetHandle = *(((AssetHandle*)data->Data) + i);
-                            Ref<Asset> asset = AssetManager::GetAsset<Asset>(assetHandle);
-                            if (!asset || asset->GetAssetType() != AssetType::Texture) break;
+                    if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
+                        const wchar_t* path = (const wchar_t*)payload->Data;
+                        //                            AssetHandle assetHandle = *(((AssetHandle*)data->Data) + i);
+                        AssetHandle assetHandle = AssetManager::GetAssetHandleFromFilePath(path);
+                        Ref<Asset> asset = AssetManager::GetAsset<Asset>(assetHandle);
+                        if (asset && asset->GetAssetType() == AssetType::Texture) {
                             albedoMap = asset.As<Texture2D>();
                             material->SetAlbedoMap(albedoMap);
                         }
