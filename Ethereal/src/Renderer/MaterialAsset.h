@@ -7,7 +7,7 @@ namespace Ethereal
 {
     class MaterialAsset : public Asset {
       public:
-        MaterialAsset(bool transparent = false);
+        MaterialAsset(const std::string& name = "Empty Name", bool transparent = false);
         MaterialAsset(Ref<Material> material);
         ~MaterialAsset();
 

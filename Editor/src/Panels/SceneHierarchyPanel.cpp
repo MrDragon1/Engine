@@ -5,7 +5,7 @@
 
 #include <filesystem>
 #include <glm/gtc/type_ptr.hpp>
-
+#include <Asset/AssetManager.h>
 
 namespace Ethereal
 {
@@ -223,6 +223,45 @@ namespace Ethereal
             DrawVec3Control("Scale", component.Scale, 1.0f);
         });
 
+        DrawComponent<StaticMeshComponent>("StaticMesh", entity, [](auto& component) {
+            Ref<StaticMesh> mesh = AssetManager::GetAsset<StaticMesh>(component.StaticMesh);
+            Ref<MaterialTable> mt = component.MaterialTable;
+
+            AssetHandle meshHandle = component.StaticMesh;
+            std::string buttonText = "Null";
+
+            ImGui::PushID("StaticMeshComponent");
+            ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8.0f, 8.0f));
+            ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4.0f, 4.0f));
+            ImGui::Columns(2);
+
+            ImGui::Text("Static Mesh");
+            ImGui::NextColumn();
+            if (AssetManager::IsAssetHandleValid(meshHandle)) {
+                auto object = AssetManager::GetAsset<StaticMesh>(meshHandle);
+                if (object && !object->IsFlagSet(AssetFlag::Missing)) {
+                    buttonText = AssetManager::GetMetadata(meshHandle).FilePath.stem().string();
+                } else {
+                    buttonText = "Missing";
+                }
+            }
+            ImGui::Text(buttonText.c_str());
+
+            ImGui::Columns(1);
+            ImGui::PopStyleVar(2);  // ItemSpacing, FramePadding
+            ImGui::PopID();
+
+            ImGuiTreeNodeFlags treeNodeFlags = ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_FramePadding;
+            if (ImGui::TreeNodeEx("Materials", treeNodeFlags)) {
+                for (auto mta : mt->GetMaterials()) {
+                    std::string materialname = mta.second->GetMaterial()->GetName();
+                    if (materialname.empty()) materialname = "Empty Name";
+                    ImGui::Text(materialname.c_str());
+                }
+                ImGui::TreePop();
+            }
+        });
+
         DrawComponent<CameraComponent>("Camera", entity, [&](auto& cameraComponent) {
             auto& camera = cameraComponent.Camera;
 
@@ -301,8 +340,6 @@ namespace Ethereal
             ImGui::DragFloat("Restitution", &component.Restitution, 0.01f, 0.0f, 1.0f);
             ImGui::DragFloat("Restitution Threshold", &component.RestitutionThreshold, 0.01f, 0.0f);
         });
-
-        // TODO: Draw Material&Mesh panel
     }
 
     template <typename T>

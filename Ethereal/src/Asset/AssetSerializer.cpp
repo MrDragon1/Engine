@@ -125,7 +125,7 @@ namespace Ethereal
         bool transparent = false;
         ET_DESERIALIZE_PROPERTY(Transparent, transparent, materialNode, false);
 
-        Ref<MaterialAsset> material = Ref<MaterialAsset>::Create(transparent);
+        Ref<MaterialAsset> material = Ref<MaterialAsset>::Create(AssetManager::GetFileSystemPath(metadata).stem().string(), transparent);
 
         ET_DESERIALIZE_PROPERTY(AlbedoColor, material->GetAlbedoColor(), materialNode, glm::vec3(0.8f));
         ET_DESERIALIZE_PROPERTY(Emission, material->GetEmission(), materialNode, 0.0f);

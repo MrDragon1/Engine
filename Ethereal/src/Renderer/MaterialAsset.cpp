@@ -3,12 +3,12 @@
 
 namespace Ethereal
 {
-    MaterialAsset::MaterialAsset(bool transparent) : m_Transparent(transparent) {
+    MaterialAsset::MaterialAsset(const std::string &name, bool transparent) : m_Transparent(transparent) {
         if (transparent) {
             // Use Transparent shader
             // m_Material = Material::Create();
         } else
-            m_Material = Material::Create();
+            m_Material = Material::Create(name);
 
         SetDefaults();
     }
