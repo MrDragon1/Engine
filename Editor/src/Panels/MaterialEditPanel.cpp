@@ -32,7 +32,6 @@ namespace Ethereal
                     if (mesh) meshMaterialTable = mesh->GetMaterials();
                 }
 
-                // HZ_CORE_VERIFY(meshMaterialTable != nullptr && componentMaterialTable != nullptr);
                 if (componentMaterialTable) {
                     if (meshMaterialTable) {
                         if (componentMaterialTable->GetMaterialCount() < meshMaterialTable->GetMaterialCount())

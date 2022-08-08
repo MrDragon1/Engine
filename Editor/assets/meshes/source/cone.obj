@@ -1,6 +1,5 @@
 # Blender v3.1.2 OBJ File: ''
 # www.blender.org
-mtllib cone.mtl
 o Cone
 v 0.000000 -1.000000 -1.000000
 v 0.195090 -1.000000 -0.980785

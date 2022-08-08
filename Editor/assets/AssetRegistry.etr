@@ -182,9 +182,6 @@ Assets:
   - Handle: 14473103724496630534
     FilePath: textures\gold\metallic.png
     Type: Texture
-  - Handle: 14896801100140734372
-    FilePath: meshes\source\cube (01).obj
-    Type: StaticMesh
   - Handle: 15298088384928640906
     FilePath: skyboxs\Factory_Catwalk_2k.hdr
     Type: EnvMap

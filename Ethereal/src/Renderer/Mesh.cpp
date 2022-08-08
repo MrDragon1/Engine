@@ -167,11 +167,10 @@ namespace Ethereal
             for (uint32_t i = 0; i < scene->mNumMaterials; i++) {
                 auto aiMaterial = scene->mMaterials[i];
                 auto aiMaterialName = aiMaterial->GetName();
-
+                ET_CORE_INFO("  {0} (Index = {1})", aiMaterialName.data, i);
                 auto mi = Material::Create(aiMaterialName.data);
                 m_Materials[i] = mi;
 
-                ET_MESH_LOG("  {0} (Index = {1})", aiMaterialName.data, i);
                 aiString aiTexPath;
                 uint32_t textureCount = aiMaterial->GetTextureCount(aiTextureType_DIFFUSE);
                 ET_MESH_LOG("    TextureCount = {0}", textureCount);

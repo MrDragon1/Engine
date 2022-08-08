@@ -1,6 +1,5 @@
 # Blender v3.1.2 OBJ File: ''
 # www.blender.org
-mtllib cylinder.mtl
 o Cylinder
 v 0.000000 -1.000000 -1.000000
 v 0.000000 1.000000 -1.000000
