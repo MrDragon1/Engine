@@ -6,6 +6,7 @@
 #include <filesystem>
 #include <glm/gtc/type_ptr.hpp>
 #include <Asset/AssetManager.h>
+#include <ImGui/UI.h>
 
 namespace Ethereal
 {
@@ -230,10 +231,7 @@ namespace Ethereal
             AssetHandle meshHandle = component.StaticMesh;
             std::string buttonText = "Null";
 
-            ImGui::PushID("StaticMeshComponent");
-            ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8.0f, 8.0f));
-            ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4.0f, 4.0f));
-            ImGui::Columns(2);
+            UI::BeginPropertyGrid();
 
             ImGui::Text("Static Mesh");
             ImGui::NextColumn();
@@ -247,18 +245,29 @@ namespace Ethereal
             }
             ImGui::Text(buttonText.c_str());
 
-            ImGui::Columns(1);
-            ImGui::PopStyleVar(2);  // ItemSpacing, FramePadding
-            ImGui::PopID();
+            UI::EndPropertyGrid();
 
-            ImGuiTreeNodeFlags treeNodeFlags = ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_FramePadding;
-            if (ImGui::TreeNodeEx("Materials", treeNodeFlags)) {
+            if (UI::BeginTreeNode("Materials")) {
+                UI::BeginPropertyGrid();
+                int index = 0;
                 for (auto mta : mt->GetMaterials()) {
+                    std::string label = fmt::format("[Material {0}]", index);
+                    ImGui::PushID(label.c_str());
+
+                    UI::ShiftCursor(10.0f, 9.0f);
+                    ImGui::Text(label.c_str());
+                    ImGui::NextColumn();
+                    UI::ShiftCursorY(9.0f);
+
                     std::string materialname = mta.second->GetMaterial()->GetName();
                     if (materialname.empty()) materialname = "Empty Name";
                     ImGui::Text(materialname.c_str());
+
+                    ImGui::PopID();
+                    index++;
                 }
-                ImGui::TreePop();
+                UI::EndPropertyGrid();
+                UI::EndTreeNode();
             }
         });
 
