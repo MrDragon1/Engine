@@ -90,11 +90,12 @@ namespace Ethereal
         }
     }
 
-    void OpenGLRendererAPI::DrawIndexed(const Ref<VertexArray>& vertexArray, uint32_t indexCount) {
+    void OpenGLRendererAPI::DrawIndexed(const Ref<VertexArray>& vertexArray, uint32_t indexCount, uint32_t start, uint32_t offset) {
         uint32_t count = indexCount ? indexCount : vertexArray->GetIndexBuffer()->GetCount();
         vertexArray->Bind();
-        glDrawElements(m_DrawModeGL, count, GL_UNSIGNED_INT, nullptr);
 
+        //        glDrawElements(m_DrawModeGL, count, GL_UNSIGNED_INT, nullptr);
+        glDrawRangeElementsBaseVertex(m_DrawModeGL, start, start + count, count, GL_UNSIGNED_INT, nullptr, offset);
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 

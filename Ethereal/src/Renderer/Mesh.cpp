@@ -105,7 +105,6 @@ namespace Ethereal
             submesh.VertexCount = mesh->mNumVertices;
             submesh.IndexCount = mesh->mNumFaces * 3;
             submesh.MeshName = mesh->mName.C_Str();
-
             vertexCount += mesh->mNumVertices;
             indexCount += submesh.IndexCount;
 
@@ -131,7 +130,10 @@ namespace Ethereal
                     vertex.Binormal = {mesh->mBitangents[i].x, mesh->mBitangents[i].y, mesh->mBitangents[i].z};
                 }
 
-                if (mesh->HasTextureCoords(0)) vertex.Texcoord = {mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y};
+                if (mesh->HasTextureCoords(0))
+                    vertex.Texcoord = {mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y};
+                else
+                    vertex.Texcoord = {0, 0};
 
                 m_StaticVertices.push_back(vertex);
             }

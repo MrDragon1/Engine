@@ -68,12 +68,14 @@ namespace Ethereal
                 Ref<MeshSource> ms = dc.StaticMesh->GetMeshSource();
                 Ref<MaterialTable> mt = dc.MaterialTable;
                 const auto& meshMaterialTable = dc.StaticMesh->GetMaterials();
-                uint32_t materialCount = meshMaterialTable->GetMaterialCount();
+                Submesh& submesh = ms->GetSubmeshes()[dc.SubmeshIndex];
+                auto materialIndex = submesh.MaterialIndex;
+
                 Ref<MaterialAsset> material =
-                    mt->HasMaterial(dc.SubmeshIndex) ? mt->GetMaterial(dc.SubmeshIndex) : meshMaterialTable->GetMaterial(dc.SubmeshIndex);
+                    mt->HasMaterial(materialIndex) ? mt->GetMaterial(materialIndex) : meshMaterialTable->GetMaterial(materialIndex);
 
                 ms->GetVertexArray()->Bind();
-                m_Shader->SetMat4("u_Model", meshTransformMap.at(mk).Transforms[dc.SubmeshIndex].Transform);
+                m_Shader->SetMat4("u_Model", meshTransformMap.at(mk).Transforms[0].Transform);
                 m_Shader->SetInt("u_EntityID", mk.EntityID);
 
                 material->GetAlbedoMap()->Bind(0);
@@ -93,7 +95,8 @@ namespace Ethereal
                 m_Shader->SetInt("u_UseRoughnessMap", material->IsUseRoughnessMap());
                 m_Shader->SetInt("u_UseOcclusionMap", material->IsUseOcclusionMap());
 
-                RenderCommand::DrawIndexed(ms->GetVertexArray(), ms->GetVertexArray()->GetIndexBuffer()->GetCount());
+                RenderCommand::DrawIndexed(ms->GetVertexArray(), submesh.IndexCount, submesh.BaseIndex, submesh.BaseVertex);
+                //                RenderCommand::DrawIndexed(ms->GetVertexArray(), ms->GetVertexArray()->GetIndexBuffer()->GetCount());
             }
         }
 

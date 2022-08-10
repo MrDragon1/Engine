@@ -161,6 +161,9 @@ Assets:
   - Handle: 12991496061341425589
     FilePath: fonts\opensans\OpenSans-LightItalic.ttf
     Type: Font
+  - Handle: 13056173822974123526
+    FilePath: meshes\cornell_box\cornell_box.hsmesh
+    Type: StaticMesh
   - Handle: 13088833478060461387
     FilePath: skyboxs\Ridgecrest_Road_Ref.hdr
     Type: EnvMap

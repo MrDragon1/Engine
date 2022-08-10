@@ -17,13 +17,13 @@ Entities:
     TagComponent:
       Tag: Sphere0
     StaticMeshComponent:
-      AssetID: 13437552004259238276
+      AssetID: 13056173822974123526
       MaterialTable:
         0: 907565599402912077
     TransformComponent:
       Translation: [0, 0, 0]
       Rotation: [0, 0, 0]
-      Scale: [1, 1, 1]
+      Scale: [0.1, 0.1, 0.1]
   - Entity: 11171200316534182301
     TagComponent:
       Tag: Sphere1
