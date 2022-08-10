@@ -42,9 +42,9 @@ namespace Ethereal
                         bool hasComponentMaterial = componentMaterialTable->HasMaterial(i);
                         bool hasMeshMaterial = meshMaterialTable && meshMaterialTable->HasMaterial(i);
 
-                        if (hasMeshMaterial && !hasComponentMaterial)
+                        if (hasMeshMaterial && !hasComponentMaterial)  // Not Override
                             RenderMaterial(i, meshMaterialTable->GetMaterial(i));
-                        else if (hasComponentMaterial)
+                        else if (hasComponentMaterial)  // Override
                             RenderMaterial(i, componentMaterialTable->GetMaterial(i));
                     }
                 }

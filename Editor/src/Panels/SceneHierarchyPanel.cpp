@@ -226,7 +226,15 @@ namespace Ethereal
 
         DrawComponent<StaticMeshComponent>("StaticMesh", entity, [](auto& component) {
             Ref<StaticMesh> mesh = AssetManager::GetAsset<StaticMesh>(component.StaticMesh);
-            Ref<MaterialTable> mt = component.MaterialTable;
+            Ref<MaterialTable> componentMaterialTable = component.MaterialTable;
+            Ref<MaterialTable> meshMaterialTable = mesh->GetMaterials();
+
+            if (componentMaterialTable) {
+                if (meshMaterialTable) {
+                    if (componentMaterialTable->GetMaterialCount() < meshMaterialTable->GetMaterialCount())
+                        componentMaterialTable->SetMaterialCount(meshMaterialTable->GetMaterialCount());
+                }
+            }
 
             AssetHandle meshHandle = component.StaticMesh;
             std::string buttonText = "Null";
@@ -249,8 +257,16 @@ namespace Ethereal
 
             if (UI::BeginTreeNode("Materials")) {
                 UI::BeginPropertyGrid();
-                int index = 0;
-                for (auto mta : mt->GetMaterials()) {
+
+                for (size_t index = 0; index < componentMaterialTable->GetMaterialCount(); index++) {
+                    bool hasComponentMaterial = componentMaterialTable->HasMaterial(index);
+                    bool hasMeshMaterial = meshMaterialTable && meshMaterialTable->HasMaterial(index);
+                    Ref<MaterialAsset> material;
+                    if (hasMeshMaterial && !hasComponentMaterial)  // Not Override
+                        material = meshMaterialTable->GetMaterial(index);
+                    else if (hasComponentMaterial)  // Override
+                        material = componentMaterialTable->GetMaterial(index);
+
                     std::string label = fmt::format("[Material {0}]", index);
                     ImGui::PushID(label.c_str());
 
@@ -259,13 +275,13 @@ namespace Ethereal
                     ImGui::NextColumn();
                     UI::ShiftCursorY(9.0f);
 
-                    std::string materialname = mta.second->GetMaterial()->GetName();
+                    std::string materialname = material->GetMaterial()->GetName();
                     if (materialname.empty()) materialname = "Empty Name";
                     ImGui::Text(materialname.c_str());
 
                     ImGui::PopID();
-                    index++;
                 }
+
                 UI::EndPropertyGrid();
                 UI::EndTreeNode();
             }
