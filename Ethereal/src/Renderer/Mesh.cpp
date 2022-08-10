@@ -162,7 +162,6 @@ namespace Ethereal
         }
 
         // Materials
-        Ref<Texture2D> whiteTexture = GlobalContext::GetRenderSystem().GetWhiteTexture();
         if (scene->HasMaterials()) {
             ET_MESH_LOG("---- Materials - {0} ----", filename);
             m_Materials.resize(scene->mNumMaterials);
@@ -170,7 +169,7 @@ namespace Ethereal
                 auto aiMaterial = scene->mMaterials[i];
                 auto aiMaterialName = aiMaterial->GetName();
                 ET_CORE_INFO("  {0} (Index = {1})", aiMaterialName.data, i);
-                auto mi = Material::Create(aiMaterialName.data);
+                auto mi = Ref<MaterialAsset>::Create(aiMaterialName.data);
                 m_Materials[i] = mi;
 
                 aiString aiTexPath;
@@ -184,7 +183,7 @@ namespace Ethereal
 
                 if (aiMaterial->Get(AI_MATKEY_COLOR_EMISSIVE, aiEmission) == AI_SUCCESS) emission = aiEmission.r;
 
-                mi->SetAlbedo(albedoColor);
+                mi->SetAlbedoColor(albedoColor);
                 mi->SetEmission(emission);
 
                 float shininess, metalness;
@@ -209,7 +208,7 @@ namespace Ethereal
                     auto texture = AssetManager::GetAsset<Texture>(texturePath);
                     if (texture->IsLoaded()) {
                         mi->SetAlbedoMap(texture);
-                        mi->SetAlbedo(glm::vec3(1.0f));
+                        mi->SetAlbedoColor(glm::vec3(1.0f));
                     } else {
                         ET_CORE_ERROR("Could not load texture: {0}", texturePath);
                         fallback = true;
@@ -218,7 +217,7 @@ namespace Ethereal
 
                 if (fallback) {
                     ET_MESH_LOG("    No albedo map");
-                    mi->SetAlbedoMap(whiteTexture);
+                    mi->ClearAlbedoMap();
                 }
 
                 // Normal maps
@@ -235,7 +234,6 @@ namespace Ethereal
                     auto texture = AssetManager::GetAsset<Texture>(texturePath);
                     if (texture->IsLoaded()) {
                         mi->SetNormalMap(texture);
-                        mi->SetUseNormalMap(true);
                     } else {
                         ET_CORE_ERROR("    Could not load texture: {0}", texturePath);
                         fallback = true;
@@ -244,13 +242,13 @@ namespace Ethereal
 
                 if (fallback) {
                     ET_MESH_LOG("    No normal map");
-                    mi->SetNormalMap(whiteTexture);
+                    mi->ClearNormalMap();
                     mi->SetUseNormalMap(false);
                 }
 
                 // Roughness map
                 bool hasRoughnessMap = aiMaterial->GetTexture(aiTextureType_SHININESS, 0, &aiTexPath) == AI_SUCCESS;
-                mi->SetRoughness(hasRoughnessMap);
+                mi->SetUseRoughnessMap(hasRoughnessMap);
                 fallback = !hasRoughnessMap;
                 if (hasRoughnessMap) {
                     // TODO: Temp - this should be handled by Filesystem
@@ -271,7 +269,7 @@ namespace Ethereal
 
                 if (fallback) {
                     ET_MESH_LOG("    No roughness map");
-                    mi->SetRoughnessMap(whiteTexture);
+                    mi->ClearRoughnessMap();
                     mi->SetRoughness(roughness);
                 }
 
@@ -294,8 +292,8 @@ namespace Ethereal
                             auto texture = AssetManager::GetAsset<Texture>(texturePath);
                             if (texture->IsLoaded()) {
                                 metalnessTextureFound = true;
-                                mi->SetMetallicMap(texture);
-                                mi->SetMetallic(1.0f);
+                                mi->SetMetalnessMap(texture);
+                                mi->SetMetalness(1.0f);
                             } else {
                                 ET_CORE_ERROR("    Could not load texture: {0}", texturePath);
                             }
@@ -303,26 +301,17 @@ namespace Ethereal
                         }
                     }
                 }
-                mi->SetMetallic(metalnessTextureFound);
+                mi->SetUseMetalnessMap(metalnessTextureFound);
                 fallback = !metalnessTextureFound;
                 if (fallback) {
                     ET_MESH_LOG("    No metalness map");
-                    mi->SetMetallicMap(whiteTexture);
-                    mi->SetMetallic(metalness);
+                    mi->ClearMetalnessMap();
+                    mi->SetMetalness(metalness);
                 }
             }
             ET_MESH_LOG("------------------------");
         } else {
-            auto mi = Material::Create("Ethereal-Default");
-            mi->SetAlbedo(glm::vec3(0.8f));
-            mi->SetEmission(0.0f);
-            mi->SetMetallic(0.0f);
-            mi->SetRoughness(0.8f);
-            mi->SetUseNormalMap(false);
-
-            mi->SetAlbedoMap(whiteTexture);
-            mi->SetMetallicMap(whiteTexture);
-            mi->SetRoughnessMap(whiteTexture);
+            auto mi = Ref<MaterialAsset>::Create("Ethereal-Default");
             m_Materials.push_back(mi);
         }
 
@@ -429,7 +418,7 @@ namespace Ethereal
 
         const auto& meshMaterials = meshSource->GetMaterials();
         m_Materials = Ref<MaterialTable>::Create(meshMaterials.size());
-        for (size_t i = 0; i < meshMaterials.size(); i++) m_Materials->SetMaterial(i, Ref<MaterialAsset>::Create(meshMaterials[i]));
+        for (size_t i = 0; i < meshMaterials.size(); i++) m_Materials->SetMaterial(i, meshMaterials[i]);
     }
 
     StaticMesh::StaticMesh(const Ref<StaticMesh>& other) : m_MeshSource(other->m_MeshSource), m_Materials(other->m_Materials) {

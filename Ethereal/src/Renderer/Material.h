@@ -56,17 +56,17 @@ namespace Ethereal
 
         glm::vec3 m_Albedo = glm::vec3(1.0f);
         float m_Metallic = 0.0f;
-        float m_Roughness = 0.0f;
+        float m_Roughness = 1.0f;
         float m_Emisstion = 0.0f;
         float m_Transparency = 0.0f;
 
         // TODO : Fix this
-        bool b_Albedo = true;
-        bool b_Metallic = true;
-        bool b_Roughness = true;
-        bool b_Normal = true;
-        bool b_Occlusion = true;
-        bool b_Emissive = true;
+        bool b_Albedo = false;
+        bool b_Metallic = false;
+        bool b_Roughness = false;
+        bool b_Normal = false;
+        bool b_Occlusion = false;
+        bool b_Emissive = false;
 
         friend class MaterialAsset;
     };

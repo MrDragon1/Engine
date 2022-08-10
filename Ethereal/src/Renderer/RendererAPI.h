@@ -23,7 +23,7 @@ namespace Ethereal
         virtual void SetDrawMode(ETHEREAL_DRAW_MODE mode) = 0;
         virtual void SetDepthFunc(ETHEREAL_DEPTH_FUNC func) = 0;
         virtual void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) = 0;
-        virtual void DrawIndexed(const Ref<VertexArray>& vertexArray, uint32_t indexCount = 0, uint32_t start = 0, uint32_t offset = 0) = 0;
+        virtual void DrawIndexed(const Ref<VertexArray>& vertexArray, uint32_t indexCount = 0, void* indices = nullptr, uint32_t offset = 0) = 0;
         virtual void Draw(const Ref<VertexArray>& vertexArray, uint32_t indexCount = 0) = 0;
 
         inline static API GetAPI() { return s_API; }

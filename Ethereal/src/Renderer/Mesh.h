@@ -74,8 +74,8 @@ namespace Ethereal
         const std::vector<Vertex>& GetVertices() const { return m_StaticVertices; }
         const std::vector<Index>& GetIndices() const { return m_Indices; }
 
-        std::vector<Ref<Material>>& GetMaterials() { return m_Materials; }
-        const std::vector<Ref<Material>>& GetMaterials() const { return m_Materials; }
+        std::vector<Ref<MaterialAsset>>& GetMaterials() { return m_Materials; }
+        const std::vector<Ref<MaterialAsset>>& GetMaterials() const { return m_Materials; }
         const std::string& GetFilePath() const { return m_FilePath; }
 
         Ref<VertexBuffer> GetVertexBuffer() { return m_VertexBuffer; }
@@ -111,7 +111,7 @@ namespace Ethereal
         std::unordered_map<aiNode*, std::vector<uint32_t>> m_NodeMap;
 
         // Materials
-        std::vector<Ref<Material>> m_Materials;
+        std::vector<Ref<MaterialAsset>> m_Materials;
     };
 
     // Static Mesh - no skeletal animation, flattened hierarchy

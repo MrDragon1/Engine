@@ -35,7 +35,7 @@ namespace Ethereal
         m_Framebuffer->Bind();
         RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1});
         RenderCommand::Clear();
-
+        RenderCommand::SetCullFace(ETHEREAL_CULLFACE_TYPE::BACK);
         // Clear our entity ID attachment to -1
         m_Framebuffer->ClearAttachment(1, -1);
 
@@ -95,8 +95,8 @@ namespace Ethereal
                 m_Shader->SetInt("u_UseRoughnessMap", material->IsUseRoughnessMap());
                 m_Shader->SetInt("u_UseOcclusionMap", material->IsUseOcclusionMap());
 
-                RenderCommand::DrawIndexed(ms->GetVertexArray(), submesh.IndexCount, submesh.BaseIndex, submesh.BaseVertex);
-                //                RenderCommand::DrawIndexed(ms->GetVertexArray(), ms->GetVertexArray()->GetIndexBuffer()->GetCount());
+                RenderCommand::DrawIndexed(ms->GetVertexArray(), submesh.IndexCount, reinterpret_cast<void*>(submesh.BaseIndex * sizeof(uint32_t)),
+                                           submesh.BaseVertex);
             }
         }
 

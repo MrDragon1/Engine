@@ -15,12 +15,12 @@ namespace Ethereal
     MaterialAsset::MaterialAsset(Ref<Material> material) {
         m_Material = Material::Copy(material);
         Ref<Texture> whiteTexture = GlobalContext::GetRenderSystem().GetWhiteTexture();
-        if (!m_Material->m_AlbedoMap) SetAlbedoMap(whiteTexture);
-        if (!m_Material->m_NormalMap) SetNormalMap(whiteTexture);
-        if (!m_Material->m_MetallicMap) SetMetalnessMap(whiteTexture);
-        if (!m_Material->m_RoughnessMap) SetRoughnessMap(whiteTexture);
-        if (!m_Material->m_OcclusionMap) SetOcclusionMap(whiteTexture);
-        if (!m_Material->m_EmissiveMap) SetEmissiveMap(whiteTexture);
+        if (!m_Material->m_AlbedoMap) ClearAlbedoMap();
+        if (!m_Material->m_NormalMap) ClearNormalMap();
+        if (!m_Material->m_MetallicMap) ClearMetalnessMap();
+        if (!m_Material->m_RoughnessMap) ClearRoughnessMap();
+        if (!m_Material->m_OcclusionMap) ClearOcclusionMap();
+        if (!m_Material->m_EmissiveMap) ClearEmissiveMap();
     }
 
     MaterialAsset::~MaterialAsset() {}
@@ -43,16 +43,23 @@ namespace Ethereal
 
     Ref<Texture> MaterialAsset::GetAlbedoMap() { return m_Material->m_AlbedoMap; }
 
-    void MaterialAsset::SetAlbedoMap(Ref<Texture> texture) { m_Material->SetAlbedoMap(texture); }
+    void MaterialAsset::SetAlbedoMap(Ref<Texture> texture) {
+        m_Material->SetAlbedoMap(texture);
+        SetUseAlbedoMap(true);
+    }
 
     void MaterialAsset::ClearAlbedoMap() {
         Ref<Texture> whiteTexture = GlobalContext::GetRenderSystem().GetWhiteTexture();
         SetAlbedoMap(whiteTexture);
+        SetUseAlbedoMap(false);
     }
 
     Ref<Texture> MaterialAsset::GetNormalMap() { return m_Material->m_NormalMap; }
 
-    void MaterialAsset::SetNormalMap(Ref<Texture> texture) { m_Material->SetNormalMap(texture); }
+    void MaterialAsset::SetNormalMap(Ref<Texture> texture) {
+        m_Material->SetNormalMap(texture);
+        SetUseNormalMap(true);
+    }
 
     bool MaterialAsset::IsUsingNormalMap() { return m_Material->b_Normal; }
 
@@ -61,22 +68,31 @@ namespace Ethereal
     void MaterialAsset::ClearNormalMap() {
         Ref<Texture> whiteTexture = GlobalContext::GetRenderSystem().GetWhiteTexture();
         SetNormalMap(whiteTexture);
+        SetUseNormalMap(false);
     }
     Ref<Texture> MaterialAsset::GetMetalnessMap() { return m_Material->m_MetallicMap; }
 
-    void MaterialAsset::SetMetalnessMap(Ref<Texture> texture) { m_Material->SetMetallicMap(texture); }
+    void MaterialAsset::SetMetalnessMap(Ref<Texture> texture) {
+        m_Material->SetMetallicMap(texture);
+        SetUseMetalnessMap(true);
+    }
 
     void MaterialAsset::ClearMetalnessMap() {
         Ref<Texture> whiteTexture = GlobalContext::GetRenderSystem().GetWhiteTexture();
         SetMetalnessMap(whiteTexture);
+        SetUseMetalnessMap(false);
     }
     Ref<Texture> MaterialAsset::GetRoughnessMap() { return m_Material->m_RoughnessMap; }
 
-    void MaterialAsset::SetRoughnessMap(Ref<Texture> texture) { m_Material->SetRoughnessMap(texture); }
+    void MaterialAsset::SetRoughnessMap(Ref<Texture> texture) {
+        m_Material->SetRoughnessMap(texture);
+        SetUseRoughnessMap(true);
+    }
 
     void MaterialAsset::ClearRoughnessMap() {
         Ref<Texture> whiteTexture = GlobalContext::GetRenderSystem().GetWhiteTexture();
         SetRoughnessMap(whiteTexture);
+        SetUseRoughnessMap(false);
     }
     float &MaterialAsset::GetTransparency() { return m_Material->m_Transparency; }
 
@@ -87,9 +103,8 @@ namespace Ethereal
         // Set defaults
         SetAlbedoColor(glm::vec3(0.8f));
         SetEmission(0.0f);
-        SetUseNormalMap(false);
         SetMetalness(0.0f);
-        SetRoughness(0.4f);
+        SetRoughness(1.0f);
 
         // Maps
         SetAlbedoMap(whiteTexture);
@@ -98,22 +113,37 @@ namespace Ethereal
         SetRoughnessMap(whiteTexture);
         SetOcclusionMap(whiteTexture);
         SetEmissiveMap(whiteTexture);
+
+        SetUseNormalMap(false);
+        SetUseMetalnessMap(false);
+        SetUseRoughnessMap(false);
+        SetUseOcclusionMap(false);
+        SetUseEmissiveMap(false);
+        SetUseAlbedoMap(false);
     }
     Ref<Texture> MaterialAsset::GetOcclusionMap() { return m_Material->m_OcclusionMap; }
 
-    void MaterialAsset::SetOcclusionMap(Ref<Texture> texture) { m_Material->SetOcclusionMap(texture); }
+    void MaterialAsset::SetOcclusionMap(Ref<Texture> texture) {
+        m_Material->SetOcclusionMap(texture);
+        SetUseOcclusionMap(true);
+    }
 
     void MaterialAsset::ClearOcclusionMap() {
         Ref<Texture> whiteTexture = GlobalContext::GetRenderSystem().GetWhiteTexture();
         SetOcclusionMap(whiteTexture);
+        SetUseOcclusionMap(false);
     }
     Ref<Texture> MaterialAsset::GetEmissiveMap() { return m_Material->m_EmissiveMap; }
 
-    void MaterialAsset::SetEmissiveMap(Ref<Texture> texture) { m_Material->SetEmissiveMap(texture); }
+    void MaterialAsset::SetEmissiveMap(Ref<Texture> texture) {
+        m_Material->SetEmissiveMap(texture);
+        SetUseEmissiveMap(true);
+    }
 
     void MaterialAsset::ClearEmissiveMap() {
         Ref<Texture> whiteTexture = GlobalContext::GetRenderSystem().GetWhiteTexture();
         SetEmissiveMap(whiteTexture);
+        SetUseEmissiveMap(false);
     }
     void MaterialAsset::SetUseAlbedoMap(bool value) { m_Material->SetUseAlbedoMap(value); }
 

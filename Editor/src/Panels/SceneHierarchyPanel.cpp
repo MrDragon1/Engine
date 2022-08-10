@@ -256,9 +256,10 @@ namespace Ethereal
             UI::EndPropertyGrid();
 
             if (UI::BeginTreeNode("Materials")) {
-                UI::BeginPropertyGrid();
 
                 for (size_t index = 0; index < componentMaterialTable->GetMaterialCount(); index++) {
+                    UI::BeginPropertyGrid();
+
                     bool hasComponentMaterial = componentMaterialTable->HasMaterial(index);
                     bool hasMeshMaterial = meshMaterialTable && meshMaterialTable->HasMaterial(index);
                     Ref<MaterialAsset> material;
@@ -280,9 +281,9 @@ namespace Ethereal
                     ImGui::Text(materialname.c_str());
 
                     ImGui::PopID();
+                    UI::EndPropertyGrid();
                 }
 
-                UI::EndPropertyGrid();
                 UI::EndTreeNode();
             }
         });
