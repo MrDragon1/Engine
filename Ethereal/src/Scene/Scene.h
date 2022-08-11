@@ -13,7 +13,7 @@ namespace Ethereal
     class RenderSystem;
     class Entity;
     struct RenderSceneData;
-    class Scene : public RefCounted {
+    class Scene : public Asset {
       public:
         Scene();
         ~Scene();

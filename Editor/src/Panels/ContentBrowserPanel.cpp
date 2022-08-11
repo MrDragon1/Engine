@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "ContentBrowserPanel.h"
+#include "Asset/AssetManager.h"
 
 #include "imgui.h"
 
@@ -41,10 +42,10 @@ namespace Ethereal
 
             ImGui::ImageButton((ImTextureID)icon->GetRendererID(), {thumbnailSize, thumbnailSize}, {0, 1}, {1, 0});
 
-            if (ImGui::BeginDragDropSource()) {
+            if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
                 auto relativePath = std::filesystem::relative(path, g_AssetPath);
-                const wchar_t* itemPath = relativePath.c_str();
-                ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", itemPath, (wcslen(itemPath) + 1) * sizeof(wchar_t));
+                AssetHandle handle = AssetManager::GetAssetHandleFromFilePath(relativePath);
+                ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", &handle, sizeof(AssetHandle));
                 ImGui::EndDragDropSource();
             }
 

@@ -192,8 +192,11 @@ namespace Ethereal
 
             if (ImGui::BeginDragDropTarget()) {
                 if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
-                    const wchar_t* path = (const wchar_t*)payload->Data;
-                    OpenScene(std::filesystem::path(g_AssetPath) / path);
+                    AssetHandle assetHandle = *((AssetHandle*)payload->Data);
+                    const AssetMetaData& assetData = AssetManager::GetMetadata(assetHandle);
+
+                    std::filesystem::path workingDirPath = Project::GetAssetDirectory() / assetData.FilePath;
+                    OpenScene(workingDirPath.string());
                 }
                 ImGui::EndDragDropTarget();
             }
@@ -328,7 +331,7 @@ namespace Ethereal
     }
 
     void EditorLayer::OpenScene() {
-        std::string filepath = FileDialogs::OpenFile("Scene (*.Scene)\0*.Scene\0");
+        std::string filepath = FileDialogs::OpenFile("Scene (*.hscene)\0*.hscene\0");
         if (!filepath.empty()) {
             OpenScene(std::filesystem::path(filepath));
         }
@@ -337,7 +340,7 @@ namespace Ethereal
     void EditorLayer::OpenScene(const std::filesystem::path& path) {
         if (m_SceneState != SceneState::Edit) OnSceneStop();
 
-        if (path.extension().string() != ".Scene") {
+        if (path.extension().string() != ".hscene") {
             ET_WARN("Could not load {0} - not a scene file", path.filename().string());
             return;
         }
@@ -353,7 +356,7 @@ namespace Ethereal
     }
 
     void EditorLayer::SaveSceneAs() {
-        std::string filepath = FileDialogs::SaveFile("Scene (*.Scene)\0*.Scene\0");
+        std::string filepath = FileDialogs::SaveFile("Scene (*.hscene)\0*.hscene\0");
         if (!filepath.empty()) {
             SerializeScene(m_ActiveScene, filepath);
             m_EditorScenePath = filepath;

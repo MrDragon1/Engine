@@ -12,6 +12,7 @@
 #include "yaml-cpp/yaml.h"
 #include <fstream>
 #include <Core/GlobalContext.h>
+#include <Scene/SceneSerializer.h>
 
 #define ET_SERIALIZE_PROPERTY(propName, propVal, outputNode) outputNode << YAML::Key << #propName << YAML::Value << propVal
 
@@ -175,6 +176,17 @@ namespace Ethereal
         asset = Ref<Environment>::Create(radiance, irradiance);
         asset->Handle = metadata.Handle;
 
+        return true;
+    }
+
+    void SceneAssetSerializer::Serialize(const AssetMetaData& metadata, const Ref<Asset>& asset) const {
+        SceneSerializer serializer(asset.As<Scene>());
+        serializer.Serialize(AssetManager::GetFileSystemPath(metadata).string());
+    }
+
+    bool SceneAssetSerializer::TryLoadData(const AssetMetaData& metadata, Ref<Asset>& asset) const {
+        asset = Ref<Asset>::Create();
+        asset->Handle = metadata.Handle;
         return true;
     }
 }  // namespace Ethereal

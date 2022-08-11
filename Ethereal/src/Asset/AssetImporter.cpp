@@ -7,6 +7,7 @@ namespace Ethereal
 {
     void AssetImporter::Init() {
         s_Serializers[AssetType::Texture] = CreateScope<TextureSerializer>();
+        s_Serializers[AssetType::Scene] = CreateScope<SceneAssetSerializer>();
         s_Serializers[AssetType::StaticMesh] = CreateScope<StaticMeshSerializer>();
         s_Serializers[AssetType::MeshSource] = CreateScope<MeshAssetSerializer>();
         s_Serializers[AssetType::Material] = CreateScope<MaterialAssetSerializer>();

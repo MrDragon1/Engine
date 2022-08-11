@@ -47,6 +47,9 @@ Assets:
   - Handle: 4956907738453405018
     FilePath: meshes\default\cone.hsmesh
     Type: StaticMesh
+  - Handle: 4980735168443109901
+    FilePath: scenes\PBR.hscene
+    Type: Scene
   - Handle: 5095451425471151322
     FilePath: fonts\opensans\OpenSans-Bold.ttf
     Type: Font
@@ -155,6 +158,9 @@ Assets:
   - Handle: 12544758060547106188
     FilePath: fonts\opensans\OpenSans-Regular.ttf
     Type: Font
+  - Handle: 12717353975045953519
+    FilePath: scenes\test.hscene
+    Type: Scene
   - Handle: 12778708817804711261
     FilePath: meshes\source\plane.obj
     Type: MeshSource
