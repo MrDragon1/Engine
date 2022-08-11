@@ -21,8 +21,8 @@ namespace Ethereal
             }
         }
 
-        static float padding = 16.0f;
-        static float thumbnailSize = 128.0f;
+        static float padding = 32.0f;
+        static float thumbnailSize = 80.0f;
         float cellSize = thumbnailSize + padding;
 
         float panelWidth = ImGui::GetContentRegionAvail().x;

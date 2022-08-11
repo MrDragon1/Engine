@@ -189,8 +189,7 @@ namespace Ethereal
 
     MaterialTable::MaterialTable(Ref<MaterialTable> other) : m_MaterialCount(other->m_MaterialCount) {
         const auto &meshMaterials = other->GetMaterials();
-        for (auto [index, materialAsset] : meshMaterials) SetMaterial(index, Ref<MaterialAsset>::Create(materialAsset->GetMaterial()));
-        //            SetMaterial(index, materialAsset);
+        for (auto [index, materialAsset] : meshMaterials) SetMaterial(index, materialAsset);
     }
 
     void MaterialTable::SetMaterial(uint32_t index, Ref<MaterialAsset> material) {

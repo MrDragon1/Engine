@@ -223,11 +223,10 @@ namespace Ethereal
                             component.MaterialTable->SetMaterialCount(mesh->GetMaterials()->GetMaterialCount());
                         }
 
-                        // Get a copy from meshComponent materialTable if it has
+                        // Get a material from meshComponent materialTable if it has (not the copy of the material)
                         for (int index = 0; index < component.MaterialTable->GetMaterialCount(); index++) {
                             if (mesh->GetMaterials()->HasMaterial(index)) {
-                                component.MaterialTable->SetMaterial(
-                                    index, Ref<MaterialAsset>::Create(mesh->GetMaterials()->GetMaterial(index)->GetMaterial()));
+                                component.MaterialTable->SetMaterial(index, mesh->GetMaterials()->GetMaterial(index));
                             }
                         }
 

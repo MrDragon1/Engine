@@ -340,8 +340,10 @@ namespace Ethereal
     void EditorLayer::OpenScene(const std::filesystem::path& path) {
         if (m_SceneState != SceneState::Edit) OnSceneStop();
 
-        // TODO: Make sure no panel is drawing entity in current scene, otherwise it will crash
+        // TODO!: Make sure no panel is drawing entity in current scene, otherwise it will crash
         m_HoveredEntity = Entity();
+        m_SceneHierarchyPanel.SetSelectedEntity(m_HoveredEntity);
+        m_MaterialEditPanel.SetSelectEntity(m_HoveredEntity);
 
         if (path.extension().string() != ".hscene") {
             ET_WARN("Could not load {0} - not a scene file", path.filename().string());
