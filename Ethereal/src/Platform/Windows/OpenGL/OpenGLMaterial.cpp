@@ -9,8 +9,6 @@ namespace Ethereal
     OpenGLMaterial::OpenGLMaterial(Ref<Material> material, const std::string& name) : m_Name(name) {
         if (name.empty()) m_Name = material->GetName();
         auto openGLMaterial = material.As<OpenGLMaterial>();
-        m_Textures = openGLMaterial->m_Textures;
-        m_TextureArrays = openGLMaterial->m_TextureArrays;
     }
 
     OpenGLMaterial::~OpenGLMaterial() {}

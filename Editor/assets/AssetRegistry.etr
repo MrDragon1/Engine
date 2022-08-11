@@ -23,8 +23,11 @@ Assets:
   - Handle: 1864105716926570769
     FilePath: textures\gold\albedo.png
     Type: Texture
-  - Handle: 2075871574199264738
-    FilePath: meshes\source\cone.obj
+  - Handle: 2063455660349834177
+    FilePath: meshes\source\Cube.gltf
+    Type: MeshSource
+  - Handle: 2112693788381023479
+    FilePath: meshes\source\Cone.gltf
     Type: MeshSource
   - Handle: 2129339068717190932
     FilePath: fonts\opensans\OpenSans-SemiBoldItalic.ttf
@@ -35,6 +38,9 @@ Assets:
   - Handle: 2801276543070836935
     FilePath: fonts\opensans\OpenSans-Medium.ttf
     Type: Font
+  - Handle: 3067973634919230891
+    FilePath: meshes\source\Sphere.gltf
+    Type: MeshSource
   - Handle: 3184234908745819317
     FilePath: textures\humanskin\human-skin1_preview3.jpg
     Type: Texture
@@ -74,6 +80,9 @@ Assets:
   - Handle: 5187981355644582993
     FilePath: meshes\gun\Textures\Cerberus_M.tga
     Type: Texture
+  - Handle: 5403180726194224146
+    FilePath: meshes\source\Torus.gltf
+    Type: MeshSource
   - Handle: 5521013208314249089
     FilePath: materials\gold.hmaterial
     Type: Material
@@ -110,9 +119,6 @@ Assets:
   - Handle: 8178794584538088286
     FilePath: fonts\opensans\OpenSans-SemiBold.ttf
     Type: Font
-  - Handle: 8608469292623611980
-    FilePath: meshes\source\sphere.obj
-    Type: MeshSource
   - Handle: 8791887480241883289
     FilePath: meshes\default\monkey.hsmesh
     Type: StaticMesh
@@ -149,6 +155,9 @@ Assets:
   - Handle: 10396357330847663768
     FilePath: textures\humanskin\human-skin1_metallic.png
     Type: Texture
+  - Handle: 10567220265324327748
+    FilePath: meshes\source\Plane.gltf
+    Type: MeshSource
   - Handle: 10755097151186722102
     FilePath: textures\humanskin\human-skin1_height.png
     Type: Texture
@@ -176,18 +185,12 @@ Assets:
   - Handle: 12447451253582744139
     FilePath: skyboxs\HWSign3-Fence_2k.hdr
     Type: EnvMap
-  - Handle: 12492224228890339769
-    FilePath: meshes\source\torus.obj
-    Type: MeshSource
   - Handle: 12544758060547106188
     FilePath: fonts\opensans\OpenSans-Regular.ttf
     Type: Font
   - Handle: 12717353975045953519
     FilePath: scenes\test.hscene
     Type: Scene
-  - Handle: 12778708817804711261
-    FilePath: meshes\source\plane.obj
-    Type: MeshSource
   - Handle: 12991496061341425589
     FilePath: fonts\opensans\OpenSans-LightItalic.ttf
     Type: Font
@@ -218,6 +221,9 @@ Assets:
   - Handle: 15298088384928640906
     FilePath: skyboxs\Factory_Catwalk_2k.hdr
     Type: EnvMap
+  - Handle: 15410943530872631803
+    FilePath: meshes\source\Cylinder.gltf
+    Type: MeshSource
   - Handle: 15629598353572669012
     FilePath: meshes\cornell_box\cornell_box.obj
     Type: MeshSource
@@ -227,9 +233,6 @@ Assets:
   - Handle: 16016150646620525778
     FilePath: textures\humanskin\human-skin1_normal-ogl.png
     Type: Texture
-  - Handle: 16437378090492961126
-    FilePath: meshes\source\cylinder.obj
-    Type: MeshSource
   - Handle: 16519244461161705494
     FilePath: scenes\tettt.hscene
     Type: Scene
@@ -239,6 +242,9 @@ Assets:
   - Handle: 16817130134590078098
     FilePath: skyboxs\Alexs_Apt_2k.hdr
     Type: EnvMap
+  - Handle: 16976040922641325788
+    FilePath: meshes\source\Capsule.gltf
+    Type: MeshSource
   - Handle: 17060509455937462602
     FilePath: meshes\default\cube.hsmesh
     Type: StaticMesh
@@ -257,9 +263,6 @@ Assets:
   - Handle: 17356469065209931330
     FilePath: fonts\opensans\OpenSans-Italic.ttf
     Type: Font
-  - Handle: 17640276763115080433
-    FilePath: meshes\source\cube.obj
-    Type: MeshSource
   - Handle: 18245045781855712380
     FilePath: meshes\gun\Cerberus_LP.fbx
     Type: MeshSource

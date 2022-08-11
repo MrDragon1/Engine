@@ -13,14 +13,44 @@ namespace Ethereal
         SetDefaults();
     }
     MaterialAsset::MaterialAsset(Ref<Material> material) {
-        m_Material = Material::Copy(material);
-        Ref<Texture> whiteTexture = GlobalContext::GetRenderSystem().GetWhiteTexture();
-        if (!m_Material->m_AlbedoMap) ClearAlbedoMap();
-        if (!m_Material->m_NormalMap) ClearNormalMap();
-        if (!m_Material->m_MetallicMap) ClearMetalnessMap();
-        if (!m_Material->m_RoughnessMap) ClearRoughnessMap();
-        if (!m_Material->m_OcclusionMap) ClearOcclusionMap();
-        if (!m_Material->m_EmissiveMap) ClearEmissiveMap();
+        m_Material = Material::Create(material->GetName() + " Copy");
+        SetAlbedoColor(material->m_Albedo);
+        SetMetalness(material->m_Metallic);
+        SetRoughness(material->m_Roughness);
+        SetEmission(material->m_Emisstion);
+        SetTransparency(material->m_Transparency);
+
+        if (!material->m_AlbedoMap)
+            ClearAlbedoMap();
+        else
+            SetAlbedoMap(material->m_AlbedoMap);
+        if (!material->m_NormalMap)
+            ClearNormalMap();
+        else
+            SetNormalMap(material->m_NormalMap);
+        if (!material->m_MetallicMap)
+            ClearMetalnessMap();
+        else
+            SetMetalnessMap(material->m_MetallicMap);
+        if (!material->m_RoughnessMap)
+            ClearRoughnessMap();
+        else
+            SetRoughnessMap(material->m_RoughnessMap);
+        if (!material->m_OcclusionMap)
+            ClearOcclusionMap();
+        else
+            SetOcclusionMap(material->m_OcclusionMap);
+        if (!material->m_EmissiveMap)
+            ClearEmissiveMap();
+        else
+            SetEmissiveMap(material->m_EmissiveMap);
+
+        SetUseAlbedoMap(material->b_Albedo);
+        SetUseNormalMap(material->b_Normal);
+        SetUseMetalnessMap(material->b_Metallic);
+        SetUseRoughnessMap(material->b_Roughness);
+        SetUseOcclusionMap(material->b_Occlusion);
+        SetUseEmissiveMap(material->b_Emissive);
     }
 
     MaterialAsset::~MaterialAsset() {}
@@ -159,9 +189,8 @@ namespace Ethereal
 
     MaterialTable::MaterialTable(Ref<MaterialTable> other) : m_MaterialCount(other->m_MaterialCount) {
         const auto &meshMaterials = other->GetMaterials();
-        for (auto [index, materialAsset] : meshMaterials)
-            // SetMaterial(index, Ref<MaterialAsset>::Create(materialAsset->GetMaterial()));
-            SetMaterial(index, materialAsset);
+        for (auto [index, materialAsset] : meshMaterials) SetMaterial(index, Ref<MaterialAsset>::Create(materialAsset->GetMaterial()));
+        //            SetMaterial(index, materialAsset);
     }
 
     void MaterialTable::SetMaterial(uint32_t index, Ref<MaterialAsset> material) {

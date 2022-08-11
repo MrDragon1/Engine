@@ -218,9 +218,25 @@ namespace Ethereal
 
                     if (staticMeshComponent["MaterialTable"]) {
                         YAML::Node materialTableNode = staticMeshComponent["MaterialTable"];
+                        auto mesh = AssetManager::GetAsset<StaticMesh>(component.StaticMesh);
+                        if (mesh->GetMaterials()->GetMaterialCount() > component.MaterialTable->GetMaterialCount()) {
+                            component.MaterialTable->SetMaterialCount(mesh->GetMaterials()->GetMaterialCount());
+                        }
+
+                        // Get a copy from meshComponent materialTable if it has
+                        for (int index = 0; index < component.MaterialTable->GetMaterialCount(); index++) {
+                            if (mesh->GetMaterials()->HasMaterial(index)) {
+                                component.MaterialTable->SetMaterial(
+                                    index, Ref<MaterialAsset>::Create(mesh->GetMaterials()->GetMaterial(index)->GetMaterial()));
+                            }
+                        }
+
+                        // Override the materialTable
                         for (auto materialEntry : materialTableNode) {
                             auto index = materialEntry.first.as<uint32_t>();
                             auto materialAsset = materialEntry.second.as<AssetHandle>();
+
+                            // User has specified an override material, just point to that material
                             if (materialAsset && AssetManager::IsAssetHandleValid(materialAsset))
                                 component.MaterialTable->SetMaterial(index, AssetManager::GetAsset<MaterialAsset>(materialAsset));
                         }

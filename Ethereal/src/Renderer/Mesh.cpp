@@ -12,15 +12,6 @@
 #include <filesystem>
 #include <Asset/AssetManager.h>
 
-#define MESH_DEBUG_LOG 0
-#if MESH_DEBUG_LOG
-#define ET_MESH_LOG(...) ET_CORE_TRACE(__VA_ARGS__)
-#define ET_MESH_ERROR(...) ET_CORE_ERROR(__VA_ARGS__)
-#else
-#define ET_MESH_LOG(...)
-#define ET_MESH_ERROR(...)
-#endif
-
 namespace Ethereal
 {
     namespace Utils
@@ -67,7 +58,7 @@ namespace Ethereal
                 Assimp::DefaultLogger::get()->attachStream(new LogStream, Assimp::Logger::Err | Assimp::Logger::Warn);
             }
         }
-        virtual void write(const char* message) override { ET_MESH_ERROR("Assimp error: {0}", message); }
+        virtual void write(const char* message) override { ET_CORE_ERROR("Assimp error: {0}", message); }
     };
 
     MeshSource::MeshSource(const std::string& filename) : m_FilePath(filename) {
@@ -163,7 +154,7 @@ namespace Ethereal
 
         // Materials
         if (scene->HasMaterials()) {
-            ET_MESH_LOG("---- Materials - {0} ----", filename);
+            ET_CORE_INFO("---- Materials - {0} ----", filename);
             m_Materials.resize(scene->mNumMaterials);
             for (uint32_t i = 0; i < scene->mNumMaterials; i++) {
                 auto aiMaterial = scene->mMaterials[i];
@@ -174,7 +165,6 @@ namespace Ethereal
 
                 aiString aiTexPath;
                 uint32_t textureCount = aiMaterial->GetTextureCount(aiTextureType_DIFFUSE);
-                ET_MESH_LOG("    TextureCount = {0}", textureCount);
 
                 glm::vec3 albedoColor(0.8f);
                 float emission = 0.0f;
@@ -192,9 +182,6 @@ namespace Ethereal
                 if (aiMaterial->Get(AI_MATKEY_REFLECTIVITY, metalness) != aiReturn_SUCCESS) metalness = 0.0f;
 
                 float roughness = 1.0f - glm::sqrt(shininess / 100.0f);
-                ET_MESH_LOG("    COLOR = {0}, {1}, {2}", aiColor.r, aiColor.g, aiColor.b);
-                ET_MESH_LOG("    ROUGHNESS = {0}", roughness);
-                ET_MESH_LOG("    METALNESS = {0}", metalness);
                 bool hasAlbedoMap = aiMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &aiTexPath) == AI_SUCCESS;
                 mi->SetUseAlbedoMap(hasAlbedoMap);
                 bool fallback = !hasAlbedoMap;
@@ -204,7 +191,6 @@ namespace Ethereal
                     auto parentPath = path.parent_path();
                     parentPath /= std::string(aiTexPath.data);
                     std::string texturePath = parentPath.string();
-                    ET_MESH_LOG("    Albedo map path = {0}", texturePath);
                     auto texture = AssetManager::GetAsset<Texture>(texturePath);
                     if (texture->IsLoaded()) {
                         mi->SetAlbedoMap(texture);
@@ -216,7 +202,6 @@ namespace Ethereal
                 }
 
                 if (fallback) {
-                    ET_MESH_LOG("    No albedo map");
                     mi->ClearAlbedoMap();
                 }
 
@@ -230,7 +215,6 @@ namespace Ethereal
                     auto parentPath = path.parent_path();
                     parentPath /= std::string(aiTexPath.data);
                     std::string texturePath = parentPath.string();
-                    ET_MESH_LOG("    Normal map path = {0}", texturePath);
                     auto texture = AssetManager::GetAsset<Texture>(texturePath);
                     if (texture->IsLoaded()) {
                         mi->SetNormalMap(texture);
@@ -241,7 +225,6 @@ namespace Ethereal
                 }
 
                 if (fallback) {
-                    ET_MESH_LOG("    No normal map");
                     mi->ClearNormalMap();
                     mi->SetUseNormalMap(false);
                 }
@@ -256,7 +239,6 @@ namespace Ethereal
                     auto parentPath = path.parent_path();
                     parentPath /= std::string(aiTexPath.data);
                     std::string texturePath = parentPath.string();
-                    ET_MESH_LOG("    Roughness map path = {0}", texturePath);
                     auto texture = AssetManager::GetAsset<Texture>(texturePath);
                     if (texture->IsLoaded()) {
                         mi->SetRoughnessMap(texture);
@@ -268,7 +250,6 @@ namespace Ethereal
                 }
 
                 if (fallback) {
-                    ET_MESH_LOG("    No roughness map");
                     mi->ClearRoughnessMap();
                     mi->SetRoughness(roughness);
                 }
@@ -288,7 +269,6 @@ namespace Ethereal
                             auto parentPath = path.parent_path();
                             parentPath /= str;
                             std::string texturePath = parentPath.string();
-                            ET_MESH_LOG("    Metalness map path = {0}", texturePath);
                             auto texture = AssetManager::GetAsset<Texture>(texturePath);
                             if (texture->IsLoaded()) {
                                 metalnessTextureFound = true;
@@ -304,12 +284,10 @@ namespace Ethereal
                 mi->SetUseMetalnessMap(metalnessTextureFound);
                 fallback = !metalnessTextureFound;
                 if (fallback) {
-                    ET_MESH_LOG("    No metalness map");
                     mi->ClearMetalnessMap();
                     mi->SetMetalness(metalness);
                 }
             }
-            ET_MESH_LOG("------------------------");
         } else {
             auto mi = Ref<MaterialAsset>::Create("Ethereal-Default");
             m_Materials.push_back(mi);

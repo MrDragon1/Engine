@@ -94,31 +94,31 @@ namespace Ethereal
         std::string name;
         switch (type) {
             case ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_CUBE:
-                filePath = "source/cube.obj";
+                filePath = "default/cube.hsmesh";
                 name = "Cube";
                 break;
             case ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_SPHERE:
-                filePath = "source/sphere.obj";
+                filePath = "default/sphere.hsmesh";
                 name = "Sphere";
                 break;
             case ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_CYLINDER:
-                filePath = "source/cylinder.obj";
+                filePath = "default/cylinder.hsmesh";
                 name = "Cylinder";
                 break;
             case ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_CONE:
-                filePath = "source/cone.obj";
+                filePath = "default/cone.hsmesh";
                 name = "Cone";
                 break;
             case ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_TORUS:
-                filePath = "source/torus.obj";
+                filePath = "default/torus.hsmesh";
                 name = "Torus";
                 break;
             case ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_PLANE:
-                filePath = "source/plane.obj";
+                filePath = "default/plane.hsmesh";
                 name = "Plane";
                 break;
             case ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_MONKEY:
-                filePath = "source/monkey.obj";
+                filePath = "default/monkey.hsmesh";
                 name = "Monkey";
                 break;
             default:
@@ -128,8 +128,9 @@ namespace Ethereal
 
         Entity Object = CreateEntity(name);
         std::filesystem::path path = Project::GetActive()->GetMeshPath() / filePath;
-        auto meshSource = Ref<MeshSource>::Create(path.string());
-        Ref<StaticMesh> mesh = AssetManager::CreateNewAsset<StaticMesh>(path.filename().string(), path.parent_path().string(), meshSource);
+        //        auto meshSource = Ref<MeshSource>::Create(path.string());
+        Ref<StaticMesh> mesh = AssetManager::GetAsset<StaticMesh>(
+            path.string());  // AssetManager::CreateNewAsset<StaticMesh>(path.filename().string(), path.parent_path().string(), meshSource);
 
         auto& staticMeshComponent = Object.AddComponent<StaticMeshComponent>();
         staticMeshComponent.StaticMesh = mesh->Handle;

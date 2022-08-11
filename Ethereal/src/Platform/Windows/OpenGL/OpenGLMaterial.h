@@ -24,9 +24,6 @@ namespace Ethereal
       private:
         std::string m_Name;
         uint32_t m_MaterialFlags = 0;
-
-        std::vector<Ref<Texture>> m_Textures;  // TODO: Texture should only be stored as images
-        std::vector<std::vector<Ref<Texture>>> m_TextureArrays;
     };
 
 }  // namespace Ethereal
