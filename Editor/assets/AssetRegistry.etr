@@ -29,6 +29,9 @@ Assets:
   - Handle: 2129339068717190932
     FilePath: fonts\opensans\OpenSans-SemiBoldItalic.ttf
     Type: Font
+  - Handle: 2240383051901346787
+    FilePath: meshes\gun\Cerberus_LP.FBX
+    Type: MeshSource
   - Handle: 2801276543070836935
     FilePath: fonts\opensans\OpenSans-Medium.ttf
     Type: Font
@@ -38,8 +41,14 @@ Assets:
   - Handle: 3684156870783348000
     FilePath: textures\rustediron\rustediron2_normal.png
     Type: Texture
+  - Handle: 4055964299062396106
+    FilePath: meshes\gun\Textures\Raw\Cerberus_AO.tga
+    Type: Texture
   - Handle: 4209009144955814373
     FilePath: icons\ContentBrowser\FileIcon.png
+    Type: Texture
+  - Handle: 4358083813901327212
+    FilePath: meshes\gun\Textures\Raw\Cerberus_UV.tga
     Type: Texture
   - Handle: 4437595807192615377
     FilePath: textures\gold\normal.png
@@ -62,6 +71,9 @@ Assets:
   - Handle: 5164372370771938880
     FilePath: meshes\default\torus.hsmesh
     Type: StaticMesh
+  - Handle: 5187981355644582993
+    FilePath: meshes\gun\Textures\Cerberus_M.tga
+    Type: Texture
   - Handle: 5521013208314249089
     FilePath: materials\gold.hmaterial
     Type: Material
@@ -116,6 +128,9 @@ Assets:
   - Handle: 9179399177065297379
     FilePath: textures\rustediron\rustediron2_metallic.png
     Type: Texture
+  - Handle: 9487121460335010656
+    FilePath: meshes\gun\Textures\Cerberus_R.tga
+    Type: Texture
   - Handle: 9998164968944880493
     FilePath: textures\default\default_diffuse.png
     Type: Texture
@@ -128,6 +143,9 @@ Assets:
   - Handle: 10159681062242942540
     FilePath: textures\rustediron\rustediron2_albedo.png
     Type: Texture
+  - Handle: 10351878036272105763
+    FilePath: meshes\gun\Cerberus_LP.hsmesh
+    Type: StaticMesh
   - Handle: 10396357330847663768
     FilePath: textures\humanskin\human-skin1_metallic.png
     Type: Texture
@@ -143,11 +161,17 @@ Assets:
   - Handle: 11116514864426116313
     FilePath: textures\humanskin\human-skin1_albedo_3.png
     Type: Texture
+  - Handle: 11434792598897862484
+    FilePath: meshes\gun\Textures\Cerberus_N.tga
+    Type: Texture
   - Handle: 11435407174954141404
     FilePath: textures\default\default_metallic.png
     Type: Texture
   - Handle: 11961565015974153655
     FilePath: textures\rustediron\rustediron2_roughness.png
+    Type: Texture
+  - Handle: 11990970196583506654
+    FilePath: meshes\gun\Textures\Raw\Cerberus_N.tga
     Type: Texture
   - Handle: 12447451253582744139
     FilePath: skyboxs\HWSign3-Fence_2k.hdr
@@ -206,6 +230,9 @@ Assets:
   - Handle: 16437378090492961126
     FilePath: meshes\source\cylinder.obj
     Type: MeshSource
+  - Handle: 16519244461161705494
+    FilePath: scenes\tettt.hscene
+    Type: Scene
   - Handle: 16686991826098416408
     FilePath: fonts\opensans\OpenSans-ExtraBoldItalic.ttf
     Type: Font
@@ -224,11 +251,17 @@ Assets:
   - Handle: 17215697492875319916
     FilePath: textures\humanskin\human-skin1_albedo_2.png
     Type: Texture
+  - Handle: 17347330393561903503
+    FilePath: meshes\gun\Textures\Cerberus_A.tga
+    Type: Texture
   - Handle: 17356469065209931330
     FilePath: fonts\opensans\OpenSans-Italic.ttf
     Type: Font
   - Handle: 17640276763115080433
     FilePath: meshes\source\cube.obj
+    Type: MeshSource
+  - Handle: 18245045781855712380
+    FilePath: meshes\gun\Cerberus_LP.fbx
     Type: MeshSource
   - Handle: 18285469331499724907
     FilePath: buildin\textures\black.png

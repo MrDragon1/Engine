@@ -1,0 +1,15 @@
+Scene:
+  Name: Untitled
+  Environment: 10111825085121754573
+Entities:
+  - Entity: 11171200316534182301
+    TagComponent:
+      Tag: Gun
+    StaticMeshComponent:
+      AssetID: 10351878036272105763
+      MaterialTable:
+        0: 0
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [10, 10, 10]
