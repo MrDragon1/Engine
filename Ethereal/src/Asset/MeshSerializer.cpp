@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "MeshSerializer.h"
 #include "AssetManager.h"
+#include "Utils/YAMLSerializationHelpers.h"
 
 #include "yaml-cpp/yaml.h"
 #include <fstream>
@@ -62,6 +63,20 @@ namespace Ethereal
 
         auto submeshIndices = rootNode["SubmeshIndices"].as<std::vector<uint32_t>>();
         Ref<StaticMesh> mesh = Ref<StaticMesh>::Create(meshSource, submeshIndices);
+
+        if (rootNode["MaterialTable"]) {
+            // The line below is for temporary, StaticMesh Create should not load material information.
+            // The material info should be created when imported the model files which will create the .hsmesh file.
+            mesh->GetMaterials()->Clear();
+
+            YAML::Node materialTableNode = rootNode["MaterialTable"];
+            for (auto materialEntry : materialTableNode) {
+                auto index = materialEntry.first.as<uint32_t>();
+                auto materialAsset = materialEntry.second.as<AssetHandle>();
+                mesh->GetMaterials()->SetMaterial(index, AssetManager::GetAsset<Material>(materialAsset));
+            }
+        }
+
         mesh->Handle = metadata.Handle;
         asset = mesh;
         return true;

@@ -128,10 +128,7 @@ namespace Ethereal
 
         Entity Object = CreateEntity(name);
         std::filesystem::path path = Project::GetActive()->GetMeshPath() / filePath;
-        //        auto meshSource = Ref<MeshSource>::Create(path.string());
-        Ref<StaticMesh> mesh = AssetManager::GetAsset<StaticMesh>(
-            path.string());  // AssetManager::CreateNewAsset<StaticMesh>(path.filename().string(), path.parent_path().string(), meshSource);
-
+        Ref<StaticMesh> mesh = AssetManager::GetAsset<StaticMesh>(path.string());
         auto& staticMeshComponent = Object.AddComponent<StaticMeshComponent>();
         staticMeshComponent.StaticMesh = mesh->Handle;
         staticMeshComponent.MaterialTable = Ref<MaterialTable>::Create(mesh->GetMaterials());

@@ -85,8 +85,7 @@ namespace Ethereal
 
             const auto& submeshes = staticMesh->GetMeshSource()->GetSubmeshes();
             uint32_t materialIndex = submeshes[submeshIndex].MaterialIndex;
-            Ref<MaterialAsset> material = materialTable->HasMaterial(materialIndex) ? materialTable->GetMaterial(materialIndex)
-                                                                                    : staticMesh->GetMaterials()->GetMaterial(materialIndex);
+            Ref<MaterialAsset> material = materialTable->GetMaterial(materialIndex);
             AssetHandle materialHandle = material->Handle;
 
             MeshKey meshKey = {staticMesh->Handle, materialHandle, submeshIndex, false, EntityID};
