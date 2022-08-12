@@ -13,7 +13,8 @@ namespace Ethereal
         SetDefaults();
     }
     MaterialAsset::MaterialAsset(Ref<Material> material) {
-        m_Material = Material::Create(material->GetName() + " Copy");
+        m_Material = material;
+        return;
         SetAlbedoColor(material->m_Albedo);
         SetMetalness(material->m_Metallic);
         SetRoughness(material->m_Roughness);

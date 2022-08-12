@@ -145,17 +145,18 @@ namespace Ethereal
     void AssetManager::PostProcessAfterImport(const AssetMetaData& metadata) {
         if (metadata.Type == AssetType::MeshSource) {
             auto meshSource = GetAsset<MeshSource>(metadata.Handle);
-
+            std::filesystem::path path = GetFileSystemPath(metadata);
             // Create materials that mesh used
             Ref<MaterialTable> mt = Ref<MaterialTable>::Create();
             meshSource->LoadMaterials(mt);
             for (auto& m : mt->GetMaterials()) {
                 if (m.second->IsValid()) {
-                    m.second = CreateNewAsset<MaterialAsset>(m.second->GetName() + ".hmaterial",
-                                                             (Project::GetAssetDirectory() / "materials").string(), m.second->GetMaterial());
+                    // TODO: create file in materials subdirectory, but this needs to create directory automatically which has not been implemented.
+                    m.second =
+                        CreateNewAsset<MaterialAsset>(m.second->GetName() + ".hmaterial", path.parent_path().string(), m.second->GetMaterial());
                 }
             }
-            std::filesystem::path path = GetFileSystemPath(metadata);
+
             CreateNewAsset<StaticMesh>(metadata.FilePath.stem().string() + ".hsmesh", path.parent_path().string(), meshSource, mt);
         }
     }

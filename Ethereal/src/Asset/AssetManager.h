@@ -36,7 +36,7 @@ namespace Ethereal
         template <typename T, typename... Args>
         static Ref<T> CreateNewAsset(const std::string& filename, const std::string& directoryPath, Args&&... args) {
             static_assert(std::is_base_of<Asset, T>::value, "CreateNewAsset only works for types derived from Asset");
-            ET_CORE_INFO("Create new asset: {0}", directoryPath + "/" + filename);
+            ET_CORE_INFO("Create new asset: {0}", directoryPath + "\\" + filename);
             AssetMetaData metadata;
             metadata.Type = T::GetStaticType();
             metadata.Handle = AssetHandle();
