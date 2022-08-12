@@ -1,14 +1,22 @@
 #pragma once
-#include "Material.h"
 #include "Asset/Asset.h"
 
 #include <map>
 namespace Ethereal
 {
+    enum class MaterialFlag
+    {
+        None = BIT(0),
+        DepthTest = BIT(1),
+        Blend = BIT(2),
+        TwoSided = BIT(3),
+        DisableShadowCasting = BIT(4)
+    };
+
     class MaterialAsset : public Asset {
       public:
         MaterialAsset(const std::string& name = "Empty Name", bool transparent = false);
-        MaterialAsset(Ref<Material> material);
+        MaterialAsset(const Ref<MaterialAsset>& other);
         ~MaterialAsset();
 
         glm::vec3& GetAlbedoColor();
@@ -23,12 +31,12 @@ namespace Ethereal
         float& GetEmission();
         void SetEmission(float value);
 
-        bool& IsUseAlbedoMap() { return m_Material->b_Albedo; };
-        bool& IsUseMetallicMap() { return m_Material->b_Metallic; };
-        bool& IsUseNormalMap() { return m_Material->b_Normal; };
-        bool& IsUseOcclusionMap() { return m_Material->b_Occlusion; };
-        bool& IsUseRoughnessMap() { return m_Material->b_Roughness; };
-        bool& IsUseEmissiveMap() { return m_Material->b_Emissive; };
+        bool& IsUseAlbedoMap() { return b_Albedo; };
+        bool& IsUseMetallicMap() { return b_Metallic; };
+        bool& IsUseNormalMap() { return b_Normal; };
+        bool& IsUseOcclusionMap() { return b_Occlusion; };
+        bool& IsUseRoughnessMap() { return b_Roughness; };
+        bool& IsUseEmissiveMap() { return b_Emissive; };
 
         // Textures
         Ref<Texture> GetAlbedoMap();
@@ -68,18 +76,37 @@ namespace Ethereal
         static AssetType GetStaticType() { return AssetType::Material; }
         virtual AssetType GetAssetType() const override { return GetStaticType(); }
 
-        Ref<Material> GetMaterial() const { return m_Material; }
-        void SetMaterial(Ref<Material> material) { m_Material = material; }
-
         bool IsTransparent() const { return m_Transparent; }
-        std::string GetName() const { return m_Material->GetName(); }
+        std::string GetName() const { return m_Name; }
 
       private:
         void SetDefaults();
 
       private:
-        Ref<Material> m_Material;
+        Ref<Texture> m_AlbedoMap;
+        Ref<Texture> m_NormalMap;
+        Ref<Texture> m_MetallicMap;
+        Ref<Texture> m_RoughnessMap;
+        Ref<Texture> m_OcclusionMap;
+        Ref<Texture> m_EmissiveMap;
+
+        glm::vec3 m_Albedo = glm::vec3(1.0f);
+        float m_Metallic = 0.0f;
+        float m_Roughness = 1.0f;
+        float m_Emisstion = 0.0f;
+        float m_Transparency = 0.0f;
+
+        // TODO : Fix this
+        bool b_Albedo = false;
+        bool b_Metallic = false;
+        bool b_Roughness = false;
+        bool b_Normal = false;
+        bool b_Occlusion = false;
+        bool b_Emissive = false;
+
         bool m_Transparent = false;
+
+        std::string m_Name;
     };
 
     class MaterialTable : public RefCounted {

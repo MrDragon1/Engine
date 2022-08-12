@@ -3,7 +3,6 @@
 #include "FrameBuffer.h"
 #include "RenderCommand.h"
 #include "Mesh.h"
-#include "Material.h"
 #include "Core/Base/Ref.h"
 
 namespace Ethereal
@@ -15,7 +14,6 @@ namespace Ethereal
         Ref<StaticMesh> StaticMesh;
         uint32_t SubmeshIndex;
         Ref<MaterialTable> MaterialTable;
-        Ref<Material> OverrideMaterial;
 
         uint32_t InstanceCount = 0;
         uint32_t InstanceOffset = 0;

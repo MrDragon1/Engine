@@ -76,8 +76,7 @@ namespace Ethereal
 
     int RenderSystem::GetMousePicking(int x, int y) { return m_MainCameraRenderPass->GetMousePicking(x, y); }
 
-    void RenderSystem::SubmitStaticMesh(Ref<StaticMesh> staticMesh, Ref<MaterialTable> materialTable, uint32_t EntityID, const glm::mat4& transform,
-                                        Ref<Material> overrideMaterial) {
+    void RenderSystem::SubmitStaticMesh(Ref<StaticMesh> staticMesh, Ref<MaterialTable> materialTable, uint32_t EntityID, const glm::mat4& transform) {
         Ref<MeshSource> meshSource = staticMesh->GetMeshSource();
         const auto& submeshData = meshSource->GetSubmeshes();
         for (uint32_t submeshIndex : staticMesh->GetSubmeshes()) {
@@ -100,7 +99,6 @@ namespace Ethereal
                 dc.StaticMesh = staticMesh;
                 dc.SubmeshIndex = submeshIndex;
                 dc.MaterialTable = materialTable;
-                dc.OverrideMaterial = overrideMaterial;
                 dc.InstanceCount++;
             }
         }

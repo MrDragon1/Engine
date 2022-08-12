@@ -104,7 +104,6 @@ namespace Ethereal
                 AssetHandle emissiveMapHandle = emissiveMap ? emissiveMap->Handle : (AssetHandle)0;
                 ET_SERIALIZE_PROPERTY(EmissiveMap, emissiveMapHandle, out);
             }
-            ET_SERIALIZE_PROPERTY(MaterialFlags, material->GetMaterial()->GetFlags(), out);
 
             out << YAML::EndMap;
         }
@@ -161,8 +160,6 @@ namespace Ethereal
         if (emissiveMap) {
             if (AssetManager::IsAssetHandleValid(emissiveMap)) material->SetEmissiveMap(AssetManager::GetAsset<Texture2D>(emissiveMap));
         }
-
-        if (materialNode["MaterialFlags"]) material->GetMaterial()->SetFlags(materialNode["MaterialFlags"].as<uint32_t>());
 
         ET_DESERIALIZE_PROPERTY(UseAlbedo, material->IsUseAlbedoMap(), materialNode, false);
         ET_DESERIALIZE_PROPERTY(UseNormal, material->IsUseNormalMap(), materialNode, false);

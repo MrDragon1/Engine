@@ -152,11 +152,9 @@ namespace Ethereal
             for (auto& m : mt->GetMaterials()) {
                 if (m.second->IsValid()) {
                     // TODO: create file in materials subdirectory, but this needs to create directory automatically which has not been implemented.
-                    m.second =
-                        CreateNewAsset<MaterialAsset>(m.second->GetName() + ".hmaterial", path.parent_path().string(), m.second->GetMaterial());
+                    m.second = CreateNewAsset<MaterialAsset>(m.second->GetName() + ".hmaterial", path.parent_path().string(), m.second);
                 }
             }
-
             CreateNewAsset<StaticMesh>(metadata.FilePath.stem().string() + ".hsmesh", path.parent_path().string(), meshSource, mt);
         }
     }

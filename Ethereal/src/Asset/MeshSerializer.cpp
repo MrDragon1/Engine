@@ -73,7 +73,7 @@ namespace Ethereal
             for (auto materialEntry : materialTableNode) {
                 auto index = materialEntry.first.as<uint32_t>();
                 auto materialAsset = materialEntry.second.as<AssetHandle>();
-                mesh->GetMaterials()->SetMaterial(index, AssetManager::GetAsset<Material>(materialAsset));
+                mesh->GetMaterials()->SetMaterial(index, AssetManager::GetAsset<MaterialAsset>(materialAsset));
             }
         } else
             ET_CORE_WARN("No material table found for mesh {0}", metadata.FilePath.stem().string());

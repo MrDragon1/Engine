@@ -55,7 +55,7 @@ namespace Ethereal
         auto& material = materialAsset;
         bool transparent = material->IsTransparent();
 
-        std::string name = material->GetMaterial()->GetName();
+        std::string name = material->GetName();
         if (name.empty()) name = "Unnamed Material";
 
         name = fmt::format("{0}", name);

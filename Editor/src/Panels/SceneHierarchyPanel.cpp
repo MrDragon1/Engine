@@ -281,7 +281,7 @@ namespace Ethereal
                     ImGui::NextColumn();
                     UI::ShiftCursorY(9.0f);
 
-                    std::string materialname = material->GetMaterial()->GetName();
+                    std::string materialname = material->GetName();
                     if (materialname.empty()) materialname = "Empty Name";
                     ImGui::Text(materialname.c_str());
 
