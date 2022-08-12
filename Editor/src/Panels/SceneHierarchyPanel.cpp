@@ -51,6 +51,11 @@ namespace Ethereal
                         m_SelectionContext = m_Context->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_MONKEY);
                     ImGui::EndMenu();
                 }
+                if (ImGui::MenuItem("Material")) {
+                    AssetManager::CreateNewAsset<MaterialAsset>("M_Default.hmaterial", (Project::GetAssetDirectory() / "materials").string(),
+                                                                "M_Default");
+                }
+
                 ImGui::EndPopup();
             }
         }

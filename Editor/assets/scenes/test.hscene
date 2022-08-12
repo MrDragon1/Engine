@@ -8,7 +8,7 @@ Entities:
     StaticMeshComponent:
       AssetID: 9144879518730628124
       MaterialTable:
-        0: 5521013208314249089
+        0: 6266248153726710475
     TransformComponent:
       Translation: [-0.500078201, -10.325346, -6.24548626]
       Rotation: [0, 0, 0]

@@ -74,8 +74,6 @@ namespace Ethereal
         const std::vector<Vertex>& GetVertices() const { return m_StaticVertices; }
         const std::vector<Index>& GetIndices() const { return m_Indices; }
 
-        std::vector<Ref<MaterialAsset>>& GetMaterials() { return m_Materials; }
-        const std::vector<Ref<MaterialAsset>>& GetMaterials() const { return m_Materials; }
         const std::string& GetFilePath() const { return m_FilePath; }
 
         Ref<VertexBuffer> GetVertexBuffer() { return m_VertexBuffer; }
@@ -87,6 +85,8 @@ namespace Ethereal
         virtual AssetType GetAssetType() const override { return GetStaticType(); }
 
         const AABB& GetBoundingBox() const { return m_BoundingBox; }
+
+        void LoadMaterials(Ref<MaterialTable>& materials);
 
       private:
         void TraverseNodes(aiNode* node, const glm::mat4& parentTransform = glm::mat4(1.0f), uint32_t level = 0);
@@ -109,15 +109,12 @@ namespace Ethereal
         std::vector<Vertex> m_StaticVertices;
         std::vector<Index> m_Indices;
         std::unordered_map<aiNode*, std::vector<uint32_t>> m_NodeMap;
-
-        // Materials
-        std::vector<Ref<MaterialAsset>> m_Materials;
     };
 
     // Static Mesh - no skeletal animation, flattened hierarchy
     class StaticMesh : public Asset {
       public:
-        explicit StaticMesh(Ref<MeshSource> meshSource);
+        explicit StaticMesh(Ref<MeshSource> meshSource, Ref<MaterialTable> materialTable);
         StaticMesh(Ref<MeshSource> meshSource, const std::vector<uint32_t>& submeshes);
         StaticMesh(const Ref<StaticMesh>& other);
         virtual ~StaticMesh();

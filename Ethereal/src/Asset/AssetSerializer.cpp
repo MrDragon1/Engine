@@ -53,7 +53,6 @@ namespace Ethereal
     }
 
     void MaterialAssetSerializer::Serialize(const AssetMetaData& metadata, const Ref<Asset>& asset) const {
-        Ref<Texture2D> whiteTexture = GlobalContext::GetRenderSystem().GetWhiteTexture();
         Ref<MaterialAsset> material = asset.As<MaterialAsset>();
 
         YAML::Emitter out;
@@ -62,47 +61,49 @@ namespace Ethereal
         {
             out << YAML::BeginMap;
 
-            // TODO: Only support non-transparent for now
-            bool transparent = false;
-            ET_SERIALIZE_PROPERTY(Transparent, transparent, out);
+            ET_SERIALIZE_PROPERTY(UseAlbedo, material->IsUseAlbedoMap(), out);
+            ET_SERIALIZE_PROPERTY(UseNormal, material->IsUseNormalMap(), out);
+            ET_SERIALIZE_PROPERTY(UseRoughness, material->IsUseRoughnessMap(), out);
+            ET_SERIALIZE_PROPERTY(UseMetallic, material->IsUseMetallicMap(), out);
+            ET_SERIALIZE_PROPERTY(UseOcclusion, material->IsUseOcclusionMap(), out);
+            ET_SERIALIZE_PROPERTY(UseEmissive, material->IsUseEmissiveMap(), out);
 
             ET_SERIALIZE_PROPERTY(AlbedoColor, material->GetAlbedoColor(), out);
+            ET_SERIALIZE_PROPERTY(Metallic, material->GetMetalness(), out);
+            ET_SERIALIZE_PROPERTY(Roughness, material->GetRoughness(), out);
             ET_SERIALIZE_PROPERTY(Emission, material->GetEmission(), out);
-            if (!transparent) {
-                ET_SERIALIZE_PROPERTY(UseNormalMap, material->IsUsingNormalMap(), out);
-                ET_SERIALIZE_PROPERTY(Metalness, material->GetMetalness(), out);
-                ET_SERIALIZE_PROPERTY(Roughness, material->GetRoughness(), out);
-            } else {
-                ET_SERIALIZE_PROPERTY(Transparency, material->GetTransparency(), out);
-            }
+            ET_SERIALIZE_PROPERTY(Transparency, material->GetTransparency(), out);
 
             {
                 Ref<Texture2D> albedoMap = material->GetAlbedoMap();
-                bool hasAlbedoMap = albedoMap && !albedoMap.EqualsObject(whiteTexture);
-                AssetHandle albedoMapHandle = hasAlbedoMap ? albedoMap->Handle : (AssetHandle)0;
+                AssetHandle albedoMapHandle = albedoMap ? albedoMap->Handle : (AssetHandle)0;
                 ET_SERIALIZE_PROPERTY(AlbedoMap, albedoMapHandle, out);
             }
-            if (!transparent) {
-                {
-                    Ref<Texture2D> normalMap = material->GetNormalMap();
-                    bool hasNormalMap = normalMap && !normalMap.EqualsObject(whiteTexture);
-                    AssetHandle normalMapHandle = hasNormalMap ? normalMap->Handle : (AssetHandle)0;
-                    ET_SERIALIZE_PROPERTY(NormalMap, normalMapHandle, out);
-                }
-                {
-                    Ref<Texture2D> metalnessMap = material->GetMetalnessMap();
-                    bool hasMetalnessMap = metalnessMap && !metalnessMap.EqualsObject(whiteTexture);
-                    AssetHandle metalnessMapHandle = hasMetalnessMap ? metalnessMap->Handle : (AssetHandle)0;
-                    ET_SERIALIZE_PROPERTY(MetalnessMap, metalnessMapHandle, out);
-                }
-                {
-                    Ref<Texture2D> roughnessMap = material->GetRoughnessMap();
-                    bool hasRoughnessMap = roughnessMap && !roughnessMap.EqualsObject(whiteTexture);
-                    AssetHandle roughnessMapHandle = hasRoughnessMap ? roughnessMap->Handle : (AssetHandle)0;
-                    ET_SERIALIZE_PROPERTY(RoughnessMap, roughnessMapHandle, out);
-                }
+            {
+                Ref<Texture2D> normalMap = material->GetNormalMap();
+                AssetHandle normalMapHandle = normalMap ? normalMap->Handle : (AssetHandle)0;
+                ET_SERIALIZE_PROPERTY(NormalMap, normalMapHandle, out);
             }
-
+            {
+                Ref<Texture2D> metalnessMap = material->GetMetalnessMap();
+                AssetHandle metalnessMapHandle = metalnessMap ? metalnessMap->Handle : (AssetHandle)0;
+                ET_SERIALIZE_PROPERTY(MetalnessMap, metalnessMapHandle, out);
+            }
+            {
+                Ref<Texture2D> roughnessMap = material->GetRoughnessMap();
+                AssetHandle roughnessMapHandle = roughnessMap ? roughnessMap->Handle : (AssetHandle)0;
+                ET_SERIALIZE_PROPERTY(RoughnessMap, roughnessMapHandle, out);
+            }
+            {
+                Ref<Texture2D> occlusionMap = material->GetOcclusionMap();
+                AssetHandle occlusionMapHandle = occlusionMap ? occlusionMap->Handle : (AssetHandle)0;
+                ET_SERIALIZE_PROPERTY(occlusionMap, occlusionMapHandle, out);
+            }
+            {
+                Ref<Texture2D> emissiveMap = material->GetEmissiveMap();
+                AssetHandle emissiveMapHandle = emissiveMap ? emissiveMap->Handle : (AssetHandle)0;
+                ET_SERIALIZE_PROPERTY(EmissiveMap, emissiveMapHandle, out);
+            }
             ET_SERIALIZE_PROPERTY(MaterialFlags, material->GetMaterial()->GetFlags(), out);
 
             out << YAML::EndMap;
@@ -128,24 +129,20 @@ namespace Ethereal
 
         Ref<MaterialAsset> material = Ref<MaterialAsset>::Create(AssetManager::GetFileSystemPath(metadata).stem().string(), transparent);
 
-        ET_DESERIALIZE_PROPERTY(AlbedoColor, material->GetAlbedoColor(), materialNode, glm::vec3(0.8f));
+        ET_DESERIALIZE_PROPERTY(AlbedoColor, material->GetAlbedoColor(), materialNode, glm::vec3(1.0f));
+        ET_DESERIALIZE_PROPERTY(Metallic, material->GetMetalness(), materialNode, 0.0f);
+        ET_DESERIALIZE_PROPERTY(Roughness, material->GetRoughness(), materialNode, 1.0f);
         ET_DESERIALIZE_PROPERTY(Emission, material->GetEmission(), materialNode, 0.0f);
+        ET_DESERIALIZE_PROPERTY(Transparency, material->GetTransparency(), materialNode, 0.0f);
 
-        if (!transparent) {
-            material->SetUseNormalMap(materialNode["UseNormalMap"] && materialNode["UseNormalMap"].as<bool>());
-            ET_DESERIALIZE_PROPERTY(Metalness, material->GetMetalness(), materialNode, 0.0f);
-            ET_DESERIALIZE_PROPERTY(Roughness, material->GetRoughness(), materialNode, 0.5f);
-        } else {
-            ET_DESERIALIZE_PROPERTY(Transparency, material->GetTransparency(), materialNode, 1.0f);
-        }
-
-        AssetHandle albedoMap, normalMap, metalnessMap, roughnessMap;
+        AssetHandle albedoMap, normalMap, metalnessMap, roughnessMap, occlusionMap, emissiveMap;
         ET_DESERIALIZE_PROPERTY(AlbedoMap, albedoMap, materialNode, (AssetHandle)0);
-        if (!transparent) {
-            ET_DESERIALIZE_PROPERTY(NormalMap, normalMap, materialNode, (AssetHandle)0);
-            ET_DESERIALIZE_PROPERTY(MetalnessMap, metalnessMap, materialNode, (AssetHandle)0);
-            ET_DESERIALIZE_PROPERTY(RoughnessMap, roughnessMap, materialNode, (AssetHandle)0);
-        }
+        ET_DESERIALIZE_PROPERTY(NormalMap, normalMap, materialNode, (AssetHandle)0);
+        ET_DESERIALIZE_PROPERTY(MetalnessMap, metalnessMap, materialNode, (AssetHandle)0);
+        ET_DESERIALIZE_PROPERTY(RoughnessMap, roughnessMap, materialNode, (AssetHandle)0);
+        ET_DESERIALIZE_PROPERTY(OcclusionMap, occlusionMap, materialNode, (AssetHandle)0);
+        ET_DESERIALIZE_PROPERTY(EmissiveMap, emissiveMap, materialNode, (AssetHandle)0);
+
         if (albedoMap) {
             if (AssetManager::IsAssetHandleValid(albedoMap)) material->SetAlbedoMap(AssetManager::GetAsset<Texture2D>(albedoMap));
         }
@@ -158,9 +155,21 @@ namespace Ethereal
         if (roughnessMap) {
             if (AssetManager::IsAssetHandleValid(roughnessMap)) material->SetRoughnessMap(AssetManager::GetAsset<Texture2D>(roughnessMap));
         }
+        if (occlusionMap) {
+            if (AssetManager::IsAssetHandleValid(occlusionMap)) material->SetOcclusionMap(AssetManager::GetAsset<Texture2D>(occlusionMap));
+        }
+        if (emissiveMap) {
+            if (AssetManager::IsAssetHandleValid(emissiveMap)) material->SetEmissiveMap(AssetManager::GetAsset<Texture2D>(emissiveMap));
+        }
 
-        ET_DESERIALIZE_PROPERTY(MaterialFlags, roughnessMap, materialNode, (AssetHandle)0);
         if (materialNode["MaterialFlags"]) material->GetMaterial()->SetFlags(materialNode["MaterialFlags"].as<uint32_t>());
+
+        ET_DESERIALIZE_PROPERTY(UseAlbedo, material->IsUseAlbedoMap(), materialNode, false);
+        ET_DESERIALIZE_PROPERTY(UseNormal, material->IsUseNormalMap(), materialNode, false);
+        ET_DESERIALIZE_PROPERTY(UseRoughness, material->IsUseRoughnessMap(), materialNode, false);
+        ET_DESERIALIZE_PROPERTY(UseMetallic, material->IsUseMetallicMap(), materialNode, false);
+        ET_DESERIALIZE_PROPERTY(UseOcclusion, material->IsUseOcclusionMap(), materialNode, false);
+        ET_DESERIALIZE_PROPERTY(UseEmissive, material->IsUseEmissiveMap(), materialNode, false);
 
         asset = material;
         asset->Handle = metadata.Handle;

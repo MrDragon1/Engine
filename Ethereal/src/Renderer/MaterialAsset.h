@@ -72,6 +72,7 @@ namespace Ethereal
         void SetMaterial(Ref<Material> material) { m_Material = material; }
 
         bool IsTransparent() const { return m_Transparent; }
+        std::string GetName() const { return m_Material->GetName(); }
 
       private:
         void SetDefaults();

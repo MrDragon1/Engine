@@ -193,6 +193,7 @@ namespace Ethereal
     }
 
     void MaterialTable::SetMaterial(uint32_t index, Ref<MaterialAsset> material) {
+        if (material->Handle == 0) ET_CORE_ERROR("Can not set material with handle 0");
         m_Materials[index] = material;
         if (index >= m_MaterialCount) m_MaterialCount = index + 1;
     }

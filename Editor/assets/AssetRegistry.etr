@@ -14,8 +14,14 @@ Assets:
   - Handle: 472868447295227411
     FilePath: fonts\opensans\OpenSans-MediumItalic.ttf
     Type: Font
+  - Handle: 628217465145563988
+    FilePath: materials\DefaultMaterial.hmaterial
+    Type: Material
   - Handle: 907565599402912077
     FilePath: materials\rustediron.hmaterial
+    Type: Material
+  - Handle: 1570330665192529701
+    FilePath: materials\08 - Default.hmaterial
     Type: Material
   - Handle: 1850952412942147138
     FilePath: textures\default\default_occlusion.png
@@ -38,6 +44,12 @@ Assets:
   - Handle: 2801276543070836935
     FilePath: fonts\opensans\OpenSans-Medium.ttf
     Type: Font
+  - Handle: 2837452743871074761
+    FilePath: scenes\basic.hscene
+    Type: Scene
+  - Handle: 2959478691534040087
+    FilePath: materials\green.hmaterial
+    Type: Material
   - Handle: 3067973634919230891
     FilePath: meshes\source\Sphere.gltf
     Type: MeshSource
@@ -50,6 +62,9 @@ Assets:
   - Handle: 4055964299062396106
     FilePath: meshes\gun\Textures\Raw\Cerberus_AO.tga
     Type: Texture
+  - Handle: 4111733622557296639
+    FilePath: meshes\cornell_box\cornell_box.hsmesh
+    Type: StaticMesh
   - Handle: 4209009144955814373
     FilePath: icons\ContentBrowser\FileIcon.png
     Type: Texture
@@ -98,30 +113,54 @@ Assets:
   - Handle: 5643262825732316959
     FilePath: fonts\opensans\OpenSans-Light.ttf
     Type: Font
+  - Handle: 5768072336176421466
+    FilePath: meshes\cornell_box\cornell_box.hsmesh
+    Type: StaticMesh
+  - Handle: 5931608281836055672
+    FilePath: materials\light.hmaterial
+    Type: Material
+  - Handle: 6266248153726710475
+    FilePath: materials\M_Default.hmaterial
+    Type: Material
   - Handle: 6560143709909394794
     FilePath: icons\PlayButton.png
     Type: Texture
   - Handle: 6607202353073020882
     FilePath: icons\ContentBrowser\DirectoryIcon.png
     Type: Texture
+  - Handle: 7183602790919037708
+    FilePath: materials\white.hmaterial
+    Type: Material
   - Handle: 7309008298981451249
     FilePath: buildin\textures\white.png
     Type: Texture
+  - Handle: 7523621751766000173
+    FilePath: meshes\cornell_box\cornell_box.hsmesh
+    Type: StaticMesh
   - Handle: 7567381472881404084
     FilePath: textures\global\brdf_schilk.hdr
     Type: EnvMap
+  - Handle: 7649619848848107862
+    FilePath: meshes\cornell_box\cornell_box.hsmesh
+    Type: StaticMesh
   - Handle: 7714422435788874728
     FilePath: textures\humanskin\human-skin1_preview.jpg
     Type: Texture
   - Handle: 7860783800334730501
     FilePath: textures\gold\gold-scuffed_basecolor-boosted.png
     Type: Texture
+  - Handle: 7954744035644289626
+    FilePath: materials\green.hmaterial
+    Type: Material
   - Handle: 8178794584538088286
     FilePath: fonts\opensans\OpenSans-SemiBold.ttf
     Type: Font
   - Handle: 8791887480241883289
     FilePath: meshes\default\monkey.hsmesh
     Type: StaticMesh
+  - Handle: 9010799711093642613
+    FilePath: materials\red.hmaterial
+    Type: Material
   - Handle: 9082851471189368623
     FilePath: textures\humanskin\human-skin1_albedo_5.png
     Type: Texture
@@ -170,27 +209,51 @@ Assets:
   - Handle: 11116514864426116313
     FilePath: textures\humanskin\human-skin1_albedo_3.png
     Type: Texture
+  - Handle: 11299704769688227271
+    FilePath: materials\blue.hmaterial
+    Type: Material
   - Handle: 11434792598897862484
     FilePath: meshes\gun\Textures\Cerberus_N.tga
     Type: Texture
   - Handle: 11435407174954141404
     FilePath: textures\default\default_metallic.png
     Type: Texture
+  - Handle: 11622693775950571930
+    FilePath: meshes\cornell_box\cornell_box.hsmesh
+    Type: StaticMesh
+  - Handle: 11900230987010435218
+    FilePath: meshes\cornell_box\cornell_box.hsmesh
+    Type: StaticMesh
   - Handle: 11961565015974153655
     FilePath: textures\rustediron\rustediron2_roughness.png
     Type: Texture
   - Handle: 11990970196583506654
     FilePath: meshes\gun\Textures\Raw\Cerberus_N.tga
     Type: Texture
+  - Handle: 12066573877665610509
+    FilePath: meshes\gun\Cerberus_LP.hsmesh
+    Type: StaticMesh
+  - Handle: 12276738029059600330
+    FilePath: meshes\cornell_box\cornell_box.hsmesh
+    Type: StaticMesh
+  - Handle: 12384679521450533381
+    FilePath: meshes\gun\Cerberus_LP.hsmesh
+    Type: StaticMesh
   - Handle: 12447451253582744139
     FilePath: skyboxs\HWSign3-Fence_2k.hdr
     Type: EnvMap
   - Handle: 12544758060547106188
     FilePath: fonts\opensans\OpenSans-Regular.ttf
     Type: Font
+  - Handle: 12627802960377351992
+    FilePath: materials\light.hmaterial
+    Type: Material
   - Handle: 12717353975045953519
     FilePath: scenes\test.hscene
     Type: Scene
+  - Handle: 12838739588801333892
+    FilePath: meshes\cornell_box\cornell_box.hsmesh
+    Type: StaticMesh
   - Handle: 12991496061341425589
     FilePath: fonts\opensans\OpenSans-LightItalic.ttf
     Type: Font
@@ -200,8 +263,14 @@ Assets:
   - Handle: 13088833478060461387
     FilePath: skyboxs\Ridgecrest_Road_Ref.hdr
     Type: EnvMap
+  - Handle: 13102150392327096690
+    FilePath: materials\white.hmaterial
+    Type: Material
   - Handle: 13437552004259238276
     FilePath: meshes\default\sphere.hsmesh
+    Type: StaticMesh
+  - Handle: 13482749080701748976
+    FilePath: meshes\cornell_box\cornell_box.hsmesh
     Type: StaticMesh
   - Handle: 13733117128754555817
     FilePath: textures\humanskin\human-skin1_albedo.png
@@ -209,24 +278,45 @@ Assets:
   - Handle: 13741325085810708696
     FilePath: textures\gold\roughness.png
     Type: Texture
+  - Handle: 13743545906097785929
+    FilePath: meshes\cornell_box\cornell_box.hsmesh
+    Type: StaticMesh
   - Handle: 13896290564190477560
     FilePath: textures\default\default_normal.png
     Type: Texture
+  - Handle: 13950380195846137352
+    FilePath: meshes\cornell_box\cornell_box.hsmesh
+    Type: StaticMesh
   - Handle: 14180194868529914398
     FilePath: textures\default\default_roughness.png
     Type: Texture
+  - Handle: 14355345937695127609
+    FilePath: meshes\cornell_box\cornell_box.hsmesh
+    Type: StaticMesh
   - Handle: 14473103724496630534
     FilePath: textures\gold\metallic.png
     Type: Texture
   - Handle: 15298088384928640906
     FilePath: skyboxs\Factory_Catwalk_2k.hdr
     Type: EnvMap
+  - Handle: 15354018371692887097
+    FilePath: materials\DefaultMaterial.hmaterial
+    Type: Material
   - Handle: 15410943530872631803
     FilePath: meshes\source\Cylinder.gltf
     Type: MeshSource
+  - Handle: 15509787934398350272
+    FilePath: meshes\cornell_box\cornell_box.hsmesh
+    Type: StaticMesh
+  - Handle: 15538580911191225888
+    FilePath: meshes\cornell_box\cornell_box.hsmesh
+    Type: StaticMesh
   - Handle: 15629598353572669012
     FilePath: meshes\cornell_box\cornell_box.obj
     Type: MeshSource
+  - Handle: 15724687246214149700
+    FilePath: materials\red.hmaterial
+    Type: Material
   - Handle: 15831349221331264664
     FilePath: textures\humanskin\human-skin1_albedo_4.png
     Type: Texture
@@ -263,6 +353,9 @@ Assets:
   - Handle: 17356469065209931330
     FilePath: fonts\opensans\OpenSans-Italic.ttf
     Type: Font
+  - Handle: 17495308120805489532
+    FilePath: materials\blue.hmaterial
+    Type: Material
   - Handle: 18245045781855712380
     FilePath: meshes\gun\Cerberus_LP.fbx
     Type: MeshSource

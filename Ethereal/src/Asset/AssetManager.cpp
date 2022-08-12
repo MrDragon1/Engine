@@ -119,7 +119,7 @@ namespace Ethereal
         ET_CORE_INFO("[AssetManager] Loaded {0} asset entries", s_AssetRegistry.Count());
     }
 
-    AssetHandle AssetManager::ImportAsset(const std::filesystem::path& filepath) {
+    AssetHandle AssetManager::LoadAsset(const std::filesystem::path& filepath) {
         std::filesystem::path path = GetRelativePath(filepath);
 
         if (auto& metadata = GetMetadata(path); metadata.IsValid()) return metadata.Handle;
@@ -134,6 +134,30 @@ namespace Ethereal
         s_AssetRegistry[metadata.Handle] = metadata;
 
         return metadata.Handle;
+    }
+
+    AssetHandle AssetManager::ImportAsset(const std::filesystem::path& filepath) {
+        AssetHandle handle = LoadAsset(filepath);
+        PostProcessAfterImport(GetMetadata(handle));
+        return handle;
+    }
+
+    void AssetManager::PostProcessAfterImport(const AssetMetaData& metadata) {
+        if (metadata.Type == AssetType::MeshSource) {
+            auto meshSource = GetAsset<MeshSource>(metadata.Handle);
+
+            // Create materials that mesh used
+            Ref<MaterialTable> mt = Ref<MaterialTable>::Create();
+            meshSource->LoadMaterials(mt);
+            for (auto& m : mt->GetMaterials()) {
+                if (m.second->IsValid()) {
+                    m.second = CreateNewAsset<MaterialAsset>(m.second->GetName() + ".hmaterial",
+                                                             (Project::GetAssetDirectory() / "materials").string(), m.second->GetMaterial());
+                }
+            }
+            std::filesystem::path path = GetFileSystemPath(metadata);
+            CreateNewAsset<StaticMesh>(metadata.FilePath.stem().string() + ".hsmesh", path.parent_path().string(), meshSource, mt);
+        }
     }
 
     bool AssetManager::ReloadData(AssetHandle assetHandle) {
@@ -162,7 +186,7 @@ namespace Ethereal
             if (entry.is_directory())
                 ProcessDirectory(entry.path());
             else
-                ImportAsset(entry.path());
+                LoadAsset(entry.path());
         }
     }
 

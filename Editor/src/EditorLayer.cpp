@@ -122,15 +122,21 @@ namespace Ethereal
                 if (ImGui::MenuItem("Open...", "Ctrl+O")) OpenScene();
                 if (ImGui::MenuItem("Save", "Ctrl+S")) SaveScene();
                 if (ImGui::MenuItem("Save As...", "Ctrl+Shift+S")) SaveSceneAs();
+                if (ImGui::MenuItem("Import File", nullptr)) {
+                    std::string filepath = FileDialogs::OpenFile("All (*.*)\0*.*\0");
+                    if (!filepath.empty()) {
+                        AssetManager::ImportAsset(std::filesystem::path(filepath));
+                    }
+                }
                 if (ImGui::MenuItem("Exit")) Application::Get().Close();
                 ImGui::EndMenu();
             }
             if (ImGui::BeginMenu("Settings")) {
-                ImGui::MenuItem("Skybox", NULL, &bShowSkyboxSettings);
+                ImGui::MenuItem("Skybox", nullptr, &bShowSkyboxSettings);
                 ImGui::EndMenu();
             }
             if (ImGui::BeginMenu("Help")) {
-                ImGui::MenuItem("Show Demo ImGui", NULL, &bShowDemoImGui);
+                ImGui::MenuItem("Show Demo ImGui", nullptr, &bShowDemoImGui);
                 ImGui::EndMenu();
             }
             ImGui::EndMenuBar();

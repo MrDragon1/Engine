@@ -1,0 +1,28 @@
+Scene:
+  Name: Basic
+  Environment: 10111825085121754573
+Entities:
+  - Entity: 12477561855528759267
+    TagComponent:
+      Tag: Cube2
+    StaticMeshComponent:
+      AssetID: 17060509455937462602
+      MaterialTable:
+        0: 0
+        1: 0
+    TransformComponent:
+      Translation: [3.2746737, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+  - Entity: 10284038693375013717
+    TagComponent:
+      Tag: Cube
+    StaticMeshComponent:
+      AssetID: 17060509455937462602
+      MaterialTable:
+        0: 0
+        1: 0
+    TransformComponent:
+      Translation: [9.83746338, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]

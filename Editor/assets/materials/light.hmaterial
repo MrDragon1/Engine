@@ -1,8 +1,8 @@
 Material:
-  UseAlbedo: true
-  UseNormal: true
-  UseRoughness: true
-  UseMetallic: true
+  UseAlbedo: false
+  UseNormal: false
+  UseRoughness: false
+  UseMetallic: false
   UseOcclusion: false
   UseEmissive: false
   AlbedoColor: [1, 1, 1]
@@ -10,10 +10,10 @@ Material:
   Roughness: 1
   Emission: 0
   Transparency: 0
-  AlbedoMap: 1864105716926570769
-  NormalMap: 4437595807192615377
-  MetalnessMap: 14473103724496630534
-  RoughnessMap: 13741325085810708696
+  AlbedoMap: 7309008298981451249
+  NormalMap: 7309008298981451249
+  MetalnessMap: 7309008298981451249
+  RoughnessMap: 7309008298981451249
   occlusionMap: 7309008298981451249
   EmissiveMap: 7309008298981451249
   MaterialFlags: 6

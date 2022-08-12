@@ -1,3 +1,5 @@
 Mesh:
   MeshSource: 18245045781855712380
+  MaterialTable:
+    0: 1570330665192529701
   SubmeshIndices: []

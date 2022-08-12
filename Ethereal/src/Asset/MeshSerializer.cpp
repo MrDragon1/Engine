@@ -75,7 +75,8 @@ namespace Ethereal
                 auto materialAsset = materialEntry.second.as<AssetHandle>();
                 mesh->GetMaterials()->SetMaterial(index, AssetManager::GetAsset<Material>(materialAsset));
             }
-        }
+        } else
+            ET_CORE_WARN("No material table found for mesh {0}", metadata.FilePath.stem().string());
 
         mesh->Handle = metadata.Handle;
         asset = mesh;
@@ -88,14 +89,21 @@ namespace Ethereal
         out << YAML::Key << "Mesh";
         {
             out << YAML::BeginMap;
-            out << YAML::Key << "MeshSource";
-            out << YAML::Value << mesh->GetMeshSource()->Handle;
+            out << YAML::Key << "MeshSource" << YAML::Value << mesh->GetMeshSource()->Handle;
+
+            out << YAML::Key << "MaterialTable" << YAML::Value << YAML::BeginMap;
+            for (uint32_t i = 0; i < mesh->GetMaterials()->GetMaterialCount(); i++) {
+                out << YAML::Key << i << YAML::Value << mesh->GetMaterials()->GetMaterial(i)->Handle;
+            }
+            out << YAML::EndMap;
+
             out << YAML::Key << "SubmeshIndices";
             out << YAML::Flow;
             if (mesh->GetSubmeshes().size() == mesh->GetMeshSource()->GetSubmeshes().size())
                 out << YAML::Value << std::vector<uint32_t>();
             else
                 out << YAML::Value << mesh->GetSubmeshes();
+
             out << YAML::EndMap;
         }
         out << YAML::EndMap;

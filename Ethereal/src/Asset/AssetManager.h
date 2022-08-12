@@ -29,44 +29,23 @@ namespace Ethereal
         static AssetType GetAssetTypeFromExtension(const std::string& extension);
         static AssetType GetAssetTypeFromPath(const std::filesystem::path& path);
 
+        static AssetHandle LoadAsset(const std::filesystem::path& filepath);
         static AssetHandle ImportAsset(const std::filesystem::path& filepath);
         static bool ReloadData(AssetHandle assetHandle);
 
         template <typename T, typename... Args>
         static Ref<T> CreateNewAsset(const std::string& filename, const std::string& directoryPath, Args&&... args) {
             static_assert(std::is_base_of<Asset, T>::value, "CreateNewAsset only works for types derived from Asset");
-
+            ET_CORE_INFO("Create new asset: {0}", directoryPath + "/" + filename);
             AssetMetaData metadata;
+            metadata.Type = T::GetStaticType();
             metadata.Handle = AssetHandle();
+
             if (directoryPath.empty() || directoryPath == ".")
                 metadata.FilePath = filename;
             else
                 metadata.FilePath = AssetManager::GetRelativePath(directoryPath + "/" + filename);
             metadata.IsDataLoaded = true;
-            metadata.Type = T::GetStaticType();
-
-            if (FileExists(metadata)) {
-                bool foundAvailableFileName = false;
-                int current = 1;
-
-                while (!foundAvailableFileName) {
-                    std::string nextFilePath = directoryPath + "/" + metadata.FilePath.stem().string();
-
-                    if (current < 10)
-                        nextFilePath += " (0" + std::to_string(current) + ")";
-                    else
-                        nextFilePath += " (" + std::to_string(current) + ")";
-                    nextFilePath += metadata.FilePath.extension().string();
-
-                    if (!FileSystem::Exists(nextFilePath)) {
-                        foundAvailableFileName = true;
-                        metadata.FilePath = AssetManager::GetRelativePath(nextFilePath);
-                        break;
-                    }
-
-                    current++;
-                }
-            }
 
             s_AssetRegistry[metadata.Handle] = metadata;
 
@@ -118,6 +97,7 @@ namespace Ethereal
         static void ProcessDirectory(const std::filesystem::path& directoryPath);
         static void ReloadAssets();
         static void WriteRegistryToFile();
+        static void PostProcessAfterImport(const AssetMetaData& metadata);
 
         static AssetMetaData& GetMetadataInternal(AssetHandle handle);
       private:
