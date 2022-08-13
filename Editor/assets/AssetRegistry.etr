@@ -20,6 +20,12 @@ Assets:
   - Handle: 907565599402912077
     FilePath: materials\rustediron.hmaterial
     Type: Material
+  - Handle: 1467296346629872072
+    FilePath: meshes\source\quad.obj
+    Type: MeshSource
+  - Handle: 1559470105849742676
+    FilePath: meshes\default\basicCube.hsmesh
+    Type: StaticMesh
   - Handle: 1667818161884198638
     FilePath: meshes\cornell_box\white.hmaterial
     Type: Material
@@ -53,6 +59,9 @@ Assets:
   - Handle: 2837452743871074761
     FilePath: scenes\basic.hscene
     Type: Scene
+  - Handle: 3009148178995972491
+    FilePath: meshes\source\DefaultMaterial.hmaterial
+    Type: Material
   - Handle: 3067973634919230891
     FilePath: meshes\source\Sphere.gltf
     Type: MeshSource
@@ -149,6 +158,9 @@ Assets:
   - Handle: 6607202353073020882
     FilePath: icons\ContentBrowser\DirectoryIcon.png
     Type: Texture
+  - Handle: 7012128274853532247
+    FilePath: meshes\source\basicCube.obj
+    Type: MeshSource
   - Handle: 7309008298981451249
     FilePath: buildin\textures\white.png
     Type: Texture
@@ -194,12 +206,18 @@ Assets:
   - Handle: 9179399177065297379
     FilePath: textures\rustediron\rustediron2_metallic.png
     Type: Texture
+  - Handle: 9253145019631705207
+    FilePath: meshes\default\quad.hsmesh
+    Type: StaticMesh
   - Handle: 9487121460335010656
     FilePath: meshes\gun\Textures\Cerberus_R.tga
     Type: Texture
   - Handle: 9773662192847046362
     FilePath: meshes\cornell_box\red.hmaterial
     Type: Material
+  - Handle: 9793788378133683577
+    FilePath: meshes\source\Cube.glb
+    Type: MeshSource
   - Handle: 9998164968944880493
     FilePath: textures\default\default_diffuse.png
     Type: Texture
@@ -278,6 +296,9 @@ Assets:
   - Handle: 12991496061341425589
     FilePath: fonts\opensans\OpenSans-LightItalic.ttf
     Type: Font
+  - Handle: 13046622228350703823
+    FilePath: meshes\source\DefaultMaterial.hmaterial
+    Type: Material
   - Handle: 13056173822974123526
     FilePath: meshes\cornell_box\cornell_box.hsmesh
     Type: StaticMesh

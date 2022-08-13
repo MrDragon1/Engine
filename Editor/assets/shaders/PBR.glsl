@@ -39,13 +39,13 @@ uniform vec3 u_Albedo;
 uniform float u_Metallic;
 uniform float u_Roughness;
 uniform float u_Occlusion;
+uniform float u_Emisstion;
 
 uniform sampler2D u_AlbedoMap;
 uniform sampler2D u_NormalMap;
 uniform sampler2D u_MetallicMap;
 uniform sampler2D u_RoughnessMap;
 uniform sampler2D u_OcclusionMap;
-uniform sampler2D u_EmissiveMap;
 
 uniform bool u_UseAlbedoMap;
 uniform bool u_UseNormalMap;
@@ -201,20 +201,20 @@ void main()
     
     // sample both the pre-filter map and the BRDF lut and combine them together as per the Split-Sum approximation to get the IBL specular part.
     const float MAX_REFLECTION_LOD = 4.0;
-    vec3 prefilteredColor = textureLod(u_PrefilterMap, R,  roughness * MAX_REFLECTION_LOD).rgb;    
+    vec3 prefilteredColor = textureLod(u_PrefilterMap, R,  roughness * MAX_REFLECTION_LOD).rgb;
     vec2 brdf  = texture(u_BRDFLUT, vec2(max(dot(N, V), 0.0), roughness)).rg;
     vec3 specular = prefilteredColor * (F * brdf.x + brdf.y);
 
     vec3 ambient = (kD * diffuse + specular) * ao;
 
-    vec3 color = ambient + Lo;
+    vec3 color = ambient + Lo + albedo * u_Emisstion;
 
     // HDR tonemapping
-    color = color / (color + vec3(1.0));
+    // color = color / (color + vec3(1.0));
     // gamma correct
-    color = pow(color, vec3(1.0/2.2)); 
+    // color = pow(color, vec3(1.0/2.2)); 
 
     FragColor = vec4(color, 1.0);
-    
+
     EntityID = u_EntityID;
 }

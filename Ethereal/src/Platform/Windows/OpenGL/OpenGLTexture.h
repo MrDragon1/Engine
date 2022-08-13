@@ -20,6 +20,8 @@ namespace Ethereal
         virtual bool operator==(const Texture& other) const override { return m_RendererID == other.GetRendererID(); }
         virtual bool IsLoaded() const override { return m_IsLoaded; };
 
+        virtual void BindToFramebuffer(uint32_t attachmentid, uint32_t face = 0, uint32_t miplevel = 0) const override;
+
       private:
         void GetOpenGLTextureFormat(const ETHEREAL_PIXEL_FORMAT& format);
         void GetOpenGLWarpFormat(const ETHEREAL_WARP_FORMAT& warp);

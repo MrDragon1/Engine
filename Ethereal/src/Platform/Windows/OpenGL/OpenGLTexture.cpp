@@ -72,7 +72,7 @@ namespace Ethereal
                 m_DataFormat = GL_RED;
                 m_DataType = GL_UNSIGNED_BYTE;
                 break;
-            case ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_HDR:
+            case ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_R16G16B16_HDR:
                 m_InternalFormat = GL_RGB16F;
                 m_DataFormat = GL_RGB;
                 m_DataType = GL_FLOAT;
@@ -161,6 +161,12 @@ namespace Ethereal
     OpenGLTexture2D::~OpenGLTexture2D() { glDeleteTextures(1, &m_RendererID); }
 
     void OpenGLTexture2D::Bind(uint32_t slot) const { glBindTextureUnit(slot, m_RendererID); }
+
+    void OpenGLTexture2D::BindToFramebuffer(uint32_t attachmentid, uint32_t face, uint32_t miplevel) const {
+        ET_CORE_ASSERT(attachmentid >= 0 && attachmentid <= 3, "Attachment id must be between 0 and 3!");
+        ET_CORE_ASSERT(miplevel == 0, "Mip level must be 0 for Texture2D !");
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + attachmentid, GL_TEXTURE_2D, m_RendererID, 0);
+    }
 
     // for non-hdr cube map only
     OpenGLTextureCube::OpenGLTextureCube(std::vector<std::string>& paths) {

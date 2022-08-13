@@ -28,7 +28,8 @@ namespace Ethereal
         m_BuildinData->WhiteTexture = AssetManager::GetAsset<Texture>("buildin/textures/white.png");
         m_BuildinData->BlackTexture = AssetManager::GetAsset<Texture>("buildin/textures/black.png");
         m_BuildinData->BRDFLutTexture = AssetManager::GetAsset<Texture>("buildin/textures/BRDF_LUT.tga");
-        m_BuildinData->Cube = AssetManager::GetAsset<StaticMesh>("meshes/default/cube.hsmesh");
+        m_BuildinData->Cube = AssetManager::GetAsset<StaticMesh>("meshes/default/basicCube.hsmesh");
+        m_BuildinData->Quad = AssetManager::GetAsset<StaticMesh>("meshes/default/quad.hsmesh");
 
         m_EnvironmentMapRenderPass = Ref<EnvironmentMapRenderPass>::Create();
         m_EnvironmentMapRenderPass->Init(m_Width, m_Height);
@@ -38,9 +39,13 @@ namespace Ethereal
         m_ShadowMapRenderPass->Init(m_Width, m_Height);
         m_SkyboxRenderPass = Ref<SkyboxRenderPass>::Create();
         m_SkyboxRenderPass->Init(m_Width, m_Height);
+        m_BloomRenderPass = Ref<BloomRenderPass>::Create();
+        m_BloomRenderPass->Init(m_Width, m_Height);
 
         // Must after m_EnvironmentMapRenderPass Init
         m_BuildinData->Environment = AssetManager::GetAsset<Environment>("skyboxs/Newport_Loft_Ref.hdr");
+
+        m_MainImage = m_MainCameraRenderPass->m_Framebuffer->GetColorAttachment(0);
     }
 
     void RenderSystem::Draw(Timestep ts) {
@@ -61,6 +66,13 @@ namespace Ethereal
         m_SkyboxRenderPass->Draw();
         m_MainCameraRenderPass->m_Framebuffer->Unbind();
 
+        // For postprocessing
+        auto mainImg = m_MainCameraRenderPass->m_Framebuffer->GetColorAttachment(0);
+        m_BloomRenderPass->SetMainImage(mainImg);
+        m_BloomRenderPass->Draw();
+
+        m_MainImage = m_BloomRenderPass->GetBloomImage();
+
         m_DrawLists->MeshTransformMap.clear();
         m_DrawLists->StaticMeshDrawList.clear();
     }
@@ -72,7 +84,7 @@ namespace Ethereal
         m_MainCameraRenderPass->OnResize(m_Width, m_Height);
     }
 
-    uint64_t RenderSystem::GetMainImage() { return m_MainCameraRenderPass->m_Framebuffer->GetColorAttachment(0)->GetRendererID(); }
+    uint64_t RenderSystem::GetMainImage() { return m_MainImage->GetRendererID(); }
 
     int RenderSystem::GetMousePicking(int x, int y) { return m_MainCameraRenderPass->GetMousePicking(x, y); }
 

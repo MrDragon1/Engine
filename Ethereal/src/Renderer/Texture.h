@@ -46,6 +46,8 @@ namespace Ethereal
         virtual void Clear(int value) = 0;
         virtual uint32_t GetRendererID() const = 0;
         virtual bool IsLoaded() const = 0;
+
+        virtual void BindToFramebuffer(uint32_t attachmentid, uint32_t face = 0, uint32_t miplevel = 0) const = 0;
     };
 
     class Texture2D : public Texture{
@@ -56,7 +58,6 @@ namespace Ethereal
 
     class TextureCube : public Texture{
       public:
-        virtual void BindToFramebuffer(uint32_t attachmentid, uint32_t face, uint32_t miplevel = 0) const = 0;
         virtual void GenerateMipmaps() const = 0;
         static Ref<TextureCube> Create(std::vector<std::string>& paths);
         static Ref<TextureCube> Create(const Ref<TextureData>& data);

@@ -36,7 +36,6 @@ namespace Ethereal
         bool& IsUseNormalMap() { return b_Normal; };
         bool& IsUseOcclusionMap() { return b_Occlusion; };
         bool& IsUseRoughnessMap() { return b_Roughness; };
-        bool& IsUseEmissiveMap() { return b_Emissive; };
 
         // Textures
         Ref<Texture> GetAlbedoMap();
@@ -65,11 +64,6 @@ namespace Ethereal
         void SetUseOcclusionMap(bool value);
         void ClearOcclusionMap();
 
-        Ref<Texture> GetEmissiveMap();
-        void SetEmissiveMap(Ref<Texture> texture);
-        void SetUseEmissiveMap(bool value);
-        void ClearEmissiveMap();
-
         float& GetTransparency();
         void SetTransparency(float transparency);
 
@@ -88,7 +82,6 @@ namespace Ethereal
         Ref<Texture> m_MetallicMap;
         Ref<Texture> m_RoughnessMap;
         Ref<Texture> m_OcclusionMap;
-        Ref<Texture> m_EmissiveMap;
 
         glm::vec3 m_Albedo = glm::vec3(1.0f);
         float m_Metallic = 0.0f;
@@ -102,7 +95,6 @@ namespace Ethereal
         bool b_Roughness = false;
         bool b_Normal = false;
         bool b_Occlusion = false;
-        bool b_Emissive = false;
 
         bool m_Transparent = false;
 

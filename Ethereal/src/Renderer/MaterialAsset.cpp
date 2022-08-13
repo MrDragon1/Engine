@@ -15,7 +15,6 @@ namespace Ethereal
         m_MetallicMap = other->m_MetallicMap;
         m_RoughnessMap = other->m_RoughnessMap;
         m_OcclusionMap = other->m_OcclusionMap;
-        m_EmissiveMap = other->m_EmissiveMap;
 
         m_Albedo = other->m_Albedo;
         m_Metallic = other->m_Metallic;
@@ -29,7 +28,6 @@ namespace Ethereal
         b_Roughness = other->b_Roughness;
         b_Normal = other->b_Normal;
         b_Occlusion = other->b_Occlusion;
-        b_Emissive = other->b_Emissive;
     }
 
     MaterialAsset::~MaterialAsset() {}
@@ -121,13 +119,11 @@ namespace Ethereal
         SetMetalnessMap(whiteTexture);
         SetRoughnessMap(whiteTexture);
         SetOcclusionMap(whiteTexture);
-        SetEmissiveMap(whiteTexture);
 
         SetUseNormalMap(false);
         SetUseMetalnessMap(false);
         SetUseRoughnessMap(false);
         SetUseOcclusionMap(false);
-        SetUseEmissiveMap(false);
         SetUseAlbedoMap(false);
     }
     Ref<Texture> MaterialAsset::GetOcclusionMap() { return m_OcclusionMap; }
@@ -142,18 +138,7 @@ namespace Ethereal
         SetOcclusionMap(whiteTexture);
         SetUseOcclusionMap(false);
     }
-    Ref<Texture> MaterialAsset::GetEmissiveMap() { return m_EmissiveMap; }
 
-    void MaterialAsset::SetEmissiveMap(Ref<Texture> texture) {
-        m_EmissiveMap = texture;
-        SetUseEmissiveMap(true);
-    }
-
-    void MaterialAsset::ClearEmissiveMap() {
-        Ref<Texture> whiteTexture = GlobalContext::GetRenderSystem().GetWhiteTexture();
-        SetEmissiveMap(whiteTexture);
-        SetUseEmissiveMap(false);
-    }
     void MaterialAsset::SetUseAlbedoMap(bool value) { b_Albedo = value; }
 
     void MaterialAsset::SetUseMetalnessMap(bool value) { b_Metallic = value; }
@@ -161,8 +146,6 @@ namespace Ethereal
     void MaterialAsset::SetUseRoughnessMap(bool value) { b_Roughness = value; }
 
     void MaterialAsset::SetUseOcclusionMap(bool value) { b_Occlusion = value; }
-
-    void MaterialAsset::SetUseEmissiveMap(bool value) { b_Emissive = value; }
 
     MaterialTable::MaterialTable(uint32_t materialCount) : m_MaterialCount(materialCount) {}
 

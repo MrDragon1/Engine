@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Renderer/RenderPass/BloomRenderPass.h>
 #include "Core/Utils.h"
 #include "RenderPass.h"
 #include "Mesh.h"
@@ -28,6 +29,7 @@ namespace Ethereal
         Ref<Texture> BlackTexture;
         Ref<Texture> BRDFLutTexture;
         Ref<StaticMesh> Cube;
+        Ref<StaticMesh> Quad;
         Ref<Environment> Environment;
     };
 
@@ -44,6 +46,7 @@ namespace Ethereal
         void OnResize();
 
         Ref<StaticMesh> GetCubeStaticMesh() { return m_BuildinData->Cube; }
+        Ref<StaticMesh> GetQuadStaticMesh() { return m_BuildinData->Quad; }
         Ref<Texture> GetWhiteTexture() { return m_BuildinData->WhiteTexture; }
         Ref<Texture> GetBlackTexture() { return m_BuildinData->BlackTexture; }
         Ref<Texture> GetBRDFLutTexture() { return m_BuildinData->BRDFLutTexture; }
@@ -59,6 +62,9 @@ namespace Ethereal
         Ref<ShadowMapRenderPass> m_ShadowMapRenderPass;
         Ref<SkyboxRenderPass> m_SkyboxRenderPass;
         Ref<EnvironmentMapRenderPass> m_EnvironmentMapRenderPass;
+        Ref<BloomRenderPass> m_BloomRenderPass;
+
+        Ref<Texture> m_MainImage;
         // TODO: Ref<RenderContent>;
         uint32_t m_Height, m_Width;
         DrawLists* m_DrawLists;

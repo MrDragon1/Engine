@@ -66,7 +66,6 @@ namespace Ethereal
             ET_SERIALIZE_PROPERTY(UseRoughness, material->IsUseRoughnessMap(), out);
             ET_SERIALIZE_PROPERTY(UseMetallic, material->IsUseMetallicMap(), out);
             ET_SERIALIZE_PROPERTY(UseOcclusion, material->IsUseOcclusionMap(), out);
-            ET_SERIALIZE_PROPERTY(UseEmissive, material->IsUseEmissiveMap(), out);
 
             ET_SERIALIZE_PROPERTY(AlbedoColor, material->GetAlbedoColor(), out);
             ET_SERIALIZE_PROPERTY(Metallic, material->GetMetalness(), out);
@@ -98,11 +97,6 @@ namespace Ethereal
                 Ref<Texture2D> occlusionMap = material->GetOcclusionMap();
                 AssetHandle occlusionMapHandle = occlusionMap ? occlusionMap->Handle : (AssetHandle)0;
                 ET_SERIALIZE_PROPERTY(occlusionMap, occlusionMapHandle, out);
-            }
-            {
-                Ref<Texture2D> emissiveMap = material->GetEmissiveMap();
-                AssetHandle emissiveMapHandle = emissiveMap ? emissiveMap->Handle : (AssetHandle)0;
-                ET_SERIALIZE_PROPERTY(EmissiveMap, emissiveMapHandle, out);
             }
 
             out << YAML::EndMap;
@@ -157,16 +151,12 @@ namespace Ethereal
         if (occlusionMap) {
             if (AssetManager::IsAssetHandleValid(occlusionMap)) material->SetOcclusionMap(AssetManager::GetAsset<Texture2D>(occlusionMap));
         }
-        if (emissiveMap) {
-            if (AssetManager::IsAssetHandleValid(emissiveMap)) material->SetEmissiveMap(AssetManager::GetAsset<Texture2D>(emissiveMap));
-        }
 
         ET_DESERIALIZE_PROPERTY(UseAlbedo, material->IsUseAlbedoMap(), materialNode, false);
         ET_DESERIALIZE_PROPERTY(UseNormal, material->IsUseNormalMap(), materialNode, false);
         ET_DESERIALIZE_PROPERTY(UseRoughness, material->IsUseRoughnessMap(), materialNode, false);
         ET_DESERIALIZE_PROPERTY(UseMetallic, material->IsUseMetallicMap(), materialNode, false);
         ET_DESERIALIZE_PROPERTY(UseOcclusion, material->IsUseOcclusionMap(), materialNode, false);
-        ET_DESERIALIZE_PROPERTY(UseEmissive, material->IsUseEmissiveMap(), materialNode, false);
 
         asset = material;
         asset->Handle = metadata.Handle;

@@ -6,7 +6,7 @@ namespace Ethereal
         m_ViewProjectionMatrix = glm::mat4(1.0f);
 
         FramebufferSpecification fbSpec;
-        fbSpec.Attachments = {ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_R8G8B8A8_UNORM, ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_R32_INTEGER,
+        fbSpec.Attachments = {ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_R16G16B16_HDR, ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_R32_INTEGER,
                               ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_DEPTH};
         fbSpec.Width = width;
         fbSpec.Height = height;
@@ -23,7 +23,6 @@ namespace Ethereal
         m_Shader->SetInt("u_MetallicMap", 2);
         m_Shader->SetInt("u_RoughnessMap", 3);
         m_Shader->SetInt("u_OcclusionMap", 4);
-        m_Shader->SetInt("u_EmissiveMap", 5);
 
         // IBL 
         m_Shader->SetInt("u_IrradianceMap", 6);
@@ -83,11 +82,11 @@ namespace Ethereal
                 material->GetMetalnessMap()->Bind(2);
                 material->GetRoughnessMap()->Bind(3);
                 material->GetOcclusionMap()->Bind(4);
-                material->GetEmissiveMap()->Bind(5);
 
                 m_Shader->SetFloat3("u_Albedo", material->GetAlbedoColor());
                 m_Shader->SetFloat("u_Roughness", material->GetRoughness());
                 m_Shader->SetFloat("u_Metallic", material->GetMetalness());
+                m_Shader->SetFloat("u_Emisstion", material->GetEmission());
 
                 m_Shader->SetInt("u_UseAlbedoMap", material->IsUseAlbedoMap());
                 m_Shader->SetInt("u_UseNormalMap", material->IsUseNormalMap());
