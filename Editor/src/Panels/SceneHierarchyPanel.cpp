@@ -265,13 +265,7 @@ namespace Ethereal
                 for (size_t index = 0; index < componentMaterialTable->GetMaterialCount(); index++) {
                     UI::BeginPropertyGrid();
 
-                    bool hasComponentMaterial = componentMaterialTable->HasMaterial(index);
-                    bool hasMeshMaterial = meshMaterialTable && meshMaterialTable->HasMaterial(index);
-                    Ref<MaterialAsset> material;
-                    if (hasMeshMaterial && !hasComponentMaterial)  // Not Override
-                        material = meshMaterialTable->GetMaterial(index);
-                    else if (hasComponentMaterial)  // Override
-                        material = componentMaterialTable->GetMaterial(index);
+                    Ref<MaterialAsset> material = componentMaterialTable->GetMaterial(index);
 
                     std::string label = fmt::format("[Material {0}]", index);
                     ImGui::PushID(label.c_str());
@@ -281,9 +275,32 @@ namespace Ethereal
                     ImGui::NextColumn();
                     UI::ShiftCursorY(9.0f);
 
-                    std::string materialname = material->GetName();
-                    if (materialname.empty()) materialname = "Empty Name";
-                    ImGui::Text(materialname.c_str());
+                    ImGui::PushItemWidth(-1);
+                    ImVec2 originalButtonTextAlign = ImGui::GetStyle().ButtonTextAlign;
+                    ImGui::GetStyle().ButtonTextAlign = {0.0f, 0.5f};
+                    float width = ImGui::GetContentRegionAvail().x;
+                    UI::PushID();
+                    {
+                        float itemHeight = 28.0f;
+                        std::string materialname = material->GetName();
+                        if (materialname.empty()) materialname = "Empty Name";
+                        ImGui::Button(materialname.c_str(), ImVec2{width, itemHeight});
+                        ImGui::GetStyle().ButtonTextAlign = originalButtonTextAlign;
+                    }
+                    UI::PopID();
+
+                    if (ImGui::BeginDragDropTarget()) {
+                        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
+                            AssetHandle assetHandle = *((AssetHandle*)payload->Data);
+                            Ref<Asset> asset = AssetManager::GetAsset<Asset>(assetHandle);
+                            if (asset && asset->GetAssetType() == AssetType::Material) {
+                                componentMaterialTable->SetMaterial(index, asset.As<MaterialAsset>());
+                            }
+                        }
+                        ImGui::EndDragDropTarget();
+                    }
+
+                    UI::DrawItemActivityOutline(2.0f, true, Colors::Theme::accent);
 
                     ImGui::PopID();
                     UI::EndPropertyGrid();

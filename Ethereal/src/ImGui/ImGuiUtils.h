@@ -55,4 +55,42 @@ namespace Ethereal::UI
             }
         }
     }  // namespace Draw
+
+    //=========================================================================================
+    /// Rectangle
+
+    static inline ImRect GetItemRect() { return ImRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax()); }
+
+    static inline ImRect RectExpanded(const ImRect& rect, float x, float y) {
+        ImRect result = rect;
+        result.Min.x -= x;
+        result.Min.y -= y;
+        result.Max.x += x;
+        result.Max.y += y;
+        return result;
+    }
+
+    static inline ImRect RectOffset(const ImRect& rect, float x, float y) {
+        ImRect result = rect;
+        result.Min.x += x;
+        result.Min.y += y;
+        result.Max.x += x;
+        result.Max.y += y;
+        return result;
+    }
+
+    static inline ImRect RectOffset(const ImRect& rect, ImVec2 xy) { return RectOffset(rect, xy.x, xy.y); }
+
+    static void DrawItemActivityOutline(float rounding = 0.0f, bool drawWhenInactive = false, ImColor colourWhenActive = ImColor(80, 80, 80)) {
+        auto* drawList = ImGui::GetWindowDrawList();
+        const ImRect rect = RectExpanded(GetItemRect(), 1.0f, 1.0f);
+        if (ImGui::IsItemHovered() && !ImGui::IsItemActive()) {
+            drawList->AddRect(rect.Min, rect.Max, ImColor(60, 60, 60), rounding, 0, 1.5f);
+        }
+        if (ImGui::IsItemActive()) {
+            drawList->AddRect(rect.Min, rect.Max, colourWhenActive, rounding, 0, 1.0f);
+        } else if (!ImGui::IsItemHovered() && drawWhenInactive) {
+            drawList->AddRect(rect.Min, rect.Max, ImColor(50, 50, 50), rounding, 0, 1.0f);
+        }
+    };
 }  // namespace Ethereal::UI
