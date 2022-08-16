@@ -63,7 +63,7 @@ namespace Ethereal
         // TODO : make skybox render pass a subpass of main camera render pass
         m_MainCameraRenderPass->m_Framebuffer->Bind();
         m_Environment->IrradianceMap->Bind(0);
-        m_SkyboxRenderPass->Draw();
+        // m_SkyboxRenderPass->Draw();
         m_MainCameraRenderPass->m_Framebuffer->Unbind();
 
         // For postprocessing

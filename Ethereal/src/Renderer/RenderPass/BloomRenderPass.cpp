@@ -28,39 +28,93 @@ namespace Ethereal
             ET_CORE_WARN("BloomRenderPass::Draw() - MainImage is nullptr");
             return;
         }
-
+        m_Framebuffer->Resize(m_Width, m_Height);
         m_Framebuffer->Bind();
 
         // Draw BrightArea Image
         m_Shader_Bright->Bind();
         m_Shader_Bright->SetInt("u_MainImage", 0);
-        m_Shader_Bright->SetFloat("u_Threshold", 0.6f);
+        m_Shader_Bright->SetFloat("u_Threshold", 1.0f);
         m_MainImage->Bind(0);
         m_BrightAreaImage->BindToFramebuffer(0);
         RenderCommand::Clear();
         RenderCommand::DrawIndexed(m_Quad->GetMeshSource()->GetVertexArray(), m_Quad->GetMeshSource()->GetIndexBuffer()->GetCount());
 
         // Blur Image
+
+        m_Framebuffer->Resize(m_Width, m_Height);
+        m_Framebuffer->Bind();
+        // Down Sampler
         m_Shader_Blur->Bind();
-        m_Shader_Blur->SetInt("u_BrightImage", 0);
-        bool horizontal = true, first_iteration = true;
-        for (int i = 0; i < 10; i++) {
-            m_Shader_Blur->SetInt("u_Horizontal", horizontal);
-            // Set blur parameters here
-            m_BlurImage[horizontal ? 0 : 1]->BindToFramebuffer(0);
-            first_iteration ? m_BrightAreaImage->Bind(0) : m_BlurImage[!horizontal ? 0 : 1]->Bind(0);
-            RenderCommand::Clear();
+        m_Shader_Blur->SetInt("u_DownSamplerImage", 0);
+        m_Shader_Blur->SetInt("u_DownSample", true);
+        m_Shader_Blur->SetInt("o_image", 0);
+        m_Shader_Blur->SetInt("i_image", 1);
+
+        m_DownSampledImage->BindImage(0, 0);
+        m_BrightAreaImage->Bind(0);
+        m_Shader_Blur->SetInt("u_MipLevel", 0);
+        m_DownSampledImage->BindToFramebuffer(0, 0);
+
+        RenderCommand::Clear();
+        RenderCommand::DrawIndexed(m_Quad->GetMeshSource()->GetVertexArray(), m_Quad->GetMeshSource()->GetIndexBuffer()->GetCount());
+
+        for (int i = 1; i < m_MipLevels; i++) {
+            auto mipWidth = static_cast<unsigned int>(m_Width * std::pow(0.5, i));
+            auto mipHeight = static_cast<unsigned int>(m_Height * std::pow(0.5, i));
+
+            m_Framebuffer->Resize(mipWidth, mipHeight);
+            m_Framebuffer->Bind();
+
+            m_DownSampledImage->Bind(0);
+            m_Shader_Blur->SetInt("u_MipLevel", i);
+            m_DownSampledImage->BindImage(0, i);
+            m_DownSampledImage->BindToFramebuffer(0, i);
+
             RenderCommand::DrawIndexed(m_Quad->GetMeshSource()->GetVertexArray(), m_Quad->GetMeshSource()->GetIndexBuffer()->GetCount());
-            horizontal = !horizontal;
-            first_iteration = false;
+        }
+
+        // Up Sampler
+        auto mipWidth = static_cast<unsigned int>(m_Width * std::pow(0.5, m_MipLevels - 2));
+        auto mipHeight = static_cast<unsigned int>(m_Height * std::pow(0.5, m_MipLevels - 2));
+        m_Framebuffer->Resize(mipWidth, mipHeight);
+        m_Framebuffer->Bind();
+
+        m_Shader_Blur->SetInt("u_DownSample", false);
+        m_DownSampledImage->Bind(0);
+
+        m_Shader_Blur->SetInt("u_FirstUpSample", true);
+        m_Shader_Blur->SetInt("u_MipLevel", m_MipLevels - 2);
+        m_UpSampledImage->BindImage(0, m_MipLevels - 2);
+
+        RenderCommand::DrawIndexed(m_Quad->GetMeshSource()->GetVertexArray(), m_Quad->GetMeshSource()->GetIndexBuffer()->GetCount());
+
+        for (int i = m_MipLevels - 3; i >= 0; --i) {
+            mipWidth = static_cast<unsigned int>(m_Width * std::pow(0.5, i));
+            mipHeight = static_cast<unsigned int>(m_Height * std::pow(0.5, i));
+
+            m_Framebuffer->Resize(mipWidth, mipHeight);
+            m_Framebuffer->Bind();
+            m_DownSampledImage->Bind(0);
+
+            m_Shader_Blur->SetInt("u_DownSample", false);
+            m_Shader_Blur->SetInt("u_FirstUpSample", false);
+            m_Shader_Blur->SetInt("u_MipLevel", i);
+            m_UpSampledImage->BindImage(0, i);
+            m_UpSampledImage->BindImage(1, i + 1);
+
+            RenderCommand::DrawIndexed(m_Quad->GetMeshSource()->GetVertexArray(), m_Quad->GetMeshSource()->GetIndexBuffer()->GetCount());
         }
 
         // Merge Image
+        m_Framebuffer->Resize(m_Width, m_Height);
+        m_Framebuffer->Bind();
+
         m_Shader_Merge->Bind();
         m_Shader_Merge->SetInt("u_MainImage", 0);
         m_MainImage->Bind(0);
         m_Shader_Merge->SetInt("u_BlurImage", 1);
-        m_BlurImage[!horizontal ? 0 : 1]->Bind(1);
+        m_UpSampledImage->Bind(1);
         m_BloomImage->BindToFramebuffer(0);
         RenderCommand::Clear();
         RenderCommand::DrawIndexed(m_Quad->GetMeshSource()->GetVertexArray(), m_Quad->GetMeshSource()->GetIndexBuffer()->GetCount());
@@ -74,15 +128,25 @@ namespace Ethereal
     }
 
     void BloomRenderPass::Invalidate(uint32_t width, uint32_t height) {
+        m_Height = height;
+        m_Width = width;
         Ref<TextureData> data = Ref<TextureData>::Create();
         data->m_width = width;
         data->m_height = height;
         data->m_depth = 1;
         data->m_type = ETHEREAL_IMAGE_TYPE::ETHEREAL_IMAGE_TYPE_2D;
-        data->m_format = ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_R16G16B16_HDR;
+        data->m_format = ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_R16G16B16A16_HDR;
         m_BrightAreaImage = Texture2D::Create(data);
         m_BlurImage[0] = Texture2D::Create(data);
         m_BlurImage[1] = Texture2D::Create(data);
         m_BloomImage = Texture2D::Create(data);
+
+        m_UpSampledImage = Texture2D::Create(data);
+        m_UpSampledImage->GenerateMipmaps();
+
+        m_DownSampledImage = Texture2D::Create(data);
+        m_DownSampledImage->GenerateMipmaps();
+
+        m_MipLevels = log(std::min(height, width)) / log(2) - 1;
     }
 }  // namespace Ethereal

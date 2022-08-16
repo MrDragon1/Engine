@@ -20,33 +20,117 @@ void main()
     #type fragment
     #version 460 core
 
-layout(location = 0) out vec4 color;
+//layout(location = 0) out vec4 color;
+
 in vec2 v_TexCoord;
 
+uniform layout(rgba16f) image2D o_image;
+uniform layout(rgba16f) image2D i_image;
+uniform sampler2D u_DownSamplerImage;
+uniform int u_DownSample;
+uniform int u_FirstUpSample;
+uniform int u_MipLevel;
 
-uniform sampler2D u_BrightImage;
-uniform float weight[16] = float[] (0.0794977567272904, 0.0763806050998811, 0.0705081851146027, 0.0625351503339776, 0.0532889399491673, 0.0436292939353091, 0.0343200181681762, 0.0259385117379726, 0.0188352253216535, 0.0131408908031312, 0.00880860252810425, 0.00567306084694417, 0.00351039583279473, 0.00208700245410541, 0.00119211471805973, 0.000654246428830130);
-uniform bool u_Horizontal;
+
+float GaussianWeight(float x, float y, float sigma)
+{
+    float PI = 3.1415926;
+    float E = 2.71828182826;
+    float sigma_2 = pow(sigma, 2.0);
+
+    float a = -(x*x+y*y) / (2.0 * sigma_2);
+    return pow(E, a) / (2.0 * PI * sigma_2);
+
+}
+
+vec3 DownsampleBox13(sampler2D tex, float lod, vec2 uv, vec2 texelSize)
+{
+    texelSize *= 0.5f;// Sample from center of texels
+    float weight = 0.0;
+    vec3 result = vec3(0.0);
+    for (int i = -3; i <= 3; ++i)
+    {
+        for (int j = -3; j <= 3; ++j)
+        {
+            float w = GaussianWeight(i, j, 4.0);
+            result += textureLod(tex, uv + vec2(texelSize.x * i, texelSize.y * j), lod).rgb * w;
+            weight += w;
+        }
+    }
+    return result / weight;
+}
+vec3 UpsampleTent9(sampler2D tex, float lod, vec2 uv, vec2 texelSize, float radius)
+{
+    texelSize *= 0.5f;
+    float weight = 0.0;
+    vec3 result = vec3(0.0);
+    for (int i = -3; i <= 3; ++i)
+    {
+        for (int j = -3; j <= 3; ++j)
+        {
+            float w = GaussianWeight(i, j, 4.0);
+            result += textureLod(tex, uv + vec2(texelSize.x * i * radius, texelSize.y * j * radius), lod).rgb * w;
+            weight += w;
+        }
+    }
+    return result / weight;
+}
+
+vec3 Blur(ivec2 coords)
+{
+    float weight = 0.0;
+    vec3 result = vec3(0.0);
+    for (int i = -3; i <= 3; ++i)
+    {
+        for (int j = -3; j <= 3; ++j)
+        {
+            float w = GaussianWeight(i, j, 4.0);
+            result += imageLoad(i_image, coords + ivec2(i, j)).rgb * w;
+            weight += w;
+        }
+    }
+    return result / weight;
+}
 
 void main()
 {
-    vec2 tex_offset = 1.0 / textureSize(u_BrightImage, 0);// gets size of single texel
-    vec3 result = texture(u_BrightImage, v_TexCoord).rgb * weight[0];
-    if (u_Horizontal)
+    vec2 imgSize = vec2(imageSize(o_image));
+    ivec2 coords = ivec2(gl_FragCoord.xy);
+    vec3 result = vec3(1.0f, 0.0f, 0.0f);
+    vec2 texCoords = vec2(float(coords.x) / imgSize.x, float(coords.y) / imgSize.y);
+    texCoords += (1.0f / imgSize) * 0.5f;
+
+    if (bool(u_DownSample))
     {
-        for (int i = 1; i < 16; ++i)
+        vec2 texSize = vec2(textureSize(u_DownSamplerImage, int(u_MipLevel)));
+        if (int(u_MipLevel) == 0)
         {
-            result += texture(u_BrightImage, v_TexCoord + vec2(tex_offset.x * i, 0.0)).rgb * weight[i];
-            result += texture(u_BrightImage, v_TexCoord - vec2(tex_offset.x * i, 0.0)).rgb * weight[i];
+            result.rgb = texture(u_DownSamplerImage, texCoords).rgb;
+            //result = Prefilter(result, texCoords);
+        }
+        else {
+            result.rgb = DownsampleBox13(u_DownSamplerImage, u_MipLevel - 1.0f, texCoords, 1.0f / texSize);
         }
     }
-    else
-    {
-        for (int i = 1; i < 16; ++i)
+    else {
+        if (bool(u_FirstUpSample))
         {
-            result += texture(u_BrightImage, v_TexCoord + vec2(0.0, tex_offset.y * i)).rgb * weight[i];
-            result += texture(u_BrightImage, v_TexCoord - vec2(0.0, tex_offset.y * i)).rgb * weight[i];
+            vec2 bloomTexSize = imgSize / 2.0;
+            float sampleScale = 1.0f;
+            vec3 upsampledTexture = UpsampleTent9(u_DownSamplerImage, u_MipLevel + 1.0f, texCoords, 1.0f / bloomTexSize, sampleScale);
+            vec3 existing = UpsampleTent9(u_DownSamplerImage, u_MipLevel, texCoords, 1.0f / imgSize, sampleScale);
+
+            result.rgb = existing + upsampledTexture;
+        }
+        else {
+            vec2 bloomTexSize = imgSize / 2.0;
+            float sampleScale = 1.0f;
+
+            vec3 upsampledTexture = Blur(coords/2);
+            vec3 existing = UpsampleTent9(u_DownSamplerImage, u_MipLevel, texCoords, 1.0f / imgSize, sampleScale);
+
+            result.rgb = existing + upsampledTexture;
         }
     }
-    color = vec4(result, 1.0);
+    imageStore(o_image, coords, vec4(result, 1.0));
 } 

@@ -122,7 +122,7 @@ namespace Ethereal
             textureData->m_pixels = malloc(datasize);
             memcpy(textureData->m_pixels, data, datasize);
             if (hdr) {
-                textureData->m_format = ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_R16G16B16_HDR;
+                textureData->m_format = ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_R16G16B16A16_HDR;
             } else {
                 if (channels == 4) {
                     textureData->m_format = ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_R8G8B8A8_UNORM;
