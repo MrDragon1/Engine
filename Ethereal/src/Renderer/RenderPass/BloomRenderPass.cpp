@@ -46,15 +46,14 @@ namespace Ethereal
         m_Framebuffer->Bind();
         // Down Sampler
         m_Shader_Blur->Bind();
-        m_Shader_Blur->SetInt("u_DownSamplerImage", 0);
         m_Shader_Blur->SetInt("u_DownSample", true);
         m_Shader_Blur->SetInt("o_image", 0);
         m_Shader_Blur->SetInt("i_image", 1);
+        m_Shader_Blur->SetInt("i_DownSamplerImage", 2);
 
         m_DownSampledImage->BindImage(0, 0);
-        m_BrightAreaImage->Bind(0);
+        m_BrightAreaImage->BindImage(1);
         m_Shader_Blur->SetInt("u_MipLevel", 0);
-        m_DownSampledImage->BindToFramebuffer(0, 0);
 
         RenderCommand::Clear();
         RenderCommand::DrawIndexed(m_Quad->GetMeshSource()->GetVertexArray(), m_Quad->GetMeshSource()->GetIndexBuffer()->GetCount());
@@ -66,10 +65,9 @@ namespace Ethereal
             m_Framebuffer->Resize(mipWidth, mipHeight);
             m_Framebuffer->Bind();
 
-            m_DownSampledImage->Bind(0);
+            m_DownSampledImage->BindImage(1, i - 1);
             m_Shader_Blur->SetInt("u_MipLevel", i);
             m_DownSampledImage->BindImage(0, i);
-            m_DownSampledImage->BindToFramebuffer(0, i);
 
             RenderCommand::DrawIndexed(m_Quad->GetMeshSource()->GetVertexArray(), m_Quad->GetMeshSource()->GetIndexBuffer()->GetCount());
         }
@@ -81,11 +79,12 @@ namespace Ethereal
         m_Framebuffer->Bind();
 
         m_Shader_Blur->SetInt("u_DownSample", false);
-        m_DownSampledImage->Bind(0);
 
         m_Shader_Blur->SetInt("u_FirstUpSample", true);
         m_Shader_Blur->SetInt("u_MipLevel", m_MipLevels - 2);
         m_UpSampledImage->BindImage(0, m_MipLevels - 2);
+        m_DownSampledImage->BindImage(1, m_MipLevels - 1);
+        m_DownSampledImage->BindImage(2, m_MipLevels - 2);
 
         RenderCommand::DrawIndexed(m_Quad->GetMeshSource()->GetVertexArray(), m_Quad->GetMeshSource()->GetIndexBuffer()->GetCount());
 
@@ -95,13 +94,13 @@ namespace Ethereal
 
             m_Framebuffer->Resize(mipWidth, mipHeight);
             m_Framebuffer->Bind();
-            m_DownSampledImage->Bind(0);
 
             m_Shader_Blur->SetInt("u_DownSample", false);
             m_Shader_Blur->SetInt("u_FirstUpSample", false);
             m_Shader_Blur->SetInt("u_MipLevel", i);
             m_UpSampledImage->BindImage(0, i);
             m_UpSampledImage->BindImage(1, i + 1);
+            m_DownSampledImage->BindImage(2, i);
 
             RenderCommand::DrawIndexed(m_Quad->GetMeshSource()->GetVertexArray(), m_Quad->GetMeshSource()->GetIndexBuffer()->GetCount());
         }
@@ -147,6 +146,6 @@ namespace Ethereal
         m_DownSampledImage = Texture2D::Create(data);
         m_DownSampledImage->GenerateMipmaps();
 
-        m_MipLevels = log(std::min(height, width)) / log(2) - 1;
+        m_MipLevels = log(std::min(height, width)) / log(2);
     }
 }  // namespace Ethereal

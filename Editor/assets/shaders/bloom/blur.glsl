@@ -26,70 +26,185 @@ in vec2 v_TexCoord;
 
 uniform layout(rgba16f) image2D o_image;
 uniform layout(rgba16f) image2D i_image;
-uniform sampler2D u_DownSamplerImage;
+uniform layout(rgba16f) image2D i_DownSamplerImage;
+
 uniform int u_DownSample;
 uniform int u_FirstUpSample;
 uniform int u_MipLevel;
 
-
-float GaussianWeight(float x, float y, float sigma)
+// Quadratic color thresholding
+// curve = (threshold - knee, knee * 2, 0.25 / knee)
+vec3 QuadraticThreshold(vec3 color, float threshold, float knee)
 {
-    float PI = 3.1415926;
-    float E = 2.71828182826;
-    float sigma_2 = pow(sigma, 2.0);
-
-    float a = -(x*x+y*y) / (2.0 * sigma_2);
-    return pow(E, a) / (2.0 * PI * sigma_2);
-
+    vec3 curve = vec3(threshold - knee, knee * 2, 0.25 / knee);
+    // Maximum pixel brightness
+    float brightness = max(max(color.r, color.g), color.b);
+    // Quadratic curve
+    float rq = clamp(brightness - curve.x, 0.0, curve.y);
+    rq = (rq * rq) * curve.z;
+    color *= max(rq, brightness - threshold) / max(brightness, 1e-6);
+    return color;
 }
 
-vec3 DownsampleBox13(sampler2D tex, float lod, vec2 uv, vec2 texelSize)
+vec3 Prefilter(vec3 color)
 {
-    texelSize *= 0.5f;// Sample from center of texels
-    float weight = 0.0;
+    float clampValue = 20.0f;
+    color = clamp(color, vec3(0.0f), vec3(clampValue));
+    color = QuadraticThreshold(color, 1.0, 0.1);
+    return color;
+}
+
+
+vec3 FirstDownsampleBox13(ivec2 uv, int texelSize)
+{
+    // Center
+    float w[13] = float[](0.5, 0.5, 0.5, 0.5, 0.5, 0.125, 0.25, 0.125, 0.25, 0.125, 0.25, 0.125, 0.25);
+
+    vec3 A = imageLoad(i_image, uv).rgb;// 1/8
+    w[0] /= 1 + dot(vec3(0.2126, 0.7152, 0.0722), A);
+    // Inner box 0.125
+    vec3 B = imageLoad(i_image, uv + texelSize * ivec2(-1, -1)).rgb;// 1/8
+    w[1] /= 1 + dot(vec3(0.2126, 0.7152, 0.0722), B);
+    vec3 C = imageLoad(i_image, uv + texelSize * ivec2(-1, 1)).rgb;// 1/8
+    w[2] /= 1 + dot(vec3(0.2126, 0.7152, 0.0722), C);
+    vec3 D = imageLoad(i_image, uv + texelSize * ivec2(1, 1)).rgb;// 1/8
+    w[3] /= 1 + dot(vec3(0.2126, 0.7152, 0.0722), D);
+    vec3 E = imageLoad(i_image, uv + texelSize * ivec2(1, -1)).rgb;// 1/8
+    w[4] /= 1 + dot(vec3(0.2126, 0.7152, 0.0722), E);
+
+    // Outer box
+    vec3 F = imageLoad(i_image, uv + texelSize * ivec2(-2, -2)).rgb;// 1/32
+    w[5] /= 1 + dot(vec3(0.2126, 0.7152, 0.0722), F);
+    vec3 G = imageLoad(i_image, uv + texelSize * ivec2(-2, 0)).rgb;// 1/16
+    w[6] /= 1 + dot(vec3(0.2126, 0.7152, 0.0722), G);
+    vec3 H = imageLoad(i_image, uv + texelSize * ivec2(-2, 2)).rgb;// 1/32
+    w[7] /= 1 + dot(vec3(0.2126, 0.7152, 0.0722), H);
+    vec3 I = imageLoad(i_image, uv + texelSize * ivec2(0, 2)).rgb;// 1/16
+    w[8] /= 1 + dot(vec3(0.2126, 0.7152, 0.0722), I);
+    vec3 J = imageLoad(i_image, uv + texelSize * ivec2(2, 2)).rgb;// 1/32
+    w[9] /= 1 + dot(vec3(0.2126, 0.7152, 0.0722), J);
+    vec3 K = imageLoad(i_image, uv + texelSize * ivec2(2, 0)).rgb;// 1/16
+    w[10] /= 1 + dot(vec3(0.2126, 0.7152, 0.0722), K);
+    vec3 L = imageLoad(i_image, uv + texelSize * ivec2(2, -2)).rgb;// 1/32
+    w[11] /= 1 + dot(vec3(0.2126, 0.7152, 0.0722), L);
+    vec3 M = imageLoad(i_image, uv + texelSize * ivec2(0, -2)).rgb;// 1/16
+    w[12] /= 1 + dot(vec3(0.2126, 0.7152, 0.0722), M);
+
+    // Weights
     vec3 result = vec3(0.0);
-    for (int i = -3; i <= 3; ++i)
-    {
-        for (int j = -3; j <= 3; ++j)
-        {
-            float w = GaussianWeight(i, j, 4.0);
-            result += textureLod(tex, uv + vec2(texelSize.x * i, texelSize.y * j), lod).rgb * w;
-            weight += w;
-        }
-    }
-    return result / weight;
+    result += A * w[0];
+    result += B * w[1] + C * w[2] + D * w[3] + E * w[4];
+    result += F * w[5] + G * w[6] + H * w[7] + I * w[8] + J * w[9] + K * w[10] + L * w[11] + M * w[12];
+
+    float sum = 0.0;
+    for (int i =0;i<13;i++) sum += w[i];
+    result /= sum;
+    // 4 samples each
+    result *= 0.25f;
+    return result;
 }
+
+vec3 DownsampleBox13(ivec2 uv, int texelSize)
+{
+    // Center
+    vec3 A = imageLoad(i_image, uv).rgb;
+
+    // Inner box
+    vec3 B = imageLoad(i_image, uv + texelSize * ivec2(-1, -1)).rgb;
+    vec3 C = imageLoad(i_image, uv + texelSize * ivec2(-1, 1)).rgb;
+    vec3 D = imageLoad(i_image, uv + texelSize * ivec2(1, 1)).rgb;
+    vec3 E = imageLoad(i_image, uv + texelSize * ivec2(1, -1)).rgb;
+
+    // Outer box
+    vec3 F = imageLoad(i_image, uv + texelSize * ivec2(-2, -2)).rgb;
+    vec3 G = imageLoad(i_image, uv + texelSize * ivec2(-2, 0)).rgb;
+    vec3 H = imageLoad(i_image, uv + texelSize * ivec2(0, 2)).rgb;
+    vec3 I = imageLoad(i_image, uv + texelSize * ivec2(2, 2)).rgb;
+    vec3 J = imageLoad(i_image, uv + texelSize * ivec2(2, 2)).rgb;
+    vec3 K = imageLoad(i_image, uv + texelSize * ivec2(2, 0)).rgb;
+    vec3 L = imageLoad(i_image, uv + texelSize * ivec2(-2, -2)).rgb;
+    vec3 M = imageLoad(i_image, uv + texelSize * ivec2(0, -2)).rgb;
+
+    // Weights
+    vec3 result = vec3(0.0);
+    // Inner box
+    result += (B + C + D + E) * 0.5f;
+    // Bottom-left box
+    result += (F + G + A + M) * 0.125f;
+    // Top-left box
+    result += (G + H + I + A) * 0.125f;
+    // Top-right box
+    result += (A + I + J + K) * 0.125f;
+    // Bottom-right box
+    result += (M + A + K + L) * 0.125f;
+
+    // 4 samples each
+    result *= 0.25f;
+
+    return result;
+}
+
 vec3 UpsampleTent9(sampler2D tex, float lod, vec2 uv, vec2 texelSize, float radius)
 {
-    texelSize *= 0.5f;
-    float weight = 0.0;
-    vec3 result = vec3(0.0);
-    for (int i = -3; i <= 3; ++i)
-    {
-        for (int j = -3; j <= 3; ++j)
-        {
-            float w = GaussianWeight(i, j, 4.0);
-            result += textureLod(tex, uv + vec2(texelSize.x * i * radius, texelSize.y * j * radius), lod).rgb * w;
-            weight += w;
-        }
-    }
-    return result / weight;
+    vec4 offset = texelSize.xyxy * vec4(1.0f, 1.0f, -1.0f, 0.0f) * radius;
+
+    // Center
+    vec3 result = textureLod(tex, uv, lod).rgb * 4.0f;
+
+    result += textureLod(tex, uv - offset.xy, lod).rgb;
+    result += textureLod(tex, uv - offset.wy, lod).rgb * 2.0;
+    result += textureLod(tex, uv - offset.zy, lod).rgb;
+
+    result += textureLod(tex, uv + offset.zw, lod).rgb * 2.0;
+    result += textureLod(tex, uv + offset.xw, lod).rgb * 2.0;
+
+    result += textureLod(tex, uv + offset.zy, lod).rgb;
+    result += textureLod(tex, uv + offset.wy, lod).rgb * 2.0;
+    result += textureLod(tex, uv + offset.xy, lod).rgb;
+
+    return result * (1.0f / 16.0f);
 }
 
-vec3 Blur(ivec2 coords)
+vec3 Blur1(ivec2 coords)
 {
-    float weight = 0.0;
-    vec3 result = vec3(0.0);
-    for (int i = -3; i <= 3; ++i)
-    {
-        for (int j = -3; j <= 3; ++j)
-        {
-            float w = GaussianWeight(i, j, 4.0);
-            result += imageLoad(i_image, coords + ivec2(i, j)).rgb * w;
-            weight += w;
-        }
-    }
-    return result / weight;
+    ivec4 offset = ivec4(1, 1, -1, 0);
+
+    // Center
+    vec3 result = imageLoad(i_image, coords).rgb * 4.0f;
+
+    result += imageLoad(i_image, coords - offset.xy).rgb;
+    result += imageLoad(i_image, coords - offset.wy).rgb * 2.0;
+    result += imageLoad(i_image, coords - offset.zy).rgb;
+
+    result += imageLoad(i_image, coords + offset.zw).rgb * 2.0;
+    result += imageLoad(i_image, coords + offset.xw).rgb * 2.0;
+
+    result += imageLoad(i_image, coords + offset.zy).rgb;
+    result += imageLoad(i_image, coords + offset.wy).rgb * 2.0;
+    result += imageLoad(i_image, coords + offset.xy).rgb;
+
+    return result / 16.0;
+}
+
+vec3 Blur2(ivec2 coords)
+{
+    ivec4 offset = ivec4(1, 1, -1, 0);
+
+    // Center
+    vec3 result = imageLoad(i_DownSamplerImage, coords).rgb * 4.0f;
+
+    result += imageLoad(i_DownSamplerImage, coords - offset.xy).rgb;
+    result += imageLoad(i_DownSamplerImage, coords - offset.wy).rgb * 2.0;
+    result += imageLoad(i_DownSamplerImage, coords - offset.zy).rgb;
+
+    result += imageLoad(i_DownSamplerImage, coords + offset.zw).rgb * 2.0;
+    result += imageLoad(i_DownSamplerImage, coords + offset.xw).rgb * 2.0;
+
+    result += imageLoad(i_DownSamplerImage, coords + offset.zy).rgb;
+    result += imageLoad(i_DownSamplerImage, coords + offset.wy).rgb * 2.0;
+    result += imageLoad(i_DownSamplerImage, coords + offset.xy).rgb;
+
+    return result / 16.0;
 }
 
 void main()
@@ -102,33 +217,28 @@ void main()
 
     if (bool(u_DownSample))
     {
-        vec2 texSize = vec2(textureSize(u_DownSamplerImage, int(u_MipLevel)));
         if (int(u_MipLevel) == 0)
         {
-            result.rgb = texture(u_DownSamplerImage, texCoords).rgb;
-            //result = Prefilter(result, texCoords);
+            result.rgb = FirstDownsampleBox13(coords, 1);
+            result.rgb = Prefilter(result);
         }
         else {
-            result.rgb = DownsampleBox13(u_DownSamplerImage, u_MipLevel - 1.0f, texCoords, 1.0f / texSize);
+            result.rgb = DownsampleBox13(coords*2, 1);
         }
     }
     else {
         if (bool(u_FirstUpSample))
         {
-            vec2 bloomTexSize = imgSize / 2.0;
             float sampleScale = 1.0f;
-            vec3 upsampledTexture = UpsampleTent9(u_DownSamplerImage, u_MipLevel + 1.0f, texCoords, 1.0f / bloomTexSize, sampleScale);
-            vec3 existing = UpsampleTent9(u_DownSamplerImage, u_MipLevel, texCoords, 1.0f / imgSize, sampleScale);
+            vec3 upsampledTexture = Blur1(coords/2);
+            vec3 existing = Blur2(coords);
 
             result.rgb = existing + upsampledTexture;
         }
         else {
-            vec2 bloomTexSize = imgSize / 2.0;
             float sampleScale = 1.0f;
-
-            vec3 upsampledTexture = Blur(coords/2);
-            vec3 existing = UpsampleTent9(u_DownSamplerImage, u_MipLevel, texCoords, 1.0f / imgSize, sampleScale);
-
+            vec3 upsampledTexture = Blur1(coords/2);
+            vec3 existing = Blur2(coords);
             result.rgb = existing + upsampledTexture;
         }
     }
