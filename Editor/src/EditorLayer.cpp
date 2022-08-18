@@ -169,6 +169,9 @@ namespace Ethereal
         }
 
         ImGui::DragFloat3("Light Position", glm::value_ptr(m_LightPos), 0.1);
+        ImGui::DragFloat("Threshold", &GlobalContext().GetRenderSystem().m_BloomRenderPass->GetThreshold(), 0.05f, 0.0f);
+        ImGui::DragFloat("Knee", &GlobalContext().GetRenderSystem().m_BloomRenderPass->GetKnee(), 0.1f, 0.0f);
+        ImGui::DragFloat("Intensity", &GlobalContext().GetRenderSystem().m_BloomRenderPass->GetIntensity(), 0.01f, 0.0f);
         ImGui::End();
 
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});

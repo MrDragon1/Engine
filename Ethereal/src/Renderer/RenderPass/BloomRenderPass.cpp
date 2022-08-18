@@ -46,6 +46,9 @@ namespace Ethereal
         m_Framebuffer->Bind();
         // Down Sampler
         m_Shader_Blur->Bind();
+        m_Shader_Blur->SetFloat("u_Threshold", m_Threshold);
+        m_Shader_Blur->SetFloat("u_Knee", m_Knee);
+
         m_Shader_Blur->SetInt("u_DownSample", true);
         m_Shader_Blur->SetInt("o_image", 0);
         m_Shader_Blur->SetInt("i_image", 1);
@@ -79,8 +82,6 @@ namespace Ethereal
         m_Framebuffer->Bind();
 
         m_Shader_Blur->SetInt("u_DownSample", false);
-
-        m_Shader_Blur->SetInt("u_FirstUpSample", true);
         m_Shader_Blur->SetInt("u_MipLevel", m_MipLevels - 2);
         m_UpSampledImage->BindImage(0, m_MipLevels - 2);
         m_DownSampledImage->BindImage(1, m_MipLevels - 1);
@@ -96,7 +97,6 @@ namespace Ethereal
             m_Framebuffer->Bind();
 
             m_Shader_Blur->SetInt("u_DownSample", false);
-            m_Shader_Blur->SetInt("u_FirstUpSample", false);
             m_Shader_Blur->SetInt("u_MipLevel", i);
             m_UpSampledImage->BindImage(0, i);
             m_UpSampledImage->BindImage(1, i + 1);
@@ -110,6 +110,8 @@ namespace Ethereal
         m_Framebuffer->Bind();
 
         m_Shader_Merge->Bind();
+        m_Shader_Merge->SetFloat("u_Intensity", m_Intensity);
+
         m_Shader_Merge->SetInt("u_MainImage", 0);
         m_MainImage->Bind(0);
         m_Shader_Merge->SetInt("u_BlurImage", 1);
@@ -136,8 +138,6 @@ namespace Ethereal
         data->m_type = ETHEREAL_IMAGE_TYPE::ETHEREAL_IMAGE_TYPE_2D;
         data->m_format = ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_R16G16B16A16_HDR;
         m_BrightAreaImage = Texture2D::Create(data);
-        m_BlurImage[0] = Texture2D::Create(data);
-        m_BlurImage[1] = Texture2D::Create(data);
         m_BloomImage = Texture2D::Create(data);
 
         m_UpSampledImage = Texture2D::Create(data);

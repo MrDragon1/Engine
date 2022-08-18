@@ -20,8 +20,6 @@ void main()
     #type fragment
     #version 460 core
 
-//layout(location = 0) out vec4 color;
-
 in vec2 v_TexCoord;
 
 uniform layout(rgba16f) image2D o_image;
@@ -29,8 +27,9 @@ uniform layout(rgba16f) image2D i_image;
 uniform layout(rgba16f) image2D i_DownSamplerImage;
 
 uniform int u_DownSample;
-uniform int u_FirstUpSample;
 uniform int u_MipLevel;
+uniform float u_Threshold;
+uniform float u_Knee;
 
 // Quadratic color thresholding
 // curve = (threshold - knee, knee * 2, 0.25 / knee)
@@ -50,12 +49,11 @@ vec3 Prefilter(vec3 color)
 {
     float clampValue = 20.0f;
     color = clamp(color, vec3(0.0f), vec3(clampValue));
-    color = QuadraticThreshold(color, 1.0, 0.1);
+    color = QuadraticThreshold(color, u_Threshold, u_Knee);
     return color;
 }
 
-
-vec3 FirstDownsampleBox13(ivec2 uv, int texelSize)
+vec3 FirstDownsample(ivec2 uv, int texelSize)
 {
     // Center
     float w[13] = float[](0.5, 0.5, 0.5, 0.5, 0.5, 0.125, 0.25, 0.125, 0.25, 0.125, 0.25, 0.125, 0.25);
@@ -104,7 +102,7 @@ vec3 FirstDownsampleBox13(ivec2 uv, int texelSize)
     return result;
 }
 
-vec3 DownsampleBox13(ivec2 uv, int texelSize)
+vec3 Downsample(ivec2 uv, int texelSize)
 {
     // Center
     vec3 A = imageLoad(i_image, uv).rgb;
@@ -118,11 +116,11 @@ vec3 DownsampleBox13(ivec2 uv, int texelSize)
     // Outer box
     vec3 F = imageLoad(i_image, uv + texelSize * ivec2(-2, -2)).rgb;
     vec3 G = imageLoad(i_image, uv + texelSize * ivec2(-2, 0)).rgb;
-    vec3 H = imageLoad(i_image, uv + texelSize * ivec2(0, 2)).rgb;
-    vec3 I = imageLoad(i_image, uv + texelSize * ivec2(2, 2)).rgb;
+    vec3 H = imageLoad(i_image, uv + texelSize * ivec2(-2, 2)).rgb;
+    vec3 I = imageLoad(i_image, uv + texelSize * ivec2(0, 2)).rgb;
     vec3 J = imageLoad(i_image, uv + texelSize * ivec2(2, 2)).rgb;
     vec3 K = imageLoad(i_image, uv + texelSize * ivec2(2, 0)).rgb;
-    vec3 L = imageLoad(i_image, uv + texelSize * ivec2(-2, -2)).rgb;
+    vec3 L = imageLoad(i_image, uv + texelSize * ivec2(2, -2)).rgb;
     vec3 M = imageLoad(i_image, uv + texelSize * ivec2(0, -2)).rgb;
 
     // Weights
@@ -144,30 +142,9 @@ vec3 DownsampleBox13(ivec2 uv, int texelSize)
     return result;
 }
 
-vec3 UpsampleTent9(sampler2D tex, float lod, vec2 uv, vec2 texelSize, float radius)
+vec3 Blur1(ivec2 coords, int radius)
 {
-    vec4 offset = texelSize.xyxy * vec4(1.0f, 1.0f, -1.0f, 0.0f) * radius;
-
-    // Center
-    vec3 result = textureLod(tex, uv, lod).rgb * 4.0f;
-
-    result += textureLod(tex, uv - offset.xy, lod).rgb;
-    result += textureLod(tex, uv - offset.wy, lod).rgb * 2.0;
-    result += textureLod(tex, uv - offset.zy, lod).rgb;
-
-    result += textureLod(tex, uv + offset.zw, lod).rgb * 2.0;
-    result += textureLod(tex, uv + offset.xw, lod).rgb * 2.0;
-
-    result += textureLod(tex, uv + offset.zy, lod).rgb;
-    result += textureLod(tex, uv + offset.wy, lod).rgb * 2.0;
-    result += textureLod(tex, uv + offset.xy, lod).rgb;
-
-    return result * (1.0f / 16.0f);
-}
-
-vec3 Blur1(ivec2 coords)
-{
-    ivec4 offset = ivec4(1, 1, -1, 0);
+    ivec4 offset = ivec4(1, 1, -1, 0) * radius;
 
     // Center
     vec3 result = imageLoad(i_image, coords).rgb * 4.0f;
@@ -186,9 +163,9 @@ vec3 Blur1(ivec2 coords)
     return result / 16.0;
 }
 
-vec3 Blur2(ivec2 coords)
+vec3 Blur2(ivec2 coords, int radius)
 {
-    ivec4 offset = ivec4(1, 1, -1, 0);
+    ivec4 offset = ivec4(1, 1, -1, 0) * radius;
 
     // Center
     vec3 result = imageLoad(i_DownSamplerImage, coords).rgb * 4.0f;
@@ -212,35 +189,22 @@ void main()
     vec2 imgSize = vec2(imageSize(o_image));
     ivec2 coords = ivec2(gl_FragCoord.xy);
     vec3 result = vec3(1.0f, 0.0f, 0.0f);
-    vec2 texCoords = vec2(float(coords.x) / imgSize.x, float(coords.y) / imgSize.y);
-    texCoords += (1.0f / imgSize) * 0.5f;
 
     if (bool(u_DownSample))
     {
         if (int(u_MipLevel) == 0)
         {
-            result.rgb = FirstDownsampleBox13(coords, 1);
+            result.rgb = FirstDownsample(coords, 1);
             result.rgb = Prefilter(result);
         }
         else {
-            result.rgb = DownsampleBox13(coords*2, 1);
+            result.rgb = Downsample(coords*2, 1);
         }
     }
     else {
-        if (bool(u_FirstUpSample))
-        {
-            float sampleScale = 1.0f;
-            vec3 upsampledTexture = Blur1(coords/2);
-            vec3 existing = Blur2(coords);
-
-            result.rgb = existing + upsampledTexture;
-        }
-        else {
-            float sampleScale = 1.0f;
-            vec3 upsampledTexture = Blur1(coords/2);
-            vec3 existing = Blur2(coords);
-            result.rgb = existing + upsampledTexture;
-        }
+        vec3 upsampledTexture = Blur1(coords/2, 1);
+        vec3 existing = Blur2(coords, 1);
+        result.rgb = existing + upsampledTexture;
     }
     imageStore(o_image, coords, vec4(result, 1.0));
 } 

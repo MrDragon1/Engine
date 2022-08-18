@@ -26,12 +26,13 @@ in vec2 v_TexCoord;
 
 uniform sampler2D u_MainImage;
 uniform sampler2D u_BlurImage;
+uniform float u_Intensity;
 
 void main()
 {
     const float gamma = 2.2;
     vec3 hdrColor = texture(u_MainImage, v_TexCoord).rgb;
-    vec3 bloomColor = texture(u_BlurImage, v_TexCoord).rgb;
+    vec3 bloomColor = texture(u_BlurImage, v_TexCoord).rgb * u_Intensity;
 
     hdrColor += bloomColor;
 
