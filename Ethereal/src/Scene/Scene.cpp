@@ -297,6 +297,30 @@ namespace Ethereal
     void Scene::OnComponentAdded(Entity entity, T& component) {
         static_assert(sizeof(T) == 0);
     }
+    Entity Scene::CreateEntityWithStaticMesh(AssetHandle assetHandle) {
+        if (!AssetManager::IsAssetHandleValid(assetHandle)) {
+            ET_CORE_WARN("Incorrect asset input!");
+            return {};
+        }
+        const AssetMetaData& assetData = AssetManager::GetMetadata(assetHandle);
+
+        Entity entity = CreateEntity(assetData.FilePath.stem().string());
+        auto& component = entity.AddComponent<StaticMeshComponent>();
+        component.StaticMesh = assetHandle;
+
+        auto mesh = AssetManager::GetAsset<StaticMesh>(assetHandle);
+        if (mesh->GetMaterials()->GetMaterialCount() > component.MaterialTable->GetMaterialCount()) {
+            component.MaterialTable->SetMaterialCount(mesh->GetMaterials()->GetMaterialCount());
+        }
+
+        // Get a material from meshComponent materialTable if it has (not the copy of the material)
+        for (int index = 0; index < component.MaterialTable->GetMaterialCount(); index++) {
+            if (mesh->GetMaterials()->HasMaterial(index)) {
+                component.MaterialTable->SetMaterial(index, mesh->GetMaterials()->GetMaterial(index));
+            }
+        }
+        return entity;
+    }
     template <>
     void Scene::OnComponentAdded<IDComponent>(Entity entity, IDComponent& component) {}
     template <>

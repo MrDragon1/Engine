@@ -205,7 +205,11 @@ namespace Ethereal
                     const AssetMetaData& assetData = AssetManager::GetMetadata(assetHandle);
 
                     std::filesystem::path workingDirPath = Project::GetAssetDirectory() / assetData.FilePath;
-                    OpenScene(workingDirPath.string());
+
+                    if (assetData.Type == AssetType::Scene)
+                        OpenScene(workingDirPath.string());
+                    else if (assetData.Type == AssetType::StaticMesh)
+                        m_EditorScene->CreateEntityWithStaticMesh(assetHandle);
                 }
                 ImGui::EndDragDropTarget();
             }

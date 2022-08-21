@@ -23,6 +23,7 @@ namespace Ethereal
         Entity CreateEntity(const std::string& name = std::string());
         Entity CreateEntityWithUUID(UUID uuid, const std::string& name = std::string());
         Entity Create3DObject(ETHEREAL_BASIC_3DOBJECT type);
+        Entity CreateEntityWithStaticMesh(AssetHandle assetHandle);
 
         void OnUpdateRuntime(Timestep ts);
         void OnUpdateEditor(Timestep ts, EditorCamera& editorCamera);
