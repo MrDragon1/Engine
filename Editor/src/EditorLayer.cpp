@@ -9,6 +9,7 @@
 #include "Utils/PlatformUtils.h"
 #include "imgui.h"
 #include "ImGui/ImGuizmo.h"
+#include "ImGui/UI.h"
 
 namespace Ethereal
 {
@@ -111,8 +112,6 @@ namespace Ethereal
         }
 
         style.WindowMinSize.x = minWinSizeX;
-        static bool bShowDemoImGui = false;
-        static bool bShowSkyboxSettings = false;
         if (ImGui::BeginMenuBar()) {
             if (ImGui::BeginMenu("File")) {
                 // Disabling fullscreen would allow the window to be moved to the front of other windows,
@@ -132,17 +131,18 @@ namespace Ethereal
                 ImGui::EndMenu();
             }
             if (ImGui::BeginMenu("Settings")) {
-                ImGui::MenuItem("Skybox", nullptr, &bShowSkyboxSettings);
+                ImGui::MenuItem("Skybox", nullptr, &b_ShowSkyboxSettings);
                 ImGui::EndMenu();
             }
             if (ImGui::BeginMenu("Help")) {
-                ImGui::MenuItem("Show Demo ImGui", nullptr, &bShowDemoImGui);
+                ImGui::MenuItem("Show Demo ImGui", nullptr, &b_ShowDemoImGui);
                 ImGui::EndMenu();
             }
             ImGui::EndMenuBar();
         }
-        if (bShowDemoImGui) ImGui::ShowDemoWindow(&bShowDemoImGui);
-        if (bShowSkyboxSettings) ShowSkyboxSettingWindow(&bShowSkyboxSettings);
+        if (b_ShowDemoImGui) ImGui::ShowDemoWindow(&b_ShowDemoImGui);
+        if (b_ShowSkyboxSettings) ShowSkyboxSettingWindow(&b_ShowSkyboxSettings);
+        if (b_ShowProjectSettings) ShowProjectSettingWindow(&b_ShowProjectSettings);
 
         m_SceneHierarchyPanel.OnImGuiRender();
         m_ContentBrowserPanel.OnImGuiRender();
@@ -169,9 +169,6 @@ namespace Ethereal
         }
 
         ImGui::DragFloat3("Light Position", glm::value_ptr(m_LightPos), 0.1);
-        ImGui::DragFloat("Threshold", &GlobalContext().GetRenderSystem().m_BloomRenderPass->GetThreshold(), 0.05f, 0.0f);
-        ImGui::DragFloat("Knee", &GlobalContext().GetRenderSystem().m_BloomRenderPass->GetKnee(), 0.1f, 0.0f);
-        ImGui::DragFloat("Intensity", &GlobalContext().GetRenderSystem().m_BloomRenderPass->GetIntensity(), 0.01f, 0.0f);
         ImGui::End();
 
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
@@ -461,6 +458,31 @@ namespace Ethereal
                 }
             }
             ImGui::Separator();
+        }
+
+        ImGui::End();
+    }
+    void EditorLayer::ShowProjectSettingWindow(bool* p_open) {
+        if (ImGui::Begin("Project Settings", p_open, ImGuiWindowFlags_NoCollapse)) {
+            if (UI::BeginTreeNode("Bloom")) {
+                UI::BeginPropertyGrid();
+                ImGui::Text("Threshold");
+                ImGui::NextColumn();
+                ImGui::DragFloat("##BloomThreshold", &GlobalContext().GetRenderSystem().m_BloomRenderPass->GetThreshold(), 0.05f, 0.0f);
+                ImGui::NextColumn();
+
+                ImGui::Text("Knee");
+                ImGui::NextColumn();
+                ImGui::DragFloat("##BloomKnee", &GlobalContext().GetRenderSystem().m_BloomRenderPass->GetKnee(), 0.05f, 0.0f);
+                ImGui::NextColumn();
+
+                ImGui::Text("Intensity");
+                ImGui::NextColumn();
+                ImGui::DragFloat("##BloomIntensity", &GlobalContext().GetRenderSystem().m_BloomRenderPass->GetIntensity(), 0.01f, 0.0f);
+
+                UI::EndPropertyGrid();
+                UI::EndTreeNode();
+            }
         }
 
         ImGui::End();

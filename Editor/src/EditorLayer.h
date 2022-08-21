@@ -40,6 +40,7 @@ namespace Ethereal
 
         void UI_Toolbar();
         void ShowSkyboxSettingWindow(bool* p_open);
+        void ShowProjectSettingWindow(bool* p_open);
 
       private:
         OrthographicCameraController m_CameraController;
@@ -72,7 +73,9 @@ namespace Ethereal
         };
 
         SceneState m_SceneState = SceneState::Edit;
-
+        bool b_ShowDemoImGui = false;
+        bool b_ShowSkyboxSettings = false;
+        bool b_ShowProjectSettings = true;
         glm::vec3 m_LightPos = glm::vec3(-20, 40, -10);  // as far as possiable (away from the scene to avoid clamp shadow)
     };
 }  // namespace Ethereal
