@@ -44,6 +44,7 @@ namespace Ethereal
                               const glm::mat4& transform = glm::mat4(1.0f));
         void SubmitRenderSceneData(const RenderSceneData& data);
         void OnResize();
+        void LoadProjectSettings();
 
         Ref<StaticMesh> GetCubeStaticMesh() { return m_BuildinData->Cube; }
         Ref<StaticMesh> GetQuadStaticMesh() { return m_BuildinData->Quad; }
@@ -58,17 +59,18 @@ namespace Ethereal
         uint64_t GetSkyboxImage() { return m_EnvironmentMapRenderPass->m_Texture->GetRendererID(); };
         int GetMousePicking(int x, int y);
 
+      private:
         Ref<MainCameraRenderPass> m_MainCameraRenderPass;
-        Ref<ShadowMapRenderPass> m_ShadowMapRenderPass;
+        Ref<ShadowMapRenderPass> m_ShadowMapRenderPass;  // Don't use it for now.
         Ref<SkyboxRenderPass> m_SkyboxRenderPass;
         Ref<EnvironmentMapRenderPass> m_EnvironmentMapRenderPass;
         Ref<BloomRenderPass> m_BloomRenderPass;
 
+        Ref<Environment> m_Environment;
         Ref<Texture> m_MainImage;
-        // TODO: Ref<RenderContent>;
         uint32_t m_Height, m_Width;
+
         DrawLists* m_DrawLists;
         BuildinData* m_BuildinData;
-        Ref<Environment> m_Environment;
     };
 }  // namespace Ethereal

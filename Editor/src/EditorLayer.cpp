@@ -45,7 +45,6 @@ namespace Ethereal
                 break;
             }
         }
-        GlobalContext::GetRenderSystem().m_ShadowMapRenderPass->SetLightPosition(m_LightPos);
         GlobalContext::GetRenderSystem().Draw(ts);
 
         if (m_SceneState == SceneState::Edit) {
@@ -468,17 +467,17 @@ namespace Ethereal
                 UI::BeginPropertyGrid();
                 ImGui::Text("Threshold");
                 ImGui::NextColumn();
-                ImGui::DragFloat("##BloomThreshold", &GlobalContext().GetRenderSystem().m_BloomRenderPass->GetThreshold(), 0.05f, 0.0f);
+                ImGui::DragFloat("##BloomThreshold", &Project().GetSettings().bloomSetting.threshold, 0.05f, 0.0f);
                 ImGui::NextColumn();
 
                 ImGui::Text("Knee");
                 ImGui::NextColumn();
-                ImGui::DragFloat("##BloomKnee", &GlobalContext().GetRenderSystem().m_BloomRenderPass->GetKnee(), 0.05f, 0.0f);
+                ImGui::DragFloat("##BloomKnee", &Project().GetSettings().bloomSetting.knee, 0.05f, 0.0f);
                 ImGui::NextColumn();
 
                 ImGui::Text("Intensity");
                 ImGui::NextColumn();
-                ImGui::DragFloat("##BloomIntensity", &GlobalContext().GetRenderSystem().m_BloomRenderPass->GetIntensity(), 0.01f, 0.0f);
+                ImGui::DragFloat("##BloomIntensity", &Project().GetSettings().bloomSetting.intensity, 0.01f, 0.0f);
 
                 UI::EndPropertyGrid();
                 UI::EndTreeNode();

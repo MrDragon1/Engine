@@ -5,6 +5,16 @@
 
 namespace Ethereal
 {
+    // TODO: Serialize settings to .project file (not implement this file for now)
+    struct BloomSetting {
+        float intensity = 1.0;
+        float threshold = 1.0;
+        float knee = 0.1;
+    };
+
+    struct ProjectSetting {
+        BloomSetting bloomSetting;
+    };
 
     struct ProjectConfig {
         std::string Name;
@@ -33,6 +43,7 @@ namespace Ethereal
         ~Project();
 
         const ProjectConfig& GetConfig() const { return m_Config; }
+        ProjectSetting& GetSettings() { return m_Settings; }
 
         static Ref<Project> GetActive() { return s_ActiveProject; }
         static void SetActive(Ref<Project> project);
@@ -71,7 +82,7 @@ namespace Ethereal
 
       private:
         ProjectConfig m_Config;
-
+        ProjectSetting m_Settings;
         inline static Ref<Project> s_ActiveProject;
     };
 

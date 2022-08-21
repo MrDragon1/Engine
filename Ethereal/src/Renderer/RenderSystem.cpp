@@ -49,6 +49,8 @@ namespace Ethereal
     }
 
     void RenderSystem::Draw(Timestep ts) {
+        LoadProjectSettings();
+
         // m_ShadowMapRenderPass->SetLightPosition();
         m_MainCameraRenderPass->SetLightSpaceMatrix(m_ShadowMapRenderPass->m_ViewProjectionMatrix);
 
@@ -130,5 +132,11 @@ namespace Ethereal
         m_EnvironmentMapRenderPass->Draw();
         // TODO: Copy the Ref<TextureCube> otherwise every Environment will point to the same Ref
         return {m_EnvironmentMapRenderPass->m_EnvironmentCubeMap, m_EnvironmentMapRenderPass->m_ReflectionCubeMap};
+    }
+
+    void RenderSystem::LoadProjectSettings() {
+        m_BloomRenderPass->GetIntensity() = Project().GetSettings().bloomSetting.intensity;
+        m_BloomRenderPass->GetThreshold() = Project().GetSettings().bloomSetting.threshold;
+        m_BloomRenderPass->GetKnee() = Project().GetSettings().bloomSetting.knee;
     }
 }  // namespace Ethereal
