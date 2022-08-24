@@ -45,7 +45,7 @@ namespace Ethereal
                                               aiProcess_SortByPType |       // Split meshes by primitive type
                                               aiProcess_GenNormals |        // Make sure we have legit normals
                                               aiProcess_GenUVCoords |       // Convert UVs if required
-                                                                            //		aiProcess_OptimizeGraph |
+                                                                            // 		aiProcess_OptimizeGraph |
                                               aiProcess_OptimizeMeshes |    // Batch draws where possible
                                               aiProcess_JoinIdenticalVertices |
                                               aiProcess_GlobalScale |  // e.g. convert cm to m for fbx import (and other formats where cm is native)
@@ -88,7 +88,6 @@ namespace Ethereal
 
         for (unsigned m = 0; m < scene->mNumMeshes; m++) {
             aiMesh* mesh = scene->mMeshes[m];
-
             Submesh& submesh = m_Submeshes.emplace_back();
             submesh.BaseVertex = vertexCount;
             submesh.BaseIndex = indexCount;
@@ -237,12 +236,18 @@ namespace Ethereal
                 auto aiMaterial = m_Scene->mMaterials[i];
                 auto aiMaterialName = aiMaterial->GetName();
                 ET_CORE_INFO("  {0} (Index = {1})", aiMaterialName.data, i);
+                std::string materialName = aiMaterialName.C_Str();
+
+                if (materialName == "DefaultMaterial") {
+                    auto mi = AssetManager::GetAsset<MaterialAsset>("materials/M_Default.hmaterial");
+                    materials->SetMaterial(i, mi);
+                    continue;
+                }
+
                 auto mi = Ref<MaterialAsset>::Create(aiMaterialName.data);
                 materials->SetMaterial(i, mi);
 
                 aiString aiTexPath;
-                uint32_t textureCount = aiMaterial->GetTextureCount(aiTextureType_DIFFUSE);
-
                 glm::vec3 albedoColor(0.8f);
                 float emission = 0.0f;
                 aiColor3D aiColor, aiEmission;

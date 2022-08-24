@@ -150,7 +150,7 @@ namespace Ethereal
             Ref<MaterialTable> mt = Ref<MaterialTable>::Create();
             meshSource->LoadMaterials(mt);
             for (auto& m : mt->GetMaterials()) {
-                if (m.second->IsValid()) {
+                if (m.second->IsValid() && !m.second->IsCreated()) {
                     // TODO: create file in materials subdirectory, but this needs to create directory automatically which has not been implemented.
                     m.second = CreateNewAsset<MaterialAsset>(m.second->GetName() + ".hmaterial", path.parent_path().string(), m.second);
                 }

@@ -19,6 +19,7 @@ namespace Ethereal
         virtual AssetType GetAssetType() const { return AssetType::None; }
 
         bool IsValid() const { return ((Flags & (uint16_t)AssetFlag::Missing) | (Flags & (uint16_t)AssetFlag::Invalid)) == 0; }
+        bool IsCreated() const { return Handle; }
 
         virtual bool operator==(const Asset& other) const { return Handle == other.Handle; }
 

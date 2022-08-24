@@ -104,8 +104,8 @@ namespace Ethereal
                 auto handle = entity.GetComponent<StaticMeshComponent>().StaticMesh;
                 auto mesh = AssetManager::GetAsset<StaticMesh>(handle);
                 for (auto& submesh : mesh->GetMeshSource()->GetSubmeshes()) {
-                    glm::mat4 localTransform = submesh.Transform;
-                    glm::mat4 transform = entity.GetComponent<TransformComponent>().GetTransform() * localTransform;
+                    glm::mat4 localTransform = submesh.LocalTransform;
+                    glm::mat4 transform = entity.GetComponent<TransformComponent>().GetTransform() * submesh.Transform;
                     if (ImGui::TreeNode(submesh.NodeName.c_str())) {
                         {
                             auto [translation, rotation, scale] = GetTransformDecomposition(transform);
