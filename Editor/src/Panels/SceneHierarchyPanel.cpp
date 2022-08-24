@@ -290,12 +290,10 @@ namespace Ethereal
             UI::EndPropertyGrid();
 
             if (UI::BeginTreeNode("Materials")) {
-
                 for (size_t index = 0; index < componentMaterialTable->GetMaterialCount(); index++) {
                     UI::BeginPropertyGrid();
 
                     Ref<MaterialAsset> material = componentMaterialTable->GetMaterial(index);
-
                     std::string label = fmt::format("[Material {0}]", index);
                     ImGui::PushID(label.c_str());
 

@@ -6,16 +6,25 @@
 
 namespace Ethereal
 {
-    extern const std::filesystem::path g_AssetPath = "assets";
+    namespace Utils
+    {
+        static bool IsImageFormat(std::string filePath) {
+            std::string extension = filePath.substr(filePath.find_last_of(".") + 1);
+            if (extension == "png" || extension == "jpg" || extension == "bmp" || extension == "tga") {
+                return true;
+            }
+            return false;
+        }
+    }  // namespace Utils
 
-    ContentBrowserPanel::ContentBrowserPanel() : m_CurrentDirectory(g_AssetPath) {
+    ContentBrowserPanel::ContentBrowserPanel() : m_CurrentDirectory(Project::GetAssetDirectory()) {
         m_DirectoryIcon = Texture2D::Create("assets/icons/ContentBrowser/DirectoryIcon.png");
         m_FileIcon = Texture2D::Create("assets/icons/ContentBrowser/FileIcon.png");
     }
 
     void ContentBrowserPanel::OnImGuiRender() {
         ImGui::Begin("Content Browser");
-        if (m_CurrentDirectory != std::filesystem::path(g_AssetPath)) {
+        if (m_CurrentDirectory != Project::GetAssetDirectory()) {
             if (ImGui::Button("<-")) {
                 m_CurrentDirectory = m_CurrentDirectory.parent_path();
             }
@@ -39,12 +48,14 @@ namespace Ethereal
 
             Ref<Texture2D> icon = directoryEntry.is_directory() ? m_DirectoryIcon : m_FileIcon;
             ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
-
-            ImGui::ImageButton((ImTextureID)icon->GetRendererID(), {thumbnailSize, thumbnailSize}, {0, 1}, {1, 0});
+            if (Utils::IsImageFormat(path.string())) {
+                Ref<Texture2D> img = AssetManager::GetAsset<Texture>(path.string()).As<Texture2D>();
+                ImGui::ImageButton((ImTextureID)img->GetRendererID(), {thumbnailSize, thumbnailSize}, {0, 1}, {1, 0});
+            } else
+                ImGui::ImageButton((ImTextureID)icon->GetRendererID(), {thumbnailSize, thumbnailSize}, {0, 1}, {1, 0});
 
             if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
-                auto relativePath = std::filesystem::relative(path, g_AssetPath);
-                AssetHandle handle = AssetManager::GetAssetHandleFromFilePath(relativePath);
+                AssetHandle handle = AssetManager::GetAssetHandleFromFilePath(path);
                 ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", &handle, sizeof(AssetHandle));
                 ImGui::EndDragDropSource();
             }
