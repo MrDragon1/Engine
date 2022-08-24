@@ -15,7 +15,7 @@ namespace Ethereal
         uint32_t m_mip_levels{0};
         void* m_pixels{nullptr};
 
-        ETHEREAL_PIXEL_FORMAT m_format{ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_UNKNOWN};
+        ETHEREAL_PIXEL_FORMAT m_format{ETHEREAL_PIXEL_FORMAT::UNKNOWN};
         ETHEREAL_IMAGE_TYPE m_type{ETHEREAL_IMAGE_TYPE::ETHEREAL_IMAGE_TYPE_UNKNOWM};
 
         ETHEREAL_WARP_FORMAT m_warp_format{ETHEREAL_WARP_FORMAT::ETHEREAL_WARP_FORMAT_CLAMP_TO_EDGE};
@@ -58,10 +58,16 @@ namespace Ethereal
         static Ref<Texture2D> Create(const Ref<TextureData>& data);
     };
 
-    class TextureCube : public Texture{
+    class TextureCube : public Texture {
       public:
         virtual void BindToFramebuffer(uint32_t attachmentid, uint32_t face = 0, uint32_t miplevel = 0) const = 0;
         static Ref<TextureCube> Create(std::vector<std::string>& paths);
         static Ref<TextureCube> Create(const Ref<TextureData>& data);
+    };
+
+    class Texture3D : public Texture {
+      public:
+        virtual void BindToFramebufferDepth(uint32_t attachmentid) const = 0;
+        static Ref<Texture3D> Create(const Ref<TextureData>& data);
     };
 }  // namespace Ethereal

@@ -4,8 +4,7 @@ namespace Ethereal
 {
     void EnvironmentMapRenderPass::Init(uint32_t width, uint32_t height) {
         FramebufferSpecification fbSpec;
-        fbSpec.Attachments = {ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_PLACEHOLDER, ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_PLACEHOLDER,
-                              ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_DEPTH};
+        fbSpec.Attachments = {ETHEREAL_PIXEL_FORMAT::PLACEHOLDER, ETHEREAL_PIXEL_FORMAT::PLACEHOLDER, ETHEREAL_PIXEL_FORMAT::DEPTH};
         fbSpec.Width = width;
         fbSpec.Height = height;
 

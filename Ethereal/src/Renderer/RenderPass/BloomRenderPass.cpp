@@ -8,7 +8,7 @@ namespace Ethereal
 
         FramebufferSpecification fbSpec;
         // Input Image, BrightArea Image (Blur)
-        fbSpec.Attachments = {ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_PLACEHOLDER, ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_DEPTH};
+        fbSpec.Attachments = {ETHEREAL_PIXEL_FORMAT::PLACEHOLDER, ETHEREAL_PIXEL_FORMAT::DEPTH};
         fbSpec.Width = width;
         fbSpec.Height = height;
         m_Framebuffer = Framebuffer::Create(fbSpec);
@@ -136,7 +136,7 @@ namespace Ethereal
         data->m_height = height;
         data->m_depth = 1;
         data->m_type = ETHEREAL_IMAGE_TYPE::ETHEREAL_IMAGE_TYPE_2D;
-        data->m_format = ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_R16G16B16A16_HDR;
+        data->m_format = ETHEREAL_PIXEL_FORMAT::R16G16B16A16_HDR;
         m_BrightAreaImage = Texture2D::Create(data);
         m_BloomImage = Texture2D::Create(data);
 

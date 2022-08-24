@@ -6,8 +6,7 @@ namespace Ethereal
         m_ViewProjectionMatrix = glm::mat4(1.0f);
 
         FramebufferSpecification fbSpec;
-        fbSpec.Attachments = {ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_R16G16B16A16_HDR, ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_R32_INTEGER,
-                              ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_DEPTH};
+        fbSpec.Attachments = {ETHEREAL_PIXEL_FORMAT::R16G16B16A16_HDR, ETHEREAL_PIXEL_FORMAT::R32_INTEGER, ETHEREAL_PIXEL_FORMAT::DEPTH};
         fbSpec.Width = width;
         fbSpec.Height = height;
         m_Framebuffer = Framebuffer::Create(fbSpec);

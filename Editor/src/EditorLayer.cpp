@@ -22,8 +22,7 @@ namespace Ethereal
         m_IconStop = Texture2D::Create("assets/icons/StopButton.png");
 
         FramebufferSpecification fbSpec;
-        fbSpec.Attachments = {ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_R8G8B8A8_UNORM, ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_R32_INTEGER,
-                              ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_DEPTH};
+        fbSpec.Attachments = {ETHEREAL_PIXEL_FORMAT::R8G8B8A8_UNORM, ETHEREAL_PIXEL_FORMAT::R32_INTEGER, ETHEREAL_PIXEL_FORMAT::DEPTH};
         fbSpec.Width = 1280;
         fbSpec.Height = 720;
 

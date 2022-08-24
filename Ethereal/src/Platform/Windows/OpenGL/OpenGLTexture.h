@@ -25,11 +25,8 @@ namespace Ethereal
         virtual void BindImage(uint32_t attachmentid, uint32_t miplevel = 0) const override;
 
       private:
-        void GetOpenGLTextureFormat(const ETHEREAL_PIXEL_FORMAT& format);
-        void GetOpenGLWarpFormat(const ETHEREAL_WARP_FORMAT& warp);
-        void GetOpenGLFilterFormat(const ETHEREAL_FILTER_FORMAT& filter);
-
         void LoadTextureData(const Ref<TextureData>& data);
+
         uint32_t m_RendererID;
         uint32_t m_Width, m_Height;
         GLenum m_InternalFormat, m_DataFormat;
@@ -54,14 +51,42 @@ namespace Ethereal
         virtual bool operator==(const Texture& other) const override { return m_RendererID == other.GetRendererID(); }
         virtual bool IsLoaded() const override { return m_IsLoaded; };
 
-
         virtual void BindToFramebuffer(uint32_t attachmentid, uint32_t face, uint32_t miplevel = 0) const override;
         virtual void GenerateMipmaps() const override;
+
       private:
         void LoadTextureData(const Ref<TextureData>& data);
         uint32_t m_RendererID;
         uint32_t m_Width, m_Height;
 
+        bool m_IsLoaded = false;
+    };
+
+    class OpenGLTexture3D : public Texture3D {
+      public:
+        OpenGLTexture3D(const Ref<TextureData>& data);
+        virtual ~OpenGLTexture3D();
+
+        virtual uint32_t GetWidth() const override { return m_Width; };
+        virtual uint32_t GetHeight() const override { return m_Height; };
+        virtual uint32_t GetRendererID() const override { return m_RendererID; };
+
+        virtual void Bind(uint32_t slot = 0) const override;
+        virtual void SetData(void* data, uint32_t size) override { ET_CORE_WARN("Texture 3D does not support SetData"); };
+        virtual void Clear(int data) override { ET_CORE_WARN("Texture 3D does not support Clear data"); };
+        virtual bool operator==(const Texture& other) const override { return m_RendererID == other.GetRendererID(); }
+        virtual bool IsLoaded() const override { return m_IsLoaded; };
+
+        virtual void BindToFramebufferDepth(uint32_t attachmentid) const override;
+        virtual void GenerateMipmaps() const override { ET_CORE_WARN("Texture 3D does not support GenerateMipmaps"); };
+
+      private:
+        uint32_t m_RendererID;
+        uint32_t m_Width, m_Height, m_Depth;
+
+        GLenum m_InternalFormat, m_DataFormat;
+        GLenum m_DataType;
+        GLenum m_WarpFormat, m_FilterFormat;
         bool m_IsLoaded = false;
     };
 }  // namespace Ethereal

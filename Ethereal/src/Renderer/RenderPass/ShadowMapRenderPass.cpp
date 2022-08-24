@@ -4,7 +4,7 @@ namespace Ethereal
 {
     void ShadowMapRenderPass::Init(uint32_t width, uint32_t height) {
         FramebufferSpecification fbSpec;
-        fbSpec.Attachments = {ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_DEPTH};
+        fbSpec.Attachments = {ETHEREAL_PIXEL_FORMAT::DEPTH};
         fbSpec.Width = m_ShadowMapSize;
         fbSpec.Height = m_ShadowMapSize;
         m_Framebuffer = Framebuffer::Create(fbSpec);

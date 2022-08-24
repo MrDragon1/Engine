@@ -44,15 +44,29 @@ namespace Ethereal
     
     Ref<TextureCube> TextureCube::Create(const Ref<TextureData>& data)
     {
-        switch (RendererAPI::GetAPI())
-        {
-        case RendererAPI::API::None:    ET_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
-        case RendererAPI::API::OpenGL:  return Ref<OpenGLTextureCube>::Create(data);
+        switch (RendererAPI::GetAPI()) {
+            case RendererAPI::API::None:
+                ET_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
+                return nullptr;
+            case RendererAPI::API::OpenGL:
+                return Ref<OpenGLTextureCube>::Create(data);
         }
 
         ET_CORE_ASSERT(false, "Unknown RendererAPI!");
         return nullptr;
     }
 
+    Ref<Texture3D> Texture3D::Create(const Ref<TextureData>& data) {
+        switch (RendererAPI::GetAPI()) {
+            case RendererAPI::API::None:
+                ET_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
+                return nullptr;
+            case RendererAPI::API::OpenGL:
+                return Ref<OpenGLTexture3D>::Create(data);
+        }
 
-}
+        ET_CORE_ASSERT(false, "Unknown RendererAPI!");
+        return nullptr;
+    }
+
+}  // namespace Ethereal

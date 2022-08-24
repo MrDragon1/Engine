@@ -33,7 +33,7 @@ namespace Ethereal
         FramebufferSpecification m_Specification;
 
         std::vector<FramebufferTextureSpecification> m_ColorAttachmentSpecifications;
-        FramebufferTextureSpecification m_DepthAttachmentSpecification = ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_DEPTH;
+        FramebufferTextureSpecification m_DepthAttachmentSpecification = ETHEREAL_PIXEL_FORMAT::DEPTH;
 
         std::vector<Ref<Texture>> m_ColorAttachments;
         Ref<Texture> m_DepthAttachment = nullptr;

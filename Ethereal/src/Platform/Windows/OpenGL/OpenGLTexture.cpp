@@ -5,6 +5,119 @@
 
 namespace Ethereal
 {
+    namespace Utils
+    {
+        void GetOpenGLTextureFormat(const ETHEREAL_PIXEL_FORMAT& format, GLenum& internalFormat, GLenum& dataFormat, GLenum& dataType) {
+            // m_InternalFormat: https://www.khronos.org/opengl/wiki/Texture_Storage
+
+            // m_DataFormat: https://docs.gl/gl4/glTexSubImage2D
+            // Only: GL_RED, GL_RG, GL_RGB, GL_BGR, GL_RGBA, GL_BGRA, GL_DEPTH_COMPONENT, and GL_STENCIL_INDEX.
+            switch (format) {
+                case ETHEREAL_PIXEL_FORMAT::R8G8B8_UNORM:
+                    internalFormat = GL_RGB8;
+                    dataFormat = GL_RGB;
+                    dataType = GL_UNSIGNED_BYTE;
+                    break;
+                case ETHEREAL_PIXEL_FORMAT::R8G8B8_SRGB:
+                    internalFormat = GL_SRGB8;
+                    dataFormat = GL_RGB;
+                    dataType = GL_UNSIGNED_BYTE;
+                    break;
+                case ETHEREAL_PIXEL_FORMAT::R8G8B8A8_UNORM:
+                    internalFormat = GL_RGBA8;
+                    dataFormat = GL_RGBA;
+                    dataType = GL_UNSIGNED_BYTE;
+                    break;
+                case ETHEREAL_PIXEL_FORMAT::R8G8B8A8_SRGB:
+                    internalFormat = GL_SRGB8_ALPHA8;
+                    dataFormat = GL_RGBA;
+                    dataType = GL_UNSIGNED_BYTE;
+                    break;
+                case ETHEREAL_PIXEL_FORMAT::R32G32_FLOAT:
+                    internalFormat = GL_RG32F;
+                    dataFormat = GL_RG;
+                    dataType = GL_UNSIGNED_BYTE;
+                    break;
+                case ETHEREAL_PIXEL_FORMAT::R32G32B32_FLOAT:
+                    internalFormat = GL_RGB32F;
+                    dataFormat = GL_RGB;
+                    dataType = GL_UNSIGNED_BYTE;
+                    break;
+                case ETHEREAL_PIXEL_FORMAT::R32G32B32A32_FLOAT:
+                    internalFormat = GL_RGBA32F;
+                    dataFormat = GL_RGBA;
+                    dataType = GL_UNSIGNED_BYTE;
+                    break;
+                case ETHEREAL_PIXEL_FORMAT::R32_INTEGER:
+                    internalFormat = GL_R32I;
+                    dataFormat = GL_RED_INTEGER;
+                    dataType = GL_UNSIGNED_BYTE;
+                    break;
+                case ETHEREAL_PIXEL_FORMAT::DEPTH:
+                    internalFormat = GL_DEPTH_COMPONENT;
+                    dataFormat = GL_DEPTH_COMPONENT;
+                    dataType = GL_FLOAT;
+                    break;
+                case ETHEREAL_PIXEL_FORMAT::RED:
+                    internalFormat = GL_RED;
+                    dataFormat = GL_RED;
+                    dataType = GL_UNSIGNED_BYTE;
+                    break;
+                case ETHEREAL_PIXEL_FORMAT::R16G16B16A16_HDR:
+                    internalFormat = GL_RGBA16F;  // Convert to RGBA
+                    dataFormat = GL_RGB;
+                    dataType = GL_FLOAT;
+                    break;
+                default:
+                    ET_CORE_ASSERT("invalid texture type");
+                    break;
+            }
+        }
+
+        void GetOpenGLWarpFormat(const ETHEREAL_WARP_FORMAT& warp, GLenum& WarpFormat) {
+            switch (warp) {
+                case ETHEREAL_WARP_FORMAT::ETHEREAL_WARP_FORMAT_CLAMP_TO_BORDER:
+                    WarpFormat = GL_CLAMP_TO_BORDER;
+                    break;
+                case ETHEREAL_WARP_FORMAT::ETHEREAL_WARP_FORMAT_CLAMP_TO_EDGE:
+                    WarpFormat = GL_CLAMP_TO_EDGE;
+                    break;
+                case ETHEREAL_WARP_FORMAT::ETHEREAL_WARP_FORMAT_REPEAT:
+                    WarpFormat = GL_REPEAT;
+                    break;
+                default:
+                    ET_CORE_ASSERT("invalid texture warp type");
+                    break;
+            }
+        }
+
+        void GetOpenGLFilterFormat(const ETHEREAL_FILTER_FORMAT& filter, GLenum& FilterFormat) {
+            switch (filter) {
+                case ETHEREAL_FILTER_FORMAT::ETHEREAL_FILTER_FORMAT_NEAREST:
+                    FilterFormat = GL_NEAREST;
+                    break;
+                case ETHEREAL_FILTER_FORMAT::ETHEREAL_FILTER_FORMAT_LINEAR:
+                    FilterFormat = GL_LINEAR;
+                    break;
+                case ETHEREAL_FILTER_FORMAT::ETHEREAL_FILTER_FORMAT_NEAREST_MIPMAP_NEAREST:
+                    FilterFormat = GL_NEAREST_MIPMAP_NEAREST;
+                    break;
+                case ETHEREAL_FILTER_FORMAT::ETHEREAL_FILTER_FORMAT_LINEAR_MIPMAP_NEAREST:
+                    FilterFormat = GL_LINEAR_MIPMAP_NEAREST;
+                    break;
+                case ETHEREAL_FILTER_FORMAT::ETHEREAL_FILTER_FORMAT_NEAREST_MIPMAP_LINEAR:
+                    FilterFormat = GL_NEAREST_MIPMAP_LINEAR;
+                    break;
+                case ETHEREAL_FILTER_FORMAT::ETHEREAL_FILTER_FORMAT_LINEAR_MIPMAP_LINEAR:
+                    FilterFormat = GL_LINEAR_MIPMAP_LINEAR;
+                    break;
+                default:
+                    ET_CORE_ASSERT("invalid texture filter type");
+                    break;
+            }
+        }
+    }  // namespace Utils
+
     OpenGLTexture2D::OpenGLTexture2D(const std::string& path) {
         Ref<TextureData> textureData = Ref<TextureData>::Create();
         TextureLoader::LoadPath(path, textureData);
@@ -16,120 +129,10 @@ namespace Ethereal
 
     OpenGLTexture2D::OpenGLTexture2D(const Ref<TextureData>& data) { LoadTextureData(data); }
 
-    void OpenGLTexture2D::GetOpenGLTextureFormat(const ETHEREAL_PIXEL_FORMAT& format) {
-        // m_InternalFormat: https://www.khronos.org/opengl/wiki/Texture_Storage
-
-        // m_DataFormat: https://docs.gl/gl4/glTexSubImage2D
-        // Only: GL_RED, GL_RG, GL_RGB, GL_BGR, GL_RGBA, GL_BGRA, GL_DEPTH_COMPONENT, and GL_STENCIL_INDEX.
-        switch (format) {
-            case ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_R8G8B8_UNORM:
-                m_InternalFormat = GL_RGB8;
-                m_DataFormat = GL_RGB;
-                m_DataType = GL_UNSIGNED_BYTE;
-                break;
-            case ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_R8G8B8_SRGB:
-                m_InternalFormat = GL_SRGB8;
-                m_DataFormat = GL_RGB;
-                m_DataType = GL_UNSIGNED_BYTE;
-                break;
-            case ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_R8G8B8A8_UNORM:
-                m_InternalFormat = GL_RGBA8;
-                m_DataFormat = GL_RGBA;
-                m_DataType = GL_UNSIGNED_BYTE;
-                break;
-            case ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_R8G8B8A8_SRGB:
-                m_InternalFormat = GL_SRGB8_ALPHA8;
-                m_DataFormat = GL_RGBA;
-                m_DataType = GL_UNSIGNED_BYTE;
-                break;
-            case ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_R32G32_FLOAT:
-                m_InternalFormat = GL_RG32F;
-                m_DataFormat = GL_RG;
-                m_DataType = GL_UNSIGNED_BYTE;
-                break;
-            case ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_R32G32B32_FLOAT:
-                m_InternalFormat = GL_RGB32F;
-                m_DataFormat = GL_RGB;
-                m_DataType = GL_UNSIGNED_BYTE;
-                break;
-            case ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_R32G32B32A32_FLOAT:
-                m_InternalFormat = GL_RGBA32F;
-                m_DataFormat = GL_RGBA;
-                m_DataType = GL_UNSIGNED_BYTE;
-                break;
-            case ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_R32_INTEGER:
-                m_InternalFormat = GL_R32I;
-                m_DataFormat = GL_RED_INTEGER;
-                m_DataType = GL_UNSIGNED_BYTE;
-                break;
-            case ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_DEPTH:
-                m_InternalFormat = GL_DEPTH_COMPONENT;
-                m_DataFormat = GL_DEPTH_COMPONENT;
-                m_DataType = GL_FLOAT;
-                break;
-            case ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_RED:
-                m_InternalFormat = GL_RED;
-                m_DataFormat = GL_RED;
-                m_DataType = GL_UNSIGNED_BYTE;
-                break;
-            case ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_R16G16B16A16_HDR:
-                m_InternalFormat = GL_RGBA16F;  // Convert to RGBA
-                m_DataFormat = GL_RGB;
-                m_DataType = GL_FLOAT;
-                break;
-            default:
-                ET_CORE_ASSERT("invalid texture type");
-                break;
-        }
-    }
-
-    void OpenGLTexture2D::GetOpenGLWarpFormat(const ETHEREAL_WARP_FORMAT& warp) {
-        switch (warp) {
-            case ETHEREAL_WARP_FORMAT::ETHEREAL_WARP_FORMAT_CLAMP_TO_BORDER:
-                m_WarpFormat = GL_CLAMP_TO_BORDER;
-                break;
-            case ETHEREAL_WARP_FORMAT::ETHEREAL_WARP_FORMAT_CLAMP_TO_EDGE:
-                m_WarpFormat = GL_CLAMP_TO_EDGE;
-                break;
-            case ETHEREAL_WARP_FORMAT::ETHEREAL_WARP_FORMAT_REPEAT:
-                m_WarpFormat = GL_REPEAT;
-                break;
-            default:
-                ET_CORE_ASSERT("invalid texture warp type");
-                break;
-        }
-    }
-
-    void OpenGLTexture2D::GetOpenGLFilterFormat(const ETHEREAL_FILTER_FORMAT& filter) {
-        switch (filter) {
-            case ETHEREAL_FILTER_FORMAT::ETHEREAL_FILTER_FORMAT_NEAREST:
-                m_FilterFormat = GL_NEAREST;
-                break;
-            case ETHEREAL_FILTER_FORMAT::ETHEREAL_FILTER_FORMAT_LINEAR:
-                m_FilterFormat = GL_LINEAR;
-                break;
-            case ETHEREAL_FILTER_FORMAT::ETHEREAL_FILTER_FORMAT_NEAREST_MIPMAP_NEAREST:
-                m_FilterFormat = GL_NEAREST_MIPMAP_NEAREST;
-                break;
-            case ETHEREAL_FILTER_FORMAT::ETHEREAL_FILTER_FORMAT_LINEAR_MIPMAP_NEAREST:
-                m_FilterFormat = GL_LINEAR_MIPMAP_NEAREST;
-                break;
-            case ETHEREAL_FILTER_FORMAT::ETHEREAL_FILTER_FORMAT_NEAREST_MIPMAP_LINEAR:
-                m_FilterFormat = GL_NEAREST_MIPMAP_LINEAR;
-                break;
-            case ETHEREAL_FILTER_FORMAT::ETHEREAL_FILTER_FORMAT_LINEAR_MIPMAP_LINEAR:
-                m_FilterFormat = GL_LINEAR_MIPMAP_LINEAR;
-                break;
-            default:
-                ET_CORE_ASSERT("invalid texture filter type");
-                break;
-        }
-    }
-
     void OpenGLTexture2D::LoadTextureData(const Ref<TextureData>& data) {
-        GetOpenGLTextureFormat(data->m_format);
-        GetOpenGLWarpFormat(data->m_warp_format);
-        GetOpenGLFilterFormat(data->m_filter_format);
+        Utils::GetOpenGLTextureFormat(data->m_format, m_InternalFormat, m_DataFormat, m_DataType);
+        Utils::GetOpenGLWarpFormat(data->m_warp_format, m_WarpFormat);
+        Utils::GetOpenGLFilterFormat(data->m_filter_format, m_FilterFormat);
         m_IsLoaded = data->isValid();
 
         m_Height = data->m_height;
@@ -234,6 +237,37 @@ namespace Ethereal
         glBindTexture(GL_TEXTURE_CUBE_MAP, m_RendererID);
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
         glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
+    }
+
+    OpenGLTexture3D::OpenGLTexture3D(const Ref<TextureData>& data) {
+        Utils::GetOpenGLTextureFormat(data->m_format, m_InternalFormat, m_DataFormat, m_DataType);
+        Utils::GetOpenGLWarpFormat(data->m_warp_format, m_WarpFormat);
+        Utils::GetOpenGLFilterFormat(data->m_filter_format, m_FilterFormat);
+
+        m_IsLoaded = data->isValid();
+
+        m_Height = data->m_height;
+        m_Width = data->m_width;
+        m_Depth = data->m_depth;
+
+        glGenTextures(1, &m_RendererID);
+        glBindTexture(GL_TEXTURE_2D_ARRAY, m_RendererID);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, m_FilterFormat);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, m_FilterFormat);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, m_WarpFormat);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, m_WarpFormat);
+
+        glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, m_InternalFormat, m_Width, m_Height, m_Depth, 0, m_DataFormat, m_DataType, nullptr);
+    }
+
+    OpenGLTexture3D::~OpenGLTexture3D() {}
+
+    void OpenGLTexture3D::Bind(uint32_t slot) const { glBindTextureUnit(slot, m_RendererID); }
+
+    void OpenGLTexture3D::BindToFramebufferDepth(uint32_t attachmentid) const {
+        glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, attachmentid, 0);
     }
 
 }  // namespace Ethereal

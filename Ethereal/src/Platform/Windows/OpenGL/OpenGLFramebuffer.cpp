@@ -10,7 +10,7 @@ namespace Ethereal
     OpenGLFramebuffer::OpenGLFramebuffer(const FramebufferSpecification& spec) : m_Specification(spec) {
         for (auto spec : m_Specification.Attachments.Attachments) {
             // TODO: Support more depth format
-            if (spec.TextureFormat != ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_DEPTH)
+            if (spec.TextureFormat != ETHEREAL_PIXEL_FORMAT::DEPTH)
                 m_ColorAttachmentSpecifications.emplace_back(spec);
             else
                 m_DepthAttachmentSpecification = spec;
@@ -51,14 +51,14 @@ namespace Ethereal
                 data->m_depth = 1;
                 data->m_type = ETHEREAL_IMAGE_TYPE::ETHEREAL_IMAGE_TYPE_2D;
                 data->m_format = m_ColorAttachmentSpecifications[i].TextureFormat;
-                if (m_ColorAttachmentSpecifications[i].TextureFormat == ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_PLACEHOLDER) continue;
+                if (m_ColorAttachmentSpecifications[i].TextureFormat == ETHEREAL_PIXEL_FORMAT::PLACEHOLDER) continue;
                 m_ColorAttachments[i] = Texture2D::Create(data);
                 m_ColorAttachments[i]->Bind();
                 glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, m_ColorAttachments[i]->GetRendererID(), 0);
             }
         }
 
-        if (m_DepthAttachmentSpecification.TextureFormat == ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_DEPTH) {
+        if (m_DepthAttachmentSpecification.TextureFormat == ETHEREAL_PIXEL_FORMAT::DEPTH) {
             Ref<TextureData> data = Ref<TextureData>::Create();
             data->m_width = m_Specification.Width;
             data->m_height = m_Specification.Height;

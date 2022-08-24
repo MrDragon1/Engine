@@ -6,7 +6,7 @@ namespace Ethereal
     struct FramebufferTextureSpecification {
         FramebufferTextureSpecification() = default;
         FramebufferTextureSpecification(ETHEREAL_PIXEL_FORMAT format) : TextureFormat(format) {}
-        ETHEREAL_PIXEL_FORMAT TextureFormat = ETHEREAL_PIXEL_FORMAT::ETHEREAL_PIXEL_FORMAT_R32G32B32A32_FLOAT;
+        ETHEREAL_PIXEL_FORMAT TextureFormat = ETHEREAL_PIXEL_FORMAT::R32G32B32A32_FLOAT;
         // TODO: filtering/wrap
     };
 
