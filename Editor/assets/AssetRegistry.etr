@@ -257,6 +257,9 @@ Assets:
   - Handle: 11435407174954141404
     FilePath: textures\default\default_metallic.png
     Type: Texture
+  - Handle: 11619546686591897210
+    FilePath: meshes\TestScene.fbx
+    Type: MeshSource
   - Handle: 11622693775950571930
     FilePath: meshes\cornell_box\cornell_box.hsmesh
     Type: StaticMesh
@@ -302,6 +305,9 @@ Assets:
   - Handle: 13056173822974123526
     FilePath: meshes\cornell_box\cornell_box.hsmesh
     Type: StaticMesh
+  - Handle: 13067081404139682734
+    FilePath: meshes\DefaultMaterial.hmaterial
+    Type: Material
   - Handle: 13088833478060461387
     FilePath: skyboxs\Ridgecrest_Road_Ref.hdr
     Type: EnvMap
@@ -410,6 +416,9 @@ Assets:
   - Handle: 17356469065209931330
     FilePath: fonts\opensans\OpenSans-Italic.ttf
     Type: Font
+  - Handle: 17573301470017245110
+    FilePath: meshes\TestScene.hsmesh
+    Type: StaticMesh
   - Handle: 18118471782484879931
     FilePath: meshes\cornell_box\cornell_box.hsmesh
     Type: StaticMesh

@@ -135,6 +135,7 @@ namespace Ethereal
     }
 
     void RenderSystem::LoadProjectSettings() {
+        // Bloom Settings
         m_BloomRenderPass->GetIntensity() = Project().GetSettings().bloomSetting.intensity;
         m_BloomRenderPass->GetThreshold() = Project().GetSettings().bloomSetting.threshold;
         m_BloomRenderPass->GetKnee() = Project().GetSettings().bloomSetting.knee;

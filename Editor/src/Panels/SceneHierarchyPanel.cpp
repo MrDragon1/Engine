@@ -72,6 +72,15 @@ namespace Ethereal
 
     void SceneHierarchyPanel::SetSelectedEntity(Entity entity) { m_SelectionContext = entity; }
 
+    static std::tuple<glm::vec3, glm::quat, glm::vec3> GetTransformDecomposition(const glm::mat4& transform) {
+        glm::vec3 scale, translation, skew;
+        glm::vec4 perspective;
+        glm::quat orientation;
+        glm::decompose(transform, scale, orientation, translation, skew, perspective);
+
+        return {translation, orientation, scale};
+    }
+
     void SceneHierarchyPanel::DrawEntityNode(Entity entity) {
         auto& tag = entity.GetComponent<TagComponent>().Tag;
 
@@ -91,10 +100,29 @@ namespace Ethereal
         }
 
         if (opened) {
-            ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
-            ;
-            bool opened = ImGui::TreeNodeEx((void*)9817239, flags, "%s", tag.c_str());
-            if (opened) ImGui::TreePop();
+            if (entity.HasComponent<StaticMeshComponent>()) {
+                auto handle = entity.GetComponent<StaticMeshComponent>().StaticMesh;
+                auto mesh = AssetManager::GetAsset<StaticMesh>(handle);
+                for (auto& submesh : mesh->GetMeshSource()->GetSubmeshes()) {
+                    glm::mat4 localTransform = submesh.Transform;
+                    glm::mat4 transform = entity.GetComponent<TransformComponent>().GetTransform() * localTransform;
+                    if (ImGui::TreeNode(submesh.NodeName.c_str())) {
+                        {
+                            auto [translation, rotation, scale] = GetTransformDecomposition(transform);
+                            ImGui::Text("World Transform");
+                            ImGui::Text("  Translation: %.2f, %.2f, %.2f", translation.x, translation.y, translation.z);
+                            ImGui::Text("  Scale: %.2f, %.2f, %.2f", scale.x, scale.y, scale.z);
+                        }
+                        {
+                            auto [translation, rotation, scale] = GetTransformDecomposition(localTransform);
+                            ImGui::Text("Local Transform");
+                            ImGui::Text("  Translation: %.2f, %.2f, %.2f", translation.x, translation.y, translation.z);
+                            ImGui::Text("  Scale: %.2f, %.2f, %.2f", scale.x, scale.y, scale.z);
+                        }
+                        ImGui::TreePop();
+                    }
+                }
+            }
             ImGui::TreePop();
         }
 
@@ -103,6 +131,7 @@ namespace Ethereal
             if (m_SelectionContext == entity) m_SelectionContext = {};
         }
     }
+
     static void DrawVec3Control(const std::string& label, glm::vec3& values, float resetValue = 0.0f, float columnWidth = 100.0f) {
         ImGuiIO& io = ImGui::GetIO();
         auto boldFont = io.Fonts->Fonts[0];
