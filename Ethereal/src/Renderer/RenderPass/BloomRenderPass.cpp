@@ -34,7 +34,7 @@ namespace Ethereal
         // Draw BrightArea Image
         m_Shader_Bright->Bind();
         m_Shader_Bright->SetInt("u_MainImage", 0);
-        m_Shader_Bright->SetFloat("u_Threshold", 1.0f);
+        m_Shader_Bright->SetFloat("u_Threshold", 0.0f);  // 0.0 for blooming entire image
         m_MainImage->Bind(0);
         m_BrightAreaImage->BindToFramebuffer(0);
         RenderCommand::Clear();
