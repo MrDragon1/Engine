@@ -21,11 +21,6 @@ namespace Ethereal
         m_IconPlay = Texture2D::Create("assets/icons/PlayButton.png");
         m_IconStop = Texture2D::Create("assets/icons/StopButton.png");
 
-        FramebufferSpecification fbSpec;
-        fbSpec.Attachments = {ETHEREAL_PIXEL_FORMAT::R8G8B8A8_UNORM, ETHEREAL_PIXEL_FORMAT::R32_INTEGER, ETHEREAL_PIXEL_FORMAT::DEPTH};
-        fbSpec.Width = 1280;
-        fbSpec.Height = 720;
-
         m_ActiveScene = Ref<Scene>::Create();
         m_EditorCamera = EditorCamera(30.0f, 1280.0f / 720.0f, 0.1f, 1000.0f);
     }

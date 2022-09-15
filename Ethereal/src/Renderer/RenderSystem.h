@@ -11,6 +11,7 @@
 #include "Renderer/RenderPass/MainCameraRenderPass.h"
 #include "Renderer/RenderPass/SkyboxRenderPass.h"
 #include "Renderer/RenderPass/ShadowMapRenderPass.h"
+#include "Renderer/RenderPass/CSMRenderPass.h"
 
 namespace Ethereal
 {
@@ -19,6 +20,10 @@ namespace Ethereal
         glm::mat4 ViewMatrix;
         glm::mat4 ProjectionMatrix;
         glm::vec3 CameraPosition;
+        float NearPlane;
+        float FarPlane;
+        float AspectRatio;
+        float FOV;
         Ref<Environment> Environment;
 
         // TODO: Lights
@@ -65,6 +70,7 @@ namespace Ethereal
         Ref<SkyboxRenderPass> m_SkyboxRenderPass;
         Ref<EnvironmentMapRenderPass> m_EnvironmentMapRenderPass;
         Ref<BloomRenderPass> m_BloomRenderPass;
+        Ref<CSMRenderPass> m_CSMRenderPass;
 
         Ref<Environment> m_Environment;
         Ref<Texture> m_MainImage;

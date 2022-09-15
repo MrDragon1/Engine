@@ -167,7 +167,7 @@ namespace Ethereal
 
     void OpenGLTexture2D::BindToFramebuffer(uint32_t attachmentid, uint32_t miplevel) const {
         ET_CORE_ASSERT(attachmentid >= 0 && attachmentid <= 3, "Attachment id must be between 0 and 3!");
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + attachmentid, GL_TEXTURE_2D, m_RendererID, miplevel);
+        glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + attachmentid, m_RendererID, miplevel);
     }
     void OpenGLTexture2D::GenerateMipmaps() const {
         glBindTexture(GL_TEXTURE_2D, m_RendererID);
@@ -262,7 +262,7 @@ namespace Ethereal
         glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, m_InternalFormat, m_Width, m_Height, m_Depth, 0, m_DataFormat, m_DataType, nullptr);
     }
 
-    OpenGLTexture3D::~OpenGLTexture3D() {}
+    OpenGLTexture3D::~OpenGLTexture3D() { glDeleteTextures(1, &m_RendererID); }
 
     void OpenGLTexture3D::Bind(uint32_t slot) const { glBindTextureUnit(slot, m_RendererID); }
 

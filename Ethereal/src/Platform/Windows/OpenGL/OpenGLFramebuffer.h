@@ -22,9 +22,7 @@ namespace Ethereal
             return m_ColorAttachments[index];
         }
 
-        Ref<Texture> GetDepthAttachment() const override {
-            return m_DepthAttachment;
-        }
+        Ref<Texture> GetDepthAttachment() const override { return m_DepthAttachment; }
 
         void Invalidate();
 
@@ -32,8 +30,8 @@ namespace Ethereal
         uint32_t m_RendererID = 0;
         FramebufferSpecification m_Specification;
 
-        std::vector<FramebufferTextureSpecification> m_ColorAttachmentSpecifications;
-        FramebufferTextureSpecification m_DepthAttachmentSpecification = ETHEREAL_PIXEL_FORMAT::DEPTH;
+        std::vector<TextureSpecification> m_ColorAttachmentSpecifications;
+        TextureSpecification m_DepthAttachmentSpecification;
 
         std::vector<Ref<Texture>> m_ColorAttachments;
         Ref<Texture> m_DepthAttachment = nullptr;

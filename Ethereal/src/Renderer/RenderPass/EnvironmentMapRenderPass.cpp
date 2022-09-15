@@ -3,8 +3,15 @@
 namespace Ethereal
 {
     void EnvironmentMapRenderPass::Init(uint32_t width, uint32_t height) {
+        TextureSpecification spec;
+        spec.Format = ETHEREAL_PIXEL_FORMAT::PLACEHOLDER;
+        TextureSpecification depthSpec;
+        depthSpec.Format = ETHEREAL_PIXEL_FORMAT::DEPTH;
+
         FramebufferSpecification fbSpec;
-        fbSpec.Attachments = {ETHEREAL_PIXEL_FORMAT::PLACEHOLDER, ETHEREAL_PIXEL_FORMAT::PLACEHOLDER, ETHEREAL_PIXEL_FORMAT::DEPTH};
+        fbSpec.ColorAttachments.PushAttachmentSpec(spec);
+        fbSpec.ColorAttachments.PushAttachmentSpec(spec);
+        fbSpec.DepthAttachment.SetAttachmentSpec(depthSpec);
         fbSpec.Width = width;
         fbSpec.Height = height;
 

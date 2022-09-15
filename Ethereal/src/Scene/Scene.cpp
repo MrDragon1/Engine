@@ -203,6 +203,11 @@ namespace Ethereal
         renderSceneData.ViewMatrix = editorCamera.GetViewMatrix();
         renderSceneData.ProjectionMatrix = editorCamera.GetProjection();
         renderSceneData.CameraPosition = editorCamera.GetPosition();
+        renderSceneData.NearPlane = editorCamera.GetNearPlane();
+        renderSceneData.FarPlane = editorCamera.GetFarPlane();
+        renderSceneData.AspectRatio = editorCamera.GetAspectRatio();
+        renderSceneData.FOV = editorCamera.GetFOV();
+
         if (!m_Environment) m_Environment = GlobalContext::GetRenderSystem().GetDefaultEnvironment();
         renderSceneData.Environment = m_Environment;
 

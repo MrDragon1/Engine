@@ -10,6 +10,7 @@ namespace Ethereal
     static GLenum ShaderTypeFromString(const std::string& type) {
         if (type == "vertex") return GL_VERTEX_SHADER;
         if (type == "fragment" || type == "pixel") return GL_FRAGMENT_SHADER;
+        if (type == "geometry") return GL_GEOMETRY_SHADER;
 
         ET_CORE_ASSERT(false, "Unknown shader type!");
         return 0;
@@ -28,10 +29,12 @@ namespace Ethereal
         m_Name = filepath.substr(lastSlash, count);
     }
 
-    OpenGLShader::OpenGLShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc) : m_Name(name) {
+    OpenGLShader::OpenGLShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc, const std::string& geometrySrc)
+        : m_Name(name) {
         std::unordered_map<GLenum, std::string> sources;
         sources[GL_VERTEX_SHADER] = vertexSrc;
         sources[GL_FRAGMENT_SHADER] = fragmentSrc;
+        if (!geometrySrc.empty()) sources[GL_GEOMETRY_SHADER] = geometrySrc;
         Compile(sources);
     }
 

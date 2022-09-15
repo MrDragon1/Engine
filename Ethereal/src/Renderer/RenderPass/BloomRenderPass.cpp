@@ -6,9 +6,14 @@ namespace Ethereal
     void BloomRenderPass::Init(uint32_t width, uint32_t height) {
         m_Quad = GlobalContext::GetRenderSystem().GetQuadStaticMesh();
 
+        TextureSpecification spec, depthSpec;
+        spec.Format = ETHEREAL_PIXEL_FORMAT::PLACEHOLDER;
+        depthSpec.Format = ETHEREAL_PIXEL_FORMAT::DEPTH;
+
         FramebufferSpecification fbSpec;
         // Input Image, BrightArea Image (Blur)
-        fbSpec.Attachments = {ETHEREAL_PIXEL_FORMAT::PLACEHOLDER, ETHEREAL_PIXEL_FORMAT::DEPTH};
+        fbSpec.ColorAttachments.PushAttachmentSpec(spec);
+        fbSpec.DepthAttachment.SetAttachmentSpec(depthSpec);
         fbSpec.Width = width;
         fbSpec.Height = height;
         m_Framebuffer = Framebuffer::Create(fbSpec);

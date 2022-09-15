@@ -5,8 +5,15 @@ namespace Ethereal
     void MainCameraRenderPass::Init(uint32_t width, uint32_t height) {
         m_ViewProjectionMatrix = glm::mat4(1.0f);
 
+        TextureSpecification hdrSpec, r32Spec, depthSpec;
+        hdrSpec.Format = ETHEREAL_PIXEL_FORMAT::R16G16B16A16_HDR;
+        r32Spec.Format = ETHEREAL_PIXEL_FORMAT::R32_INTEGER;
+        depthSpec.Format = ETHEREAL_PIXEL_FORMAT::DEPTH;
+
         FramebufferSpecification fbSpec;
-        fbSpec.Attachments = {ETHEREAL_PIXEL_FORMAT::R16G16B16A16_HDR, ETHEREAL_PIXEL_FORMAT::R32_INTEGER, ETHEREAL_PIXEL_FORMAT::DEPTH};
+        fbSpec.ColorAttachments.PushAttachmentSpec(hdrSpec);
+        fbSpec.ColorAttachments.PushAttachmentSpec(r32Spec);
+        fbSpec.DepthAttachment.SetAttachmentSpec(depthSpec);
         fbSpec.Width = width;
         fbSpec.Height = height;
         m_Framebuffer = Framebuffer::Create(fbSpec);

@@ -8,13 +8,11 @@ namespace Ethereal
 {
     static const uint32_t s_MaxFramebufferSize = 8192;
     OpenGLFramebuffer::OpenGLFramebuffer(const FramebufferSpecification& spec) : m_Specification(spec) {
-        for (auto spec : m_Specification.Attachments.Attachments) {
+        for (auto spec : m_Specification.ColorAttachments.Attachments) {
             // TODO: Support more depth format
-            if (spec.TextureFormat != ETHEREAL_PIXEL_FORMAT::DEPTH)
-                m_ColorAttachmentSpecifications.emplace_back(spec);
-            else
-                m_DepthAttachmentSpecification = spec;
+            m_ColorAttachmentSpecifications.emplace_back(spec);
         }
+        m_DepthAttachmentSpecification = m_Specification.DepthAttachment.Attachments[0];
         Invalidate();
     }
 
@@ -45,29 +43,43 @@ namespace Ethereal
         if (m_ColorAttachmentSpecifications.size()) {
             m_ColorAttachments.resize(m_ColorAttachmentSpecifications.size());
             for (size_t i = 0; i < m_ColorAttachments.size(); i++) {
+                // TODO: Deprecated TextureData
                 Ref<TextureData> data = Ref<TextureData>::Create();
-                data->m_width = m_Specification.Width;
-                data->m_height = m_Specification.Height;
-                data->m_depth = 1;
-                data->m_type = ETHEREAL_IMAGE_TYPE::ETHEREAL_IMAGE_TYPE_2D;
-                data->m_format = m_ColorAttachmentSpecifications[i].TextureFormat;
-                if (m_ColorAttachmentSpecifications[i].TextureFormat == ETHEREAL_PIXEL_FORMAT::PLACEHOLDER) continue;
-                m_ColorAttachments[i] = Texture2D::Create(data);
-                m_ColorAttachments[i]->Bind();
-                glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, m_ColorAttachments[i]->GetRendererID(), 0);
+                data->m_width = m_ColorAttachmentSpecifications[i].Width ? m_ColorAttachmentSpecifications[i].Width : m_Specification.Width;
+                data->m_height = m_ColorAttachmentSpecifications[i].Height ? m_ColorAttachmentSpecifications[i].Height : m_Specification.Height;
+                data->m_depth = m_ColorAttachmentSpecifications[i].Depth;
+                data->m_type = m_ColorAttachmentSpecifications[i].Type;
+                data->m_format = m_ColorAttachmentSpecifications[i].Format;
+                if (m_ColorAttachmentSpecifications[i].Format == ETHEREAL_PIXEL_FORMAT::PLACEHOLDER) continue;
+                if (data->m_type == ETHEREAL_IMAGE_TYPE::ETHEREAL_IMAGE_TYPE_2D) {
+                    m_ColorAttachments[i] = Texture2D::Create(data);
+                    m_ColorAttachments[i]->Bind();
+                    glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, m_ColorAttachments[i]->GetRendererID(), 0);
+                } else if (data->m_type == ETHEREAL_IMAGE_TYPE::ETHEREAL_IMAGE_TYPE_2D_ARRAY) {
+                    m_ColorAttachments[i] = Texture3D::Create(data);
+                    m_ColorAttachments[i]->Bind();
+                    glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, m_ColorAttachments[i]->GetRendererID(), 0);
+                }
             }
         }
 
-        if (m_DepthAttachmentSpecification.TextureFormat == ETHEREAL_PIXEL_FORMAT::DEPTH) {
+        if (m_DepthAttachmentSpecification.Format == ETHEREAL_PIXEL_FORMAT::DEPTH) {
             Ref<TextureData> data = Ref<TextureData>::Create();
-            data->m_width = m_Specification.Width;
-            data->m_height = m_Specification.Height;
-            data->m_depth = 1;
-            data->m_type = ETHEREAL_IMAGE_TYPE::ETHEREAL_IMAGE_TYPE_2D;
-            data->m_format = m_DepthAttachmentSpecification.TextureFormat;
-            m_DepthAttachment = Texture2D::Create(data);
-            m_DepthAttachment->Bind();
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_DepthAttachment->GetRendererID(), 0);
+            data->m_width = m_DepthAttachmentSpecification.Width ? m_DepthAttachmentSpecification.Width : m_Specification.Width;
+            data->m_height = m_DepthAttachmentSpecification.Height ? m_DepthAttachmentSpecification.Height : m_Specification.Height;
+            data->m_depth = m_DepthAttachmentSpecification.Depth;
+            data->m_type = m_DepthAttachmentSpecification.Type;
+            data->m_format = m_DepthAttachmentSpecification.Format;
+
+            if (data->m_type == ETHEREAL_IMAGE_TYPE::ETHEREAL_IMAGE_TYPE_2D) {
+                m_DepthAttachment = Texture2D::Create(data);
+                m_DepthAttachment->Bind();
+                glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, m_DepthAttachment->GetRendererID(), 0);
+            } else if (data->m_type == ETHEREAL_IMAGE_TYPE::ETHEREAL_IMAGE_TYPE_2D_ARRAY) {
+                m_DepthAttachment = Texture3D::Create(data);
+                m_DepthAttachment->Bind();
+                glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, m_DepthAttachment->GetRendererID(), 0);
+            }
         }
 
         if (m_ColorAttachments.size() > 1) {

@@ -3,8 +3,11 @@
 namespace Ethereal
 {
     void ShadowMapRenderPass::Init(uint32_t width, uint32_t height) {
+        TextureSpecification depthSpec;
+        depthSpec.Format = ETHEREAL_PIXEL_FORMAT::DEPTH;
+
         FramebufferSpecification fbSpec;
-        fbSpec.Attachments = {ETHEREAL_PIXEL_FORMAT::DEPTH};
+        fbSpec.DepthAttachment.SetAttachmentSpec(depthSpec);
         fbSpec.Width = m_ShadowMapSize;
         fbSpec.Height = m_ShadowMapSize;
         m_Framebuffer = Framebuffer::Create(fbSpec);
@@ -12,7 +15,7 @@ namespace Ethereal
         m_LightPos = glm::vec3(-2.0f, 4.0f, -1.0f);
         CalculateViewProjectionMatrix();
 
-        m_Shader = m_Shader = Shader::Create(m_ShaderPath);
+        m_Shader = Shader::Create(m_ShaderPath);
         m_Shader->Bind();
     }
 
@@ -22,6 +25,7 @@ namespace Ethereal
         RenderCommand::Clear();
         RenderCommand::SetCullFace(ETHEREAL_CULLFACE_TYPE::FRONT);
 
+        // Draw Shadow Map
         const auto& staticMeshDrawList = m_DrawLists.StaticMeshDrawList;
         const auto& meshTransformMap = m_DrawLists.MeshTransformMap;
 
@@ -30,19 +34,12 @@ namespace Ethereal
         if (!staticMeshDrawList.empty()) {
             for (auto& [mk, dc] : staticMeshDrawList) {
                 Ref<MeshSource> ms = dc.StaticMesh->GetMeshSource();
-                Ref<MaterialTable> mt = dc.MaterialTable;
-                const auto& meshMaterialTable = dc.StaticMesh->GetMaterials();
-                uint32_t materialCount = meshMaterialTable->GetMaterialCount();
-                Ref<MaterialAsset> material =
-                    mt->HasMaterial(dc.SubmeshIndex) ? mt->GetMaterial(dc.SubmeshIndex) : meshMaterialTable->GetMaterial(dc.SubmeshIndex);
-
                 ms->GetVertexArray()->Bind();
                 m_Shader->SetMat4("u_Model", meshTransformMap.at(mk).Transforms[dc.SubmeshIndex].Transform);
 
                 RenderCommand::DrawIndexed(ms->GetVertexArray(), ms->GetVertexArray()->GetIndexBuffer()->GetCount());
             }
         }
-
         RenderCommand::SetCullFace(ETHEREAL_CULLFACE_TYPE::BACK);
         m_Framebuffer->Unbind();
     }

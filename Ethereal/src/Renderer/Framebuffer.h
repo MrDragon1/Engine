@@ -1,25 +1,37 @@
 #pragma once
-//#include "pch.h"
+// #include "pch.h"
 #include "Texture.h"
 namespace Ethereal
 {
-    struct FramebufferTextureSpecification {
-        FramebufferTextureSpecification() = default;
-        FramebufferTextureSpecification(ETHEREAL_PIXEL_FORMAT format) : TextureFormat(format) {}
-        ETHEREAL_PIXEL_FORMAT TextureFormat = ETHEREAL_PIXEL_FORMAT::R32G32B32A32_FLOAT;
-        // TODO: filtering/wrap
+    struct TextureSpecification {
+        TextureSpecification() = default;
+        uint32_t Width{0};
+        uint32_t Height{0};
+        uint32_t Depth{1};
+        uint32_t MipLevels{0};
+        void* Data{nullptr};
+
+        ETHEREAL_PIXEL_FORMAT Format{ETHEREAL_PIXEL_FORMAT::PLACEHOLDER};
+        ETHEREAL_IMAGE_TYPE Type{ETHEREAL_IMAGE_TYPE::ETHEREAL_IMAGE_TYPE_2D};
+
+        ETHEREAL_WARP_FORMAT WarpFormat{ETHEREAL_WARP_FORMAT::ETHEREAL_WARP_FORMAT_CLAMP_TO_EDGE};
+        ETHEREAL_FILTER_FORMAT FilterFormat{ETHEREAL_FILTER_FORMAT::ETHEREAL_FILTER_FORMAT_LINEAR};
     };
 
     struct FramebufferAttachmentSpecification {
         FramebufferAttachmentSpecification() = default;
-        FramebufferAttachmentSpecification(std::initializer_list<FramebufferTextureSpecification> attachments) : Attachments(attachments) {}
-
-        std::vector<FramebufferTextureSpecification> Attachments;
+        void PushAttachmentSpec(TextureSpecification spec) { Attachments.push_back(spec); }
+        void SetAttachmentSpec(TextureSpecification spec) {
+            Attachments.clear();
+            Attachments.push_back(spec);
+        }
+        std::vector<TextureSpecification> Attachments;
     };
 
     struct FramebufferSpecification {
         uint32_t Width, Height;
-        FramebufferAttachmentSpecification Attachments;
+        FramebufferAttachmentSpecification ColorAttachments;
+        FramebufferAttachmentSpecification DepthAttachment;
         uint32_t Samples = 1;
     };
 
@@ -34,7 +46,7 @@ namespace Ethereal
         virtual Ref<Texture> GetColorAttachment(uint32_t index = 0) const = 0;
         virtual Ref<Texture> GetDepthAttachment() const = 0;
         virtual void ClearAttachment(uint32_t attachmentIndex, int value) = 0;
-        
+
         virtual int ReadPixel(uint32_t attachmentIndex, int x, int y) = 0;
 
         static Ref<Framebuffer> Create(const FramebufferSpecification& spec);

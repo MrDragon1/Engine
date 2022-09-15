@@ -41,6 +41,8 @@ namespace Ethereal
         m_SkyboxRenderPass->Init(m_Width, m_Height);
         m_BloomRenderPass = Ref<BloomRenderPass>::Create();
         m_BloomRenderPass->Init(m_Width, m_Height);
+        m_CSMRenderPass = Ref<CSMRenderPass>::Create();
+        m_CSMRenderPass->Init(m_Width, m_Height);
 
         // Must after m_EnvironmentMapRenderPass Init
         m_BuildinData->Environment = AssetManager::GetAsset<Environment>("skyboxs/Newport_Loft_Ref.hdr");
@@ -122,6 +124,13 @@ namespace Ethereal
         m_MainCameraRenderPass->SetCameraPosition(data.CameraPosition);
         m_SkyboxRenderPass->SetSkyboxProjection(data.ProjectionMatrix);
         m_SkyboxRenderPass->SetSkyboxView(data.ViewMatrix);
+
+        m_CSMRenderPass->SetNearFarPlane(data.NearPlane, data.FarPlane);
+        m_CSMRenderPass->SetViewMatrix(data.ViewMatrix);
+        m_CSMRenderPass->SetProjMatrix(data.ProjectionMatrix);
+        m_CSMRenderPass->SetFOV(data.FOV);
+        m_CSMRenderPass->SetAspectRatio(data.AspectRatio);
+
         m_Environment = data.Environment;
 
         m_MainCameraRenderPass->SetViewProjectionMatrix(data.ViewProjectionMatrix);

@@ -35,6 +35,11 @@ namespace Ethereal
         float GetPitch() const { return m_Pitch; }
         float GetYaw() const { return m_Yaw; }
 
+        float GetFOV() const { return m_FOV; }
+        float GetAspectRatio() const { return m_AspectRatio; }
+        float GetNearPlane() const { return m_NearClip; }
+        float GetFarPlane() const { return m_FarClip; }
+
       private:
         void UpdateProjection();
         void UpdateView();
