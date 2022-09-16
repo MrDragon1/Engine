@@ -45,7 +45,7 @@ namespace Ethereal
         void SetFOV(const float fov) { m_Data.FOV = fov; }
         void SetAspectRatio(const float ratio) { m_Data.AspectRatio = ratio; }
 
-        void SetLightDir(const glm::vec3& dir) { m_Data.LightDir = (dir); }
+        void SetLightDir(const glm::vec3& dir) { m_Data.LightDir = glm::normalize(dir); }
 
         CSMRenderPassData GetData() { return m_Data; }
 

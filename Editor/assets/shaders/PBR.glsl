@@ -163,7 +163,7 @@ float ShadowCalculation(vec3 fragPosWorldSpace)
     {
         layer = u_CascadeCount;
     }
-
+//    return float(layer) / u_CascadeCount;
     vec4 fragPosLightSpace = u_LightSpaceMatrices[layer] * vec4(fragPosWorldSpace, 1.0);
     // perform perspective divide
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
@@ -198,7 +198,7 @@ float ShadowCalculation(vec3 fragPosWorldSpace)
     {
         for (int y = -1; y <= 1; ++y)
         {
-            float pcfDepth = texture(u_ShadowMap, vec3(projCoords.xy+ vec2(x, y) * texelSize, layer)).r;
+            float pcfDepth = texture(u_ShadowMap, vec3(projCoords.xy + vec2(x, y) * texelSize, layer)).r;
             shadow += (currentDepth - bias) > pcfDepth ? 1.0 : 0.0;
         }
     }
