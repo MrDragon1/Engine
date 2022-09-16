@@ -26,7 +26,7 @@ namespace Ethereal
         Entity CreateEntityWithStaticMesh(AssetHandle assetHandle);
 
         void OnUpdateRuntime(Timestep ts);
-        void OnUpdateEditor(Timestep ts, EditorCamera& editorCamera);
+        void OnUpdateEditor(Timestep ts, RenderSceneData& renderSceneData);
         void SubmitRenderScene(RenderSceneData& renderSceneData);
 
         void DestroyEntity(Entity entity);

@@ -62,12 +62,19 @@ uniform sampler2D u_BRDFLUT;
 uniform vec3 lightPositions[4];
 uniform vec3 lightColors[4];
 
+// Cascaded Shadow Map
+uniform sampler2DArray u_ShadowMap;
+uniform mat4 u_LightSpaceMatrices[16];
+uniform float u_CascadePlaneDistances[16];
+uniform int u_CascadeCount;
+uniform vec3 u_LightDir;
+uniform float u_FarPlane;
+uniform mat4 u_View;
+
 uniform vec3 camPos;
-
 uniform int u_EntityID;
-
-
 const float PI = 3.14159265359;
+
 // ----------------------------------------------------------------------------
 // Easy trick to get tangent-normals to world-space to keep PBR code simplified.
 // Don't worry if you don't get what's going on; you generally want to do normal 
@@ -133,7 +140,73 @@ vec3 fresnelSchlick(float cosTheta, vec3 F0)
 vec3 fresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness)
 {
     return F0 + (max(vec3(1.0 - roughness), F0) - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
-}   
+}
+
+// ----------------------------------------------------------------------------
+// Cascaded Shadow Map
+float ShadowCalculation(vec3 fragPosWorldSpace)
+{
+    // select cascade layer
+    vec4 fragPosViewSpace = u_View * vec4(fragPosWorldSpace, 1.0);
+    float depthValue = abs(fragPosViewSpace.z);
+
+    int layer = -1;
+    for (int i = 0; i < u_CascadeCount; ++i)
+    {
+        if (depthValue < u_CascadePlaneDistances[i])
+        {
+            layer = i;
+            break;
+        }
+    }
+    if (layer == -1)
+    {
+        layer = u_CascadeCount;
+    }
+
+    vec4 fragPosLightSpace = u_LightSpaceMatrices[layer] * vec4(fragPosWorldSpace, 1.0);
+    // perform perspective divide
+    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+    // transform to [0,1] range
+    projCoords = projCoords * 0.5 + 0.5;
+
+    // get depth of current fragment from light's perspective
+    float currentDepth = projCoords.z;
+
+    // keep the shadow at 0.0 when outside the far_plane region of the light's frustum.
+    if (currentDepth > 1.0)
+    {
+        return 0.0;
+    }
+    // calculate bias (based on depth map resolution and slope)
+    vec3 normal = u_UseNormalMap ? getNormalFromMap() : normalize(v_Normal);
+    float bias = max(0.05 * (1.0 - dot(normal, u_LightDir)), 0.005);
+    const float biasModifier = 0.5f;
+    if (layer == u_CascadeCount)
+    {
+        bias *= 1 / (u_FarPlane * biasModifier);
+    }
+    else
+    {
+        bias *= 1 / (u_CascadePlaneDistances[layer] * biasModifier);
+    }
+
+    // PCF
+    float shadow = 0.0;
+    vec2 texelSize = 1.0 / vec2(textureSize(u_ShadowMap, 0));
+    for (int x = -1; x <= 1; ++x)
+    {
+        for (int y = -1; y <= 1; ++y)
+        {
+            float pcfDepth = texture(u_ShadowMap, vec3(projCoords.xy+ vec2(x, y) * texelSize, layer)).r;
+            shadow += (currentDepth - bias) > pcfDepth ? 1.0 : 0.0;
+        }
+    }
+    shadow /= 9.0;
+
+    return shadow;
+}
+
 // ----------------------------------------------------------------------------
 void main()
 {
@@ -198,16 +271,19 @@ void main()
     
     vec3 irradiance = texture(u_IrradianceMap, N).rgb;
     vec3 diffuse      = irradiance * albedo;
-    
+
     // sample both the pre-filter map and the BRDF lut and combine them together as per the Split-Sum approximation to get the IBL specular part.
     const float MAX_REFLECTION_LOD = 4.0;
-    vec3 prefilteredColor = textureLod(u_PrefilterMap, R,  roughness * MAX_REFLECTION_LOD).rgb;
+    vec3 prefilteredColor = textureLod(u_PrefilterMap, R, roughness * MAX_REFLECTION_LOD).rgb;
     vec2 brdf  = texture(u_BRDFLUT, vec2(max(dot(N, V), 0.0), roughness)).rg;
     vec3 specular = prefilteredColor * (F * brdf.x + brdf.y);
 
     vec3 ambient = (kD * diffuse + specular) * ao;
 
-    vec3 color = ambient + Lo + albedo * u_Emisstion;
+    // calculate shadow
+    float shadow = ShadowCalculation(v_WorldPos);
+
+    vec3 color = (ambient + Lo) * (1 - shadow) + albedo * u_Emisstion;
 
     // HDR tonemapping
     // color = color / (color + vec3(1.0));

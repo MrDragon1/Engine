@@ -197,17 +197,7 @@ namespace Ethereal
         }
     }
 
-    void Scene::OnUpdateEditor(Timestep ts, EditorCamera& editorCamera) {
-        RenderSceneData renderSceneData;
-        renderSceneData.ViewProjectionMatrix = editorCamera.GetViewProjection();
-        renderSceneData.ViewMatrix = editorCamera.GetViewMatrix();
-        renderSceneData.ProjectionMatrix = editorCamera.GetProjection();
-        renderSceneData.CameraPosition = editorCamera.GetPosition();
-        renderSceneData.NearPlane = editorCamera.GetNearPlane();
-        renderSceneData.FarPlane = editorCamera.GetFarPlane();
-        renderSceneData.AspectRatio = editorCamera.GetAspectRatio();
-        renderSceneData.FOV = editorCamera.GetFOV();
-
+    void Scene::OnUpdateEditor(Timestep ts, RenderSceneData& renderSceneData) {
         if (!m_Environment) m_Environment = GlobalContext::GetRenderSystem().GetDefaultEnvironment();
         renderSceneData.Environment = m_Environment;
 

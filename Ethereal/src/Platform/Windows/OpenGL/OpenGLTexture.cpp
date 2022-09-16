@@ -54,7 +54,7 @@ namespace Ethereal
                     dataType = GL_UNSIGNED_BYTE;
                     break;
                 case ETHEREAL_PIXEL_FORMAT::DEPTH:
-                    internalFormat = GL_DEPTH_COMPONENT;
+                    internalFormat = GL_DEPTH_COMPONENT32F;
                     dataFormat = GL_DEPTH_COMPONENT;
                     dataType = GL_FLOAT;
                     break;
@@ -253,11 +253,11 @@ namespace Ethereal
         glGenTextures(1, &m_RendererID);
         glBindTexture(GL_TEXTURE_2D_ARRAY, m_RendererID);
 
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, m_FilterFormat);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, m_FilterFormat);
+        glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, m_FilterFormat);
+        glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, m_FilterFormat);
 
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, m_WarpFormat);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, m_WarpFormat);
+        glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, m_WarpFormat);
+        glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, m_WarpFormat);
 
         glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, m_InternalFormat, m_Width, m_Height, m_Depth, 0, m_DataFormat, m_DataType, nullptr);
     }

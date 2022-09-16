@@ -1,0 +1,37 @@
+Scene:
+  Name: Untitled
+  Environment: 10111825085121754573
+Entities:
+  - Entity: 12448116261531323673
+    TagComponent:
+      Tag: Plane
+    StaticMeshComponent:
+      AssetID: 9144879518730628124
+      MaterialTable:
+        0: 6266248153726710475
+    TransformComponent:
+      Translation: [0, -10.323823, 2.16432762]
+      Rotation: [0, 0, 0]
+      Scale: [20.0132656, 34.9568825, 20.0132656]
+  - Entity: 6878430722712004472
+    TagComponent:
+      Tag: Cube
+    StaticMeshComponent:
+      AssetID: 17060509455937462602
+      MaterialTable:
+        0: 6266248153726710475
+    TransformComponent:
+      Translation: [0.302898288, -6.6436286, 3.28573775]
+      Rotation: [0, 0, 0]
+      Scale: [2.32999992, 2.32999992, 2.32999992]
+  - Entity: 10393859523941400476
+    TagComponent:
+      Tag: Sphere
+    StaticMeshComponent:
+      AssetID: 13437552004259238276
+      MaterialTable:
+        0: 5521013208314249089
+    TransformComponent:
+      Translation: [4.80120277, -6.87727404, 3.61753368]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]

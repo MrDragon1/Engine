@@ -22,7 +22,7 @@ namespace Ethereal
         m_IconStop = Texture2D::Create("assets/icons/StopButton.png");
 
         m_ActiveScene = Ref<Scene>::Create();
-        m_EditorCamera = EditorCamera(30.0f, 1280.0f / 720.0f, 0.1f, 1000.0f);
+        m_EditorCamera = EditorCamera(30.0f, 1280.0f / 720.0f, 0.1f, 500.0f);
     }
 
     void EditorLayer::OnDetach() {}
@@ -35,7 +35,15 @@ namespace Ethereal
             }
             case SceneState::Edit: {
                 m_EditorCamera.OnUpdate(ts);
-                m_ActiveScene->OnUpdateEditor(ts, m_EditorCamera);
+                m_RenderSceneData.ViewProjectionMatrix = m_EditorCamera.GetViewProjection();
+                m_RenderSceneData.ViewMatrix = m_EditorCamera.GetViewMatrix();
+                m_RenderSceneData.ProjectionMatrix = m_EditorCamera.GetProjection();
+                m_RenderSceneData.CameraPosition = m_EditorCamera.GetPosition();
+                m_RenderSceneData.NearPlane = m_EditorCamera.GetNearPlane();
+                m_RenderSceneData.FarPlane = m_EditorCamera.GetFarPlane();
+                m_RenderSceneData.AspectRatio = m_EditorCamera.GetAspectRatio();
+                m_RenderSceneData.FOV = m_EditorCamera.GetFOV();
+                m_ActiveScene->OnUpdateEditor(ts, m_RenderSceneData);
                 break;
             }
         }
@@ -160,7 +168,7 @@ namespace Ethereal
             ImGui::EndCombo();
         }
 
-        ImGui::DragFloat3("Light Position", glm::value_ptr(m_LightPos), 0.1);
+        ImGui::DragFloat3("Directional Light Dir", glm::value_ptr(m_RenderSceneData.DirectionalLightDir), 0.1);
         ImGui::End();
 
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});

@@ -77,5 +77,7 @@ namespace Ethereal
         bool b_ShowSkyboxSettings = false;
         bool b_ShowProjectSettings = true;
         glm::vec3 m_LightPos = glm::vec3(-20, 40, -10);  // as far as possiable (away from the scene to avoid clamp shadow)
+
+        RenderSceneData m_RenderSceneData;
     };
 }  // namespace Ethereal

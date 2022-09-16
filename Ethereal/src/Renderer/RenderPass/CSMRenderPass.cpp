@@ -5,22 +5,17 @@ namespace Ethereal
     void CSMRenderPass::Init(uint32_t width, uint32_t height) {
         // Generate ShadowMaps
         TextureSpecification spec;
-        spec.Depth = m_Cascaded + 1;
+        spec.Depth = m_Data.Cascaded + 1;
         spec.Type = ETHEREAL_IMAGE_TYPE::ETHEREAL_IMAGE_TYPE_2D_ARRAY;
         spec.Format = ETHEREAL_PIXEL_FORMAT::DEPTH;
 
         FramebufferSpecification fbSpec;
         fbSpec.DepthAttachment.SetAttachmentSpec(spec);
-        fbSpec.Width = m_ShadowMapSize;
-        fbSpec.Height = m_ShadowMapSize;
+        fbSpec.Width = m_Data.ShadowMapSize;
+        fbSpec.Height = m_Data.ShadowMapSize;
 
         m_Framebuffer = Framebuffer::Create(fbSpec);
-
-        // TODO: automatically generate distance according to m_Cascaded
-        m_Distance.push_back(m_FarPlane / 50.0f);
-        m_Distance.push_back(m_FarPlane / 25.0f);
-        m_Distance.push_back(m_FarPlane / 10.0f);
-        m_Distance.push_back(m_FarPlane / 2.0f);
+        m_Data.ShadowMap = m_Framebuffer->GetDepthAttachment();
 
         m_Shader = Shader::Create(m_ShaderPath);
     }
@@ -35,19 +30,24 @@ namespace Ethereal
         const auto& staticMeshDrawList = m_DrawLists.StaticMeshDrawList;
         const auto& meshTransformMap = m_DrawLists.MeshTransformMap;
 
+        m_Data.Distance = m_Distance;
+        m_Data.LightMatrices = GetLightSpaceMatrices();
+        for (int i = 0; i < m_Data.LightMatrices.size(); i++) {
+            m_Shader->SetMat4("u_LightSpaceMatrices[" + std::to_string(i) + "]", m_Data.LightMatrices[i]);
+        }
+
+        // Draw Static Mesh
         if (!staticMeshDrawList.empty()) {
             for (auto& [mk, dc] : staticMeshDrawList) {
                 Ref<MeshSource> ms = dc.StaticMesh->GetMeshSource();
                 Ref<MaterialTable> mt = dc.MaterialTable;
-                const auto& meshMaterialTable = dc.StaticMesh->GetMaterials();
-                uint32_t materialCount = meshMaterialTable->GetMaterialCount();
-                Ref<MaterialAsset> material =
-                    mt->HasMaterial(dc.SubmeshIndex) ? mt->GetMaterial(dc.SubmeshIndex) : meshMaterialTable->GetMaterial(dc.SubmeshIndex);
+                Submesh& submesh = ms->GetSubmeshes()[dc.SubmeshIndex];
 
                 ms->GetVertexArray()->Bind();
-                m_Shader->SetMat4("u_Model", meshTransformMap.at(mk).Transforms[dc.SubmeshIndex].Transform);
+                m_Shader->SetMat4("u_Model", meshTransformMap.at(mk).Transforms[0].Transform);
 
-                RenderCommand::DrawIndexed(ms->GetVertexArray(), ms->GetVertexArray()->GetIndexBuffer()->GetCount());
+                RenderCommand::DrawIndexed(ms->GetVertexArray(), submesh.IndexCount, reinterpret_cast<void*>(submesh.BaseIndex * sizeof(uint32_t)),
+                                           submesh.BaseVertex);
             }
         }
 
@@ -77,9 +77,9 @@ namespace Ethereal
         return GetFrustumCornersWorldSpace(proj * view);
     }
 
-    glm::mat4 CSMRenderPass::GetLightSpaceMatrix(const float nearPlane, const float farPlane) {
-        const auto proj = glm::perspective(glm::radians(m_FOV), m_AspectRatio, nearPlane, farPlane);
-        const auto corners = GetFrustumCornersWorldSpace(proj, m_View);
+    glm::mat4 CSMRenderPass::GetLightSpaceMatrix(float nearPlane, float farPlane) {
+        const auto proj = glm::perspective(glm::radians(m_Data.FOV), m_Data.AspectRatio, nearPlane, farPlane);
+        const auto corners = GetFrustumCornersWorldSpace(proj, m_Data.View);
 
         glm::vec3 center = glm::vec3(0, 0, 0);
         for (const auto& v : corners) {
@@ -87,7 +87,7 @@ namespace Ethereal
         }
         center /= corners.size();
 
-        const auto lightView = glm::lookAt(center + m_LightDir, center, glm::vec3(0.0f, 1.0f, 0.0f));
+        const auto lightView = glm::lookAt(center + m_Data.LightDir, center, glm::vec3(0.0f, 1.0f, 0.0f));
 
         float minX = std::numeric_limits<float>::max();
         float maxX = std::numeric_limits<float>::min();
@@ -127,11 +127,11 @@ namespace Ethereal
         std::vector<glm::mat4> ret;
         for (size_t i = 0; i < m_Distance.size() + 1; ++i) {
             if (i == 0) {
-                ret.push_back(GetLightSpaceMatrix(m_NearPlane, m_Distance[i]));
+                ret.push_back(GetLightSpaceMatrix(m_Data.NearPlane, m_Distance[i]));
             } else if (i < m_Distance.size()) {
                 ret.push_back(GetLightSpaceMatrix(m_Distance[i - 1], m_Distance[i]));
             } else {
-                ret.push_back(GetLightSpaceMatrix(m_Distance[i - 1], m_FarPlane));
+                ret.push_back(GetLightSpaceMatrix(m_Distance[i - 1], m_Data.FarPlane));
             }
         }
         return ret;

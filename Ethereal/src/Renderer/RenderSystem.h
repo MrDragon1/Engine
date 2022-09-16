@@ -27,6 +27,7 @@ namespace Ethereal
         Ref<Environment> Environment;
 
         // TODO: Lights
+        glm::vec3 DirectionalLightDir = glm::normalize(glm::vec3(20.0f, 50, 20.0f));
     };
 
     struct BuildinData {

@@ -1,5 +1,6 @@
 #pragma once
 #include "Renderer/RenderPass.h"
+#include "CSMRenderPass.h"
 
 namespace Ethereal
 {
@@ -14,12 +15,12 @@ namespace Ethereal
         void SetViewProjectionMatrix(const glm::mat4& matrix) { m_ViewProjectionMatrix = matrix; }
         int GetMousePicking(int x, int y);
 
-        void SetLightSpaceMatrix(const glm::mat4& matrix) { m_LightSpaceMatrix = matrix; };
         void SetCameraPosition(const glm::vec3& position) { m_CameraPosition = position; };
+
+        void SetCSMData(CSMRenderPassData data) { m_CSMData = data; }
 
       private:
         glm::mat4 m_ViewProjectionMatrix;
-        glm::mat4 m_LightSpaceMatrix;
 
         Ref<Shader> m_Shader;
         std::string m_ShaderPath = "assets/shaders/PBR.glsl";
@@ -27,6 +28,8 @@ namespace Ethereal
 
         // temporary
         glm::vec3 m_CameraPosition;
+
+        CSMRenderPassData m_CSMData;
 
         friend class RenderSystem;
     };

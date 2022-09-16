@@ -1,12 +1,10 @@
 #include "pch.h"
 #include "EditorCamera.h"
 
-
 #include "Core/Input.h"
 #include "Core/KeyCodes.h"
 #include "Core/MouseButtonCodes.h"
 #include "Core/GlobalContext.h"
-#include "GLFW/glfw3.h"
 
 namespace Ethereal
 {
@@ -28,9 +26,11 @@ namespace Ethereal
         // m_Yaw = m_Pitch = 0.0f; // Lock the camera's rotation
         m_Position = CalculatePosition();
 
-        glm::quat orientation = GetOrientation();
-        m_ViewMatrix = glm::translate(glm::mat4(1.0f), m_Position) * glm::toMat4(orientation);
-        m_ViewMatrix = glm::inverse(m_ViewMatrix);
+        //        glm::quat orientation = GetOrientation();
+        //        m_ViewMatrix = glm::translate(glm::mat4(1.0f), m_Position) * glm::toMat4(orientation);
+        //        m_ViewMatrix = glm::inverse(m_ViewMatrix);
+
+        m_ViewMatrix = glm::lookAt(m_Position, m_Position + GetForwardDirection(), GetUpDirection());
     }
 
     std::pair<float, float> EditorCamera::PanSpeed() const {

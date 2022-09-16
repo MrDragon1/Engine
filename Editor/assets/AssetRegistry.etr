@@ -197,6 +197,9 @@ Assets:
   - Handle: 8178794584538088286
     FilePath: fonts\opensans\OpenSans-SemiBold.ttf
     Type: Font
+  - Handle: 8416912332081586442
+    FilePath: scenes\CSM.hscene
+    Type: Scene
   - Handle: 8791887480241883289
     FilePath: meshes\default\monkey.hsmesh
     Type: StaticMesh

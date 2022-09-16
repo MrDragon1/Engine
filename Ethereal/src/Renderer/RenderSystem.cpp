@@ -54,11 +54,12 @@ namespace Ethereal
         LoadProjectSettings();
 
         // m_ShadowMapRenderPass->SetLightPosition();
-        m_MainCameraRenderPass->SetLightSpaceMatrix(m_ShadowMapRenderPass->m_ViewProjectionMatrix);
+        m_CSMRenderPass->Draw();
 
         // m_ShadowMapRenderPass->Draw();
         // m_ShadowMapRenderPass->m_Framebuffer->GetDepthAttachment()->Bind(5);
 
+        m_MainCameraRenderPass->SetCSMData(m_CSMRenderPass->GetData());
         m_Environment->RadianceMap->Bind(6);
         m_Environment->IrradianceMap->Bind(7);
         GlobalContext::GetRenderSystem().GetBRDFLutTexture()->Bind(8);
@@ -130,6 +131,7 @@ namespace Ethereal
         m_CSMRenderPass->SetProjMatrix(data.ProjectionMatrix);
         m_CSMRenderPass->SetFOV(data.FOV);
         m_CSMRenderPass->SetAspectRatio(data.AspectRatio);
+        m_CSMRenderPass->SetLightDir(data.DirectionalLightDir);
 
         m_Environment = data.Environment;
 
