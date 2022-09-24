@@ -283,7 +283,7 @@ void main()
     // calculate shadow
     float shadow = ShadowCalculation(v_WorldPos);
 
-    vec3 color = (ambient + Lo) * (1 - shadow) + albedo * u_Emisstion;
+    vec3 color = (ambient) * (1 - shadow) + Lo + albedo * u_Emisstion;
 
     // HDR tonemapping
     // color = color / (color + vec3(1.0));
