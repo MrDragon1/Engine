@@ -38,4 +38,10 @@ namespace Ethereal
         virtual void Serialize(const AssetMetaData& metadata, const Ref<Asset>& asset) const override;
         virtual bool TryLoadData(const AssetMetaData& metadata, Ref<Asset>& asset) const override;
     };
+
+    class AnimationSerializer : public AssetSerializer {
+      public:
+        virtual void Serialize(const AssetMetaData& metadata, const Ref<Asset>& asset) const override;
+        virtual bool TryLoadData(const AssetMetaData& metadata, Ref<Asset>& asset) const override;
+    };
 }  // namespace Ethereal

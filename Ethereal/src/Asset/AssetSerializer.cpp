@@ -8,6 +8,8 @@
 #include "Renderer/Mesh.h"
 #include "Renderer/MaterialAsset.h"
 #include "Renderer/Environment.h"
+#include "Animation/Animation.h"
+#include "Animation/AnimSerializer.h"
 
 #include "yaml-cpp/yaml.h"
 #include <fstream>
@@ -185,4 +187,19 @@ namespace Ethereal
         asset->Handle = metadata.Handle;
         return true;
     }
+
+    void AnimationSerializer::Serialize(const AssetMetaData& metadata, const Ref<Asset>& asset) const {
+        AnimSerializer serializer(asset.As<Animation>());
+        serializer.Serialize(AssetManager::GetFileSystemPath(metadata).string());
+    }
+
+    bool AnimationSerializer::TryLoadData(const AssetMetaData& metadata, Ref<Asset>& asset) const {
+        asset = Ref<Animation>::Create();
+        asset->Handle = metadata.Handle;
+
+        AnimSerializer serializer(asset);
+        ET_CORE_ASSERT(serializer.Deserialize(AssetManager::GetFileSystemPath(metadata).string()), "Error when loading animation asset!");
+        return true;
+    }
+
 }  // namespace Ethereal

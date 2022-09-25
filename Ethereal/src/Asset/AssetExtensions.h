@@ -6,21 +6,21 @@
 namespace Ethereal
 {
 
-    inline static std::unordered_map<std::string, AssetType> s_AssetExtensionMap = {
-        {".hscene", AssetType::Scene},
-        {".hsmesh", AssetType::StaticMesh},
-        {".hmaterial", AssetType::Material},
+    inline static std::unordered_map<std::string, AssetType> s_AssetExtensionMap = {{".hscene", AssetType::Scene},
+                                                                                    {".hsmesh", AssetType::StaticMesh},
+                                                                                    {".hmaterial", AssetType::Material},
+                                                                                    {".hanim", AssetType::Animation},
 
-        // Meshes
-        {".fbx", AssetType::MeshSource},
-        {".gltf", AssetType::MeshSource},
-        {".glb", AssetType::MeshSource},
-        {".obj", AssetType::MeshSource},
+                                                                                    // Meshes
+                                                                                    {".fbx", AssetType::MeshSource},
+                                                                                    {".gltf", AssetType::MeshSource},
+                                                                                    {".glb", AssetType::MeshSource},
+                                                                                    {".obj", AssetType::MeshSource},
 
-        // Textures
-        {".png", AssetType::Texture},
-        {".jpg", AssetType::Texture},
-        {".jpeg", AssetType::Texture},
+                                                                                    // Textures
+                                                                                    {".png", AssetType::Texture},
+                                                                                    {".jpg", AssetType::Texture},
+                                                                                    {".jpeg", AssetType::Texture},
         {".tga", AssetType::Texture},
         {".hdr", AssetType::EnvMap},
 

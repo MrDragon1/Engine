@@ -4,10 +4,10 @@
 namespace Ethereal
 {
     // The Joint infomation, not include any animation info
-    class Joint {
+    class Joint : public RefCounted {
       public:
-        Joint* m_Parent{nullptr};
-        std::vector<Joint*> m_Children;
+        Ref<Joint> m_Parent;
+        std::vector<Ref<Joint>> m_Children;
         std::string m_Name;
         size_t m_ID;
 

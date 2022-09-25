@@ -20,7 +20,9 @@ namespace Ethereal
         Material = 4,
         Texture = 5,
         EnvMap = 6,
-        Font = 7
+        Font = 7,
+        Animation = 8,
+        Animator = 9
     };
 
     namespace Utils
