@@ -16,6 +16,7 @@ namespace Ethereal
         Ref<Joint> m_Root;
         std::unordered_map<size_t, Ref<Joint>> m_JointsMap;
         std::unordered_map<size_t, glm::mat4> m_FinalBoneMatrices;
+        std::string m_Name;
 
       private:
         void CalculateMatrices(Ref<Joint> node, glm::mat4 parentTransform);

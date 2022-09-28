@@ -6,6 +6,8 @@ namespace Ethereal
     // The Joint infomation, not include any animation info
     class Joint : public RefCounted {
       public:
+        Joint() = default;
+
         void SetLocalTransform(AnimState state);
 
         glm::mat4 GetLocalTransform() { return m_LocalTransform; }
@@ -22,9 +24,6 @@ namespace Ethereal
 
         glm::mat4 m_InverseT{glm::mat4(1.0f)};
         glm::mat4 m_LocalTransform{glm::mat4(1.0f)};
-
-      public:
-        Joint() = default;
     };
 
 }  // namespace Ethereal

@@ -44,7 +44,7 @@ namespace Ethereal
         YAML::Node data;
         try {
             data = YAML::LoadFile(filepath);
-        } catch (YAML::ParserException e) {
+        } catch (YAML::ParserException& e) {
             ET_CORE_ERROR("Failed to load Animation file '{0}'\n     {1}", filepath, e.what());
             return false;
         }
@@ -60,7 +60,7 @@ namespace Ethereal
                 keyClip.JointID = kf["JointID"].as<size_t>();
                 auto keyStates = kf["States"];
                 for (auto ks : keyStates) {
-                    AnimState state;
+                    AnimState state{};
                     state.Position = ks["Position"].as<glm::vec3>();
                     state.Rotation = ks["Rotation"].as<glm::quat>();
                     state.Scale = ks["Scale"].as<glm::vec3>();
@@ -71,5 +71,74 @@ namespace Ethereal
             }
         }
         return true;
+    }
+
+    void SkeletonSerializer::Serialize(const std::string& filepath) {
+        YAML::Emitter out;
+        out << YAML::BeginMap;
+
+        out << YAML::Key << "Skeleton";
+        out << YAML::BeginMap;
+        out << YAML::Key << "Name" << YAML::Value << m_Skeleton->m_Name;
+        out << YAML::EndMap;
+        out << YAML::Key << "Joints" << YAML::Value << YAML::BeginSeq;
+
+        SerializeJoint(m_Skeleton->m_Root, out);
+
+        out << YAML::EndSeq;
+        out << YAML::EndMap;
+
+        std::ofstream fout(filepath);
+        fout << out.c_str();
+    }
+
+    bool SkeletonSerializer::Deserialize(const std::string& filepath) {
+        YAML::Node data;
+        try {
+            data = YAML::LoadFile(filepath);
+        } catch (YAML::ParserException& e) {
+            ET_CORE_ERROR("Failed to load Skeleton file '{0}'\n     {1}", filepath, e.what());
+            return false;
+        }
+        if (!data["Skeleton"]) return false;
+
+        m_Skeleton->m_Name = data["Skeleton"]["Name"].as<std::string>();
+
+        auto joints = data["Joints"];
+        if (joints) {
+            m_Skeleton->m_Root = DeserializeJoint(joints);
+        }
+    }
+
+    void SkeletonSerializer::SerializeJoint(Ref<Joint> node, YAML::Emitter& out) {
+        out << YAML::BeginMap;
+        out << YAML::Key << "m_Name" << YAML::Value << node->m_Name;
+        out << YAML::Key << "m_ID" << YAML::Value << node->m_ID;
+        out << YAML::Key << "m_InitialPosition" << YAML::Value << node->m_InitialPosition;
+        out << YAML::Key << "m_InitialRotation" << YAML::Value << node->m_InitialRotation;
+        out << YAML::Key << "m_InitialScale" << YAML::Value << node->m_InitialScale;
+        // InverseT can calculate with 3 InitialPoses
+
+        out << YAML::Key << "Children" << YAML::Value << YAML::BeginSeq;
+        for (auto& child : node->m_Children) SerializeJoint(child, out);
+        out << YAML::EndSeq;
+
+        out << YAML::EndMap;
+    }
+
+    Ref<Joint> SkeletonSerializer::DeserializeJoint(YAML::Node& node) {
+        Ref<Joint> joint = Ref<Joint>::Create();
+        joint->m_Name = node["m_Name"].as<std::string>();
+        joint->m_ID = node["m_Name"].as<size_t>();
+        joint->m_InitialPosition = node["m_Name"].as<glm::vec3>();
+        joint->m_InitialRotation = node["m_Name"].as<glm::quat>();
+        joint->m_InitialScale = node["m_Name"].as<glm::vec3>();
+        joint->m_Children.clear();
+
+        auto children = node["Children"];
+        for (auto child : children) {
+            joint->m_Children.emplace_back(DeserializeJoint(child));
+        }
+        return joint;
     }
 }  // namespace Ethereal

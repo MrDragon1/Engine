@@ -21,8 +21,8 @@ namespace Ethereal
 
     class Animation : public Asset {
       public:
+        Animation() = default;
         AnimInterClip GetInterpolateClip(TimeStamp ts);
-
         size_t GetFramesPerSecond() { return m_TotalFrames; }
         TimeStamp GetDuration() { return m_Duration; }
 

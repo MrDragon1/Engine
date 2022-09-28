@@ -9,7 +9,7 @@ namespace Ethereal
     // Control how to play animation
     class Animator : public Asset {
       public:
-        Animator(Ref<Animation> anim);
+        Animator(Ref<Animation> anim, Ref<Skeleton> skel);
         void PlayAnimation();
         void UpdateAnimation(TimeStamp ts);
         std::unordered_map<size_t, glm::mat4> GetFinalBoneMatrices() { return m_Skeleton->GetFinalBoneMatrices(); }

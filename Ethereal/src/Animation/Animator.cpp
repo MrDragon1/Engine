@@ -2,8 +2,9 @@
 
 namespace Ethereal
 {
-    Animator::Animator(Ref<Animation> anim) {
+    Animator::Animator(Ref<Animation> anim, Ref<Skeleton> skel) {
         m_Animation = anim;
+        m_Skeleton = skel;
         m_CurrentTime = 0.0f;
     }
 
