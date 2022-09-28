@@ -136,7 +136,7 @@ namespace Ethereal
         return Object;
     }
 
-    void Scene::OnUpdateRuntime(Timestep ts) {
+    void Scene::OnUpdateRuntime(TimeStamp ts) {
         // Update Scripts
         {
             m_Registry.view<NativeScriptComponent>().each([=](auto entity, auto& scriptable) {
@@ -197,7 +197,7 @@ namespace Ethereal
         }
     }
 
-    void Scene::OnUpdateEditor(Timestep ts, RenderSceneData& renderSceneData) {
+    void Scene::OnUpdateEditor(TimeStamp ts, RenderSceneData& renderSceneData) {
         if (!m_Environment) m_Environment = GlobalContext::GetRenderSystem().GetDefaultEnvironment();
         renderSceneData.Environment = m_Environment;
 

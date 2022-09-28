@@ -7,7 +7,7 @@
 #include "Core/Layer.h"
 #include "Core/Input.h"
 #include "Core/OrthographicCameraController.h"
-#include "Core/Timestep.h"
+#include "Core/TimeStamp.h"
 
 #include "Core/GlobalContext.h"
 

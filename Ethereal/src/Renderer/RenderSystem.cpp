@@ -50,7 +50,7 @@ namespace Ethereal
         m_MainImage = m_MainCameraRenderPass->m_Framebuffer->GetColorAttachment(0);
     }
 
-    void RenderSystem::Draw(Timestep ts) {
+    void RenderSystem::Draw(TimeStamp ts) {
         LoadProjectSettings();
 
         // m_ShadowMapRenderPass->SetLightPosition();

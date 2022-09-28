@@ -7,7 +7,7 @@ namespace Ethereal
         glm::vec3 Position;
         glm::quat Rotation;
         glm::vec3 Scale;
-        float TimeStamp;
+        TimeStamp TimeStamp;  // Frame Number
     };
 
     struct AnimKeyClip {
@@ -15,11 +15,25 @@ namespace Ethereal
         size_t JointID;
     };
 
+    struct AnimInterClip {
+        std::vector<AnimKeyClip> States;
+    };
+
     class Animation : public Asset {
+      public:
+        AnimInterClip GetInterpolateClip(TimeStamp ts);
+
+        size_t GetFramesPerSecond() { return m_TotalFrames; }
+        TimeStamp GetDuration() { return m_Duration; }
+
       public:
         std::vector<AnimKeyClip> m_KeyClips;
         size_t m_TotalFrames;
+        TimeStamp m_Duration;
         std::string m_Name{"Default Animation"};
+
+      private:
+        AnimState InterpolateState(AnimState prev, AnimState next, TimeStamp ts);
     };
 
 }  // namespace Ethereal

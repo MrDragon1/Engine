@@ -53,7 +53,7 @@ namespace Ethereal
         return speed;
     }
 
-    void EditorCamera::OnUpdate(Timestep ts) {
+    void EditorCamera::OnUpdate(TimeStamp ts) {
         if (Input::IsKeyPressed(Key::LeftAlt)) {
             const glm::vec2& mouse{Input::GetMouseX(), Input::GetMouseY()};
             glm::vec2 delta = (mouse - m_InitialMousePosition) * 0.003f;

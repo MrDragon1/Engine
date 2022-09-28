@@ -2,7 +2,7 @@
 
 #include "Core/Utils.h"
 #include "Event/Event.h"
-#include "Core/Timestep.h"
+#include "Core/TimeStamp.h"
 namespace Ethereal {
 
 class Layer {
@@ -12,7 +12,7 @@ class Layer {
 
     virtual void OnAttach() {}
     virtual void OnDetach() {}
-    virtual void OnUpdate(Timestep ts) {}
+    virtual void OnUpdate(TimeStamp ts) {}
     virtual void OnImGuiRender() {}
     virtual void OnEvent(Event& event) {}
 

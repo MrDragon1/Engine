@@ -18,7 +18,7 @@ namespace Ethereal
         virtual void OnAttach() override;
         virtual void OnDetach() override;
 
-        void OnUpdate(Timestep ts) override;
+        void OnUpdate(TimeStamp ts) override;
         virtual void OnImGuiRender() override;
         void OnEvent(Event& e) override;
 

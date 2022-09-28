@@ -5,7 +5,7 @@
 #include "RenderPass.h"
 #include "Mesh.h"
 #include "Scene/Scene.h"
-#include "Core/Timestep.h"
+#include "Core/TimeStamp.h"
 
 #include "Renderer/RenderPass/EnvironmentMapRenderPass.h"
 #include "Renderer/RenderPass/MainCameraRenderPass.h"
@@ -43,7 +43,7 @@ namespace Ethereal
       public:
         RenderSystem();
         void Init();
-        void Draw(Timestep ts);
+        void Draw(TimeStamp ts);
 
         std::pair<Ref<TextureCube>, Ref<TextureCube>> CreateEnvironmentMap(const std::string& path);
         void SubmitStaticMesh(Ref<StaticMesh> staticMesh, Ref<MaterialTable> materialTabel, uint32_t EntityID,

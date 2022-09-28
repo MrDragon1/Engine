@@ -27,7 +27,7 @@ namespace Ethereal
 
     void EditorLayer::OnDetach() {}
 
-    void EditorLayer::OnUpdate(Timestep ts) {
+    void EditorLayer::OnUpdate(TimeStamp ts) {
         switch (m_SceneState) {
             case SceneState::Play: {
                 m_ActiveScene->OnUpdateRuntime(ts);

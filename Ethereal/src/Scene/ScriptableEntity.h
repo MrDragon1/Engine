@@ -14,7 +14,7 @@ namespace Ethereal
         }
 
       protected:
-        virtual void OnUpdate(Timestep ts) {}
+        virtual void OnUpdate(TimeStamp ts) {}
         virtual void OnCreate() {}
         virtual void OnDestroy() {}
 

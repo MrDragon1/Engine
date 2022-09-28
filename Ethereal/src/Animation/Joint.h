@@ -1,10 +1,15 @@
 #pragma once
 #include "pch.h"
-
+#include "Animation.h"
 namespace Ethereal
 {
     // The Joint infomation, not include any animation info
     class Joint : public RefCounted {
+      public:
+        void SetLocalTransform(AnimState state);
+
+        glm::mat4 GetLocalTransform() { return m_LocalTransform; }
+
       public:
         Ref<Joint> m_Parent;
         std::vector<Ref<Joint>> m_Children;
@@ -16,6 +21,7 @@ namespace Ethereal
         glm::vec3 m_InitialScale;
 
         glm::mat4 m_InverseT{glm::mat4(1.0f)};
+        glm::mat4 m_LocalTransform{glm::mat4(1.0f)};
 
       public:
         Joint() = default;

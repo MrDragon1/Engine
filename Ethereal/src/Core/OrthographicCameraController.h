@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Renderer/OrthographicCamera.h"
-#include "Core/Timestep.h"
+#include "Core/TimeStamp.h"
 
 #include "Event/ApplicationEvent.h"
 #include "Event/MouseEvent.h"
@@ -12,7 +12,7 @@ namespace Ethereal
       public:
         OrthographicCameraController(float aspectRatio, bool rotation = true);
 
-        void OnUpdate(Timestep ts);
+        void OnUpdate(TimeStamp ts);
         void OnEvent(Event& e);
         void OnResize(float width, float height);
 

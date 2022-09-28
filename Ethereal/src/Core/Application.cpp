@@ -50,7 +50,7 @@ namespace Ethereal
     void Application::Run() {
         while (m_Running) {
             float time = Time::GetTime();
-            Timestep timestep = time - m_LastFrameTime;
+            TimeStamp timestep = time - m_LastFrameTime;
             m_LastFrameTime = time;
 
             if (!m_Minimized) {

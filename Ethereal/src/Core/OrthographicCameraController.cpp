@@ -10,7 +10,7 @@ namespace Ethereal
         : m_AspectRatio(aspectRatio), m_Camera(-m_AspectRatio * m_ZoomLevel, m_AspectRatio* m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel), m_Rotation(rotation) {
     }
 
-    void OrthographicCameraController::OnUpdate(Timestep ts) {
+    void OrthographicCameraController::OnUpdate(TimeStamp ts) {
         if (Input::IsKeyPressed(Key::A))
             m_CameraPosition.x -= m_CameraTranslationSpeed * ts;
         else if (Input::IsKeyPressed(Key::D))

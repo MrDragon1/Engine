@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Core/UUID.h"
-#include "Core/Timestep.h"
+#include "Core/TimeStamp.h"
 #include "Renderer/EditorCamera.h"
 #include "Renderer/Environment.h"
 #include "Utils/Macro.h"
@@ -25,8 +25,8 @@ namespace Ethereal
         Entity Create3DObject(ETHEREAL_BASIC_3DOBJECT type);
         Entity CreateEntityWithStaticMesh(AssetHandle assetHandle);
 
-        void OnUpdateRuntime(Timestep ts);
-        void OnUpdateEditor(Timestep ts, RenderSceneData& renderSceneData);
+        void OnUpdateRuntime(TimeStamp ts);
+        void OnUpdateEditor(TimeStamp ts, RenderSceneData& renderSceneData);
         void SubmitRenderScene(RenderSceneData& renderSceneData);
 
         void DestroyEntity(Entity entity);

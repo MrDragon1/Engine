@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Camera.h"
-#include "Core/Timestep.h"
+#include "Core/TimeStamp.h"
 #include "Event/Event.h"
 #include "Event/MouseEvent.h"
 
@@ -15,7 +15,7 @@ namespace Ethereal
         EditorCamera() = default;
         EditorCamera(float fov, float aspectRatio, float nearClip, float farClip);
 
-        void OnUpdate(Timestep ts);
+        void OnUpdate(TimeStamp ts);
         void OnEvent(Event& e);
 
         inline float GetDistance() const { return m_Distance; }
