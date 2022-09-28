@@ -22,7 +22,8 @@ namespace Ethereal
         EnvMap = 6,
         Font = 7,
         Animation = 8,
-        Animator = 9
+        Animator = 9,
+        Skeleton = 10
     };
 
     namespace Utils

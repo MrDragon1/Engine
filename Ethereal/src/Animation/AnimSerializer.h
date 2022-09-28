@@ -15,9 +15,9 @@ namespace Ethereal
         Ref<Animation> m_Animation;
     };
 
-    class SkeletonSerializer {
+    class SkelSerializer {
       public:
-        SkeletonSerializer(const Ref<Skeleton>& skel) : m_Skeleton(skel){};
+        SkelSerializer(const Ref<Skeleton>& skel) : m_Skeleton(skel){};
 
         void Serialize(const std::string& filepath);
         bool Deserialize(const std::string& filepath);

@@ -5,7 +5,7 @@
 namespace Ethereal
 {
     // The skeleton that describes how the joints connect
-    class Skeleton : public RefCounted {
+    class Skeleton : public Asset {
       public:
         Skeleton();
         void UpdatePose(AnimInterClip clip);

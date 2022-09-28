@@ -202,4 +202,16 @@ namespace Ethereal
         return true;
     }
 
+    void SkeletonSerializer::Serialize(const AssetMetaData& metadata, const Ref<Asset>& asset) const {
+        SkelSerializer serializer(asset.As<Skeleton>());
+        serializer.Serialize(AssetManager::GetFileSystemPath(metadata).string());
+    }
+    bool SkeletonSerializer::TryLoadData(const AssetMetaData& metadata, Ref<Asset>& asset) const {
+        asset = Ref<Skeleton>::Create();
+        asset->Handle = metadata.Handle;
+
+        SkelSerializer serializer(asset);
+        ET_CORE_ASSERT(serializer.Deserialize(AssetManager::GetFileSystemPath(metadata).string()), "Error when loading Skeleton asset!");
+        return true;
+    }
 }  // namespace Ethereal

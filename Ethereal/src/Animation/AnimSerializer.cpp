@@ -73,7 +73,7 @@ namespace Ethereal
         return true;
     }
 
-    void SkeletonSerializer::Serialize(const std::string& filepath) {
+    void SkelSerializer::Serialize(const std::string& filepath) {
         YAML::Emitter out;
         out << YAML::BeginMap;
 
@@ -92,7 +92,7 @@ namespace Ethereal
         fout << out.c_str();
     }
 
-    bool SkeletonSerializer::Deserialize(const std::string& filepath) {
+    bool SkelSerializer::Deserialize(const std::string& filepath) {
         YAML::Node data;
         try {
             data = YAML::LoadFile(filepath);
@@ -110,7 +110,7 @@ namespace Ethereal
         }
     }
 
-    void SkeletonSerializer::SerializeJoint(Ref<Joint> node, YAML::Emitter& out) {
+    void SkelSerializer::SerializeJoint(Ref<Joint> node, YAML::Emitter& out) {
         out << YAML::BeginMap;
         out << YAML::Key << "m_Name" << YAML::Value << node->m_Name;
         out << YAML::Key << "m_ID" << YAML::Value << node->m_ID;
@@ -126,7 +126,7 @@ namespace Ethereal
         out << YAML::EndMap;
     }
 
-    Ref<Joint> SkeletonSerializer::DeserializeJoint(YAML::Node& node) {
+    Ref<Joint> SkelSerializer::DeserializeJoint(YAML::Node& node) {
         Ref<Joint> joint = Ref<Joint>::Create();
         joint->m_Name = node["m_Name"].as<std::string>();
         joint->m_ID = node["m_Name"].as<size_t>();

@@ -10,6 +10,7 @@ namespace Ethereal
                                                                                     {".hsmesh", AssetType::StaticMesh},
                                                                                     {".hmaterial", AssetType::Material},
                                                                                     {".hanim", AssetType::Animation},
+                                                                                    {".hskel", AssetType::Skeleton},
 
                                                                                     // Meshes
                                                                                     {".fbx", AssetType::MeshSource},
@@ -21,11 +22,11 @@ namespace Ethereal
                                                                                     {".png", AssetType::Texture},
                                                                                     {".jpg", AssetType::Texture},
                                                                                     {".jpeg", AssetType::Texture},
-        {".tga", AssetType::Texture},
-        {".hdr", AssetType::EnvMap},
+                                                                                    {".tga", AssetType::Texture},
+                                                                                    {".hdr", AssetType::EnvMap},
 
-        // Fonts
-        {".ttf", AssetType::Font},
-        {".ttc", AssetType::Font},
-        {".otf", AssetType::Font}};
+                                                                                    // Fonts
+                                                                                    {".ttf", AssetType::Font},
+                                                                                    {".ttc", AssetType::Font},
+                                                                                    {".otf", AssetType::Font}};
 }
