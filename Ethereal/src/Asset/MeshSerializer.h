@@ -18,4 +18,18 @@ namespace Ethereal
         virtual bool TryLoadData(const AssetMetaData& metadata, Ref<Asset>& asset) const override;
     };
 
+    class MeshSerializer : public AssetSerializer {
+      public:
+        MeshSerializer();
+
+        void Serialize(Ref<Mesh> mesh, const std::string& filepath);
+        void SerializeRuntime(Ref<Mesh> mesh, const std::string& filepath);
+
+        bool Deserialize(const std::string& filepath);
+        bool DeserializeRuntime(const std::string& filepath);
+
+        virtual void Serialize(const AssetMetaData& metadata, const Ref<Asset>& asset) const override;
+        virtual bool TryLoadData(const AssetMetaData& metadata, Ref<Asset>& asset) const override;
+    };
+
 }  // namespace Ethereal

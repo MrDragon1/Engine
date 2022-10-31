@@ -51,7 +51,7 @@ namespace Ethereal
     bool MeshAssetSerializer::TryLoadData(const AssetMetaData& metadata, Ref<Asset>& asset) const {
         asset = Ref<MeshSource>::Create(AssetManager::GetFileSystemPathString(metadata));
         asset->Handle = metadata.Handle;
-        return (asset.As<MeshSource>())->GetVertices().size() > 0;  // Maybe?
+        return true;
     }
 
     void MaterialAssetSerializer::Serialize(const AssetMetaData& metadata, const Ref<Asset>& asset) const {
@@ -188,12 +188,12 @@ namespace Ethereal
         return true;
     }
 
-    void AnimationSerializer::Serialize(const AssetMetaData& metadata, const Ref<Asset>& asset) const {
+    void AnimationAssetSerializer::Serialize(const AssetMetaData& metadata, const Ref<Asset>& asset) const {
         AnimSerializer serializer(asset.As<Animation>());
         serializer.Serialize(AssetManager::GetFileSystemPath(metadata).string());
     }
 
-    bool AnimationSerializer::TryLoadData(const AssetMetaData& metadata, Ref<Asset>& asset) const {
+    bool AnimationAssetSerializer::TryLoadData(const AssetMetaData& metadata, Ref<Asset>& asset) const {
         asset = Ref<Animation>::Create();
         asset->Handle = metadata.Handle;
 
@@ -202,15 +202,28 @@ namespace Ethereal
         return true;
     }
 
-    void SkeletonSerializer::Serialize(const AssetMetaData& metadata, const Ref<Asset>& asset) const {
+    void SkeletonAssetSerializer::Serialize(const AssetMetaData& metadata, const Ref<Asset>& asset) const {
         SkelSerializer serializer(asset.As<Skeleton>());
         serializer.Serialize(AssetManager::GetFileSystemPath(metadata).string());
     }
-    bool SkeletonSerializer::TryLoadData(const AssetMetaData& metadata, Ref<Asset>& asset) const {
+    bool SkeletonAssetSerializer::TryLoadData(const AssetMetaData& metadata, Ref<Asset>& asset) const {
         asset = Ref<Skeleton>::Create();
         asset->Handle = metadata.Handle;
 
         SkelSerializer serializer(asset);
+        ET_CORE_ASSERT(serializer.Deserialize(AssetManager::GetFileSystemPath(metadata).string()), "Error when loading Skeleton asset!");
+        return true;
+    }
+
+    void AnimatorAssetSerializer::Serialize(const AssetMetaData& metadata, const Ref<Asset>& asset) const {
+        AnimatorSerializer serializer(asset.As<Animator>());
+        serializer.Serialize(AssetManager::GetFileSystemPath(metadata).string());
+    }
+    bool AnimatorAssetSerializer::TryLoadData(const AssetMetaData& metadata, Ref<Asset>& asset) const {
+        asset = Ref<Animator>::Create();
+        asset->Handle = metadata.Handle;
+
+        AnimatorSerializer serializer(asset);
         ET_CORE_ASSERT(serializer.Deserialize(AssetManager::GetFileSystemPath(metadata).string()), "Error when loading Skeleton asset!");
         return true;
     }

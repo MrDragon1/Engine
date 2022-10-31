@@ -3,37 +3,63 @@
 #include "Asset/Asset.h"
 namespace Ethereal
 {
-    struct AnimState {
+    struct AnimPositionState {
         glm::vec3 Position;
+        TimeStamp TimeStamp;
+    };
+    struct AnimRotationState {
         glm::quat Rotation;
+        TimeStamp TimeStamp;
+    };
+    struct AnimScaleState {
         glm::vec3 Scale;
-        TimeStamp TimeStamp;  // Frame Number
+        TimeStamp TimeStamp;
     };
 
     struct AnimKeyClip {
-        std::vector<AnimState> States;
+        std::vector<AnimPositionState> PositionStates;
+        std::vector<AnimRotationState> RotationStates;
+        std::vector<AnimScaleState> ScaleStates;
+        size_t JointID;
+    };
+
+    struct AnimState {
+        AnimPositionState PositionState;
+        AnimRotationState RotationState;
+        AnimScaleState ScaleState;
         size_t JointID;
     };
 
     struct AnimInterClip {
-        std::vector<AnimKeyClip> States;
+        std::vector<AnimState> States;
     };
 
     class Animation : public Asset {
       public:
         Animation() = default;
-        AnimInterClip GetInterpolateClip(TimeStamp ts);
-        size_t GetFramesPerSecond() { return m_TotalFrames; }
+        Animation(const Ref<Animation>& anim);
+        AnimInterClip GetInterpolateClip(TimeStamp animationTime);
+        double GetFramesPerSecond() { return m_FramesPersecond; }
         TimeStamp GetDuration() { return m_Duration; }
+
+        static AssetType GetStaticType() { return AssetType::Animation; }
+        virtual AssetType GetAssetType() const override { return GetStaticType(); }
 
       public:
         std::vector<AnimKeyClip> m_KeyClips;
-        size_t m_TotalFrames;
-        TimeStamp m_Duration;
+        double m_FramesPersecond;  // Frame per second
+        TimeStamp m_Duration;      // Duration in second
         std::string m_Name{"Default Animation"};
 
       private:
-        AnimState InterpolateState(AnimState prev, AnimState next, TimeStamp ts);
+        std::vector<int> GetPositionIndex(TimeStamp animationTime);
+        std::vector<int> GetRotationIndex(TimeStamp animationTime);
+        std::vector<int> GetScaleIndex(TimeStamp animationTime);
+        float GetScaleFactor(TimeStamp lastTimeStamp, TimeStamp nextTimeStamp, TimeStamp animationTime);
+
+        AnimPositionState InterpolatePosition(int jointIndex, int keyIndex, TimeStamp animationTime);
+        AnimRotationState InterpolateRotation(int jointIndex, int keyIndex, TimeStamp animationTime);
+        AnimScaleState InterpolateScale(int jointIndex, int keyIndex, TimeStamp animationTime);
     };
 
 }  // namespace Ethereal

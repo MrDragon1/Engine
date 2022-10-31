@@ -38,6 +38,12 @@ namespace Ethereal
             return result;
         }
 
+        glm::vec3 Vec3FromAssimpVec3(const aiVector3D& vec) { return glm::vec3(vec.x, vec.y, vec.z); }
+
+        glm::quat QuatFromAssimpQuat(const aiQuaternion& pOrientation) {
+            return glm::quat(pOrientation.w, pOrientation.x, pOrientation.y, pOrientation.z);
+        }
+
     }  // namespace Utils
 
     static const uint32_t s_MeshImportFlags = aiProcess_CalcTangentSpace |  // Create binormals/tangents just in case
@@ -77,6 +83,12 @@ namespace Ethereal
 
         m_Scene = scene;
         m_InverseTransform = glm::inverse(Utils::Mat4FromAssimpMat4(scene->mRootNode->mTransformation));
+        m_IsAnimated = scene->mAnimations != nullptr;
+        if (m_IsAnimated) {
+            Ref<Skeleton> skel = Ref<Skeleton>::Create();
+            Ref<Animation> anim = Ref<Animation>::Create();
+            m_Animator = Ref<Animator>::Create(anim, skel);
+        }
 
         uint32_t vertexCount = 0;
         uint32_t indexCount = 0;
@@ -101,31 +113,52 @@ namespace Ethereal
             ET_CORE_ASSERT(mesh->HasPositions(), "Meshes require positions.");
             ET_CORE_ASSERT(mesh->HasNormals(), "Meshes require normals.");
 
-            auto& aabb = submesh.BoundingBox;
-            aabb.Min = {FLT_MAX, FLT_MAX, FLT_MAX};
-            aabb.Max = {-FLT_MAX, -FLT_MAX, -FLT_MAX};
-            for (size_t i = 0; i < mesh->mNumVertices; i++) {
-                Vertex vertex;
-                vertex.Position = {mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z};
-                vertex.Normal = {mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z};
-                aabb.Min.x = glm::min(vertex.Position.x, aabb.Min.x);
-                aabb.Min.y = glm::min(vertex.Position.y, aabb.Min.y);
-                aabb.Min.z = glm::min(vertex.Position.z, aabb.Min.z);
-                aabb.Max.x = glm::max(vertex.Position.x, aabb.Max.x);
-                aabb.Max.y = glm::max(vertex.Position.y, aabb.Max.y);
-                aabb.Max.z = glm::max(vertex.Position.z, aabb.Max.z);
+            // Vertices
+            if (m_IsAnimated) {
+                for (size_t i = 0; i < mesh->mNumVertices; i++) {
+                    AnimationVertex vertex;
+                    vertex.Position = {mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z};
+                    vertex.Normal = {mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z};
 
-                if (mesh->HasTangentsAndBitangents()) {
-                    vertex.Tangent = {mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z};
-                    vertex.Binormal = {mesh->mBitangents[i].x, mesh->mBitangents[i].y, mesh->mBitangents[i].z};
+                    if (mesh->HasTangentsAndBitangents()) {
+                        vertex.Tangent = {mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z};
+                        vertex.Binormal = {mesh->mBitangents[i].x, mesh->mBitangents[i].y, mesh->mBitangents[i].z};
+                    }
+
+                    if (mesh->HasTextureCoords(0))
+                        vertex.Texcoord = {mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y};
+                    else
+                        vertex.Texcoord = {0, 0};
+
+                    m_AnimationVertices.push_back(vertex);
                 }
+            } else {
+                auto& aabb = submesh.BoundingBox;
+                aabb.Min = {FLT_MAX, FLT_MAX, FLT_MAX};
+                aabb.Max = {-FLT_MAX, -FLT_MAX, -FLT_MAX};
+                for (size_t i = 0; i < mesh->mNumVertices; i++) {
+                    Vertex vertex;
+                    vertex.Position = {mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z};
+                    vertex.Normal = {mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z};
+                    aabb.Min.x = glm::min(vertex.Position.x, aabb.Min.x);
+                    aabb.Min.y = glm::min(vertex.Position.y, aabb.Min.y);
+                    aabb.Min.z = glm::min(vertex.Position.z, aabb.Min.z);
+                    aabb.Max.x = glm::max(vertex.Position.x, aabb.Max.x);
+                    aabb.Max.y = glm::max(vertex.Position.y, aabb.Max.y);
+                    aabb.Max.z = glm::max(vertex.Position.z, aabb.Max.z);
 
-                if (mesh->HasTextureCoords(0))
-                    vertex.Texcoord = {mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y};
-                else
-                    vertex.Texcoord = {0, 0};
+                    if (mesh->HasTangentsAndBitangents()) {
+                        vertex.Tangent = {mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z};
+                        vertex.Binormal = {mesh->mBitangents[i].x, mesh->mBitangents[i].y, mesh->mBitangents[i].z};
+                    }
 
-                m_StaticVertices.push_back(vertex);
+                    if (mesh->HasTextureCoords(0))
+                        vertex.Texcoord = {mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y};
+                    else
+                        vertex.Texcoord = {0, 0};
+
+                    m_StaticVertices.push_back(vertex);
+                }
             }
 
             // Indices
@@ -151,12 +184,97 @@ namespace Ethereal
             m_BoundingBox.Max.z = glm::max(m_BoundingBox.Max.z, max.z);
         }
 
+        // Bones
+        if (m_IsAnimated) {
+            // Create Hierarchy Joint Skeleton without offset matrix
+            TraverseNodesAnim(scene->mRootNode, m_Animator->m_Skeleton->m_Root);
 
-        m_VertexBuffer = VertexBuffer::Create(m_StaticVertices.data(), (uint32_t)(m_StaticVertices.size() * sizeof(Vertex)));
-        m_VertexBufferLayout = {
-            {ShaderDataType::Float3, "a_Position"}, {ShaderDataType::Float3, "a_Normal"},   {ShaderDataType::Float3, "a_Tangent"},
-            {ShaderDataType::Float3, "a_Binormal"}, {ShaderDataType::Float2, "a_TexCoord"},
-        };
+            // Update offset matrix
+            for (size_t m = 0; m < scene->mNumMeshes; m++) {
+                aiMesh* mesh = scene->mMeshes[m];
+                Submesh& submesh = m_Submeshes[m];
+
+                for (size_t i = 0; i < mesh->mNumBones; i++) {
+                    aiBone* bone = mesh->mBones[i];
+                    std::string boneName(bone->mName.data);
+                    size_t boneID = m_Animator->m_Skeleton->m_NameIDMap[boneName];
+                    ET_CORE_ASSERT(boneID >= 0, "Can not find bone with name {0}", boneName);
+                    Ref<Joint> joint = m_Animator->m_Skeleton->m_JointsMap[boneID];
+
+                    joint->m_LocalTransform = Utils::Mat4FromAssimpMat4(bone->mOffsetMatrix);
+
+                    for (size_t j = 0; j < bone->mNumWeights; j++) {
+                        int VertexID = submesh.BaseVertex + bone->mWeights[j].mVertexId;
+                        float Weight = bone->mWeights[j].mWeight;
+                        m_AnimationVertices[VertexID].AddBoneData(boneID, Weight);
+                    }
+                }
+            }
+
+            // Create Animation (Only support one anim for now)
+            auto& animation = m_Animator->m_Animation;
+            auto& rawAnim = scene->mAnimations[0];
+            animation->m_Name = rawAnim->mName.data;
+            animation->m_Duration = rawAnim->mDuration / rawAnim->mTicksPerSecond;
+            animation->m_FramesPersecond = rawAnim->mTicksPerSecond;
+            animation->m_KeyClips.clear();
+
+            // fill key clip
+            auto& channels = rawAnim->mChannels;
+            auto& keyClips = animation->m_KeyClips;
+            for (int i = 0; i < rawAnim->mNumChannels; i++) {
+                aiNodeAnim* channel = channels[i];
+                AnimKeyClip keyClip;
+                keyClip.JointID = m_Animator->m_Skeleton->GetJointID(channel->mNodeName.data);
+
+                int m_NumPositions = channel->mNumPositionKeys;
+                for (int positionIndex = 0; positionIndex < m_NumPositions; ++positionIndex) {
+                    aiVector3D aiPosition = channel->mPositionKeys[positionIndex].mValue;
+                    float timeStamp = channel->mPositionKeys[positionIndex].mTime;
+                    AnimPositionState data;
+                    data.Position = Utils::Vec3FromAssimpVec3(aiPosition);
+                    data.TimeStamp = timeStamp;
+                    keyClip.PositionStates.push_back(data);
+                }
+
+                int m_NumRotations = channel->mNumRotationKeys;
+                for (int rotationIndex = 0; rotationIndex < m_NumRotations; ++rotationIndex) {
+                    aiQuaternion aiOrientation = channel->mRotationKeys[rotationIndex].mValue;
+                    float timeStamp = channel->mRotationKeys[rotationIndex].mTime;
+                    AnimRotationState data;
+                    data.Rotation = Utils::QuatFromAssimpQuat(aiOrientation);
+                    data.TimeStamp = timeStamp;
+                    keyClip.RotationStates.push_back(data);
+                }
+
+                int m_NumScalings = channel->mNumScalingKeys;
+                for (int keyIndex = 0; keyIndex < m_NumScalings; ++keyIndex) {
+                    aiVector3D scale = channel->mScalingKeys[keyIndex].mValue;
+                    float timeStamp = channel->mScalingKeys[keyIndex].mTime;
+                    AnimScaleState data;
+                    data.Scale = Utils::Vec3FromAssimpVec3(scale);
+                    data.TimeStamp = timeStamp;
+                    keyClip.ScaleStates.push_back(data);
+                }
+
+                animation->m_KeyClips.push_back(keyClip);
+            }
+        }
+
+        if (m_IsAnimated) {
+            m_VertexBuffer = VertexBuffer::Create(m_AnimationVertices.data(), (uint32_t)(m_AnimationVertices.size() * sizeof(AnimationVertex)));
+            m_VertexBufferLayout = {
+                {ShaderDataType::Float3, "a_Position"},    {ShaderDataType::Float3, "a_Normal"},   {ShaderDataType::Float3, "a_Tangent"},
+                {ShaderDataType::Float3, "a_Binormal"},    {ShaderDataType::Float2, "a_TexCoord"}, {ShaderDataType::Int4, "a_BoneIDs"},
+                {ShaderDataType::Float4, "a_BoneWeights"},
+            };
+        } else {
+            m_VertexBuffer = VertexBuffer::Create(m_StaticVertices.data(), (uint32_t)(m_StaticVertices.size() * sizeof(Vertex)));
+            m_VertexBufferLayout = {
+                {ShaderDataType::Float3, "a_Position"}, {ShaderDataType::Float3, "a_Normal"},   {ShaderDataType::Float3, "a_Tangent"},
+                {ShaderDataType::Float3, "a_Binormal"}, {ShaderDataType::Float2, "a_TexCoord"},
+            };
+        }
 
         m_IndexBuffer = IndexBuffer::Create(m_Indices.data(), (uint32_t)(m_Indices.size() * sizeof(Index)));
 
@@ -178,12 +296,25 @@ namespace Ethereal
             submesh.LocalTransform = localTransform;
             m_NodeMap[node][i] = mesh;
         }
-
         for (uint32_t i = 0; i < node->mNumChildren; i++) TraverseNodes(node->mChildren[i], transform, level + 1);
     }
 
+    void MeshSource::TraverseNodesAnim(aiNode* node, Ref<Joint>& joint) {
+        ET_CORE_ASSERT(node, "Empty aiNode!")
+        joint->m_Name = node->mName.data;
+        joint->m_ID = m_JointCount++;
+        m_Animator->m_Skeleton->m_NameIDMap[joint->m_Name] = joint->m_ID;
+        m_Animator->m_Skeleton->m_JointsMap[joint->m_ID] = joint;
+        for (uint32_t i = 0; i < node->mNumChildren; i++) {
+            Ref<Joint> childJoint = Ref<Joint>::Create();
+            childJoint->m_Parent = joint;
+            TraverseNodesAnim(node->mChildren[i], childJoint);
+            joint->m_Children.push_back(childJoint);
+        }
+    }
+
     MeshSource::MeshSource(const std::vector<Vertex>& vertices, const std::vector<Index>& indices, const glm::mat4& transform)
-        : m_StaticVertices(vertices), m_Indices(indices) {
+        : m_StaticVertices(vertices), m_Indices(indices), m_IsAnimated(false) {
         // Generate a new asset handle
         Handle = {};
 
@@ -208,7 +339,7 @@ namespace Ethereal
     }
 
     MeshSource::MeshSource(const std::vector<Vertex>& vertices, const std::vector<Index>& indices, const std::vector<Submesh>& submeshes)
-        : m_StaticVertices(vertices), m_Indices(indices), m_Submeshes(submeshes) {
+        : m_StaticVertices(vertices), m_Indices(indices), m_Submeshes(submeshes), m_IsAnimated(false) {
         // Generate a new asset handle
         Handle = {};
 
@@ -227,6 +358,7 @@ namespace Ethereal
     }
 
     MeshSource::~MeshSource() {}
+
     void MeshSource::LoadMaterials(Ref<MaterialTable>& materials) {
         // Materials
         if (m_Scene->HasMaterials()) {
@@ -274,7 +406,7 @@ namespace Ethereal
                     parentPath /= std::string(aiTexPath.data);
                     std::string texturePath = parentPath.string();
                     auto texture = AssetManager::GetAsset<Texture>(texturePath);
-                    if (texture->IsLoaded()) {
+                    if (texture && texture->IsLoaded()) {
                         mi->SetAlbedoMap(texture);
                         mi->SetAlbedoColor(glm::vec3(1.0f));
                     } else {
@@ -298,7 +430,7 @@ namespace Ethereal
                     parentPath /= std::string(aiTexPath.data);
                     std::string texturePath = parentPath.string();
                     auto texture = AssetManager::GetAsset<Texture>(texturePath);
-                    if (texture->IsLoaded()) {
+                    if (texture && texture->IsLoaded()) {
                         mi->SetNormalMap(texture);
                     } else {
                         ET_CORE_ERROR("    Could not load texture: {0}", texturePath);
@@ -322,7 +454,7 @@ namespace Ethereal
                     parentPath /= std::string(aiTexPath.data);
                     std::string texturePath = parentPath.string();
                     auto texture = AssetManager::GetAsset<Texture>(texturePath);
-                    if (texture->IsLoaded()) {
+                    if (texture && texture->IsLoaded()) {
                         mi->SetRoughnessMap(texture);
                         mi->SetRoughness(1.0f);
                     } else {
@@ -352,7 +484,7 @@ namespace Ethereal
                             parentPath /= str;
                             std::string texturePath = parentPath.string();
                             auto texture = AssetManager::GetAsset<Texture>(texturePath);
-                            if (texture->IsLoaded()) {
+                            if (texture && texture->IsLoaded()) {
                                 metalnessTextureFound = true;
                                 mi->SetMetalnessMap(texture);
                                 mi->SetMetalness(1.0f);
@@ -405,6 +537,42 @@ namespace Ethereal
     StaticMesh::~StaticMesh() {}
 
     void StaticMesh::SetSubmeshes(const std::vector<uint32_t>& submeshes) {
+        if (!submeshes.empty()) {
+            m_Submeshes = submeshes;
+        } else {
+            const auto& submeshes = m_MeshSource->GetSubmeshes();
+            m_Submeshes.resize(submeshes.size());
+            for (uint32_t i = 0; i < submeshes.size(); i++) m_Submeshes[i] = i;
+        }
+    }
+
+    Mesh::Mesh(Ref<MeshSource> meshSource, Ref<MaterialTable> materialTable) : m_MeshSource(meshSource) {
+        // Generate a new asset handle
+        Handle = {};
+
+        SetSubmeshes({});
+        m_Materials = Ref<MaterialTable>::Create();
+        for (auto& m : materialTable->GetMaterials()) {
+            m_Materials->SetMaterial(m.first, m.second);
+        }
+    }
+
+    Mesh::Mesh(Ref<MeshSource> meshSource, const std::vector<uint32_t>& submeshes) : m_MeshSource(meshSource) {
+        // Generate a new asset handle
+        Handle = {};
+
+        SetSubmeshes(submeshes);
+        m_Materials = Ref<MaterialTable>::Create();
+        //        const auto& meshMaterials = meshSource->GetMaterials();
+        //        m_Materials = Ref<MaterialTable>::Create(meshMaterials.size());
+        //        for (size_t i = 0; i < meshMaterials.size(); i++) m_Materials->SetMaterial(i, meshMaterials[i]);
+    }
+
+    Mesh::Mesh(const Ref<Mesh>& other) : m_MeshSource(other->m_MeshSource), m_Materials(other->m_Materials) { SetSubmeshes(other->m_Submeshes); }
+
+    Mesh::~Mesh() {}
+
+    void Mesh::SetSubmeshes(const std::vector<uint32_t>& submeshes) {
         if (!submeshes.empty()) {
             m_Submeshes = submeshes;
         } else {

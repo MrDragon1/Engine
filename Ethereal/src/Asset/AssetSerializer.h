@@ -39,13 +39,19 @@ namespace Ethereal
         virtual bool TryLoadData(const AssetMetaData& metadata, Ref<Asset>& asset) const override;
     };
 
-    class AnimationSerializer : public AssetSerializer {
+    class AnimationAssetSerializer : public AssetSerializer {
       public:
         virtual void Serialize(const AssetMetaData& metadata, const Ref<Asset>& asset) const override;
         virtual bool TryLoadData(const AssetMetaData& metadata, Ref<Asset>& asset) const override;
     };
 
-    class SkeletonSerializer : public AssetSerializer {
+    class SkeletonAssetSerializer : public AssetSerializer {
+      public:
+        virtual void Serialize(const AssetMetaData& metadata, const Ref<Asset>& asset) const override;
+        virtual bool TryLoadData(const AssetMetaData& metadata, Ref<Asset>& asset) const override;
+    };
+
+    class AnimatorAssetSerializer : public AssetSerializer {
       public:
         virtual void Serialize(const AssetMetaData& metadata, const Ref<Asset>& asset) const override;
         virtual bool TryLoadData(const AssetMetaData& metadata, Ref<Asset>& asset) const override;

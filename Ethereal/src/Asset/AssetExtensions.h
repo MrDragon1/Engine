@@ -17,6 +17,7 @@ namespace Ethereal
                                                                                     {".gltf", AssetType::MeshSource},
                                                                                     {".glb", AssetType::MeshSource},
                                                                                     {".obj", AssetType::MeshSource},
+                                                                                    {".dae", AssetType::MeshSource},
 
                                                                                     // Textures
                                                                                     {".png", AssetType::Texture},

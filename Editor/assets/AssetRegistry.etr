@@ -20,18 +20,30 @@ Assets:
   - Handle: 743188567960440942
     FilePath: meshes\cornell_box\cornell_box.hsmesh
     Type: StaticMesh
+  - Handle: 856863001946872951
+    FilePath: meshes\vampire\dancing_vampire.hSkeleton
+    Type: Skeleton
   - Handle: 907565599402912077
     FilePath: materials\rustediron.hmaterial
     Type: Material
+  - Handle: 1317791090268197828
+    FilePath: meshes\vampire\dancing_vampire.hSkeleton
+    Type: Skeleton
   - Handle: 1339853416729350087
     FilePath: meshes\cornell_box\blue.hmaterial
     Type: Material
+  - Handle: 1395800423723553282
+    FilePath: meshes\vampire\dancing_vampire.hSkeleton
+    Type: Skeleton
   - Handle: 1467296346629872072
     FilePath: meshes\source\quad.obj
     Type: MeshSource
   - Handle: 1559470105849742676
     FilePath: meshes\default\basicCube.hsmesh
     Type: StaticMesh
+  - Handle: 1597234240901622462
+    FilePath: meshes\vampire\dancing_vampire.hAnimator
+    Type: Animator
   - Handle: 1815109911821718148
     FilePath: meshes\gun\Cerberus_LP.hsmesh
     Type: StaticMesh
@@ -59,6 +71,9 @@ Assets:
   - Handle: 2348022839419931696
     FilePath: meshes\cornell_box\green.hmaterial
     Type: Material
+  - Handle: 2655262481281071250
+    FilePath: meshes\vampire\dancing_vampire.hAnimation
+    Type: Animation
   - Handle: 2801276543070836935
     FilePath: fonts\opensans\OpenSans-Medium.ttf
     Type: Font
@@ -77,6 +92,9 @@ Assets:
   - Handle: 3184234908745819317
     FilePath: textures\humanskin\human-skin1_preview3.jpg
     Type: Texture
+  - Handle: 3517025027883692410
+    FilePath: meshes\vampire\dancing_vampire.hAnimator
+    Type: Animator
   - Handle: 3684156870783348000
     FilePath: textures\rustediron\rustediron2_normal.png
     Type: Texture
@@ -98,6 +116,9 @@ Assets:
   - Handle: 4437595807192615377
     FilePath: textures\gold\normal.png
     Type: Texture
+  - Handle: 4917435649131397342
+    FilePath: meshes\vampire\Vampire_MAT.hmaterial
+    Type: Material
   - Handle: 4956907738453405018
     FilePath: meshes\default\cone.hsmesh
     Type: StaticMesh
@@ -146,8 +167,20 @@ Assets:
   - Handle: 5768072336176421466
     FilePath: meshes\cornell_box\cornell_box.hsmesh
     Type: StaticMesh
+  - Handle: 5902503613824294823
+    FilePath: meshes\vampire\dancing_vampire.dae
+    Type: MeshSource
   - Handle: 6266248153726710475
     FilePath: materials\M_Default.hmaterial
+    Type: Material
+  - Handle: 6285195207540677147
+    FilePath: meshes\vampire\Vampire_MAT.hmaterial
+    Type: Material
+  - Handle: 6322331058959809975
+    FilePath: meshes\vampire\dancing_vampire.hAnimator
+    Type: Animator
+  - Handle: 6541381828760894743
+    FilePath: meshes\vampire\Vampire_MAT.hmaterial
     Type: Material
   - Handle: 6560143709909394794
     FilePath: icons\PlayButton.png
@@ -170,6 +203,9 @@ Assets:
   - Handle: 7309008298981451249
     FilePath: buildin\textures\white.png
     Type: Texture
+  - Handle: 7411007936820886853
+    FilePath: meshes\vampire\dancing_vampire.hAnimator
+    Type: Animator
   - Handle: 7515865243955731945
     FilePath: meshes\cornell_box\cornell_box.hsmesh
     Type: StaticMesh
@@ -200,9 +236,27 @@ Assets:
   - Handle: 8416912332081586442
     FilePath: scenes\CSM.hscene
     Type: Scene
+  - Handle: 8585686005696021021
+    FilePath: meshes\vampire\textures\Vampire_emission.png
+    Type: Texture
+  - Handle: 8716458809046413660
+    FilePath: meshes\vampire\Vampire_MAT.hmaterial
+    Type: Material
+  - Handle: 8729042463168201760
+    FilePath: meshes\boy\Martelo 2.fbx
+    Type: MeshSource
   - Handle: 8791887480241883289
     FilePath: meshes\default\monkey.hsmesh
     Type: StaticMesh
+  - Handle: 8949083732928986374
+    FilePath: meshes\vampire\dancing_vampire.hAnimation
+    Type: Animation
+  - Handle: 8990937357232030802
+    FilePath: meshes\vampire\dancing_vampire.hmesh
+    Type: Mesh
+  - Handle: 9035498572029525025
+    FilePath: meshes\vampire\dancing_vampire.hAnimation
+    Type: Animation
   - Handle: 9082851471189368623
     FilePath: textures\humanskin\human-skin1_albedo_5.png
     Type: Texture
@@ -221,9 +275,24 @@ Assets:
   - Handle: 9378122927255444766
     FilePath: meshes\cornell_box\cornell_box.hsmesh
     Type: StaticMesh
+  - Handle: 9437989654649627846
+    FilePath: meshes\vampire\textures\Vampire_normal.png
+    Type: Texture
   - Handle: 9487121460335010656
     FilePath: meshes\gun\Textures\Cerberus_R.tga
     Type: Texture
+  - Handle: 9495562913119864151
+    FilePath: meshes\vampire\dancing_vampire.hmesh
+    Type: Mesh
+  - Handle: 9618790457173860348
+    FilePath: meshes\vampire\dancing_vampire.hmesh
+    Type: Mesh
+  - Handle: 9638275129901886715
+    FilePath: meshes\vampire\dancing_vampire.hAnimation
+    Type: Animation
+  - Handle: 9647986915398505128
+    FilePath: meshes\vampire\dancing_vampire.hAnimator
+    Type: Animator
   - Handle: 9793788378133683577
     FilePath: meshes\source\Cube.glb
     Type: MeshSource
@@ -245,21 +314,39 @@ Assets:
   - Handle: 10396357330847663768
     FilePath: textures\humanskin\human-skin1_metallic.png
     Type: Texture
+  - Handle: 10532273288035071592
+    FilePath: meshes\vampire\textures\Vampire_diffuse.png
+    Type: Texture
   - Handle: 10567220265324327748
     FilePath: meshes\source\Plane.gltf
     Type: MeshSource
+  - Handle: 10628532277239401793
+    FilePath: meshes\vampire\Vampire_MAT.hmaterial
+    Type: Material
+  - Handle: 10680583695567829955
+    FilePath: meshes\vampire\dancing_vampire.hAnimation
+    Type: Animation
   - Handle: 10755097151186722102
     FilePath: textures\humanskin\human-skin1_height.png
     Type: Texture
   - Handle: 10827238871968035892
     FilePath: meshes\source\monkey.obj
     Type: MeshSource
+  - Handle: 10997034524640334257
+    FilePath: meshes\vampire\dancing_vampire.hAnimator
+    Type: Animation
   - Handle: 11040801240512034961
     FilePath: textures\humanskin\human-skin1_albedo_1.png
+    Type: Texture
+  - Handle: 11059710607740176903
+    FilePath: meshes\vampire\textures\Vampire_specular.png
     Type: Texture
   - Handle: 11116514864426116313
     FilePath: textures\humanskin\human-skin1_albedo_3.png
     Type: Texture
+  - Handle: 11170054644867380554
+    FilePath: meshes\vampire\dancing_vampire.hAnimator
+    Type: Animator
   - Handle: 11434792598897862484
     FilePath: meshes\gun\Textures\Cerberus_N.tga
     Type: Texture
@@ -308,6 +395,12 @@ Assets:
   - Handle: 12717353975045953519
     FilePath: scenes\test.hscene
     Type: Scene
+  - Handle: 12719217534623961137
+    FilePath: meshes\vampire\dancing_vampire.hAnimation
+    Type: Animation
+  - Handle: 12753705603814303221
+    FilePath: meshes\vampire\dancing_vampire.hmesh
+    Type: Mesh
   - Handle: 12838739588801333892
     FilePath: meshes\cornell_box\cornell_box.hsmesh
     Type: StaticMesh
@@ -332,6 +425,9 @@ Assets:
   - Handle: 13482749080701748976
     FilePath: meshes\cornell_box\cornell_box.hsmesh
     Type: StaticMesh
+  - Handle: 13552251607004013146
+    FilePath: meshes\vampire\dancing_vampire.hSkeleton
+    Type: Skeleton
   - Handle: 13733117128754555817
     FilePath: textures\humanskin\human-skin1_albedo.png
     Type: Texture
@@ -353,6 +449,9 @@ Assets:
   - Handle: 14267756768597356953
     FilePath: meshes\cornell_box\white.hmaterial
     Type: Material
+  - Handle: 14352574883220584941
+    FilePath: meshes\vampire\dancing_vampire.hmesh
+    Type: Mesh
   - Handle: 14355345937695127609
     FilePath: meshes\cornell_box\cornell_box.hsmesh
     Type: StaticMesh
@@ -362,9 +461,15 @@ Assets:
   - Handle: 14664112580432978546
     FilePath: meshes\cornell_box\cornell_box.hsmesh
     Type: StaticMesh
+  - Handle: 14876490879724366631
+    FilePath: meshes\vampire\dancing_vampire.hSkeleton
+    Type: Skeleton
   - Handle: 15298088384928640906
     FilePath: skyboxs\Factory_Catwalk_2k.hdr
     Type: EnvMap
+  - Handle: 15404336755774379421
+    FilePath: meshes\vampire\Vampire_MAT.hmaterial
+    Type: Material
   - Handle: 15410943530872631803
     FilePath: meshes\source\Cylinder.gltf
     Type: MeshSource
@@ -377,6 +482,9 @@ Assets:
   - Handle: 15538580911191225888
     FilePath: meshes\cornell_box\cornell_box.hsmesh
     Type: StaticMesh
+  - Handle: 15562064418557568677
+    FilePath: meshes\vampire\Vampire_MAT.hmaterial
+    Type: Material
   - Handle: 15629598353572669012
     FilePath: meshes\cornell_box\cornell_box.obj
     Type: MeshSource
@@ -401,6 +509,9 @@ Assets:
   - Handle: 16903944524580968091
     FilePath: meshes\cornell_box\light.hmaterial
     Type: Material
+  - Handle: 16963609796035919729
+    FilePath: meshes\vampire\Vampire_MAT.hmaterial
+    Type: Material
   - Handle: 16976040922641325788
     FilePath: meshes\source\Capsule.gltf
     Type: MeshSource
@@ -422,6 +533,12 @@ Assets:
   - Handle: 17356469065209931330
     FilePath: fonts\opensans\OpenSans-Italic.ttf
     Type: Font
+  - Handle: 17388472182422384487
+    FilePath: meshes\vampire\dancing_vampire.hSkeleton
+    Type: Skeleton
+  - Handle: 17736945535323059320
+    FilePath: meshes\vampire\dancing_vampire.hAnimator
+    Type: Animator
   - Handle: 18118471782484879931
     FilePath: meshes\cornell_box\cornell_box.hsmesh
     Type: StaticMesh

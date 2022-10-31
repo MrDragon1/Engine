@@ -35,15 +35,16 @@ target_compile_definitions(EtherealRuntime
         )
 target_precompile_headers(EtherealRuntime PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src/pch.h")
 
-find_package(glm CONFIG REQUIRED)   # x64-windows-static
+
 find_package(glad CONFIG REQUIRED)  # x64-windows
+find_package(glm CONFIG REQUIRED)   # x64-windows-static
 find_package(glfw3 CONFIG REQUIRED) # x64-windows
 find_package(assimp CONFIG REQUIRED) # x64-windows
 find_package(EnTT CONFIG REQUIRED) # x64-windows
 find_package(spdlog CONFIG REQUIRED) # x64-windows
 find_package(yaml-cpp CONFIG REQUIRED) # x64-windows
-find_package(box2d CONFIG REQUIRED) # x64-windows-static
-find_package(imgui CONFIG REQUIRED) # x64-windows
+find_package(box2d CONFIG REQUIRED) # x64-windows (-static)
+find_package(imgui CONFIG REQUIRED) # imgui[docking-experimental]:x64-windows
 find_package(imguizmo CONFIG REQUIRED) # x64-windows
 
 find_path(STB_INCLUDE_DIRS "stb_c_lexer.h")

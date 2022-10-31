@@ -8,6 +8,12 @@ namespace Ethereal
         m_CurrentTime = 0.0f;
     }
 
+    Animator::Animator(const Ref<Animator>& anim) {
+        m_Animation = anim->m_Animation;
+        m_Skeleton = anim->m_Skeleton;
+        m_CurrentTime = 0.0f;
+    }
+
     void Animator::PlayAnimation() { m_CurrentTime = 0.0f; }
 
     void Animator::UpdateAnimation(TimeStamp ts) {
@@ -21,4 +27,5 @@ namespace Ethereal
             m_Skeleton->UpdatePose(clip);
         }
     }
+
 }  // namespace Ethereal

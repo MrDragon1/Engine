@@ -2,13 +2,23 @@
 
 namespace Ethereal
 {
-    Skeleton::Skeleton() {}
+    Skeleton::Skeleton() {
+        m_Root = Ref<Joint>::Create();
+        m_Name = "Default Skeleton";
+    }
+
+    Skeleton::Skeleton(const Ref<Skeleton>& skel) {
+        m_Root = skel->m_Root;
+        m_NameIDMap = skel->m_NameIDMap;
+        m_Name = skel->m_Name;
+        m_JointsMap = skel->m_JointsMap;
+    }
 
     void Skeleton::UpdatePose(AnimInterClip clip) {
         // Update LocalTranform in every joint
         for (auto state : clip.States) {
             Ref<Joint> node = m_JointsMap[state.JointID];
-            node->SetLocalTransform(state.States[0]);
+            node->SetLocalTransform(state);
         }
 
         // Loop joint tree to update FinalBoneMatrices

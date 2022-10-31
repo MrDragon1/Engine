@@ -22,9 +22,9 @@ void main()
 
 in vec2 v_TexCoord;
 
-uniform layout(rgba16f) image2D o_image;
-uniform layout(rgba16f) image2D i_image;
-uniform layout(rgba16f) image2D i_DownSamplerImage;
+layout(rgba16f) uniform image2D o_image;
+layout(rgba16f) uniform image2D i_image;
+layout(rgba16f) uniform image2D i_DownSamplerImage;
 
 uniform int u_DownSample;
 uniform int u_MipLevel;

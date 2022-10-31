@@ -9,11 +9,13 @@ namespace Ethereal
         s_Serializers[AssetType::Texture] = CreateScope<TextureSerializer>();
         s_Serializers[AssetType::Scene] = CreateScope<SceneAssetSerializer>();
         s_Serializers[AssetType::StaticMesh] = CreateScope<StaticMeshSerializer>();
+        s_Serializers[AssetType::Mesh] = CreateScope<MeshSerializer>();
         s_Serializers[AssetType::MeshSource] = CreateScope<MeshAssetSerializer>();
         s_Serializers[AssetType::Material] = CreateScope<MaterialAssetSerializer>();
         s_Serializers[AssetType::EnvMap] = CreateScope<EnvironmentSerializer>();
-        s_Serializers[AssetType::Animation] = CreateScope<AnimationSerializer>();
-        s_Serializers[AssetType::Skeleton] = CreateScope<SkeletonSerializer>();
+        s_Serializers[AssetType::Animation] = CreateScope<AnimationAssetSerializer>();
+        s_Serializers[AssetType::Skeleton] = CreateScope<SkeletonAssetSerializer>();
+        s_Serializers[AssetType::Animator] = CreateScope<AnimatorAssetSerializer>();
     }
 
     void AssetImporter::Serialize(const AssetMetaData& metadata, const Ref<Asset>& asset) {

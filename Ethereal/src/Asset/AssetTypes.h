@@ -23,7 +23,8 @@ namespace Ethereal
         Font = 7,
         Animation = 8,
         Animator = 9,
-        Skeleton = 10
+        Skeleton = 10,
+        Mesh = 11
     };
 
     namespace Utils
@@ -33,11 +34,15 @@ namespace Ethereal
             if (assetType == "None") return AssetType::None;
             if (assetType == "Scene") return AssetType::Scene;
             if (assetType == "StaticMesh") return AssetType::StaticMesh;
+            if (assetType == "Mesh") return AssetType::Mesh;
             if (assetType == "MeshSource") return AssetType::MeshSource;
             if (assetType == "Material") return AssetType::Material;
             if (assetType == "Texture") return AssetType::Texture;
             if (assetType == "EnvMap") return AssetType::EnvMap;
             if (assetType == "Font") return AssetType::Font;
+            if (assetType == "Animation") return AssetType::Animation;
+            if (assetType == "Animator") return AssetType::Animator;
+            if (assetType == "Skeleton") return AssetType::Skeleton;
 
             ET_CORE_ASSERT(false, "Unknown Asset Type");
             return AssetType::None;
@@ -61,6 +66,14 @@ namespace Ethereal
                     return "EnvMap";
                 case AssetType::Font:
                     return "Font";
+                case AssetType::Skeleton:
+                    return "Skeleton";
+                case AssetType::Animation:
+                    return "Animation";
+                case AssetType::Animator:
+                    return "Animator";
+                case AssetType::Mesh:
+                    return "Mesh";
             }
 
             ET_CORE_ASSERT(false, "Unknown Asset Type");

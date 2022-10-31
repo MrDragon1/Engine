@@ -104,12 +104,12 @@ namespace Ethereal
             if (metadata.Type == AssetType::None) continue;
 
             if (!FileSystem::Exists(AssetManager::GetFileSystemPath(metadata))) {
-                ET_CORE_WARN("[AssetManager] Missing asset '{0}' detected in registry file", metadata.FilePath);
+                ET_CORE_WARN("[AssetManager] Missing asset '{0}' detected in registry file", metadata.FilePath.string());
                 continue;
             }
 
             if (metadata.Handle == 0) {
-                ET_CORE_WARN("[AssetManager] AssetHandle for {0} is 0, this shouldn't happen.", metadata.FilePath);
+                ET_CORE_WARN("[AssetManager] AssetHandle for {0} is 0, this shouldn't happen.", metadata.FilePath.string());
                 continue;
             }
 
@@ -143,9 +143,12 @@ namespace Ethereal
     }
 
     void AssetManager::PostProcessAfterImport(const AssetMetaData& metadata) {
+        // Convert MeshSource to hsmesh and other asset file
         if (metadata.Type == AssetType::MeshSource) {
             auto meshSource = GetAsset<MeshSource>(metadata.Handle);
+            if (!meshSource->IsValid()) return;
             std::filesystem::path path = GetFileSystemPath(metadata);
+
             // Create materials that mesh used
             Ref<MaterialTable> mt = Ref<MaterialTable>::Create();
             meshSource->LoadMaterials(mt);
@@ -155,7 +158,18 @@ namespace Ethereal
                     m.second = CreateNewAsset<MaterialAsset>(m.second->GetName() + ".hmaterial", path.parent_path().string(), m.second);
                 }
             }
-            CreateNewAsset<StaticMesh>(metadata.FilePath.stem().string() + ".hsmesh", path.parent_path().string(), meshSource, mt);
+
+            // Create animator that mesh used
+            if (meshSource->IsAnimated()) {
+                auto animatorAsset = CreateNewAsset<Animator>(metadata.FilePath.stem().string() + ".hAnimator", path.parent_path().string(),
+                                                              meshSource->GetAnimator());
+                meshSource->GetAnimator()->Handle = animatorAsset->Handle;
+            }
+
+            if (meshSource->IsAnimated())
+                CreateNewAsset<Mesh>(metadata.FilePath.stem().string() + ".hmesh", path.parent_path().string(), meshSource, mt);
+            else
+                CreateNewAsset<StaticMesh>(metadata.FilePath.stem().string() + ".hsmesh", path.parent_path().string(), meshSource, mt);
         }
     }
 

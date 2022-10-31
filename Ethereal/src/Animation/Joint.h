@@ -13,10 +13,10 @@ namespace Ethereal
         glm::mat4 GetLocalTransform() { return m_LocalTransform; }
 
       public:
-        Ref<Joint> m_Parent;
+        Ref<Joint> m_Parent = nullptr;
         std::vector<Ref<Joint>> m_Children;
         std::string m_Name;
-        size_t m_ID;
+        size_t m_ID = -1;
 
         glm::vec3 m_InitialPosition;
         glm::quat m_InitialRotation;

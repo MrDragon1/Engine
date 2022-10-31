@@ -2,6 +2,7 @@
 #include <yaml-cpp/emitter.h>
 #include "Animation.h"
 #include "Skeleton.h"
+#include "Animator.h"
 namespace Ethereal
 {
     class AnimSerializer {
@@ -28,6 +29,17 @@ namespace Ethereal
       private:
         void SerializeJoint(Ref<Joint> node, YAML::Emitter& out);
         Ref<Joint> DeserializeJoint(YAML::Node& node);
+    };
+
+    class AnimatorSerializer {
+      public:
+        AnimatorSerializer(const Ref<Animator>& anim) : m_Animator(anim){};
+
+        void Serialize(const std::string& filepath);
+        bool Deserialize(const std::string& filepath);
+
+      private:
+        Ref<Animator> m_Animator;
     };
 
 }  // namespace Ethereal

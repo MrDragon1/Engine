@@ -34,7 +34,7 @@ namespace Ethereal
 
         // Not serialized
         std::string ProjectFileName = "Default Project";
-        std::string ProjectDirectory = "G:\\Code\\Engine\\Editor";
+        std::string ProjectDirectory = "E:\\Code\\Engine\\Editor";
     };
 
     class Project : public RefCounted {
