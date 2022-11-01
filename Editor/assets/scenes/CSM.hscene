@@ -2,39 +2,6 @@ Scene:
   Name: Untitled
   Environment: 10111825085121754573
 Entities:
-  - Entity: 18411395427453320437
-    TagComponent:
-      Tag: dancing_vampire
-    MeshComponent:
-      AssetID: 12294864179002628096
-      MaterialTable:
-        0: 70615365145783185
-    TransformComponent:
-      Translation: [0, 0, 0]
-      Rotation: [0, 0, 0]
-      Scale: [1, 1, 1]
-  - Entity: 10393859523941400476
-    TagComponent:
-      Tag: Sphere
-    StaticMeshComponent:
-      AssetID: 13437552004259238276
-      MaterialTable:
-        0: 5521013208314249089
-    TransformComponent:
-      Translation: [4.80120277, -6.87727404, 3.61753368]
-      Rotation: [0, 0, 0]
-      Scale: [1, 1, 1]
-  - Entity: 6878430722712004472
-    TagComponent:
-      Tag: Cube
-    StaticMeshComponent:
-      AssetID: 17060509455937462602
-      MaterialTable:
-        0: 6266248153726710475
-    TransformComponent:
-      Translation: [0.302898288, -6.6436286, 3.28573775]
-      Rotation: [0, 0, 0]
-      Scale: [2.32999992, 2.32999992, 2.32999992]
   - Entity: 12448116261531323673
     TagComponent:
       Tag: Plane
@@ -46,3 +13,36 @@ Entities:
       Translation: [0, -10.323823, 2.16432762]
       Rotation: [0, 0, 0]
       Scale: [20.0132656, 34.9568825, 20.0132656]
+  - Entity: 6878430722712004472
+    TagComponent:
+      Tag: Cube
+    StaticMeshComponent:
+      AssetID: 17060509455937462602
+      MaterialTable:
+        0: 6266248153726710475
+    TransformComponent:
+      Translation: [0.302898288, -6.6436286, 3.28573775]
+      Rotation: [0, 0, 0]
+      Scale: [2.32999992, 2.32999992, 2.32999992]
+  - Entity: 10393859523941400476
+    TagComponent:
+      Tag: Sphere
+    StaticMeshComponent:
+      AssetID: 13437552004259238276
+      MaterialTable:
+        0: 5521013208314249089
+    TransformComponent:
+      Translation: [4.80120277, -6.87727404, 3.61753368]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+  - Entity: 18411395427453320437
+    TagComponent:
+      Tag: dancing_vampire
+    MeshComponent:
+      AssetID: 12294864179002628096
+      MaterialTable:
+        0: 70615365145783185
+    TransformComponent:
+      Translation: [-4.12934256, -10.3199997, 5.87265396]
+      Rotation: [0, 0, 0]
+      Scale: [2, 2, 2]

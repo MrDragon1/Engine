@@ -32,9 +32,11 @@ namespace Ethereal
         std::vector<int> res;
         res.clear();
         for (auto& joint : m_KeyClips) {
-            for (int index = 0; index < joint.PositionStates.size() - 1; ++index) {
-                if (animationTime < joint.PositionStates[index + 1].TimeStamp) res.push_back(index);
+            int ind = -1;
+            for (int index = 0; index < joint.PositionStates.size() - 1 && ind == -1; ++index) {
+                if (animationTime < joint.PositionStates[index + 1].TimeStamp) ind = index;
             }
+            res.push_back(ind);
         }
         return res;
     }
@@ -43,9 +45,11 @@ namespace Ethereal
         std::vector<int> res;
         res.clear();
         for (auto& joint : m_KeyClips) {
-            for (int index = 0; index < joint.RotationStates.size() - 1; ++index) {
-                if (animationTime < joint.RotationStates[index + 1].TimeStamp) res.push_back(index);
+            int ind = -1;
+            for (int index = 0; index < joint.RotationStates.size() - 1 && ind == -1; ++index) {
+                if (animationTime < joint.RotationStates[index + 1].TimeStamp) ind = index;
             }
+            res.push_back(ind);
         }
         return res;
     }
@@ -54,9 +58,11 @@ namespace Ethereal
         std::vector<int> res;
         res.clear();
         for (auto& joint : m_KeyClips) {
-            for (int index = 0; index < joint.ScaleStates.size() - 1; ++index) {
-                if (animationTime < joint.ScaleStates[index + 1].TimeStamp) res.push_back(index);
+            int ind = -1;
+            for (int index = 0; index < joint.ScaleStates.size() - 1 && ind == -1; ++index) {
+                if (animationTime < joint.ScaleStates[index + 1].TimeStamp) ind = index;
             }
+            res.push_back(ind);
         }
         return res;
     }
@@ -70,18 +76,21 @@ namespace Ethereal
     }
 
     AnimPositionState Animation::InterpolatePosition(int jointIndex, int keyIndex, TimeStamp animationTime) {
-        auto& joint = m_KeyClips[jointIndex];
+        auto& keyClip = m_KeyClips[jointIndex];
         AnimPositionState res;
         res.TimeStamp = animationTime;
-        if (1 == joint.PositionStates.size()) {
-            res.Position = joint.PositionStates[0].Position;
+        if (1 == keyClip.PositionStates.size()) {
+            res.Position = keyClip.PositionStates[0].Position;
             return res;
         }
-
+        if (-1 == keyIndex) {
+            res.Position = glm::vec3(0.0f);  // should be initial pose
+            return res;
+        }
         int p0Index = keyIndex;
         int p1Index = p0Index + 1;
-        float scaleFactor = GetScaleFactor(joint.PositionStates[p0Index].TimeStamp, joint.PositionStates[p1Index].TimeStamp, animationTime);
-        res.Position = glm::mix(joint.PositionStates[p0Index].Position, joint.PositionStates[p1Index].Position, scaleFactor);
+        float scaleFactor = GetScaleFactor(keyClip.PositionStates[p0Index].TimeStamp, keyClip.PositionStates[p1Index].TimeStamp, animationTime);
+        res.Position = glm::mix(keyClip.PositionStates[p0Index].Position, keyClip.PositionStates[p1Index].Position, scaleFactor);
         return res;
     }
 
@@ -93,6 +102,10 @@ namespace Ethereal
 
         if (1 == joint.RotationStates.size()) {
             res.Rotation = joint.RotationStates[0].Rotation;
+            return res;
+        }
+        if (-1 == keyIndex) {
+            res.Rotation = glm::quat(glm::vec3(0.0f));  // should be initial pose
             return res;
         }
 
@@ -111,6 +124,11 @@ namespace Ethereal
 
         if (1 == joint.ScaleStates.size()) {
             res.Scale = joint.ScaleStates[0].Scale;
+            return res;
+        }
+
+        if (-1 == keyIndex) {
+            res.Scale = glm::vec3(1.0f);  // should be initial pose
             return res;
         }
 

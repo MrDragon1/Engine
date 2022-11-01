@@ -75,6 +75,9 @@ namespace Ethereal
     AssetType AssetManager::GetAssetTypeFromPath(const std::filesystem::path& path) { return GetAssetTypeFromExtension(path.extension().string()); }
 
     void AssetManager::LoadAssetRegistry() {
+        // TODO:
+        //  BUG: Same asset may has many handle in registry file.
+        //  Importing asset annually will add a new handle for all the associated asset file.
         ET_CORE_INFO("[AssetManager] Loading Asset Registry");
 
         const auto& assetRegistryPath = Project::GetAssetRegistryPath();

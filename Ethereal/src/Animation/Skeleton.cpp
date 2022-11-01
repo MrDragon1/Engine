@@ -29,7 +29,7 @@ namespace Ethereal
         glm::mat4 globalTransform = parentTransform * node->GetLocalTransform();
 
         // InverseT transfroms vertex from model space to bone space
-        m_FinalBoneMatrices[node->m_ID] = globalTransform * node->m_OffsetMatrix;
+        m_FinalBoneMatrices[node->m_ID] = m_Root->m_InverseOffsetMatrix * globalTransform * node->m_OffsetMatrix;
 
         for (auto& children : node->m_Children) {
             CalculateMatrices(children, globalTransform);

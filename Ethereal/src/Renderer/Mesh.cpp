@@ -202,6 +202,7 @@ namespace Ethereal
                     Ref<Joint> joint = m_Animator->m_Skeleton->m_JointsMap[boneID];
 
                     joint->m_OffsetMatrix = Utils::Mat4FromAssimpMat4(bone->mOffsetMatrix);
+                    joint->m_InverseOffsetMatrix = glm::inverse(joint->m_OffsetMatrix);
 
                     for (size_t j = 0; j < bone->mNumWeights; j++) {
                         int VertexID = submesh.BaseVertex + bone->mWeights[j].mVertexId;

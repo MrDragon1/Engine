@@ -20,6 +20,9 @@ Assets:
   - Handle: 472868447295227411
     FilePath: fonts\opensans\OpenSans-MediumItalic.ttf
     Type: Font
+  - Handle: 664648298263591012
+    FilePath: meshes\vampire\dancing_vampire.hSkeleton
+    Type: Skeleton
   - Handle: 743188567960440942
     FilePath: meshes\cornell_box\cornell_box.hsmesh
     Type: StaticMesh
@@ -113,6 +116,9 @@ Assets:
   - Handle: 5065889348537517837
     FilePath: meshes\gun\Cerberus_LP.hsmesh
     Type: StaticMesh
+  - Handle: 5067589375737006289
+    FilePath: meshes\vampire\Vampire_MAT.hmaterial
+    Type: Material
   - Handle: 5095451425471151322
     FilePath: fonts\opensans\OpenSans-Bold.ttf
     Type: Font
@@ -392,6 +398,9 @@ Assets:
   - Handle: 13743545906097785929
     FilePath: meshes\cornell_box\cornell_box.hsmesh
     Type: StaticMesh
+  - Handle: 13808348361145947964
+    FilePath: meshes\vampire\dancing_vampire.hmesh
+    Type: Mesh
   - Handle: 13896290564190477560
     FilePath: textures\default\default_normal.png
     Type: Texture
@@ -446,6 +455,12 @@ Assets:
   - Handle: 16016150646620525778
     FilePath: textures\humanskin\human-skin1_normal-ogl.png
     Type: Texture
+  - Handle: 16023337528699981285
+    FilePath: meshes\vampire\dancing_vampire.hAnimator
+    Type: Animator
+  - Handle: 16089535894389553709
+    FilePath: meshes\vampire\dancing_vampire.hAnimation
+    Type: Animation
   - Handle: 16519244461161705494
     FilePath: scenes\tettt.hscene
     Type: Scene
