@@ -201,7 +201,7 @@ namespace Ethereal
                     ET_CORE_ASSERT(boneID >= 0, "Can not find bone with name {0}", boneName);
                     Ref<Joint> joint = m_Animator->m_Skeleton->m_JointsMap[boneID];
 
-                    joint->m_LocalTransform = Utils::Mat4FromAssimpMat4(bone->mOffsetMatrix);
+                    joint->m_OffsetMatrix = Utils::Mat4FromAssimpMat4(bone->mOffsetMatrix);
 
                     for (size_t j = 0; j < bone->mNumWeights; j++) {
                         int VertexID = submesh.BaseVertex + bone->mWeights[j].mVertexId;
@@ -215,7 +215,7 @@ namespace Ethereal
             auto& animation = m_Animator->m_Animation;
             auto& rawAnim = scene->mAnimations[0];
             animation->m_Name = rawAnim->mName.data;
-            animation->m_Duration = rawAnim->mDuration / rawAnim->mTicksPerSecond;
+            animation->m_Duration = rawAnim->mDuration;
             animation->m_FramesPersecond = rawAnim->mTicksPerSecond;
             animation->m_KeyClips.clear();
 
@@ -314,7 +314,7 @@ namespace Ethereal
     }
 
     MeshSource::MeshSource(const std::vector<Vertex>& vertices, const std::vector<Index>& indices, const glm::mat4& transform)
-        : m_StaticVertices(vertices), m_Indices(indices), m_IsAnimated(false) {
+        : m_StaticVertices(vertices), m_Indices(indices), m_IsAnimated(false), m_Animator(nullptr) {
         // Generate a new asset handle
         Handle = {};
 
@@ -339,7 +339,7 @@ namespace Ethereal
     }
 
     MeshSource::MeshSource(const std::vector<Vertex>& vertices, const std::vector<Index>& indices, const std::vector<Submesh>& submeshes)
-        : m_StaticVertices(vertices), m_Indices(indices), m_Submeshes(submeshes), m_IsAnimated(false) {
+        : m_StaticVertices(vertices), m_Indices(indices), m_Submeshes(submeshes), m_IsAnimated(false), m_Animator(nullptr) {
         // Generate a new asset handle
         Handle = {};
 

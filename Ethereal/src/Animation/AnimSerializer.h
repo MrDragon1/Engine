@@ -28,7 +28,7 @@ namespace Ethereal
 
       private:
         void SerializeJoint(Ref<Joint> node, YAML::Emitter& out);
-        Ref<Joint> DeserializeJoint(YAML::Node& node);
+        Ref<Joint> DeserializeJoint(const YAML::Node& node);
     };
 
     class AnimatorSerializer {

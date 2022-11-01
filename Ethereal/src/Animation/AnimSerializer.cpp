@@ -150,7 +150,10 @@ namespace Ethereal
 
         auto joints = data["Joints"];
         if (joints) {
-            m_Skeleton->m_Root = DeserializeJoint(joints);
+            for (const auto& joint : joints) {
+                m_Skeleton->m_Root = DeserializeJoint(joint);
+                break;
+            }
         }
         return true;
     }
@@ -171,13 +174,13 @@ namespace Ethereal
         out << YAML::EndMap;
     }
 
-    Ref<Joint> SkelSerializer::DeserializeJoint(YAML::Node& node) {
+    Ref<Joint> SkelSerializer::DeserializeJoint(const YAML::Node& node) {
         Ref<Joint> joint = Ref<Joint>::Create();
         joint->m_Name = node["m_Name"].as<std::string>();
-        joint->m_ID = node["m_Name"].as<size_t>();
-        joint->m_InitialPosition = node["m_Name"].as<glm::vec3>();
-        joint->m_InitialRotation = node["m_Name"].as<glm::quat>();
-        joint->m_InitialScale = node["m_Name"].as<glm::vec3>();
+        joint->m_ID = node["m_ID"].as<AssetHandle>();
+        joint->m_InitialPosition = node["m_InitialPosition"].as<glm::vec3>();
+        joint->m_InitialRotation = node["m_InitialRotation"].as<glm::quat>();
+        joint->m_InitialScale = node["m_InitialScale"].as<glm::vec3>();
         // TODO: calculate inverseT
 
         joint->m_Children.clear();

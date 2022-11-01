@@ -121,6 +121,34 @@ namespace Ethereal
         }
     }
 
+    void RenderSystem::SubmitMesh(Ref<Mesh> mesh, Ref<MaterialTable> materialTable, uint32_t EntityID, const glm::mat4& transform) {
+        Ref<MeshSource> meshSource = mesh->GetMeshSource();
+        const auto& submeshData = meshSource->GetSubmeshes();
+        for (uint32_t submeshIndex : mesh->GetSubmeshes()) {
+            glm::mat4 submeshTransform = transform * submeshData[submeshIndex].Transform;
+
+            const auto& submeshes = mesh->GetMeshSource()->GetSubmeshes();
+            uint32_t materialIndex = submeshes[submeshIndex].MaterialIndex;
+            Ref<MaterialAsset> material = materialTable->GetMaterial(materialIndex);
+            AssetHandle materialHandle = material->Handle;
+
+            MeshKey meshKey = {mesh->Handle, materialHandle, submeshIndex, false, EntityID};
+            auto& transformStorage = m_DrawLists->MeshTransformMap[meshKey].Transforms.emplace_back();
+            transformStorage.Transform = submeshTransform;
+            // Main geo
+            {
+                bool isTransparent = material->IsTransparent();
+                if (isTransparent) ET_CORE_WARN("Only support untransparent material");
+                auto& destDrawList = m_DrawLists->MeshDrawList;
+                auto& dc = destDrawList[meshKey];
+                dc.Mesh = mesh;
+                dc.SubmeshIndex = submeshIndex;
+                dc.MaterialTable = materialTable;
+                dc.InstanceCount++;
+            }
+        }
+    }
+
     void RenderSystem::SubmitRenderSceneData(const RenderSceneData& data) {
         m_MainCameraRenderPass->SetCameraPosition(data.CameraPosition);
         m_SkyboxRenderPass->SetSkyboxProjection(data.ProjectionMatrix);

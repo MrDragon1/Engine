@@ -207,6 +207,8 @@ namespace Ethereal
                         OpenScene(workingDirPath.string());
                     else if (assetData.Type == AssetType::StaticMesh)
                         m_EditorScene->CreateEntityWithStaticMesh(assetHandle);
+                    else if (assetData.Type == AssetType::Mesh)
+                        m_EditorScene->CreateEntityWithMesh(assetHandle);
                 }
                 ImGui::EndDragDropTarget();
             }

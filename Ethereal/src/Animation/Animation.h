@@ -48,7 +48,7 @@ namespace Ethereal
       public:
         std::vector<AnimKeyClip> m_KeyClips;
         double m_FramesPersecond;  // Frame per second
-        TimeStamp m_Duration;      // Duration in second
+        TimeStamp m_Duration;      // Duration (total frames)
         std::string m_Name{"Default Animation"};
 
       private:

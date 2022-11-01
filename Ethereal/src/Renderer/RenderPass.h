@@ -10,8 +10,18 @@ namespace Ethereal
     struct TransformVertexData {
         glm::mat4 Transform;
     };
+
     struct StaticDrawCommand {
         Ref<StaticMesh> StaticMesh;
+        uint32_t SubmeshIndex;
+        Ref<MaterialTable> MaterialTable;
+
+        uint32_t InstanceCount = 0;
+        uint32_t InstanceOffset = 0;
+    };
+
+    struct DrawCommand {
+        Ref<Mesh> Mesh;
         uint32_t SubmeshIndex;
         Ref<MaterialTable> MaterialTable;
 
@@ -58,6 +68,7 @@ namespace Ethereal
     struct DrawLists {
         std::map<MeshKey, TransformMapData> MeshTransformMap;
         std::map<MeshKey, StaticDrawCommand> StaticMeshDrawList;
+        std::map<MeshKey, DrawCommand> MeshDrawList;
     };
 
     class RenderPass : public RefCounted {

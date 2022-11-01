@@ -201,20 +201,39 @@ namespace Ethereal
         if (!m_Environment) m_Environment = GlobalContext::GetRenderSystem().GetDefaultEnvironment();
         renderSceneData.Environment = m_Environment;
 
+        // TODO: Should update animation OnUpdateRuntime
+        auto view = m_Registry.view<MeshComponent>();
+        for (auto& entity : view) {
+            const auto meshComponent = view.get<MeshComponent>(entity);
+            auto mesh = AssetManager::GetAsset<Mesh>(meshComponent.Mesh);
+            mesh->GetAnimator()->UpdateAnimation(ts);
+        }
+
         SubmitRenderScene(renderSceneData);
     }
 
     void Scene::SubmitRenderScene(RenderSceneData& renderSceneData) {
         GlobalContext::GetRenderSystem().SubmitRenderSceneData(renderSceneData);
 
-        auto view = m_Registry.view<TransformComponent, StaticMeshComponent>();
-        for (auto entity : view) {
-            const auto [transformComponent, staticMeshComponent] = view.get<TransformComponent, StaticMeshComponent>(entity);
+        auto staticMeshView = m_Registry.view<TransformComponent, StaticMeshComponent>();
+        for (auto entity : staticMeshView) {
+            const auto [transformComponent, staticMeshComponent] = staticMeshView.get<TransformComponent, StaticMeshComponent>(entity);
             auto staticMesh = AssetManager::GetAsset<StaticMesh>(staticMeshComponent.StaticMesh);
             if (staticMesh && !staticMesh->IsFlagSet(AssetFlag::Missing)) {
                 Entity e = Entity(entity, this);
                 glm::mat4 transform = transformComponent.GetTransform();  // GetWorldSpaceTransformMatrix(e);
                 GlobalContext::GetRenderSystem().SubmitStaticMesh(staticMesh, staticMeshComponent.MaterialTable, (uint32_t)e, transform);
+            }
+        }
+
+        auto meshView = m_Registry.view<TransformComponent, MeshComponent>();
+        for (auto entity : meshView) {
+            const auto [transformComponent, meshComponent] = meshView.get<TransformComponent, MeshComponent>(entity);
+            auto mesh = AssetManager::GetAsset<StaticMesh>(meshComponent.Mesh);
+            if (mesh && !mesh->IsFlagSet(AssetFlag::Missing)) {
+                Entity e = Entity(entity, this);
+                glm::mat4 transform = transformComponent.GetTransform();  // GetWorldSpaceTransformMatrix(e);
+                GlobalContext::GetRenderSystem().SubmitMesh(mesh, meshComponent.MaterialTable, (uint32_t)e, transform);
             }
         }
     }
@@ -288,10 +307,6 @@ namespace Ethereal
         return {};
     }
 
-    template <typename T>
-    void Scene::OnComponentAdded(Entity entity, T& component) {
-        static_assert(sizeof(T) == 0);
-    }
     Entity Scene::CreateEntityWithStaticMesh(AssetHandle assetHandle) {
         if (!AssetManager::IsAssetHandleValid(assetHandle)) {
             ET_CORE_WARN("Incorrect asset input!");
@@ -316,12 +331,44 @@ namespace Ethereal
         }
         return entity;
     }
+
+    Entity Scene::CreateEntityWithMesh(AssetHandle assetHandle) {
+        if (!AssetManager::IsAssetHandleValid(assetHandle)) {
+            ET_CORE_WARN("Incorrect asset input!");
+            return {};
+        }
+        const AssetMetaData& assetData = AssetManager::GetMetadata(assetHandle);
+
+        Entity entity = CreateEntity(assetData.FilePath.stem().string());
+        auto& component = entity.AddComponent<MeshComponent>();
+        component.Mesh = assetHandle;
+
+        auto mesh = AssetManager::GetAsset<Mesh>(assetHandle);
+        if (mesh->GetMaterials()->GetMaterialCount() > component.MaterialTable->GetMaterialCount()) {
+            component.MaterialTable->SetMaterialCount(mesh->GetMaterials()->GetMaterialCount());
+        }
+
+        // Get a material from meshComponent materialTable if it has (not the copy of the material)
+        for (int index = 0; index < component.MaterialTable->GetMaterialCount(); index++) {
+            if (mesh->GetMaterials()->HasMaterial(index)) {
+                component.MaterialTable->SetMaterial(index, mesh->GetMaterials()->GetMaterial(index));
+            }
+        }
+        return entity;
+    }
+
+    template <typename T>
+    void Scene::OnComponentAdded(Entity entity, T& component) {
+        static_assert(sizeof(T) == 0);
+    }
     template <>
     void Scene::OnComponentAdded<IDComponent>(Entity entity, IDComponent& component) {}
     template <>
     void Scene::OnComponentAdded<TransformComponent>(Entity entity, TransformComponent& component) {}
     template <>
     void Scene::OnComponentAdded<StaticMeshComponent>(Entity entity, StaticMeshComponent& component) {}
+    template <>
+    void Scene::OnComponentAdded<MeshComponent>(Entity entity, MeshComponent& component) {}
     template <>
     void Scene::OnComponentAdded<CameraComponent>(Entity entity, CameraComponent& component) {
         component.Camera.SetViewportSize(m_ViewportWidth, m_ViewportHeight);

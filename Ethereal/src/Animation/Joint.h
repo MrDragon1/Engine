@@ -22,7 +22,7 @@ namespace Ethereal
         glm::quat m_InitialRotation;
         glm::vec3 m_InitialScale;
 
-        glm::mat4 m_InverseT{glm::mat4(1.0f)};
+        glm::mat4 m_OffsetMatrix{glm::mat4(1.0f)};
         glm::mat4 m_LocalTransform{glm::mat4(1.0f)};
     };
 

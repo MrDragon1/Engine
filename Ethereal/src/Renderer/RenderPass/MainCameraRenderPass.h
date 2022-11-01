@@ -22,8 +22,12 @@ namespace Ethereal
       private:
         glm::mat4 m_ViewProjectionMatrix;
 
-        Ref<Shader> m_Shader;
-        std::string m_ShaderPath = "assets/shaders/PBR.glsl";
+        Ref<Shader> m_StaticMeshShader;
+        std::string m_StaticMeshShaderPath = "assets/shaders/PBR.glsl";
+
+        Ref<Shader> m_MeshShader;
+        std::string m_MeshShaderPath = "assets/shaders/PBR_Anim.glsl";
+
         Ref<Framebuffer> m_Framebuffer;
 
         // temporary

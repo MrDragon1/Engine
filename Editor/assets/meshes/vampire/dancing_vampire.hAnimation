@@ -1,6 +1,6 @@
 Animation:
   Name: Hips
-  AssetHandle: 12719217534623961137
+  AssetHandle: 7263571438218922053
   FramesPersecond: 1000
 KeyFrames:
   - JointID: 1

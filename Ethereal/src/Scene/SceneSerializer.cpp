@@ -70,6 +70,25 @@ namespace Ethereal
             out << YAML::EndMap;  // StaticMeshComponent
         }
 
+        if (entity.HasComponent<MeshComponent>()) {
+            out << YAML::Key << "MeshComponent";
+            out << YAML::BeginMap;  // MeshComponent
+
+            MeshComponent& mc = entity.GetComponent<MeshComponent>();
+            out << YAML::Key << "AssetID" << YAML::Value << mc.Mesh;
+            auto materialTable = mc.MaterialTable;
+            if (materialTable->GetMaterialCount() > 0) {
+                out << YAML::Key << "MaterialTable" << YAML::Value << YAML::BeginMap;  // MaterialTable
+
+                for (uint32_t i = 0; i < materialTable->GetMaterialCount(); i++) {
+                    AssetHandle handle = (materialTable->HasMaterial(i) ? materialTable->GetMaterial(i)->Handle : (AssetHandle)0);
+                    out << YAML::Key << i << YAML::Value << handle;
+                }
+                out << YAML::EndMap;  // MaterialTable
+            }
+            out << YAML::EndMap;  // MeshComponent
+        }
+
         if (entity.HasComponent<TransformComponent>()) {
             out << YAML::Key << "TransformComponent";
             out << YAML::BeginMap;  // TransformComponent
@@ -219,6 +238,42 @@ namespace Ethereal
                     if (staticMeshComponent["MaterialTable"]) {
                         YAML::Node materialTableNode = staticMeshComponent["MaterialTable"];
                         auto mesh = AssetManager::GetAsset<StaticMesh>(component.StaticMesh);
+                        if (mesh->GetMaterials()->GetMaterialCount() > component.MaterialTable->GetMaterialCount()) {
+                            component.MaterialTable->SetMaterialCount(mesh->GetMaterials()->GetMaterialCount());
+                        }
+
+                        // Get a material from meshComponent materialTable if it has (not the copy of the material)
+                        for (int index = 0; index < component.MaterialTable->GetMaterialCount(); index++) {
+                            if (mesh->GetMaterials()->HasMaterial(index)) {
+                                component.MaterialTable->SetMaterial(index, mesh->GetMaterials()->GetMaterial(index));
+                            }
+                        }
+
+                        // Override the materialTable
+                        for (auto materialEntry : materialTableNode) {
+                            auto index = materialEntry.first.as<uint32_t>();
+                            auto materialAsset = materialEntry.second.as<AssetHandle>();
+
+                            // User has specified an override material, just point to that material
+                            if (materialAsset && AssetManager::IsAssetHandleValid(materialAsset))
+                                component.MaterialTable->SetMaterial(index, AssetManager::GetAsset<MaterialAsset>(materialAsset));
+                        }
+                    }
+                }
+
+                auto meshComponent = entity["MeshComponent"];
+                if (meshComponent) {
+                    auto& component = deserializedEntity.AddComponent<MeshComponent>();
+
+                    AssetHandle assetHandle = meshComponent["AssetID"].as<uint64_t>();
+                    if (AssetManager::IsAssetHandleValid(assetHandle)) {
+                        const AssetMetaData& metadata = AssetManager::GetMetadata(assetHandle);
+                        component.Mesh = assetHandle;
+                    }
+
+                    if (meshComponent["MaterialTable"]) {
+                        YAML::Node materialTableNode = meshComponent["MaterialTable"];
+                        auto mesh = AssetManager::GetAsset<StaticMesh>(component.Mesh);
                         if (mesh->GetMaterials()->GetMaterialCount() > component.MaterialTable->GetMaterialCount()) {
                             component.MaterialTable->SetMaterialCount(mesh->GetMaterials()->GetMaterialCount());
                         }

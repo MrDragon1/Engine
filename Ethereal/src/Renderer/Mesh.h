@@ -195,6 +195,7 @@ namespace Ethereal
         void SetMeshAsset(Ref<MeshSource> meshAsset) { m_MeshSource = meshAsset; }
 
         Ref<MaterialTable> GetMaterials() const { return m_Materials; }
+        Ref<Animator> GetAnimator() { return m_MeshSource->GetAnimator(); }
 
         static AssetType GetStaticType() { return AssetType::Mesh; }
         virtual AssetType GetAssetType() const override { return GetStaticType(); }

@@ -18,24 +18,45 @@ namespace Ethereal
         fbSpec.Height = height;
         m_Framebuffer = Framebuffer::Create(fbSpec);
 
-        m_Shader = Shader::Create(m_ShaderPath);
-        m_Shader->Bind();
+        /* Static Mesh Shader */
+        m_StaticMeshShader = Shader::Create(m_StaticMeshShaderPath);
+        m_StaticMeshShader->Bind();
 
-        m_Shader->SetFloat3("u_Albedo", {0.5f, 0.0f, 0.0f});
-        m_Shader->SetFloat("u_Occlusion", 1.0f);
+        m_StaticMeshShader->SetFloat3("u_Albedo", {0.5f, 0.0f, 0.0f});
+        m_StaticMeshShader->SetFloat("u_Occlusion", 1.0f);
 
-        m_Shader->SetInt("u_AlbedoMap", 0);
-        m_Shader->SetInt("u_NormalMap", 1);
-        m_Shader->SetInt("u_MetallicMap", 2);
-        m_Shader->SetInt("u_RoughnessMap", 3);
-        m_Shader->SetInt("u_OcclusionMap", 4);
+        m_StaticMeshShader->SetInt("u_AlbedoMap", 0);
+        m_StaticMeshShader->SetInt("u_NormalMap", 1);
+        m_StaticMeshShader->SetInt("u_MetallicMap", 2);
+        m_StaticMeshShader->SetInt("u_RoughnessMap", 3);
+        m_StaticMeshShader->SetInt("u_OcclusionMap", 4);
 
         // IBL
-        m_Shader->SetInt("u_IrradianceMap", 6);
-        m_Shader->SetInt("u_PrefilterMap", 7);
-        m_Shader->SetInt("u_BRDFLUT", 8);
+        m_StaticMeshShader->SetInt("u_IrradianceMap", 6);
+        m_StaticMeshShader->SetInt("u_PrefilterMap", 7);
+        m_StaticMeshShader->SetInt("u_BRDFLUT", 8);
 
-        m_Shader->SetInt("u_ShadowMap", 9);
+        m_StaticMeshShader->SetInt("u_ShadowMap", 9);
+
+        /* Mesh Shader */
+        m_MeshShader = Shader::Create(m_MeshShaderPath);
+        m_MeshShader->Bind();
+
+        m_MeshShader->SetFloat3("u_Albedo", {0.5f, 0.0f, 0.0f});
+        m_MeshShader->SetFloat("u_Occlusion", 1.0f);
+
+        m_MeshShader->SetInt("u_AlbedoMap", 0);
+        m_MeshShader->SetInt("u_NormalMap", 1);
+        m_MeshShader->SetInt("u_MetallicMap", 2);
+        m_MeshShader->SetInt("u_RoughnessMap", 3);
+        m_MeshShader->SetInt("u_OcclusionMap", 4);
+
+        // IBL
+        m_MeshShader->SetInt("u_IrradianceMap", 6);
+        m_MeshShader->SetInt("u_PrefilterMap", 7);
+        m_MeshShader->SetInt("u_BRDFLUT", 8);
+
+        m_MeshShader->SetInt("u_ShadowMap", 9);
     }
 
     void MainCameraRenderPass::Draw() {
@@ -47,14 +68,10 @@ namespace Ethereal
         m_Framebuffer->ClearAttachment(1, -1);
 
         const auto& staticMeshDrawList = m_DrawLists.StaticMeshDrawList;
+        const auto& meshDrawList = m_DrawLists.MeshDrawList;
         const auto& meshTransformMap = m_DrawLists.MeshTransformMap;
 
-        m_Shader->Bind();
-        m_Shader->SetMat4("u_ViewProjection", m_ViewProjectionMatrix);
-        m_Shader->SetFloat3("camPos", m_CameraPosition);
-
         // lights
-        // ------
         glm::vec3 lightPositions[] = {
             glm::vec3(-10.0f, 20.0f, 10.0f),
             glm::vec3(10.0f, 20.0f, 10.0f),
@@ -63,59 +80,141 @@ namespace Ethereal
         };
         glm::vec3 lightColors[] = {glm::vec3(300.0f, 300.0f, 300.0f), glm::vec3(300.0f, 300.0f, 300.0f), glm::vec3(300.0f, 300.0f, 300.0f),
                                    glm::vec3(300.0f, 300.0f, 300.0f)};
-        for (int i = 0; i < 4; i++) {
-            m_Shader->SetFloat3("lightPositions[" + std::to_string(i) + "]", lightPositions[i]);
-            m_Shader->SetFloat3("lightColors[" + std::to_string(i) + "]", lightColors[i]);
+
+        // Draw StaticMesh
+        {
+            m_StaticMeshShader->Bind();
+            m_StaticMeshShader->SetMat4("u_ViewProjection", m_ViewProjectionMatrix);
+            m_StaticMeshShader->SetFloat3("camPos", m_CameraPosition);
+
+            for (int i = 0; i < 4; i++) {
+                m_StaticMeshShader->SetFloat3("lightPositions[" + std::to_string(i) + "]", lightPositions[i]);
+                m_StaticMeshShader->SetFloat3("lightColors[" + std::to_string(i) + "]", lightColors[i]);
+            }
+
+            // CSM
+            m_CSMData.ShadowMap->Bind(9);
+            m_StaticMeshShader->SetMat4("u_View", m_CSMData.View);
+            m_StaticMeshShader->SetFloat("u_FarPlane", m_CSMData.FarPlane);
+            m_StaticMeshShader->SetFloat3("u_LightDir", m_CSMData.LightDir);
+            m_StaticMeshShader->SetInt("u_CascadeCount", m_CSMData.Cascaded);
+            for (int i = 0; i < m_CSMData.LightMatrices.size(); i++) {
+                m_StaticMeshShader->SetMat4("u_LightSpaceMatrices[" + std::to_string(i) + "]", m_CSMData.LightMatrices[i]);
+            }
+            for (int i = 0; i < m_CSMData.Distance.size(); i++) {
+                m_StaticMeshShader->SetFloat("u_CascadePlaneDistances[" + std::to_string(i) + "]", m_CSMData.Distance[i]);
+            }
+
+            // Draw Static Mesh
+            if (!staticMeshDrawList.empty()) {
+                for (auto& [mk, dc] : staticMeshDrawList) {
+                    Ref<MeshSource> ms = dc.StaticMesh->GetMeshSource();
+                    Ref<MaterialTable> mt = dc.MaterialTable;
+                    const auto& meshMaterialTable = dc.StaticMesh->GetMaterials();
+                    Submesh& submesh = ms->GetSubmeshes()[dc.SubmeshIndex];
+                    auto materialIndex = submesh.MaterialIndex;
+
+                    Ref<MaterialAsset> material =
+                        mt->HasMaterial(materialIndex) ? mt->GetMaterial(materialIndex) : meshMaterialTable->GetMaterial(materialIndex);
+
+                    ms->GetVertexArray()->Bind();
+                    m_StaticMeshShader->SetMat4("u_Model", meshTransformMap.at(mk).Transforms[0].Transform);
+                    m_StaticMeshShader->SetInt("u_EntityID", mk.EntityID);
+
+                    material->GetAlbedoMap()->Bind(0);
+                    material->GetNormalMap()->Bind(1);
+                    material->GetMetalnessMap()->Bind(2);
+                    material->GetRoughnessMap()->Bind(3);
+                    material->GetOcclusionMap()->Bind(4);
+
+                    m_StaticMeshShader->SetFloat3("u_Albedo", material->GetAlbedoColor());
+                    m_StaticMeshShader->SetFloat("u_Roughness", material->GetRoughness());
+                    m_StaticMeshShader->SetFloat("u_Metallic", material->GetMetalness());
+                    m_StaticMeshShader->SetFloat("u_Emisstion", material->GetEmission());
+
+                    m_StaticMeshShader->SetInt("u_UseAlbedoMap", material->IsUseAlbedoMap());
+                    m_StaticMeshShader->SetInt("u_UseNormalMap", material->IsUseNormalMap());
+                    m_StaticMeshShader->SetInt("u_UseMetallicMap", material->IsUseMetallicMap());
+                    m_StaticMeshShader->SetInt("u_UseRoughnessMap", material->IsUseRoughnessMap());
+                    m_StaticMeshShader->SetInt("u_UseOcclusionMap", material->IsUseOcclusionMap());
+
+                    RenderCommand::DrawIndexed(ms->GetVertexArray(), submesh.IndexCount,
+                                               reinterpret_cast<void*>(submesh.BaseIndex * sizeof(uint32_t)), submesh.BaseVertex);
+                }
+            }
         }
 
-        // CSM
-        m_CSMData.ShadowMap->Bind(9);
-        m_Shader->SetMat4("u_View", m_CSMData.View);
-        m_Shader->SetFloat("u_FarPlane", m_CSMData.FarPlane);
-        m_Shader->SetFloat3("u_LightDir", m_CSMData.LightDir);
-        m_Shader->SetInt("u_CascadeCount", m_CSMData.Cascaded);
-        for (int i = 0; i < m_CSMData.LightMatrices.size(); i++) {
-            m_Shader->SetMat4("u_LightSpaceMatrices[" + std::to_string(i) + "]", m_CSMData.LightMatrices[i]);
-        }
-        for (int i = 0; i < m_CSMData.Distance.size(); i++) {
-            m_Shader->SetFloat("u_CascadePlaneDistances[" + std::to_string(i) + "]", m_CSMData.Distance[i]);
-        }
+        // Draw Mesh
+        {
+            m_MeshShader->Bind();
+            m_MeshShader->SetMat4("u_ViewProjection", m_ViewProjectionMatrix);
+            m_MeshShader->SetFloat3("camPos", m_CameraPosition);
 
-        // Draw Static Mesh
-        if (!staticMeshDrawList.empty()) {
-            for (auto& [mk, dc] : staticMeshDrawList) {
-                Ref<MeshSource> ms = dc.StaticMesh->GetMeshSource();
-                Ref<MaterialTable> mt = dc.MaterialTable;
-                const auto& meshMaterialTable = dc.StaticMesh->GetMaterials();
-                Submesh& submesh = ms->GetSubmeshes()[dc.SubmeshIndex];
-                auto materialIndex = submesh.MaterialIndex;
+            for (int i = 0; i < 4; i++) {
+                m_MeshShader->SetFloat3("lightPositions[" + std::to_string(i) + "]", lightPositions[i]);
+                m_MeshShader->SetFloat3("lightColors[" + std::to_string(i) + "]", lightColors[i]);
+            }
 
-                Ref<MaterialAsset> material =
-                    mt->HasMaterial(materialIndex) ? mt->GetMaterial(materialIndex) : meshMaterialTable->GetMaterial(materialIndex);
+            // CSM
+            m_CSMData.ShadowMap->Bind(9);
+            m_MeshShader->SetMat4("u_View", m_CSMData.View);
+            m_MeshShader->SetFloat("u_FarPlane", m_CSMData.FarPlane);
+            m_MeshShader->SetFloat3("u_LightDir", m_CSMData.LightDir);
+            m_MeshShader->SetInt("u_CascadeCount", m_CSMData.Cascaded);
+            for (int i = 0; i < m_CSMData.LightMatrices.size(); i++) {
+                m_MeshShader->SetMat4("u_LightSpaceMatrices[" + std::to_string(i) + "]", m_CSMData.LightMatrices[i]);
+            }
+            for (int i = 0; i < m_CSMData.Distance.size(); i++) {
+                m_MeshShader->SetFloat("u_CascadePlaneDistances[" + std::to_string(i) + "]", m_CSMData.Distance[i]);
+            }
 
-                ms->GetVertexArray()->Bind();
-                m_Shader->SetMat4("u_Model", meshTransformMap.at(mk).Transforms[0].Transform);
-                m_Shader->SetInt("u_EntityID", mk.EntityID);
+            // Draw
+            if (!meshDrawList.empty()) {
+                for (auto& [mk, dc] : meshDrawList) {
+                    Ref<MeshSource> ms = dc.Mesh->GetMeshSource();
 
-                material->GetAlbedoMap()->Bind(0);
-                material->GetNormalMap()->Bind(1);
-                material->GetMetalnessMap()->Bind(2);
-                material->GetRoughnessMap()->Bind(3);
-                material->GetOcclusionMap()->Bind(4);
+                    Ref<Animator> animator = ms->GetAnimator();
+                    auto boneMatrices = animator->GetFinalBoneMatrices();
+                    for (const auto& [id, m] : boneMatrices) {
+                        if (id >= 100) {
+                            ET_CORE_WARN("Only support 100 bones!");
+                            continue;
+                        }
+                        m_MeshShader->SetMat4("u_BoneTransforms[" + std::to_string(id) + "]", m);
+                    }
 
-                m_Shader->SetFloat3("u_Albedo", material->GetAlbedoColor());
-                m_Shader->SetFloat("u_Roughness", material->GetRoughness());
-                m_Shader->SetFloat("u_Metallic", material->GetMetalness());
-                m_Shader->SetFloat("u_Emisstion", material->GetEmission());
+                    Ref<MaterialTable> mt = dc.MaterialTable;
+                    const auto& meshMaterialTable = dc.Mesh->GetMaterials();
+                    Submesh& submesh = ms->GetSubmeshes()[dc.SubmeshIndex];
+                    auto materialIndex = submesh.MaterialIndex;
 
-                m_Shader->SetInt("u_UseAlbedoMap", material->IsUseAlbedoMap());
-                m_Shader->SetInt("u_UseNormalMap", material->IsUseNormalMap());
-                m_Shader->SetInt("u_UseMetallicMap", material->IsUseMetallicMap());
-                m_Shader->SetInt("u_UseRoughnessMap", material->IsUseRoughnessMap());
-                m_Shader->SetInt("u_UseOcclusionMap", material->IsUseOcclusionMap());
+                    Ref<MaterialAsset> material =
+                        mt->HasMaterial(materialIndex) ? mt->GetMaterial(materialIndex) : meshMaterialTable->GetMaterial(materialIndex);
 
-                RenderCommand::DrawIndexed(ms->GetVertexArray(), submesh.IndexCount, reinterpret_cast<void*>(submesh.BaseIndex * sizeof(uint32_t)),
-                                           submesh.BaseVertex);
+                    ms->GetVertexArray()->Bind();
+                    m_MeshShader->SetMat4("u_Model", meshTransformMap.at(mk).Transforms[0].Transform);
+                    m_MeshShader->SetInt("u_EntityID", mk.EntityID);
+
+                    material->GetAlbedoMap()->Bind(0);
+                    material->GetNormalMap()->Bind(1);
+                    material->GetMetalnessMap()->Bind(2);
+                    material->GetRoughnessMap()->Bind(3);
+                    material->GetOcclusionMap()->Bind(4);
+
+                    m_MeshShader->SetFloat3("u_Albedo", material->GetAlbedoColor());
+                    m_MeshShader->SetFloat("u_Roughness", material->GetRoughness());
+                    m_MeshShader->SetFloat("u_Metallic", material->GetMetalness());
+                    m_MeshShader->SetFloat("u_Emisstion", material->GetEmission());
+
+                    m_MeshShader->SetInt("u_UseAlbedoMap", material->IsUseAlbedoMap());
+                    m_MeshShader->SetInt("u_UseNormalMap", material->IsUseNormalMap());
+                    m_MeshShader->SetInt("u_UseMetallicMap", material->IsUseMetallicMap());
+                    m_MeshShader->SetInt("u_UseRoughnessMap", material->IsUseRoughnessMap());
+                    m_MeshShader->SetInt("u_UseOcclusionMap", material->IsUseOcclusionMap());
+
+                    RenderCommand::DrawIndexed(ms->GetVertexArray(), submesh.IndexCount,
+                                               reinterpret_cast<void*>(submesh.BaseIndex * sizeof(uint32_t)), submesh.BaseVertex);
+                }
             }
         }
 

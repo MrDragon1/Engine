@@ -89,6 +89,7 @@ namespace Ethereal
         out << YAML::Key << "Mesh";
         {
             out << YAML::BeginMap;
+            out << YAML::Key << "AssetHandle" << YAML::Value << mesh->Handle;
             out << YAML::Key << "MeshSource" << YAML::Value << mesh->GetMeshSource()->Handle;
 
             out << YAML::Key << "MaterialTable" << YAML::Value << YAML::BeginMap;
@@ -137,7 +138,7 @@ namespace Ethereal
         out << YAML::Key << "Mesh";
         {
             out << YAML::BeginMap;
-
+            out << YAML::Key << "AssetHandle" << YAML::Value << mesh->Handle;
             out << YAML::Key << "MeshSource" << YAML::Value << mesh->GetMeshSource()->Handle;
 
             out << YAML::Key << "MaterialTable" << YAML::Value << YAML::BeginMap;
@@ -203,12 +204,8 @@ namespace Ethereal
 
         // TODO: now animation and skeleton will be loaded when mesh source created
         if (rootNode["Animator"]) {
-            YAML::Node animatorNode = rootNode["Animator"];
-            auto animationHandle = animatorNode["Animation"].as<AssetHandle>();
-            auto skeletonHandle = animatorNode["Skeleton"].as<AssetHandle>();
-            mesh->GetMeshSource()->GetAnimator()->m_Animation = AssetManager::GetAsset<Animation>(animationHandle);
-            mesh->GetMeshSource()->GetAnimator()->m_Skeleton = AssetManager::GetAsset<Skeleton>(skeletonHandle);
-
+            auto animatorHandle = rootNode["Animator"].as<AssetHandle>();
+            mesh->GetMeshSource()->GetAnimator() = AssetManager::GetAsset<Animator>(animatorHandle);
         } else
             ET_CORE_WARN("No animator found for mesh {0}", metadata.FilePath.stem().string());
 

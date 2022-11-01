@@ -51,6 +51,15 @@ namespace Ethereal
         StaticMeshComponent(AssetHandle staticMesh) : StaticMesh(staticMesh) {}
     };
 
+    struct MeshComponent {
+        AssetHandle Mesh;
+        Ref<Ethereal::MaterialTable> MaterialTable = Ref<Ethereal::MaterialTable>::Create();
+
+        MeshComponent() = default;
+        MeshComponent(const MeshComponent& other) : Mesh(other.Mesh), MaterialTable(Ref<Ethereal::MaterialTable>::Create(other.MaterialTable)) {}
+        MeshComponent(AssetHandle mesh) : Mesh(mesh) {}
+    };
+
     struct CameraComponent {
         SceneCamera Camera;
         bool Primary = true;

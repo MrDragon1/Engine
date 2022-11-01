@@ -48,6 +48,7 @@ namespace Ethereal
         std::pair<Ref<TextureCube>, Ref<TextureCube>> CreateEnvironmentMap(const std::string& path);
         void SubmitStaticMesh(Ref<StaticMesh> staticMesh, Ref<MaterialTable> materialTabel, uint32_t EntityID,
                               const glm::mat4& transform = glm::mat4(1.0f));
+        void SubmitMesh(Ref<Mesh> mesh, Ref<MaterialTable> materialTabel, uint32_t EntityID, const glm::mat4& transform = glm::mat4(1.0f));
         void SubmitRenderSceneData(const RenderSceneData& data);
         void OnResize();
         void LoadProjectSettings();
