@@ -16,7 +16,7 @@ namespace Ethereal
       private:
         void DrawEntityNode(Entity entity);
         void DrawComponents(Entity entity);
-
+        void DrawMaterialTable(Ref<MaterialTable> materialTable);
         template <typename T>
         void DisplayAddComponentEntry(const std::string& entryName);
 

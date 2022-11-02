@@ -258,7 +258,7 @@ namespace Ethereal
             DrawVec3Control("Scale", component.Scale, 1.0f);
         });
 
-        DrawComponent<StaticMeshComponent>("StaticMesh", entity, [](auto& component) {
+        DrawComponent<StaticMeshComponent>("StaticMesh", entity, [this](auto& component) {
             Ref<StaticMesh> mesh = AssetManager::GetAsset<StaticMesh>(component.StaticMesh);
             Ref<MaterialTable> componentMaterialTable = component.MaterialTable;
             Ref<MaterialTable> meshMaterialTable = mesh->GetMaterials();
@@ -289,52 +289,44 @@ namespace Ethereal
 
             UI::EndPropertyGrid();
 
-            if (UI::BeginTreeNode("Materials")) {
-                for (size_t index = 0; index < componentMaterialTable->GetMaterialCount(); index++) {
-                    UI::BeginPropertyGrid();
+            DrawMaterialTable(componentMaterialTable);
+        });
 
-                    Ref<MaterialAsset> material = componentMaterialTable->GetMaterial(index);
-                    std::string label = fmt::format("[Material {0}]", index);
-                    ImGui::PushID(label.c_str());
+        DrawComponent<MeshComponent>("Mesh", entity, [this](auto& component) {
+            Ref<Mesh> mesh = AssetManager::GetAsset<StaticMesh>(component.Mesh);
+            Ref<MaterialTable> componentMaterialTable = component.MaterialTable;
+            Ref<MaterialTable> meshMaterialTable = mesh->GetMaterials();
 
-                    UI::ShiftCursor(10.0f, 9.0f);
-                    ImGui::Text(label.c_str());
-                    ImGui::NextColumn();
-                    UI::ShiftCursorY(9.0f);
-
-                    ImGui::PushItemWidth(-1);
-                    ImVec2 originalButtonTextAlign = ImGui::GetStyle().ButtonTextAlign;
-                    ImGui::GetStyle().ButtonTextAlign = {0.0f, 0.5f};
-                    float width = ImGui::GetContentRegionAvail().x;
-                    UI::PushID();
-                    {
-                        float itemHeight = 28.0f;
-                        std::string materialname = material->GetName();
-                        if (materialname.empty()) materialname = "Empty Name";
-                        ImGui::Button(materialname.c_str(), ImVec2{width, itemHeight});
-                        ImGui::GetStyle().ButtonTextAlign = originalButtonTextAlign;
-                    }
-                    UI::PopID();
-
-                    if (ImGui::BeginDragDropTarget()) {
-                        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
-                            AssetHandle assetHandle = *((AssetHandle*)payload->Data);
-                            Ref<Asset> asset = AssetManager::GetAsset<Asset>(assetHandle);
-                            if (asset && asset->GetAssetType() == AssetType::Material) {
-                                componentMaterialTable->SetMaterial(index, asset.As<MaterialAsset>());
-                            }
-                        }
-                        ImGui::EndDragDropTarget();
-                    }
-
-                    UI::DrawItemActivityOutline(2.0f, true, Colors::Theme::accent);
-
-                    ImGui::PopID();
-                    UI::EndPropertyGrid();
+            if (componentMaterialTable) {
+                if (meshMaterialTable) {
+                    if (componentMaterialTable->GetMaterialCount() < meshMaterialTable->GetMaterialCount())
+                        componentMaterialTable->SetMaterialCount(meshMaterialTable->GetMaterialCount());
                 }
-
-                UI::EndTreeNode();
             }
+
+            AssetHandle meshHandle = component.Mesh;
+            std::string buttonText = "Null";
+
+            UI::BeginPropertyGrid();
+
+            ImGui::Text("Mesh");
+            ImGui::NextColumn();
+            if (AssetManager::IsAssetHandleValid(meshHandle)) {
+                auto object = AssetManager::GetAsset<StaticMesh>(meshHandle);
+                if (object && !object->IsFlagSet(AssetFlag::Missing)) {
+                    buttonText = AssetManager::GetMetadata(meshHandle).FilePath.stem().string();
+                } else {
+                    buttonText = "Missing";
+                }
+            }
+            ImGui::Text(buttonText.c_str());
+
+            UI::EndPropertyGrid();
+
+            DrawMaterialTable(componentMaterialTable);
+
+            Ref<Animator> animator = mesh->GetAnimator();
+            // TODO: draw animator component
         });
 
         DrawComponent<CameraComponent>("Camera", entity, [&](auto& cameraComponent) {
@@ -415,6 +407,55 @@ namespace Ethereal
             ImGui::DragFloat("Restitution", &component.Restitution, 0.01f, 0.0f, 1.0f);
             ImGui::DragFloat("Restitution Threshold", &component.RestitutionThreshold, 0.01f, 0.0f);
         });
+    }
+
+    void SceneHierarchyPanel::DrawMaterialTable(Ref<MaterialTable> materialTable) {
+        if (UI::BeginTreeNode("Materials")) {
+            for (size_t index = 0; index < materialTable->GetMaterialCount(); index++) {
+                UI::BeginPropertyGrid();
+
+                Ref<MaterialAsset> material = materialTable->GetMaterial(index);
+                std::string label = fmt::format("[Material {0}]", index);
+                ImGui::PushID(label.c_str());
+
+                UI::ShiftCursor(10.0f, 9.0f);
+                ImGui::Text(label.c_str());
+                ImGui::NextColumn();
+                UI::ShiftCursorY(9.0f);
+
+                ImGui::PushItemWidth(-1);
+                ImVec2 originalButtonTextAlign = ImGui::GetStyle().ButtonTextAlign;
+                ImGui::GetStyle().ButtonTextAlign = {0.0f, 0.5f};
+                float width = ImGui::GetContentRegionAvail().x;
+                UI::PushID();
+                {
+                    float itemHeight = 28.0f;
+                    std::string materialname = material->GetName();
+                    if (materialname.empty()) materialname = "Empty Name";
+                    ImGui::Button(materialname.c_str(), ImVec2{width, itemHeight});
+                    ImGui::GetStyle().ButtonTextAlign = originalButtonTextAlign;
+                }
+                UI::PopID();
+
+                if (ImGui::BeginDragDropTarget()) {
+                    if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
+                        AssetHandle assetHandle = *((AssetHandle*)payload->Data);
+                        Ref<Asset> asset = AssetManager::GetAsset<Asset>(assetHandle);
+                        if (asset && asset->GetAssetType() == AssetType::Material) {
+                            materialTable->SetMaterial(index, asset.As<MaterialAsset>());
+                        }
+                    }
+                    ImGui::EndDragDropTarget();
+                }
+
+                UI::DrawItemActivityOutline(2.0f, true, Colors::Theme::accent);
+
+                ImGui::PopID();
+                UI::EndPropertyGrid();
+            }
+
+            UI::EndTreeNode();
+        }
     }
 
     template <typename T>

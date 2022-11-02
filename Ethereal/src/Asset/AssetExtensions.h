@@ -8,9 +8,11 @@ namespace Ethereal
 
     inline static std::unordered_map<std::string, AssetType> s_AssetExtensionMap = {{".hscene", AssetType::Scene},
                                                                                     {".hsmesh", AssetType::StaticMesh},
+                                                                                    {".hmesh", AssetType::Mesh},
                                                                                     {".hmaterial", AssetType::Material},
-                                                                                    {".hanim", AssetType::Animation},
-                                                                                    {".hskel", AssetType::Skeleton},
+                                                                                    {".hAnimation", AssetType::Animation},
+                                                                                    {".hAnimator", AssetType::Animator},
+                                                                                    {".hSkeleton", AssetType::Skeleton},
 
                                                                                     // Meshes
                                                                                     {".fbx", AssetType::MeshSource},

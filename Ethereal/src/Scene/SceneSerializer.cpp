@@ -234,10 +234,10 @@ namespace Ethereal
                         const AssetMetaData& metadata = AssetManager::GetMetadata(assetHandle);
                         component.StaticMesh = assetHandle;
                     }
-
+                    auto mesh = AssetManager::GetAsset<StaticMesh>(component.StaticMesh);
                     if (staticMeshComponent["MaterialTable"]) {
                         YAML::Node materialTableNode = staticMeshComponent["MaterialTable"];
-                        auto mesh = AssetManager::GetAsset<StaticMesh>(component.StaticMesh);
+
                         if (mesh->GetMaterials()->GetMaterialCount() > component.MaterialTable->GetMaterialCount()) {
                             component.MaterialTable->SetMaterialCount(mesh->GetMaterials()->GetMaterialCount());
                         }
@@ -270,10 +270,9 @@ namespace Ethereal
                         const AssetMetaData& metadata = AssetManager::GetMetadata(assetHandle);
                         component.Mesh = assetHandle;
                     }
-
+                    auto mesh = AssetManager::GetAsset<Mesh>(component.Mesh);
                     if (meshComponent["MaterialTable"]) {
                         YAML::Node materialTableNode = meshComponent["MaterialTable"];
-                        auto mesh = AssetManager::GetAsset<StaticMesh>(component.Mesh);
                         if (mesh->GetMaterials()->GetMaterialCount() > component.MaterialTable->GetMaterialCount()) {
                             component.MaterialTable->SetMaterialCount(mesh->GetMaterials()->GetMaterialCount());
                         }
