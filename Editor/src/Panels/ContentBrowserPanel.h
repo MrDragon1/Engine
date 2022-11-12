@@ -1,6 +1,6 @@
 #pragma once
 #include <filesystem>
-#include "Renderer/Texture.h"
+#include "Core/Renderer/Texture.h"
 namespace Ethereal
 {
     class ContentBrowserPanel {

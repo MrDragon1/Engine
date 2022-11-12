@@ -1,5 +1,5 @@
 #pragma once
-#include "Renderer/Framebuffer.h"
+#include "Core/Renderer/Framebuffer.h"
 
 namespace Ethereal
 {

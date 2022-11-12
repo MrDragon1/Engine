@@ -1,6 +1,6 @@
 #include "MaterialEditPanel.h"
-#include "Asset/AssetManager.h"
-#include "Core/GlobalContext.h"
+#include "Core/Asset/AssetManager.h"
+#include "Base/GlobalContext.h"
 #include "imgui.h"
 namespace Ethereal
 {

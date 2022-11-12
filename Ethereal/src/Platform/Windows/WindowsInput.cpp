@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "WindowsInput.h"
 
-#include "Core/Application.h"
+#include "Base/Application.h"
 #include <GLFW/glfw3.h>
 
 namespace Ethereal

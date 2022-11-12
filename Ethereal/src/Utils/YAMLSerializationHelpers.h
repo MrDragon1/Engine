@@ -1,5 +1,5 @@
 #pragma once
-#include "Asset/Asset.h"
+#include "Core/Asset/Asset.h"
 
 #include "yaml-cpp/yaml.h"
 #define GLM_ENABLE_EXPERIMENTAL

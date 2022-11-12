@@ -1,12 +1,12 @@
 #include "SceneHierarchyPanel.h"
 
+#include "Core/Asset/AssetManager.h"
+#include "Base/ImGui/UI.h"
+
 #include <imgui.h>
 #include <imgui_internal.h>
-
 #include <filesystem>
 #include <glm/gtc/type_ptr.hpp>
-#include <Asset/AssetManager.h>
-#include <ImGui/UI.h>
 
 namespace Ethereal
 {

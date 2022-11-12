@@ -1,15 +1,15 @@
-#include <Asset/AssetManager.h>
+#include "Core/Asset/AssetManager.h"
 #include "EditorLayer.h"
 #include "pch.h"
 
-#include "Core/GlobalContext.h"
-#include "Scene/Components.h"
-#include "Scene/SceneSerializer.h"
+#include "Base/GlobalContext.h"
+#include "Core/Scene/Components.h"
+#include "Core/Scene/SceneSerializer.h"
 #include "Utils/Math.h"
 #include "Utils/PlatformUtils.h"
 #include "imgui.h"
-#include "ImGui/ImGuizmo.h"
-#include "ImGui/UI.h"
+#include "Base/ImGui/ImGuizmo.h"
+#include "Base/ImGui/UI.h"
 
 namespace Ethereal
 {

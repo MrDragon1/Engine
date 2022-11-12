@@ -4,7 +4,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include "Core/Utils.h"
+#include "Ethereal/src/Base/Utils.h"
 
 namespace Ethereal {
 OpenGLContext::OpenGLContext(GLFWwindow *windowHandle) : m_WindowHandle(windowHandle) { ET_CORE_ASSERT(windowHandle, "Window handle is null!"); }

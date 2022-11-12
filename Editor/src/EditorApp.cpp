@@ -1,5 +1,5 @@
 #include <Ethereal.h>
-#include "Core/EntryPoint.h"
+#include "Base/EntryPoint.h"
 
 #include "Platform/Windows/OpenGL/OpenGLShader.h"
 

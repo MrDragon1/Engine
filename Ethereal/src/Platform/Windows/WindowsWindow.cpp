@@ -1,9 +1,9 @@
 #include "pch.h"
 #include "WindowsWindow.h"
 
-#include "Event/ApplicationEvent.h"
-#include "Event/KeyEvent.h"
-#include "Event/MouseEvent.h"
+#include "Base/Event/ApplicationEvent.h"
+#include "Base/Event/KeyEvent.h"
+#include "Base/Event/MouseEvent.h"
 #include "glad/glad.h"
 
 namespace Ethereal

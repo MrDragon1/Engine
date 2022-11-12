@@ -5,8 +5,8 @@
 #include "Panels/ContentBrowserPanel.h"
 #include "Panels/MaterialEditPanel.h"
 
-#include "Renderer/EditorCamera.h"
-#include "Core/Base/Ref.h"
+#include "Core/Renderer/EditorCamera.h"
+#include "Base/Ref.h"
 
 namespace Ethereal
 {
@@ -43,7 +43,7 @@ namespace Ethereal
         void ShowProjectSettingWindow(bool* p_open);
 
       private:
-        OrthographicCameraController m_CameraController;
+        OrthographicCameraController;
         EditorCamera m_EditorCamera;
 
         Ref<Texture2D> m_IconPlay;

@@ -12,11 +12,11 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include "Core/Log.h"
-#include "Core/Base/Ref.h"
-#include "Core/TimeStamp.h"
-#include "glad/glad.h"
+#include "Base/Log.h"
+#include "Base/Ref.h"
+#include "Base/TimeStamp.h"
 
+#include "glad/glad.h"
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/matrix_transform.hpp>
