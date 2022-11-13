@@ -5,7 +5,10 @@
 #include "Base/GlobalContext.h"
 #include "Utils/PlatformUtils.h"
 #include "Core/Project/Project.h"
-#include "Base/Math/Vector.h"
+
+#include "Base/Meta/Serializer.h"
+#include "Base/Meta/ReflectionRegister.h"
+
 namespace Ethereal
 {
     Application* Application::s_Instance = nullptr;
@@ -15,6 +18,8 @@ namespace Ethereal
         s_Instance = this;
         m_Window = Window::Create(WindowProps(name));
         m_Window->SetEventCallback(ET_BIND_EVENT_FN(Application::OnEvent));
+
+        Reflection::TypeMetaRegister::Register();
 
         RenderCommand::Init();
         GlobalContext::Reset();

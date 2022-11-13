@@ -1,1 +1,7 @@
-E:/Code/Engine/Ethereal/src/Base/Math/Vector.h;E: /Code/Engine/Ethereal/src/Base/Meta/Reflection.h;E: /Code/Engine/Ethereal/src/Base/Meta/Serializer.h;E: /Code/Engine/Ethereal/src/Base/yaml.h;
+E:/Code/Engine/Ethereal/src/Base/Math/Matrix.h
+E:/Code/Engine/Ethereal/src/Base/Math/Vector.h
+E:/Code/Engine/Ethereal/src/Base/Math/Quaternion.h
+E:/Code/Engine/Ethereal/src/Base/Math/Transform.h
+E:/Code/Engine/Ethereal/src/Base/Meta/Reflection.h
+E:/Code/Engine/Ethereal/src/Base/Meta/Serializer.h
+E:/Code/Engine/Ethereal/src/Base/yaml.h

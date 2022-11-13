@@ -3,24 +3,16 @@
 #include "Base/Meta/_generated/serializer/all_serializer.h"
 {{#include_headfiles}}
 #include "{{headfile_name}}"
-{
-    { / include_headfiles }
-}
+{{/include_headfiles}}
 
 namespace Ethereal
 {
     namespace Reflection
     {
         void TypeMetaRegister::Register() {
-            {
-                {
-#class_defines
-                }
-            }
+            {{#class_defines}}
             TypeWrappersRegister::{{class_name}}();
-            {
-                { / class_defines }
-            }
+            {{/class_defines}}
         }
     }  // namespace Reflection
 }  // namespace Ethereal
