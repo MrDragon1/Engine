@@ -43,7 +43,7 @@ namespace Ethereal
         void ShowProjectSettingWindow(bool* p_open);
 
       private:
-        OrthographicCameraController;
+        OrthographicCameraController m_CameraController;
         EditorCamera m_EditorCamera;
 
         Ref<Texture2D> m_IconPlay;

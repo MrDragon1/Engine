@@ -1,5 +1,5 @@
 #pragma once
-#include <yaml-cpp/emitter.h>
+#include "Base/Yaml.h"
 #include "Core/Animation/Animation.h"
 #include "Core/Animation/Skeleton.h"
 #include "Core/Animation/Animator.h"
@@ -28,7 +28,7 @@ namespace Ethereal
 
       private:
         void SerializeJoint(Ref<Joint> node, YAML::Emitter& out);
-        Ref<Joint> DeserializeJoint(const YAML::Node& node);
+        Ref<Joint> DeserializeJoint(const YNode& node);
     };
 
     class AnimatorSerializer {

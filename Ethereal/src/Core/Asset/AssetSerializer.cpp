@@ -13,7 +13,7 @@
 #include "Core/Animation/Animation.h"
 #include "Core/Animation/AnimSerializer.h"
 
-#include "yaml-cpp/yaml.h"
+#include "Base/Yaml.h"
 #include <fstream>
 
 #define ET_SERIALIZE_PROPERTY(propName, propVal, outputNode) outputNode << YAML::Key << #propName << YAML::Value << propVal
@@ -116,8 +116,8 @@ namespace Ethereal
         std::stringstream strStream;
         strStream << stream.rdbuf();
 
-        YAML::Node root = YAML::Load(strStream.str());
-        YAML::Node materialNode = root["Material"];
+        YNode root = YAML::Load(strStream.str());
+        YNode materialNode = root["Material"];
 
         bool transparent = false;
         ET_DESERIALIZE_PROPERTY(Transparent, transparent, materialNode, false);

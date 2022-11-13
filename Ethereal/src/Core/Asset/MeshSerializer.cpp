@@ -3,7 +3,7 @@
 #include "AssetManager.h"
 #include "Utils/YAMLSerializationHelpers.h"
 
-#include "yaml-cpp/yaml.h"
+#include "Base/Yaml.h"
 #include <fstream>
 
 namespace YAML
@@ -51,10 +51,10 @@ namespace Ethereal
         std::stringstream strStream;
         strStream << stream.rdbuf();
 
-        YAML::Node data = YAML::Load(strStream.str());
+        YNode data = YAML::Load(strStream.str());
         if (!data["Mesh"]) return false;
 
-        YAML::Node rootNode = data["Mesh"];
+        YNode rootNode = data["Mesh"];
         if (!rootNode["MeshAsset"] && !rootNode["MeshSource"]) return false;
 
         AssetHandle meshSourceHandle = rootNode["MeshSource"].as<uint64_t>();
@@ -69,7 +69,7 @@ namespace Ethereal
             // The material info should be created when imported the model files which will create the .hsmesh file.
             mesh->GetMaterials()->Clear();
 
-            YAML::Node materialTableNode = rootNode["MaterialTable"];
+            YNode materialTableNode = rootNode["MaterialTable"];
             for (auto materialEntry : materialTableNode) {
                 auto index = materialEntry.first.as<uint32_t>();
                 auto materialAsset = materialEntry.second.as<AssetHandle>();
@@ -175,10 +175,10 @@ namespace Ethereal
         std::stringstream strStream;
         strStream << stream.rdbuf();
 
-        YAML::Node data = YAML::Load(strStream.str());
+        YNode data = YAML::Load(strStream.str());
         if (!data["Mesh"]) return false;
 
-        YAML::Node rootNode = data["Mesh"];
+        YNode rootNode = data["Mesh"];
         if (!rootNode["MeshAsset"] && !rootNode["MeshSource"]) return false;
 
         AssetHandle meshSourceHandle = rootNode["MeshSource"].as<uint64_t>();
@@ -193,7 +193,7 @@ namespace Ethereal
             // The material info should be created when imported the model files which will create the .hsmesh file.
             mesh->GetMaterials()->Clear();
 
-            YAML::Node materialTableNode = rootNode["MaterialTable"];
+            YNode materialTableNode = rootNode["MaterialTable"];
             for (auto materialEntry : materialTableNode) {
                 auto index = materialEntry.first.as<uint32_t>();
                 auto materialAsset = materialEntry.second.as<AssetHandle>();

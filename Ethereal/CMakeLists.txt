@@ -11,7 +11,7 @@ macro(RUNTIME_ADD_SOURCE)
     set(RuntimeSourceFiles ${RuntimeSourceFiles} ${SOURCE_FILES} PARENT_SCOPE)
 endmacro(RUNTIME_ADD_SOURCE)
 
-set(RuntimeSourceFiles "")
+set(RuntimeSourceFiles "" src/Base/Math/Vector.cpp src/Base/Math/Vector.h src/Base/Meta/Reflection.cpp src/Base/Meta/Reflection.h src/Base/Meta/Serializer.cpp src/Base/Meta/Serializer.h src/Base/Yaml.h src/Base/Meta/ReflectionRegister.cpp src/Base/Meta/ReflectionRegister.h)
 
 add_subdirectory(src)
 add_subdirectory(vendor)

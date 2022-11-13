@@ -5,7 +5,7 @@
 #include "Utils/StringUtils.h"
 
 #include "imgui.h"
-#include "yaml-cpp/yaml.h"
+#include "Base/Yaml.h"
 #include <filesystem>
 #include <fstream>
 
@@ -88,7 +88,7 @@ namespace Ethereal
         std::stringstream strStream;
         strStream << stream.rdbuf();
 
-        YAML::Node data = YAML::Load(strStream.str());
+        YNode data = YAML::Load(strStream.str());
         auto handles = data["Assets"];
         if (!handles) {
             ET_CORE_ERROR("[AssetManager] Asset Registry appears to be corrupted!");

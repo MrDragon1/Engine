@@ -7,7 +7,7 @@
 #include "Utils/YAMLSerializationHelpers.h"
 
 #include <fstream>
-#include <yaml-cpp/yaml.h>
+#include "Base/Yaml.h"
 
 namespace Ethereal
 {
@@ -183,7 +183,7 @@ namespace Ethereal
     }
 
     bool SceneSerializer::Deserialize(const std::string& filepath) {
-        YAML::Node data;
+        YNode data;
         try {
             data = YAML::LoadFile(filepath);
         } catch (YAML::ParserException e) {
@@ -236,7 +236,7 @@ namespace Ethereal
                     }
                     auto mesh = AssetManager::GetAsset<StaticMesh>(component.StaticMesh);
                     if (staticMeshComponent["MaterialTable"]) {
-                        YAML::Node materialTableNode = staticMeshComponent["MaterialTable"];
+                        YNode materialTableNode = staticMeshComponent["MaterialTable"];
 
                         if (mesh->GetMaterials()->GetMaterialCount() > component.MaterialTable->GetMaterialCount()) {
                             component.MaterialTable->SetMaterialCount(mesh->GetMaterials()->GetMaterialCount());
@@ -272,7 +272,7 @@ namespace Ethereal
                     }
                     auto mesh = AssetManager::GetAsset<Mesh>(component.Mesh);
                     if (meshComponent["MaterialTable"]) {
-                        YAML::Node materialTableNode = meshComponent["MaterialTable"];
+                        YNode materialTableNode = meshComponent["MaterialTable"];
                         if (mesh->GetMaterials()->GetMaterialCount() > component.MaterialTable->GetMaterialCount()) {
                             component.MaterialTable->SetMaterialCount(mesh->GetMaterials()->GetMaterialCount());
                         }

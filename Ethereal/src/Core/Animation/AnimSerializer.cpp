@@ -3,7 +3,7 @@
 #include "Core/Asset/AssetManager.h"
 #include <fstream>
 #include <filesystem>
-#include <yaml-cpp/yaml.h>
+#include "Base/Yaml.h"
 
 namespace Ethereal
 {
@@ -65,7 +65,7 @@ namespace Ethereal
     }
 
     bool AnimSerializer::Deserialize(const std::string& filepath) {
-        YAML::Node data;
+        YNode data;
         try {
             data = YAML::LoadFile(filepath);
         } catch (YAML::ParserException& e) {
@@ -135,7 +135,7 @@ namespace Ethereal
     }
 
     bool SkelSerializer::Deserialize(const std::string& filepath) {
-        YAML::Node data;
+        YNode data;
         try {
             data = YAML::LoadFile(filepath);
         } catch (YAML::ParserException& e) {
@@ -174,7 +174,7 @@ namespace Ethereal
         out << YAML::EndMap;
     }
 
-    Ref<Joint> SkelSerializer::DeserializeJoint(const YAML::Node& node) {
+    Ref<Joint> SkelSerializer::DeserializeJoint(const YNode& node) {
         Ref<Joint> joint = Ref<Joint>::Create();
         joint->m_Name = node["m_Name"].as<std::string>();
         joint->m_ID = node["m_ID"].as<AssetHandle>();
@@ -222,7 +222,7 @@ namespace Ethereal
         fout << out.c_str();
     }
     bool AnimatorSerializer::Deserialize(const std::string& filepath) {
-        YAML::Node data;
+        YNode data;
         try {
             data = YAML::LoadFile(filepath);
         } catch (YAML::ParserException& e) {
