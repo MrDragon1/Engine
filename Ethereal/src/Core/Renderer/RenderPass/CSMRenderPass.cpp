@@ -57,14 +57,14 @@ namespace Ethereal
 
     void CSMRenderPass::OnResize(uint32_t width, uint32_t height) {}
 
-    std::vector<glm::vec4> CSMRenderPass::GetFrustumCornersWorldSpace(const glm::mat4& projview) {
-        const auto inv = glm::inverse(projview);
+    std::vector<Vector4> CSMRenderPass::GetFrustumCornersWorldSpace(const Matrix4x4& projview) {
+        const auto inv = projview.inverse();
 
-        std::vector<glm::vec4> frustumCorners;
+        std::vector<Vector4> frustumCorners;
         for (unsigned int x = 0; x < 2; ++x) {
             for (unsigned int y = 0; y < 2; ++y) {
                 for (unsigned int z = 0; z < 2; ++z) {
-                    const glm::vec4 pt = inv * glm::vec4(2.0f * x - 1.0f, 2.0f * y - 1.0f, 2.0f * z - 1.0f, 1.0f);
+                    const Vector4 pt = inv * Vector4(2.0f * x - 1.0f, 2.0f * y - 1.0f, 2.0f * z - 1.0f, 1.0f);
                     frustumCorners.push_back(pt / pt.w);
                 }
             }
@@ -73,21 +73,21 @@ namespace Ethereal
         return frustumCorners;
     }
 
-    std::vector<glm::vec4> CSMRenderPass::GetFrustumCornersWorldSpace(const glm::mat4& proj, const glm::mat4& view) {
+    std::vector<Vector4> CSMRenderPass::GetFrustumCornersWorldSpace(const Matrix4x4& proj, const Matrix4x4& view) {
         return GetFrustumCornersWorldSpace(proj * view);
     }
 
-    glm::mat4 CSMRenderPass::GetLightSpaceMatrix(float nearPlane, float farPlane) {
-        const auto proj = glm::perspective(glm::radians(m_Data.FOV), m_Data.AspectRatio, nearPlane, farPlane);
+    Matrix4x4 CSMRenderPass::GetLightSpaceMatrix(float nearPlane, float farPlane) {
+        const auto proj = Math::makePerspectiveMatrix(Radian(Math::degreesToRadians(m_Data.FOV)), m_Data.AspectRatio, nearPlane, farPlane);
         const auto corners = GetFrustumCornersWorldSpace(proj, m_Data.View);
 
-        glm::vec3 center = glm::vec3(0, 0, 0);
+        Vector3 center = Vector3(0, 0, 0);
         for (const auto& v : corners) {
-            center += glm::vec3(v);
+            center += Vector3(v.x,v.y,v.z);
         }
         center /= corners.size();
 
-        const auto lightView = glm::lookAt(center + m_Data.LightDir, center, glm::vec3(0.0f, 1.0f, 0.0f));
+        const auto lightView = Math::makeLookAtMatrix(center + m_Data.LightDir, center, Vector3(0.0f, 1.0f, 0.0f));
 
         float minX = std::numeric_limits<float>::max();
         float maxX = std::numeric_limits<float>::min();
@@ -118,13 +118,13 @@ namespace Ethereal
             maxZ *= zMult;
         }
 
-        const glm::mat4 lightProjection = glm::ortho(minX, maxX, minY, maxY, minZ, maxZ);
+        const Matrix4x4 lightProjection = Math::makeOrthographicProjectionMatrix(minX, maxX, minY, maxY, minZ, maxZ);
 
         return lightProjection * lightView;
     }
 
-    std::vector<glm::mat4> CSMRenderPass::GetLightSpaceMatrices() {
-        std::vector<glm::mat4> ret;
+    std::vector<Matrix4x4> CSMRenderPass::GetLightSpaceMatrices() {
+        std::vector<Matrix4x4> ret;
         for (size_t i = 0; i < m_Distance.size() + 1; ++i) {
             if (i == 0) {
                 ret.push_back(GetLightSpaceMatrix(m_Data.NearPlane, m_Distance[i]));

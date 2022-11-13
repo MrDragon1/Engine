@@ -7,7 +7,7 @@ namespace Ethereal
     class OpenGLRendererAPI : public RendererAPI {
       public:
         virtual void Init() override;
-        virtual void SetClearColor(const glm::vec4& color) override;
+        virtual void SetClearColor(const Vector4& color) override;
         virtual void Clear() override;
         virtual ETHEREAL_DRAW_MODE GetDrawMode() override;
         virtual void SetCullFace(ETHEREAL_CULLFACE_TYPE type) override;

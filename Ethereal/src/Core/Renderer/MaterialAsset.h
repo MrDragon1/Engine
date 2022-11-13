@@ -19,8 +19,8 @@ namespace Ethereal
         MaterialAsset(const Ref<MaterialAsset>& other);
         ~MaterialAsset();
 
-        glm::vec3& GetAlbedoColor();
-        void SetAlbedoColor(const glm::vec3& color);
+        Vector3& GetAlbedoColor();
+        void SetAlbedoColor(const Vector3& color);
 
         float& GetMetalness();
         void SetMetalness(float value);
@@ -83,7 +83,7 @@ namespace Ethereal
         Ref<Texture> m_RoughnessMap;
         Ref<Texture> m_OcclusionMap;
 
-        glm::vec3 m_Albedo = glm::vec3(1.0f);
+        Vector3 m_Albedo = Vector3(1.0f);
         float m_Metallic = 0.0f;
         float m_Roughness = 1.0f;
         float m_Emisstion = 0.0f;

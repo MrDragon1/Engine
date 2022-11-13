@@ -6,19 +6,28 @@
 namespace Ethereal
 {
     REFLECTION_TYPE(Vector2)
-    CLASS(Vector2, Fields)
-    {
+    CLASS(Vector2, Fields) {
         REFLECTION_BODY(Vector2);
 
       public:
-        float x {0.f}, y {0.f};
+        float x{0.f}, y{0.f};
 
       public:
         Vector2() = default;
+        glm::vec2 toGLM()const
+        {
+            glm::vec2 m{x,y};
+            return m;
+        }
 
+        Vector2(const glm::vec2& v)
+        {
+            x = v.x;
+            y = v.y;
+        }
         Vector2(float x_, float y_) : x(x_), y(y_) {}
 
-        explicit Vector2(float scaler) : x(scaler), y(scaler) {}
+        explicit Vector2(float scalar) : x(scalar), y(scalar) {}
 
         explicit Vector2(const float v[2]) : x(v[0]), y(v[1]) {}
 
@@ -28,14 +37,12 @@ namespace Ethereal
 
         const float* ptr() const { return &x; }
 
-        float operator[](size_t i) const
-        {
+        float operator[](size_t i) const {
             assert(i < 2);
             return (i == 0 ? x : y);
         }
 
-        float& operator[](size_t i)
-        {
+        float& operator[](size_t i) {
             assert(i < 2);
             return (i == 0 ? x : y);
         }
@@ -53,8 +60,7 @@ namespace Ethereal
 
         Vector2 operator*(const Vector2& rhs) const { return Vector2(x * rhs.x, y * rhs.y); }
 
-        Vector2 operator/(float scale) const
-        {
+        Vector2 operator/(float scale) const {
             assert(scale != 0.0);
 
             float inv = 1.0f / scale;
@@ -70,10 +76,7 @@ namespace Ethereal
         // overloaded operators to help Vector2
         friend Vector2 operator*(float scalar, const Vector2& rhs) { return Vector2(scalar * rhs.x, scalar * rhs.y); }
 
-        friend Vector2 operator/(float fScalar, const Vector2& rhs)
-        {
-            return Vector2(fScalar / rhs.x, fScalar / rhs.y);
-        }
+        friend Vector2 operator/(float fScalar, const Vector2& rhs) { return Vector2(fScalar / rhs.x, fScalar / rhs.y); }
 
         friend Vector2 operator+(const Vector2& lhs, float rhs) { return Vector2(lhs.x + rhs, lhs.y + rhs); }
 
@@ -84,56 +87,49 @@ namespace Ethereal
         friend Vector2 operator-(float lhs, const Vector2& rhs) { return Vector2(lhs - rhs.x, lhs - rhs.y); }
 
         // arithmetic updates
-        Vector2& operator+=(const Vector2& rhs)
-        {
+        Vector2& operator+=(const Vector2& rhs) {
             x += rhs.x;
             y += rhs.y;
 
             return *this;
         }
 
-        Vector2& operator+=(float scalar)
-        {
+        Vector2& operator+=(float scalar) {
             x += scalar;
             y += scalar;
 
             return *this;
         }
 
-        Vector2& operator-=(const Vector2& rhs)
-        {
+        Vector2& operator-=(const Vector2& rhs) {
             x -= rhs.x;
             y -= rhs.y;
 
             return *this;
         }
 
-        Vector2& operator-=(float scalar)
-        {
+        Vector2& operator-=(float scalar) {
             x -= scalar;
             y -= scalar;
 
             return *this;
         }
 
-        Vector2& operator*=(float scalar)
-        {
+        Vector2& operator*=(float scalar) {
             x *= scalar;
             y *= scalar;
 
             return *this;
         }
 
-        Vector2& operator*=(const Vector2& rhs)
-        {
+        Vector2& operator*=(const Vector2& rhs) {
             x *= rhs.x;
             y *= rhs.y;
 
             return *this;
         }
 
-        Vector2& operator/=(float scalar)
-        {
+        Vector2& operator/=(float scalar) {
             assert(scalar != 0.0);
 
             float inv = 1.0f / scalar;
@@ -144,8 +140,7 @@ namespace Ethereal
             return *this;
         }
 
-        Vector2& operator/=(const Vector2& rhs)
-        {
+        Vector2& operator/=(const Vector2& rhs) {
             x /= rhs.x;
             y /= rhs.y;
 
@@ -220,12 +215,10 @@ namespace Ethereal
         @returns The previous length of the vector.
         */
 
-        float normalise()
-        {
+        float normalise() {
             float lengh = std::hypot(x, y);
 
-            if (lengh > 0.0f)
-            {
+            if (lengh > 0.0f) {
                 float inv_length = 1.0f / lengh;
                 x *= inv_length;
                 y *= inv_length;
@@ -262,12 +255,9 @@ namespace Ethereal
         value of x, y and z from both vectors. Lowest is taken just
         numerically, not magnitude, so -1 < 0.
         */
-        void makeFloor(const Vector2& cmp)
-        {
-            if (cmp.x < x)
-                x = cmp.x;
-            if (cmp.y < y)
-                y = cmp.y;
+        void makeFloor(const Vector2& cmp) {
+            if (cmp.x < x) x = cmp.x;
+            if (cmp.y < y) y = cmp.y;
         }
 
         /** Sets this vector's components to the maximum of its own and the
@@ -277,12 +267,9 @@ namespace Ethereal
         value of x, y and z from both vectors. Highest is taken just
         numerically, not magnitude, so 1 > -3.
         */
-        void makeCeil(const Vector2& cmp)
-        {
-            if (cmp.x > x)
-                x = cmp.x;
-            if (cmp.y > y)
-                y = cmp.y;
+        void makeCeil(const Vector2& cmp) {
+            if (cmp.x > x) x = cmp.x;
+            if (cmp.y > y) y = cmp.y;
         }
 
         /** Generates a vector perpendicular to this vector (eg an 'up' vector).
@@ -301,16 +288,14 @@ namespace Ethereal
         float crossProduct(const Vector2& rhs) const { return x * rhs.y - y * rhs.x; }
 
         /** Returns true if this vector is zero length. */
-        bool isZeroLength(void) const
-        {
+        bool isZeroLength(void) const {
             float sqlen = (x * x) + (y * y);
             return (sqlen < (Float_EPSILON * Float_EPSILON));
         }
 
         /** As normalise, except that this vector is unaffected and the
         normalised vector is returned as a copy. */
-        Vector2 normalisedCopy(void) const
-        {
+        Vector2 normalisedCopy(void) const {
             Vector2 ret = *this;
             ret.normalise();
             return ret;
@@ -319,10 +304,7 @@ namespace Ethereal
         /** Calculates a reflection vector to the plane with the given normal .
         @remarks NB assumes 'this' is pointing AWAY FROM the plane, invert if it is not.
         */
-        Vector2 reflect(const Vector2& normal) const
-        {
-            return Vector2(*this - (2 * this->dotProduct(normal) * normal));
-        }
+        Vector2 reflect(const Vector2& normal) const { return Vector2(*this - (2 * this->dotProduct(normal) * normal)); }
 
         /// Check whether this vector contains valid values
         bool isNaN() const { return Math::isNan(x) || Math::isNan(y); }
@@ -338,31 +320,39 @@ namespace Ethereal
         static const Vector2 UNIT_SCALE;
     };
 
-
     REFLECTION_TYPE(Vector3)
-    CLASS(Vector3, Fields)
-    {
+    CLASS(Vector3, Fields) {
         REFLECTION_BODY(Vector3);
 
       public:
-        float x {0.f};
-        float y {0.f};
-        float z {0.f};
+        float x{0.f};
+        float y{0.f};
+        float z{0.f};
 
       public:
-        Vector3() = default;
-        Vector3(float x_, float y_, float z_) : x {x_}, y {y_}, z {z_} {}
-
-        explicit Vector3(const float coords[3]) : x {coords[0]}, y {coords[1]}, z {coords[2]} {}
-
-        float operator[](size_t i) const
+        glm::vec3 toGLM()const
         {
+            glm::vec3 m{x,y,z};
+            return m;
+        }
+
+        Vector3(const glm::vec3& v)
+        {
+            x = v.x;
+            y = v.y;
+            z = v.z;
+        }
+        Vector3() = default;
+        Vector3(float x_, float y_, float z_) : x{x_}, y{y_}, z{z_} {}
+        explicit Vector3(float scalar) : x(scalar), y(scalar), z(scalar) {}
+        explicit Vector3(const float coords[3]) : x{coords[0]}, y{coords[1]}, z{coords[2]} {}
+
+        float operator[](size_t i) const {
             assert(i < 3);
             return *(&x + i);
         }
 
-        float& operator[](size_t i)
-        {
+        float& operator[](size_t i) {
             assert(i < 3);
             return *(&x + i);
         }
@@ -384,14 +374,12 @@ namespace Ethereal
 
         Vector3 operator*(const Vector3& rhs) const { return Vector3(x * rhs.x, y * rhs.y, z * rhs.z); }
 
-        Vector3 operator/(float scalar) const
-        {
+        Vector3 operator/(float scalar) const {
             assert(scalar != 0.0);
             return Vector3(x / scalar, y / scalar, z / scalar);
         }
 
-        Vector3 operator/(const Vector3& rhs) const
-        {
+        Vector3 operator/(const Vector3& rhs) const {
             assert((rhs.x != 0 && rhs.y != 0 && rhs.z != 0));
             return Vector3(x / rhs.x, y / rhs.y, z / rhs.z);
         }
@@ -401,88 +389,65 @@ namespace Ethereal
         Vector3 operator-() const { return Vector3(-x, -y, -z); }
 
         // overloaded operators to help Vector3
-        friend Vector3 operator*(float scalar, const Vector3& rhs)
-        {
-            return Vector3(scalar * rhs.x, scalar * rhs.y, scalar * rhs.z);
-        }
+        friend Vector3 operator*(float scalar, const Vector3& rhs) { return Vector3(scalar * rhs.x, scalar * rhs.y, scalar * rhs.z); }
 
-        friend Vector3 operator/(float scalar, const Vector3& rhs)
-        {
+        friend Vector3 operator/(float scalar, const Vector3& rhs) {
             assert(rhs.x != 0 && rhs.y != 0 && rhs.z != 0);
             return Vector3(scalar / rhs.x, scalar / rhs.y, scalar / rhs.z);
         }
 
-        friend Vector3 operator+(const Vector3& lhs, float rhs)
-        {
-            return Vector3(lhs.x + rhs, lhs.y + rhs, lhs.z + rhs);
-        }
+        friend Vector3 operator+(const Vector3& lhs, float rhs) { return Vector3(lhs.x + rhs, lhs.y + rhs, lhs.z + rhs); }
 
-        friend Vector3 operator+(float lhs, const Vector3& rhs)
-        {
-            return Vector3(lhs + rhs.x, lhs + rhs.y, lhs + rhs.z);
-        }
+        friend Vector3 operator+(float lhs, const Vector3& rhs) { return Vector3(lhs + rhs.x, lhs + rhs.y, lhs + rhs.z); }
 
-        friend Vector3 operator-(const Vector3& lhs, float rhs)
-        {
-            return Vector3(lhs.x - rhs, lhs.y - rhs, lhs.z - rhs);
-        }
+        friend Vector3 operator-(const Vector3& lhs, float rhs) { return Vector3(lhs.x - rhs, lhs.y - rhs, lhs.z - rhs); }
 
-        friend Vector3 operator-(float lhs, const Vector3& rhs)
-        {
-            return Vector3(lhs - rhs.x, lhs - rhs.y, lhs - rhs.z);
-        }
+        friend Vector3 operator-(float lhs, const Vector3& rhs) { return Vector3(lhs - rhs.x, lhs - rhs.y, lhs - rhs.z); }
 
         // arithmetic updates
-        Vector3& operator+=(const Vector3& rhs)
-        {
+        Vector3& operator+=(const Vector3& rhs) {
             x += rhs.x;
             y += rhs.y;
             z += rhs.z;
             return *this;
         }
 
-        Vector3& operator+=(float scalar)
-        {
+        Vector3& operator+=(float scalar) {
             x += scalar;
             y += scalar;
             z += scalar;
             return *this;
         }
 
-        Vector3& operator-=(const Vector3& rhs)
-        {
+        Vector3& operator-=(const Vector3& rhs) {
             x -= rhs.x;
             y -= rhs.y;
             z -= rhs.z;
             return *this;
         }
 
-        Vector3& operator-=(float scalar)
-        {
+        Vector3& operator-=(float scalar) {
             x -= scalar;
             y -= scalar;
             z -= scalar;
             return *this;
         }
 
-        Vector3& operator*=(float scalar)
-        {
+        Vector3& operator*=(float scalar) {
             x *= scalar;
             y *= scalar;
             z *= scalar;
             return *this;
         }
 
-        Vector3& operator*=(const Vector3& rhs)
-        {
+        Vector3& operator*=(const Vector3& rhs) {
             x *= rhs.x;
             y *= rhs.y;
             z *= rhs.z;
             return *this;
         }
 
-        Vector3& operator/=(float scalar)
-        {
+        Vector3& operator/=(float scalar) {
             assert(scalar != 0.0);
             x /= scalar;
             y /= scalar;
@@ -490,8 +455,7 @@ namespace Ethereal
             return *this;
         }
 
-        Vector3& operator/=(const Vector3& rhs)
-        {
+        Vector3& operator/=(const Vector3& rhs) {
             assert(rhs.x != 0 && rhs.y != 0 && rhs.z != 0);
             x /= rhs.x;
             y /= rhs.y;
@@ -571,11 +535,9 @@ namespace Ethereal
         @returns The previous length of the vector.
         */
 
-        void normalise()
-        {
+        void normalise() {
             float length = std::hypot(x, y, z);
-            if (length == 0.f)
-                return;
+            if (length == 0.f) return;
 
             float inv_lengh = 1.0f / length;
             x *= inv_lengh;
@@ -612,10 +574,7 @@ namespace Ethereal
         (assuming you're using a CRT monitor, of course).
         */
 
-        Vector3 crossProduct(const Vector3& rhs) const
-        {
-            return Vector3(y * rhs.z - z * rhs.y, z * rhs.x - x * rhs.z, x * rhs.y - y * rhs.x);
-        }
+        Vector3 crossProduct(const Vector3& rhs) const { return Vector3(y * rhs.z - z * rhs.y, z * rhs.x - x * rhs.z, x * rhs.y - y * rhs.x); }
 
         /** Sets this vector's components to the minimum of its own and the
         ones of the passed in vector.
@@ -624,14 +583,10 @@ namespace Ethereal
         value of x, y and z from both vectors. Lowest is taken just
         numerically, not magnitude, so -1 < 0.
         */
-        void makeFloor(const Vector3& cmp)
-        {
-            if (cmp.x < x)
-                x = cmp.x;
-            if (cmp.y < y)
-                y = cmp.y;
-            if (cmp.z < z)
-                z = cmp.z;
+        void makeFloor(const Vector3& cmp) {
+            if (cmp.x < x) x = cmp.x;
+            if (cmp.y < y) y = cmp.y;
+            if (cmp.z < z) z = cmp.z;
         }
 
         /** Sets this vector's components to the maximum of its own and the
@@ -641,14 +596,10 @@ namespace Ethereal
         value of x, y and z from both vectors. Highest is taken just
         numerically, not magnitude, so 1 > -3.
         */
-        void makeCeil(const Vector3& cmp)
-        {
-            if (cmp.x > x)
-                x = cmp.x;
-            if (cmp.y > y)
-                y = cmp.y;
-            if (cmp.z > z)
-                z = cmp.z;
+        void makeCeil(const Vector3& cmp) {
+            if (cmp.x > x) x = cmp.x;
+            if (cmp.y > y) y = cmp.y;
+            if (cmp.z > z) z = cmp.z;
         }
 
         /** Gets the angle between 2 vectors.
@@ -656,13 +607,11 @@ namespace Ethereal
         Vectors do not have to be unit-length but must represent directions.
         */
 
-        Radian angleBetween(const Vector3& dest) const
-        {
+        Radian angleBetween(const Vector3& dest) const {
             float len_product = length() * dest.length();
 
             // Divide by zero check
-            if (len_product < 1e-6f)
-                len_product = 1e-6f;
+            if (len_product < 1e-6f) len_product = 1e-6f;
 
             float f = dotProduct(dest) / len_product;
 
@@ -678,8 +627,7 @@ namespace Ethereal
         ANY axis of rotation is valid.
         */
 
-        Quaternion getRotationTo(const Vector3& dest, const Vector3& fallback_axis = Vector3::ZERO) const
-        {
+        Quaternion getRotationTo(const Vector3& dest, const Vector3& fallback_axis = Vector3::ZERO) const {
             // Based on Stan Melax's article in Game Programming Gems
             Quaternion q;
             // Copy, since cannot modify local
@@ -690,30 +638,23 @@ namespace Ethereal
 
             float d = v0.dotProduct(v1);
             // If dot == 1, vectors are the same
-            if (d >= 1.0f)
-            {
+            if (d >= 1.0f) {
                 return Quaternion::IDENTITY;
             }
-            if (d < (1e-6f - 1.0f))
-            {
-                if (fallback_axis != Vector3::ZERO)
-                {
+            if (d < (1e-6f - 1.0f)) {
+                if (fallback_axis != Vector3::ZERO) {
                     // rotate 180 degrees about the fall back axis
                     q.fromAngleAxis(Radian(Math_PI), fallback_axis);
-                }
-                else
-                {
+                } else {
                     // Generate an axis
                     Vector3 axis = Vector3::UNIT_X.crossProduct(*this);
-                    if (axis.isZeroLength()) // pick another if collinear
+                    if (axis.isZeroLength())  // pick another if collinear
                         axis = Vector3::UNIT_Y.crossProduct(*this);
                     axis.normalise();
                     q.fromAngleAxis(Radian(Math_PI), axis);
                 }
-            }
-            else
-            {
-                float s    = Math::sqrt((1 + d) * 2);
+            } else {
+                float s = Math::sqrt((1 + d) * 2);
                 float invs = 1 / s;
 
                 Vector3 c = v0.crossProduct(v1);
@@ -728,8 +669,7 @@ namespace Ethereal
         }
 
         /** Returns true if this vector is zero length. */
-        bool isZeroLength(void) const
-        {
+        bool isZeroLength(void) const {
             float sqlen = (x * x) + (y * y) + (z * z);
             return (sqlen < (1e-06 * 1e-06));
         }
@@ -739,8 +679,7 @@ namespace Ethereal
         /** As normalise, except that this vector is unaffected and the
         normalised vector is returned as a copy. */
 
-        Vector3 normalisedCopy(void) const
-        {
+        Vector3 normalisedCopy(void) const {
             Vector3 ret = *this;
             ret.normalise();
             return ret;
@@ -749,10 +688,7 @@ namespace Ethereal
         /** Calculates a reflection vector to the plane with the given normal .
         @remarks NB assumes 'this' is pointing AWAY FROM the plane, invert if it is not.
         */
-        Vector3 reflect(const Vector3& normal) const
-        {
-            return Vector3(*this - (2 * this->dotProduct(normal) * normal));
-        }
+        Vector3 reflect(const Vector3& normal) const { return Vector3(*this - (2 * this->dotProduct(normal) * normal)); }
 
         /** Calculates projection to a plane with the given normal
         @param normal The normal of given plane
@@ -763,14 +699,12 @@ namespace Ethereal
 
         static Vector3 lerp(const Vector3& lhs, const Vector3& rhs, float alpha) { return lhs + alpha * (rhs - lhs); }
 
-        static Vector3 clamp(const Vector3& v, const Vector3& min, const Vector3& max)
-        {
-            return Vector3(
-                Math::clamp(v.x, min.x, max.x), Math::clamp(v.y, min.y, max.y), Math::clamp(v.z, min.z, max.z));
+        static Vector3 clamp(const Vector3& v, const Vector3& min, const Vector3& max) {
+            return Vector3(Math::clamp(v.x, min.x, max.x), Math::clamp(v.y, min.y, max.y), Math::clamp(v.z, min.z, max.z));
         }
 
         static float getMaxElement(const Vector3& v) { return Math::getMaxElement(v.x, v.y, v.z); }
-        bool         isNaN() const { return Math::isNan(x) || Math::isNan(y) || Math::isNan(z); }
+        bool isNaN() const { return Math::isNan(x) || Math::isNan(y) || Math::isNan(z); }
         // special points
         static const Vector3 ZERO;
         static const Vector3 UNIT_X;
@@ -783,28 +717,38 @@ namespace Ethereal
     };
 
     REFLECTION_TYPE(Vector4)
-    CLASS(Vector4, Fields)
-    {
+    CLASS(Vector4, Fields) {
         REFLECTION_BODY(Vector4);
 
       public:
-        float x {0.f}, y {0.f}, z {0.f}, w {0.f};
+        float x{0.f}, y{0.f}, z{0.f}, w{0.f};
 
       public:
-        Vector4() = default;
-        Vector4(float x_, float y_, float z_, float w_) : x {x_}, y {y_}, z {z_}, w {w_} {}
-        Vector4(const Vector3& v3, float w_) : x {v3.x}, y {v3.y}, z {v3.z}, w {w_} {}
-
-        explicit Vector4(float coords[4]) : x {coords[0]}, y {coords[1]}, z {coords[2]}, w {coords[3]} {}
-
-        float operator[](size_t i) const
+        glm::vec4 toGLM()const
         {
+            glm::vec4 m{x,y,z,w};
+            return m;
+        }
+
+        Vector4(const glm::vec4& v)
+        {
+            x = v.x;
+            y = v.y;
+            z = v.z;
+            w = v.w;
+        }
+        Vector4() = default;
+        Vector4(float x_, float y_, float z_, float w_) : x{x_}, y{y_}, z{z_}, w{w_} {}
+        Vector4(const Vector3& v3, float w_) : x{v3.x}, y{v3.y}, z{v3.z}, w{w_} {}
+        explicit Vector4(float scalar) : x(scalar), y(scalar), z(scalar), w(scalar) {}
+        explicit Vector4(float coords[4]) : x{coords[0]}, y{coords[1]}, z{coords[2]}, w{coords[3]} {}
+
+        float operator[](size_t i) const {
             assert(i < 4);
             return *(&x + i);
         }
 
-        float& operator[](size_t i)
-        {
+        float& operator[](size_t i) {
             assert(i < 4);
             return *(&x + i);
         }
@@ -814,8 +758,7 @@ namespace Ethereal
         /// Pointer accessor for direct copying
         const float* ptr() const { return &x; }
 
-        Vector4& operator=(float scalar)
-        {
+        Vector4& operator=(float scalar) {
             x = scalar;
             y = scalar;
             z = scalar;
@@ -831,13 +774,11 @@ namespace Ethereal
         Vector4 operator-(const Vector4& rhs) const { return Vector4(x - rhs.x, y - rhs.y, z - rhs.z, w - rhs.w); }
         Vector4 operator*(float scalar) const { return Vector4(x * scalar, y * scalar, z * scalar, w * scalar); }
         Vector4 operator*(const Vector4& rhs) const { return Vector4(rhs.x * x, rhs.y * y, rhs.z * z, rhs.w * w); }
-        Vector4 operator/(float scalar) const
-        {
+        Vector4 operator/(float scalar) const {
             assert(scalar != 0.0);
             return Vector4(x / scalar, y / scalar, z / scalar, w / scalar);
         }
-        Vector4 operator/(const Vector4& rhs) const
-        {
+        Vector4 operator/(const Vector4& rhs) const {
             assert(rhs.x != 0 && rhs.y != 0 && rhs.z != 0 && rhs.w != 0);
             return Vector4(x / rhs.x, y / rhs.y, z / rhs.z, w / rhs.w);
         }
@@ -846,40 +787,23 @@ namespace Ethereal
 
         Vector4 operator-() const { return Vector4(-x, -y, -z, -w); }
 
-        friend Vector4 operator*(float scalar, const Vector4& rhs)
-        {
-            return Vector4(scalar * rhs.x, scalar * rhs.y, scalar * rhs.z, scalar * rhs.w);
-        }
+        friend Vector4 operator*(float scalar, const Vector4& rhs) { return Vector4(scalar * rhs.x, scalar * rhs.y, scalar * rhs.z, scalar * rhs.w); }
 
-        friend Vector4 operator/(float scalar, const Vector4& rhs)
-        {
+        friend Vector4 operator/(float scalar, const Vector4& rhs) {
             assert(rhs.x != 0 && rhs.y != 0 && rhs.z != 0 && rhs.w != 0);
             return Vector4(scalar / rhs.x, scalar / rhs.y, scalar / rhs.z, scalar / rhs.w);
         }
 
-        friend Vector4 operator+(const Vector4& lhs, float rhs)
-        {
-            return Vector4(lhs.x + rhs, lhs.y + rhs, lhs.z + rhs, lhs.w + rhs);
-        }
+        friend Vector4 operator+(const Vector4& lhs, float rhs) { return Vector4(lhs.x + rhs, lhs.y + rhs, lhs.z + rhs, lhs.w + rhs); }
 
-        friend Vector4 operator+(float lhs, const Vector4& rhs)
-        {
-            return Vector4(lhs + rhs.x, lhs + rhs.y, lhs + rhs.z, lhs + rhs.w);
-        }
+        friend Vector4 operator+(float lhs, const Vector4& rhs) { return Vector4(lhs + rhs.x, lhs + rhs.y, lhs + rhs.z, lhs + rhs.w); }
 
-        friend Vector4 operator-(const Vector4& lhs, float rhs)
-        {
-            return Vector4(lhs.x - rhs, lhs.y - rhs, lhs.z - rhs, lhs.w - rhs);
-        }
+        friend Vector4 operator-(const Vector4& lhs, float rhs) { return Vector4(lhs.x - rhs, lhs.y - rhs, lhs.z - rhs, lhs.w - rhs); }
 
-        friend Vector4 operator-(float lhs, const Vector4& rhs)
-        {
-            return Vector4(lhs - rhs.x, lhs - rhs.y, lhs - rhs.z, lhs - rhs.w);
-        }
+        friend Vector4 operator-(float lhs, const Vector4& rhs) { return Vector4(lhs - rhs.x, lhs - rhs.y, lhs - rhs.z, lhs - rhs.w); }
 
         // arithmetic updates
-        Vector4& operator+=(const Vector4& rhs)
-        {
+        Vector4& operator+=(const Vector4& rhs) {
             x += rhs.x;
             y += rhs.y;
             z += rhs.z;
@@ -887,8 +811,7 @@ namespace Ethereal
             return *this;
         }
 
-        Vector4& operator-=(const Vector4& rhs)
-        {
+        Vector4& operator-=(const Vector4& rhs) {
             x -= rhs.x;
             y -= rhs.y;
             z -= rhs.z;
@@ -896,8 +819,7 @@ namespace Ethereal
             return *this;
         }
 
-        Vector4& operator*=(float scalar)
-        {
+        Vector4& operator*=(float scalar) {
             x *= scalar;
             y *= scalar;
             z *= scalar;
@@ -905,8 +827,7 @@ namespace Ethereal
             return *this;
         }
 
-        Vector4& operator+=(float scalar)
-        {
+        Vector4& operator+=(float scalar) {
             x += scalar;
             y += scalar;
             z += scalar;
@@ -914,8 +835,7 @@ namespace Ethereal
             return *this;
         }
 
-        Vector4& operator-=(float scalar)
-        {
+        Vector4& operator-=(float scalar) {
             x -= scalar;
             y -= scalar;
             z -= scalar;
@@ -923,8 +843,7 @@ namespace Ethereal
             return *this;
         }
 
-        Vector4& operator*=(const Vector4& rhs)
-        {
+        Vector4& operator*=(const Vector4& rhs) {
             x *= rhs.x;
             y *= rhs.y;
             z *= rhs.z;
@@ -932,8 +851,7 @@ namespace Ethereal
             return *this;
         }
 
-        Vector4& operator/=(float scalar)
-        {
+        Vector4& operator/=(float scalar) {
             assert(scalar != 0.0);
 
             x /= scalar;
@@ -943,8 +861,7 @@ namespace Ethereal
             return *this;
         }
 
-        Vector4& operator/=(const Vector4& rhs)
-        {
+        Vector4& operator/=(const Vector4& rhs) {
             assert(rhs.x != 0 && rhs.y != 0 && rhs.z != 0);
             x /= rhs.x;
             y /= rhs.y;
@@ -952,6 +869,8 @@ namespace Ethereal
             w /= rhs.w;
             return *this;
         }
+
+        operator Vector3() { return Vector3{x, y, z}; }
 
         /** Calculates the dot (scalar) product of this vector with another.
         @param

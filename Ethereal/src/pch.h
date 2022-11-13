@@ -15,6 +15,10 @@
 #include "Base/Log.h"
 #include "Base/Ref.h"
 #include "Base/TimeStamp.h"
+#include "Base/Math/Math.h"
+#include "Base/Math/Vector.h"
+#include "Base/Math/Quaternion.h"
+#include "Base/Math/Matrix.h"
 
 #include "glad/glad.h"
 #include <glm/glm.hpp>

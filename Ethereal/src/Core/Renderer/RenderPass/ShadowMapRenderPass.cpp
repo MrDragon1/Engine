@@ -12,7 +12,7 @@ namespace Ethereal
         fbSpec.Height = m_ShadowMapSize;
         m_Framebuffer = Framebuffer::Create(fbSpec);
 
-        m_LightPos = glm::vec3(-2.0f, 4.0f, -1.0f);
+        m_LightPos = Vector3(-2.0f, 4.0f, -1.0f);
         CalculateViewProjectionMatrix();
 
         m_Shader = Shader::Create(m_ShaderPath);
@@ -51,9 +51,9 @@ namespace Ethereal
 
     void ShadowMapRenderPass::CalculateViewProjectionMatrix() {
         GLfloat near_plane = 0.1f, far_plane = 100.0f;
-        glm::mat4 lightProjection = glm::ortho(-50.0f, 50.0f, -50.0f, 50.0f, near_plane, far_plane);
-        // glm::mat4 lightProjection = glm::perspective(glm::radians(90.0f), 1.0f, near_plane, far_plane);
-        glm::mat4 lightView = glm::lookAt(m_LightPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        Matrix4x4 lightProjection = Math::makeOrthographicProjectionMatrix(-50.0f, 50.0f, -50.0f, 50.0f, near_plane, far_plane);
+        // Matrix4x4 lightProjection = Math::makePerspectiveMatrix(glm::radians(90.0f), 1.0f, near_plane, far_plane);
+        Matrix4x4 lightView = Math::makeLookAtMatrix(m_LightPos, Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f));
         m_ViewProjectionMatrix = lightProjection * lightView;
     }
 

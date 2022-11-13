@@ -16,10 +16,10 @@
 namespace Ethereal
 {
     struct RenderSceneData {
-        glm::mat4 ViewProjectionMatrix;
-        glm::mat4 ViewMatrix;
-        glm::mat4 ProjectionMatrix;
-        glm::vec3 CameraPosition;
+        Matrix4x4 ViewProjectionMatrix;
+        Matrix4x4 ViewMatrix;
+        Matrix4x4 ProjectionMatrix;
+        Vector3 CameraPosition;
         float NearPlane;
         float FarPlane;
         float AspectRatio;
@@ -27,7 +27,7 @@ namespace Ethereal
         Ref<Environment> Environment;
 
         // TODO: Lights
-        glm::vec3 DirectionalLightDir = glm::normalize(glm::vec3(20.0f, 50, 20.0f));
+        Vector3 DirectionalLightDir = Vector3(20.0f, 50, 20.0f).normalisedCopy();
     };
 
     struct BuildinData {
@@ -47,8 +47,8 @@ namespace Ethereal
 
         std::pair<Ref<TextureCube>, Ref<TextureCube>> CreateEnvironmentMap(const std::string& path);
         void SubmitStaticMesh(Ref<StaticMesh> staticMesh, Ref<MaterialTable> materialTabel, uint32_t EntityID,
-                              const glm::mat4& transform = glm::mat4(1.0f));
-        void SubmitMesh(Ref<Mesh> mesh, Ref<MaterialTable> materialTabel, uint32_t EntityID, const glm::mat4& transform = glm::mat4(1.0f));
+                              const Matrix4x4& transform = Matrix4x4::IDENTITY);
+        void SubmitMesh(Ref<Mesh> mesh, Ref<MaterialTable> materialTabel, uint32_t EntityID, const Matrix4x4& transform = Matrix4x4::IDENTITY);
         void SubmitRenderSceneData(const RenderSceneData& data);
         void OnResize();
         void LoadProjectSettings();

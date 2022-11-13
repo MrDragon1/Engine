@@ -17,8 +17,8 @@ namespace Ethereal
 {
     namespace Utils
     {
-        glm::mat4 Mat4FromAssimpMat4(const aiMatrix4x4& matrix) {
-            glm::mat4 result;
+        Matrix4x4 Mat4FromAssimpMat4(const aiMatrix4x4& matrix) {
+            Matrix4x4 result;
             // the a,b,c,d in assimp is the row ; the 1,2,3,4 is the column
             result[0][0] = matrix.a1;
             result[1][0] = matrix.a2;
@@ -39,10 +39,10 @@ namespace Ethereal
             return result;
         }
 
-        glm::vec3 Vec3FromAssimpVec3(const aiVector3D& vec) { return glm::vec3(vec.x, vec.y, vec.z); }
+        Vector3 Vec3FromAssimpVec3(const aiVector3D& vec) { return Vector3(vec.x, vec.y, vec.z); }
 
-        glm::quat QuatFromAssimpQuat(const aiQuaternion& pOrientation) {
-            return glm::quat(pOrientation.w, pOrientation.x, pOrientation.y, pOrientation.z);
+        Quaternion QuatFromAssimpQuat(const aiQuaternion& pOrientation) {
+            return Quaternion(pOrientation.w, pOrientation.x, pOrientation.y, pOrientation.z);
         }
 
     }  // namespace Utils
@@ -83,7 +83,7 @@ namespace Ethereal
         }
 
         m_Scene = scene;
-        m_InverseTransform = glm::inverse(Utils::Mat4FromAssimpMat4(scene->mRootNode->mTransformation));
+        m_InverseTransform = Utils::Mat4FromAssimpMat4(scene->mRootNode->mTransformation).inverse();
         m_IsAnimated = scene->mAnimations != nullptr;
         if (m_IsAnimated) {
             Ref<Skeleton> skel = Ref<Skeleton>::Create();
@@ -141,12 +141,12 @@ namespace Ethereal
                     Vertex vertex;
                     vertex.Position = {mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z};
                     vertex.Normal = {mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z};
-                    aabb.Min.x = glm::min(vertex.Position.x, aabb.Min.x);
-                    aabb.Min.y = glm::min(vertex.Position.y, aabb.Min.y);
-                    aabb.Min.z = glm::min(vertex.Position.z, aabb.Min.z);
-                    aabb.Max.x = glm::max(vertex.Position.x, aabb.Max.x);
-                    aabb.Max.y = glm::max(vertex.Position.y, aabb.Max.y);
-                    aabb.Max.z = glm::max(vertex.Position.z, aabb.Max.z);
+                    aabb.Min.x = Math::min(vertex.Position.x, aabb.Min.x);
+                    aabb.Min.y = Math::min(vertex.Position.y, aabb.Min.y);
+                    aabb.Min.z = Math::min(vertex.Position.z, aabb.Min.z);
+                    aabb.Max.x = Math::max(vertex.Position.x, aabb.Max.x);
+                    aabb.Max.y = Math::max(vertex.Position.y, aabb.Max.y);
+                    aabb.Max.z = Math::max(vertex.Position.z, aabb.Max.z);
 
                     if (mesh->HasTangentsAndBitangents()) {
                         vertex.Tangent = {mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z};
@@ -174,15 +174,15 @@ namespace Ethereal
 
         for (const auto& submesh : m_Submeshes) {
             AABB transformedSubmeshAABB = submesh.BoundingBox;
-            glm::vec3 min = glm::vec3(submesh.Transform * glm::vec4(transformedSubmeshAABB.Min, 1.0f));
-            glm::vec3 max = glm::vec3(submesh.Transform * glm::vec4(transformedSubmeshAABB.Max, 1.0f));
+            Vector3 min = Vector3(submesh.Transform * Vector4(transformedSubmeshAABB.Min, 1.0f));
+            Vector3 max = Vector3(submesh.Transform * Vector4(transformedSubmeshAABB.Max, 1.0f));
 
-            m_BoundingBox.Min.x = glm::min(m_BoundingBox.Min.x, min.x);
-            m_BoundingBox.Min.y = glm::min(m_BoundingBox.Min.y, min.y);
-            m_BoundingBox.Min.z = glm::min(m_BoundingBox.Min.z, min.z);
-            m_BoundingBox.Max.x = glm::max(m_BoundingBox.Max.x, max.x);
-            m_BoundingBox.Max.y = glm::max(m_BoundingBox.Max.y, max.y);
-            m_BoundingBox.Max.z = glm::max(m_BoundingBox.Max.z, max.z);
+            m_BoundingBox.Min.x = Math::min(m_BoundingBox.Min.x, min.x);
+            m_BoundingBox.Min.y = Math::min(m_BoundingBox.Min.y, min.y);
+            m_BoundingBox.Min.z = Math::min(m_BoundingBox.Min.z, min.z);
+            m_BoundingBox.Max.x = Math::max(m_BoundingBox.Max.x, max.x);
+            m_BoundingBox.Max.y = Math::max(m_BoundingBox.Max.y, max.y);
+            m_BoundingBox.Max.z = Math::max(m_BoundingBox.Max.z, max.z);
         }
 
         // Bones
@@ -203,7 +203,7 @@ namespace Ethereal
                     Ref<Joint> joint = m_Animator->m_Skeleton->m_JointsMap[boneID];
 
                     joint->m_OffsetMatrix = Utils::Mat4FromAssimpMat4(bone->mOffsetMatrix);
-                    joint->m_InverseOffsetMatrix = glm::inverse(joint->m_OffsetMatrix);
+                    joint->m_InverseOffsetMatrix = joint->m_OffsetMatrix.inverse();
 
                     for (size_t j = 0; j < bone->mNumWeights; j++) {
                         int VertexID = submesh.BaseVertex + bone->mWeights[j].mVertexId;
@@ -286,9 +286,9 @@ namespace Ethereal
         m_VertexArray->SetIndexBuffer(m_IndexBuffer);
     }
 
-    void MeshSource::TraverseNodes(aiNode* node, const glm::mat4& parentTransform, uint32_t level) {
-        glm::mat4 localTransform = Utils::Mat4FromAssimpMat4(node->mTransformation);
-        glm::mat4 transform = parentTransform * localTransform;
+    void MeshSource::TraverseNodes(aiNode* node, const Matrix4x4& parentTransform, uint32_t level) {
+        Matrix4x4 localTransform = Utils::Mat4FromAssimpMat4(node->mTransformation);
+        Matrix4x4 transform = parentTransform * localTransform;
         m_NodeMap[node].resize(node->mNumMeshes);
         for (uint32_t i = 0; i < node->mNumMeshes; i++) {
             uint32_t mesh = node->mMeshes[i];
@@ -315,7 +315,7 @@ namespace Ethereal
         }
     }
 
-    MeshSource::MeshSource(const std::vector<Vertex>& vertices, const std::vector<Index>& indices, const glm::mat4& transform)
+    MeshSource::MeshSource(const std::vector<Vertex>& vertices, const std::vector<Index>& indices, const Matrix4x4& transform)
         : m_StaticVertices(vertices), m_Indices(indices), m_IsAnimated(false), m_Animator(nullptr) {
         // Generate a new asset handle
         Handle = {};
@@ -382,7 +382,7 @@ namespace Ethereal
                 materials->SetMaterial(i, mi);
 
                 aiString aiTexPath;
-                glm::vec3 albedoColor(0.8f);
+                Vector3 albedoColor(0.8f);
                 float emission = 0.0f;
                 aiColor3D aiColor, aiEmission;
                 if (aiMaterial->Get(AI_MATKEY_COLOR_DIFFUSE, aiColor) == AI_SUCCESS) albedoColor = {aiColor.r, aiColor.g, aiColor.b};
@@ -397,7 +397,7 @@ namespace Ethereal
 
                 if (aiMaterial->Get(AI_MATKEY_REFLECTIVITY, metalness) != aiReturn_SUCCESS) metalness = 0.0f;
 
-                float roughness = 1.0f - glm::sqrt(shininess / 100.0f);
+                float roughness = 1.0f - Math::sqrt(shininess / 100.0f);
                 bool hasAlbedoMap = aiMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &aiTexPath) == AI_SUCCESS;
                 mi->SetUseAlbedoMap(hasAlbedoMap);
                 bool fallback = !hasAlbedoMap;
@@ -410,7 +410,7 @@ namespace Ethereal
                     auto texture = AssetManager::GetAsset<Texture>(texturePath);
                     if (texture && texture->IsLoaded()) {
                         mi->SetAlbedoMap(texture);
-                        mi->SetAlbedoColor(glm::vec3(1.0f));
+                        mi->SetAlbedoColor(Vector3(1.0f));
                     } else {
                         ET_CORE_ERROR("Could not load texture: {0}", texturePath);
                         fallback = true;

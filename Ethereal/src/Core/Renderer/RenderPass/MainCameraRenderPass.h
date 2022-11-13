@@ -12,15 +12,15 @@ namespace Ethereal
         void Draw() override;
         void OnResize(uint32_t width, uint32_t height) override;
 
-        void SetViewProjectionMatrix(const glm::mat4& matrix) { m_ViewProjectionMatrix = matrix; }
+        void SetViewProjectionMatrix(const Matrix4x4& matrix) { m_ViewProjectionMatrix = matrix; }
         int GetMousePicking(int x, int y);
 
-        void SetCameraPosition(const glm::vec3& position) { m_CameraPosition = position; };
+        void SetCameraPosition(const Vector3& position) { m_CameraPosition = position; };
 
         void SetCSMData(CSMRenderPassData data) { m_CSMData = data; }
 
       private:
-        glm::mat4 m_ViewProjectionMatrix;
+        Matrix4x4 m_ViewProjectionMatrix;
 
         Ref<Shader> m_StaticMeshShader;
         std::string m_StaticMeshShaderPath = "assets/shaders/PBR.glsl";
@@ -31,7 +31,7 @@ namespace Ethereal
         Ref<Framebuffer> m_Framebuffer;
 
         // temporary
-        glm::vec3 m_CameraPosition;
+        Vector3 m_CameraPosition;
 
         CSMRenderPassData m_CSMData;
 

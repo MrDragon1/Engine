@@ -1,20 +1,20 @@
 #pragma once
 #include "Core/Renderer/Texture.h"
-
+#include "Base/Math/Vector.h"
 namespace Ethereal
 {
     class SubTexture2D : public RefCounted {
       public:
-        SubTexture2D(const Ref<Texture2D>& texture, const glm::vec2& min, const glm::vec2& max);
+        SubTexture2D(const Ref<Texture2D>& texture, const Vector2& min, const Vector2& max);
 
         const Ref<Texture2D> GetTexture() const { return m_Texture; }
-        const glm::vec2* GetTexCoords() const { return m_Coords; }
+        const Vector2* GetTexCoords() const { return m_Coords; }
 
-        static Ref<SubTexture2D> CreateFromCoords(const Ref<Texture2D>& texture, const glm::vec2& coords, const glm::vec2& cellSize,
-                                                  const glm::vec2& spriteSize = {1, 1});
+        static Ref<SubTexture2D> CreateFromCoords(const Ref<Texture2D>& texture, const Vector2& coords, const Vector2& cellSize,
+                                                  const Vector2& spriteSize = {1, 1});
 
       private:
         Ref<Texture2D> m_Texture;
-        glm::vec2 m_Coords[4];
+        Vector2 m_Coords[4];
     };
 }  // namespace Ethereal

@@ -1,18 +1,19 @@
 #pragma once
 #include "pch.h"
+#include "Base/Math/Vector.h"
 #include "Core/Asset/Asset.h"
 namespace Ethereal
 {
     struct AnimPositionState {
-        glm::vec3 Position;
+        Vector3 Position;
         TimeStamp TimeStamp;
     };
     struct AnimRotationState {
-        glm::quat Rotation;
+        Quaternion Rotation;
         TimeStamp TimeStamp;
     };
     struct AnimScaleState {
-        glm::vec3 Scale;
+        Vector3 Scale;
         TimeStamp TimeStamp;
     };
 

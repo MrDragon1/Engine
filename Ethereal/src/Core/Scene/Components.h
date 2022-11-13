@@ -28,16 +28,16 @@ namespace Ethereal
         TagComponent(const std::string& tag) : Tag(tag) {}
     };
     struct TransformComponent {
-        glm::vec3 Translation = glm::vec3(0.0f);
-        glm::vec3 Rotation = glm::vec3(0.0f);
-        glm::vec3 Scale = glm::vec3(1.0f);
+        Vector3 Translation = Vector3(0.0f);
+        Vector3 Rotation = Vector3(0.0f);
+        Vector3 Scale = Vector3(1.0f);
 
         TransformComponent() = default;
         TransformComponent(const TransformComponent&) = default;
 
-        glm::mat4 GetTransform() {
-            glm::mat4 rotation = glm::toMat4(glm::quat(Rotation));
-            return glm::translate(glm::mat4(1.0f), Translation) * rotation * glm::scale(glm::mat4(1.0f), Scale);
+        Matrix4x4 GetTransform() {
+            Matrix4x4 rotation = Matrix4x4(Quaternion(Rotation));
+            return Math::getTranslateMatrix(Translation) * rotation * Math::getScaleMatrix(Scale);
         }
     };
 
@@ -104,8 +104,8 @@ namespace Ethereal
     };
 
     struct BoxCollider2DComponent {
-        glm::vec2 Offset = {0.0f, 0.0f};
-        glm::vec2 Size = {0.5f, 0.5f};
+        Vector2 Offset = {0.0f, 0.0f};
+        Vector2 Size = {0.5f, 0.5f};
 
         float Density = 1.0f;
         float Friction = 0.5f;

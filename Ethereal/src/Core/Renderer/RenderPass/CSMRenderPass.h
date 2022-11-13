@@ -7,18 +7,18 @@ namespace Ethereal
         int Cascaded = 4;
         int ShadowMapSize = 4096;
 
-        glm::mat4 View;
-        glm::mat4 Proj;
+        Matrix4x4 View;
+        Matrix4x4 Proj;
         float FOV;
         float AspectRatio;
         float NearPlane;
         float FarPlane;
 
-        glm::vec3 LightDir;
+        Vector3 LightDir;
 
         Ref<Texture> ShadowMap;
         std::vector<float> Distance;
-        std::vector<glm::mat4> LightMatrices;
+        std::vector<Matrix4x4> LightMatrices;
     };
 
     class CSMRenderPass : public RenderPass {
@@ -40,20 +40,20 @@ namespace Ethereal
             m_Distance.push_back(m_Data.FarPlane / 10.0f);
             m_Distance.push_back(m_Data.FarPlane / 2.0f);
         }
-        void SetViewMatrix(const glm::mat4& view) { m_Data.View = view; }
-        void SetProjMatrix(const glm::mat4& proj) { m_Data.Proj = proj; }
+        void SetViewMatrix(const Matrix4x4& view) { m_Data.View = view; }
+        void SetProjMatrix(const Matrix4x4& proj) { m_Data.Proj = proj; }
         void SetFOV(const float fov) { m_Data.FOV = fov; }
         void SetAspectRatio(const float ratio) { m_Data.AspectRatio = ratio; }
 
-        void SetLightDir(const glm::vec3& dir) { m_Data.LightDir = glm::normalize(dir); }
+        void SetLightDir(const Vector3& dir) { m_Data.LightDir = dir.normalisedCopy(); }
 
         CSMRenderPassData GetData() { return m_Data; }
 
       private:
-        std::vector<glm::vec4> GetFrustumCornersWorldSpace(const glm::mat4& projview);
-        std::vector<glm::vec4> GetFrustumCornersWorldSpace(const glm::mat4& proj, const glm::mat4& view);
-        glm::mat4 GetLightSpaceMatrix(float nearPlane, float farPlane);
-        std::vector<glm::mat4> GetLightSpaceMatrices();
+        std::vector<Vector4> GetFrustumCornersWorldSpace(const Matrix4x4& projview);
+        std::vector<Vector4> GetFrustumCornersWorldSpace(const Matrix4x4& proj, const Matrix4x4& view);
+        Matrix4x4 GetLightSpaceMatrix(float nearPlane, float farPlane);
+        std::vector<Matrix4x4> GetLightSpaceMatrices();
 
       private:
         Ref<Shader> m_Shader;

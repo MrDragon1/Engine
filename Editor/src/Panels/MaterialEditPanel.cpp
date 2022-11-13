@@ -140,7 +140,7 @@ namespace Ethereal
                 bool useAlbedoMap = material->IsUseAlbedoMap();
                 if (ImGui::Checkbox("Use##Albedo", &useAlbedoMap)) material->SetUseAlbedoMap(useAlbedoMap);
 
-                if (ImGui::ColorEdit3("Color##Albedo", glm::value_ptr(albedoColor), ImGuiColorEditFlags_NoInputs))
+                if (ImGui::ColorEdit3("Color##Albedo", albedoColor.ptr(), ImGuiColorEditFlags_NoInputs))
                     material->SetAlbedoColor(albedoColor);
                 float& emissive = material->GetEmission();
 

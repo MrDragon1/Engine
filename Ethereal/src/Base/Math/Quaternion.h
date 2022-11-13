@@ -8,26 +8,41 @@ namespace Ethereal
     class Vector3;
 
     REFLECTION_TYPE(Quaternion)
-    CLASS(Quaternion, Fields)
-    {
+    CLASS(Quaternion, Fields) {
         REFLECTION_BODY(Quaternion);
 
       public:
-        float w {1.f}, x {0.f}, y {0.f}, z {0.f};
+        float w{1.f}, x{0.f}, y{0.f}, z{0.f};
 
       public:
+        glm::quat toGLM()const
+        {
+            glm::quat m;
+            m.x = x;
+            m.y = y;
+            m.z = z;
+            m.w = w;
+            return m;
+        }
+
+        Quaternion(const glm::quat& v)
+        {
+            x = v.x;
+            y = v.y;
+            z = v.z;
+            w = v.w;
+        }
         Quaternion() = default;
-        Quaternion(float w_, float x_, float y_, float z_) : w {w_}, x {x_}, y {y_}, z {z_} {}
+        Quaternion(float w_, float x_, float y_, float z_) : w{w_}, x{x_}, y{y_}, z{z_} {}
 
         /// Construct a quaternion from a rotation matrix
         explicit Quaternion(const Matrix3x3& rot) { this->fromRotationMatrix(rot); }
         /// Construct a quaternion from an angle/axis
         Quaternion(const Radian& angle, const Vector3& axis) { this->fromAngleAxis(angle, axis); }
+        /// Construct a quaternion from an euler angle
+        Quaternion(const Vector3& axis) { this->fromEulerAngle(axis); }
         /// Construct a quaternion from 3 orthonormal local axes
-        Quaternion(const Vector3& xaxis, const Vector3& yaxis, const Vector3& zaxis)
-        {
-            this->fromAxes(xaxis, yaxis, zaxis);
-        }
+        Quaternion(const Vector3& xaxis, const Vector3& yaxis, const Vector3& zaxis) { this->fromAxes(xaxis, yaxis, zaxis); }
 
         /// Pointer accessor for direct copying
         float* ptr() { return &w; }
@@ -38,6 +53,9 @@ namespace Ethereal
         void fromRotationMatrix(const Matrix3x3& rotation);
         void toRotationMatrix(Matrix3x3 & rotation) const;
         void toRotationMatrix(Matrix4x4 & rotation) const;
+
+        void fromEulerAngle(const Vector3& angle);
+        void toEulerAngle(Vector3& angle);
 
         void fromAngleAxis(const Radian& angle, const Vector3& axis);
 
@@ -71,15 +89,9 @@ namespace Ethereal
         */
         Vector3 zAxis() const;
 
-        Quaternion operator+(const Quaternion& rhs) const
-        {
-            return Quaternion(w + rhs.w, x + rhs.x, y + rhs.y, z + rhs.z);
-        }
+        Quaternion operator+(const Quaternion& rhs) const { return Quaternion(w + rhs.w, x + rhs.x, y + rhs.y, z + rhs.z); }
 
-        Quaternion operator-(const Quaternion& rhs) const
-        {
-            return Quaternion(w - rhs.w, x - rhs.x, y - rhs.y, z - rhs.z);
-        }
+        Quaternion operator-(const Quaternion& rhs) const { return Quaternion(w - rhs.w, x - rhs.x, y - rhs.y, z - rhs.z); }
 
         Quaternion mul(const Quaternion& rhs) const { return (*this) * rhs; }
         Quaternion operator*(const Quaternion& rhs) const;
@@ -89,28 +101,20 @@ namespace Ethereal
         //// rotation of a vector by a quaternion
         Vector3 operator*(const Vector3& rhs) const;
 
-        Quaternion operator/(float scalar) const
-        {
+        Quaternion operator/(float scalar) const {
             assert(scalar != 0.0f);
             return Quaternion(w / scalar, x / scalar, y / scalar, z / scalar);
         }
 
-        friend Quaternion operator*(float scalar, const Quaternion& rhs)
-        {
+        friend Quaternion operator*(float scalar, const Quaternion& rhs) {
             return Quaternion(scalar * rhs.w, scalar * rhs.x, scalar * rhs.y, scalar * rhs.z);
         }
 
         Quaternion operator-() const { return Quaternion(-w, -x, -y, -z); }
 
-        bool operator==(const Quaternion& rhs) const
-        {
-            return (rhs.x == x) && (rhs.y == y) && (rhs.z == z) && (rhs.w == w);
-        }
+        bool operator==(const Quaternion& rhs) const { return (rhs.x == x) && (rhs.y == y) && (rhs.z == z) && (rhs.w == w); }
 
-        bool operator!=(const Quaternion& rhs) const
-        {
-            return (rhs.x != x) || (rhs.y != y) || (rhs.z != z) || (rhs.w != w);
-        }
+        bool operator!=(const Quaternion& rhs) const { return (rhs.x != x) || (rhs.y != y) || (rhs.z != z) || (rhs.w != w); }
 
         /// Check whether this quaternion contains valid values
         bool isNaN() const { return Math::isNan(x) || Math::isNan(y) || Math::isNan(z) || Math::isNan(w); }
@@ -126,22 +130,18 @@ namespace Ethereal
         float length() const { return std::sqrt(w * w + x * x + y * y + z * z); }
 
         /// Normalizes this quaternion, and returns the previous length
-        void normalise(void)
-        {
+        void normalise(void) {
             float factor = 1.0f / this->length();
-            *this        = *this * factor;
+            *this = *this * factor;
         }
 
-        Quaternion inverse() const // apply to non-zero quaternion
+        Quaternion inverse() const  // apply to non-zero quaternion
         {
             float norm = w * w + x * x + y * y + z * z;
-            if (norm > 0.0)
-            {
+            if (norm > 0.0) {
                 float inv_norm = 1.0f / norm;
                 return Quaternion(w * inv_norm, -x * inv_norm, -y * inv_norm, -z * inv_norm);
-            }
-            else
-            {
+            } else {
                 // return an invalid result to flag the error
                 return ZERO;
             }
@@ -213,4 +213,4 @@ namespace Ethereal
 
         static const float k_epsilon;
     };
-}
+}  // namespace Ethereal

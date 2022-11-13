@@ -72,11 +72,10 @@ namespace Ethereal
 
     void SceneHierarchyPanel::SetSelectedEntity(Entity entity) { m_SelectionContext = entity; }
 
-    static std::tuple<glm::vec3, glm::quat, glm::vec3> GetTransformDecomposition(const glm::mat4& transform) {
-        glm::vec3 scale, translation, skew;
-        glm::vec4 perspective;
-        glm::quat orientation;
-        glm::decompose(transform, scale, orientation, translation, skew, perspective);
+    static std::tuple<Vector3, Quaternion, Vector3> GetTransformDecomposition(const Matrix4x4& transform) {
+        Vector3 scale, translation;
+        Quaternion orientation;
+        Math::decomposeTransformMatrix(transform, translation, scale, orientation );
 
         return {translation, orientation, scale};
     }
@@ -104,8 +103,8 @@ namespace Ethereal
                 auto handle = entity.GetComponent<StaticMeshComponent>().StaticMesh;
                 auto mesh = AssetManager::GetAsset<StaticMesh>(handle);
                 for (auto& submesh : mesh->GetMeshSource()->GetSubmeshes()) {
-                    glm::mat4 localTransform = submesh.LocalTransform;
-                    glm::mat4 transform = entity.GetComponent<TransformComponent>().GetTransform() * submesh.Transform;
+                    Matrix4x4 localTransform = submesh.LocalTransform;
+                    Matrix4x4 transform = entity.GetComponent<TransformComponent>().GetTransform() * submesh.Transform;
                     if (ImGui::TreeNode(submesh.NodeName.c_str())) {
                         {
                             auto [translation, rotation, scale] = GetTransformDecomposition(transform);
@@ -132,7 +131,7 @@ namespace Ethereal
         }
     }
 
-    static void DrawVec3Control(const std::string& label, glm::vec3& values, float resetValue = 0.0f, float columnWidth = 100.0f) {
+    static void DrawVec3Control(const std::string& label, Vector3& values, float resetValue = 0.0f, float columnWidth = 100.0f) {
         ImGuiIO& io = ImGui::GetIO();
         auto boldFont = io.Fonts->Fonts[0];
 
@@ -252,9 +251,9 @@ namespace Ethereal
 
         DrawComponent<TransformComponent>("Transform", entity, [](auto& component) {
             DrawVec3Control("Translation", component.Translation);
-            glm::vec3 rotation = glm::degrees(component.Rotation);
+            Vector3 rotation = Math::radiansToDegrees(component.Rotation);
             DrawVec3Control("Rotation", rotation);
-            component.Rotation = glm::radians(rotation);
+            component.Rotation = Math::degreesToRadians(rotation);
             DrawVec3Control("Scale", component.Scale, 1.0f);
         });
 
@@ -355,8 +354,8 @@ namespace Ethereal
             }
 
             if (camera.GetProjectionType() == SceneCamera::ProjectionType::Perspective) {
-                float verticalFov = glm::degrees(camera.GetPerspectiveVerticalFOV());
-                if (ImGui::DragFloat("Vertical FOV", &verticalFov)) camera.SetPerspectiveVerticalFOV(glm::radians(verticalFov));
+                float verticalFov = Math::radiansToDegrees(camera.GetPerspectiveVerticalFOV());
+                if (ImGui::DragFloat("Vertical FOV", &verticalFov)) camera.SetPerspectiveVerticalFOV(Math::degreesToRadians(verticalFov));
 
                 float orthoNear = camera.GetPerspectiveNearClip();
                 if (ImGui::DragFloat("Near", &orthoNear)) camera.SetPerspectiveNearClip(orthoNear);
@@ -400,8 +399,8 @@ namespace Ethereal
         });
 
         DrawComponent<BoxCollider2DComponent>("BoxCollider 2D", entity, [](auto& component) {
-            ImGui::DragFloat2("Offset", glm::value_ptr(component.Offset));
-            ImGui::DragFloat2("Size", glm::value_ptr(component.Size));
+            ImGui::DragFloat2("Offset", component.Offset.ptr());
+            ImGui::DragFloat2("Size", component.Size.ptr());
             ImGui::DragFloat("Density", &component.Density, 0.01f, 0.0f, 1.0f);
             ImGui::DragFloat("Friction", &component.Friction, 0.01f, 0.0f, 1.0f);
             ImGui::DragFloat("Restitution", &component.Restitution, 0.01f, 0.0f, 1.0f);

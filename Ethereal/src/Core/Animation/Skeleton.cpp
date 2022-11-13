@@ -22,11 +22,11 @@ namespace Ethereal
         }
 
         // Loop joint tree to update FinalBoneMatrices
-        CalculateMatrices(m_Root, glm::mat4(1.0f));
+        CalculateMatrices(m_Root, Matrix4x4::IDENTITY);
     }
 
-    void Skeleton::CalculateMatrices(Ref<Joint> node, glm::mat4 parentTransform) {
-        glm::mat4 globalTransform = parentTransform * node->GetLocalTransform();
+    void Skeleton::CalculateMatrices(Ref<Joint> node, Matrix4x4 parentTransform) {
+        Matrix4x4 globalTransform = parentTransform * node->GetLocalTransform();
 
         // InverseT transfroms vertex from model space to bone space
         m_FinalBoneMatrices[node->m_ID] = m_Root->m_InverseOffsetMatrix * globalTransform * node->m_OffsetMatrix;

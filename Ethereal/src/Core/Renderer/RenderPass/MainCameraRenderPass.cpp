@@ -3,7 +3,7 @@
 namespace Ethereal
 {
     void MainCameraRenderPass::Init(uint32_t width, uint32_t height) {
-        m_ViewProjectionMatrix = glm::mat4(1.0f);
+        m_ViewProjectionMatrix = Matrix4x4::IDENTITY;
 
         TextureSpecification hdrSpec, r32Spec, depthSpec;
         hdrSpec.Format = ETHEREAL_PIXEL_FORMAT::R16G16B16A16_HDR;
@@ -72,14 +72,14 @@ namespace Ethereal
         const auto& meshTransformMap = m_DrawLists.MeshTransformMap;
 
         // lights
-        glm::vec3 lightPositions[] = {
-            glm::vec3(-10.0f, 20.0f, 10.0f),
-            glm::vec3(10.0f, 20.0f, 10.0f),
-            glm::vec3(-10.0f, 0.0f, 10.0f),
-            glm::vec3(10.0f, 0.0f, 10.0f),
+        Vector3 lightPositions[] = {
+            Vector3(-10.0f, 20.0f, 10.0f),
+            Vector3(10.0f, 20.0f, 10.0f),
+            Vector3(-10.0f, 0.0f, 10.0f),
+            Vector3(10.0f, 0.0f, 10.0f),
         };
-        glm::vec3 lightColors[] = {glm::vec3(300.0f, 300.0f, 300.0f), glm::vec3(300.0f, 300.0f, 300.0f), glm::vec3(300.0f, 300.0f, 300.0f),
-                                   glm::vec3(300.0f, 300.0f, 300.0f)};
+        Vector3 lightColors[] = {Vector3(300.0f, 300.0f, 300.0f), Vector3(300.0f, 300.0f, 300.0f), Vector3(300.0f, 300.0f, 300.0f),
+                                   Vector3(300.0f, 300.0f, 300.0f)};
 
         // Draw StaticMesh
         {

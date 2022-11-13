@@ -124,7 +124,7 @@ namespace Ethereal
 
         Ref<MaterialAsset> material = Ref<MaterialAsset>::Create(AssetManager::GetFileSystemPath(metadata).stem().string(), transparent);
 
-        ET_DESERIALIZE_PROPERTY(AlbedoColor, material->GetAlbedoColor(), materialNode, glm::vec3(1.0f));
+        ET_DESERIALIZE_PROPERTY(AlbedoColor, material->GetAlbedoColor(), materialNode, Vector3(1.0f));
         ET_DESERIALIZE_PROPERTY(Metallic, material->GetMetalness(), materialNode, 0.0f);
         ET_DESERIALIZE_PROPERTY(Roughness, material->GetRoughness(), materialNode, 1.0f);
         ET_DESERIALIZE_PROPERTY(Emission, material->GetEmission(), materialNode, 0.0f);

@@ -1,6 +1,7 @@
 #pragma once
 #include "Base/AABB.h"
 #include "Base/TimeStamp.h"
+#include "Base/Math/Vector.h"
 #include "Core/Asset/Asset.h"
 #include "Core/Renderer/Buffer.h"
 #include "Core/Renderer/Shader.h"
@@ -24,19 +25,19 @@ namespace Assimp
 namespace Ethereal
 {
     struct Vertex {
-        glm::vec3 Position;
-        glm::vec3 Normal;
-        glm::vec3 Tangent;
-        glm::vec3 Binormal;
-        glm::vec2 Texcoord;
+        Vector3 Position;
+        Vector3 Normal;
+        Vector3 Tangent;
+        Vector3 Binormal;
+        Vector2 Texcoord;
     };
 
     struct AnimationVertex {
-        glm::vec3 Position;
-        glm::vec3 Normal;
-        glm::vec3 Tangent;
-        glm::vec3 Binormal;
-        glm::vec2 Texcoord;
+        Vector3 Position;
+        Vector3 Normal;
+        Vector3 Tangent;
+        Vector3 Binormal;
+        Vector2 Texcoord;
 
         uint32_t IDs[4] = {0, 0, 0, 0};
         float Weights[4]{0.0f, 0.0f, 0.0f, 0.0f};
@@ -75,8 +76,8 @@ namespace Ethereal
         uint32_t IndexCount;
         uint32_t VertexCount;
 
-        glm::mat4 Transform{1.0f};  // World transform
-        glm::mat4 LocalTransform{1.0f};
+        Matrix4x4 Transform{Matrix4x4::IDENTITY};  // World transform
+        Matrix4x4 LocalTransform{Matrix4x4::IDENTITY};
         AABB BoundingBox;
 
         std::string NodeName, MeshName;
@@ -87,7 +88,7 @@ namespace Ethereal
     class MeshSource : public Asset {
       public:
         MeshSource(const std::string& filename);
-        MeshSource(const std::vector<Vertex>& vertices, const std::vector<Index>& indices, const glm::mat4& transform);
+        MeshSource(const std::vector<Vertex>& vertices, const std::vector<Index>& indices, const Matrix4x4& transform);
         MeshSource(const std::vector<Vertex>& vertices, const std::vector<Index>& indices, const std::vector<Submesh>& submeshes);
         virtual ~MeshSource();
 
@@ -114,7 +115,7 @@ namespace Ethereal
         void LoadMaterials(Ref<MaterialTable>& materials);
 
       private:
-        void TraverseNodes(aiNode* node, const glm::mat4& parentTransform = glm::mat4(1.0f), uint32_t level = 0);
+        void TraverseNodes(aiNode* node, const Matrix4x4& parentTransform = Matrix4x4::IDENTITY, uint32_t level = 0);
         void TraverseNodesAnim(aiNode* node, Ref<Joint>& joint);
 
       private:
@@ -122,7 +123,7 @@ namespace Ethereal
         const aiScene* m_Scene;
         std::string m_FilePath;
 
-        glm::mat4 m_InverseTransform;
+        Matrix4x4 m_InverseTransform;
 
         Ref<VertexArray> m_VertexArray;
         Ref<VertexBuffer> m_VertexBuffer;

@@ -11,6 +11,9 @@
 #include "Base/ImGui/ImGuizmo.h"
 #include "Base/ImGui/UI.h"
 
+#include "Base/Meta/Serializer.h"
+#include "Base/Meta/_generated/serializer/all_serializer.h"
+
 namespace Ethereal
 {
     extern const std::filesystem::path g_AssetPath;
@@ -44,6 +47,9 @@ namespace Ethereal
                 m_RenderSceneData.AspectRatio = m_EditorCamera.GetAspectRatio();
                 m_RenderSceneData.FOV = m_EditorCamera.GetFOV();
                 m_ActiveScene->OnUpdateEditor(ts, m_RenderSceneData);
+
+//                std::cout << "View " << Serializer::write(m_RenderSceneData.ViewMatrix.toMatrix4x4_()) << std::endl;
+//                std::cout << "Proj " << Serializer::write(m_RenderSceneData.ProjectionMatrix.toMatrix4x4_()) << std::endl;
                 break;
             }
         }
@@ -53,7 +59,7 @@ namespace Ethereal
             auto [mx, my] = ImGui::GetMousePos();
             mx -= m_ViewportBounds[0].x;
             my -= m_ViewportBounds[0].y;
-            glm::vec2 viewportSize = m_ViewportBounds[1] - m_ViewportBounds[0];
+            Vector2 viewportSize = m_ViewportBounds[1] - m_ViewportBounds[0];
             my = viewportSize.y - my;
             int mouseX = (int)mx;
             int mouseY = (int)my;
@@ -168,7 +174,7 @@ namespace Ethereal
             ImGui::EndCombo();
         }
 
-        ImGui::DragFloat3("Directional Light Dir", glm::value_ptr(m_RenderSceneData.DirectionalLightDir), 0.1);
+        ImGui::DragFloat3("Directional Light Dir", m_RenderSceneData.DirectionalLightDir.ptr(), 0.1);
         ImGui::End();
 
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
@@ -232,12 +238,12 @@ namespace Ethereal
                 ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
 
                 // Editor camera
-                const glm::mat4& cameraProjection = m_EditorCamera.GetProjection();
-                glm::mat4 cameraView = m_EditorCamera.GetViewMatrix();
+                const Matrix4x4& cameraProjection = m_EditorCamera.GetProjection();
+                Matrix4x4 cameraView = m_EditorCamera.GetViewMatrix();
 
                 // Entity transform
                 auto& tc = selectedEntity.GetComponent<TransformComponent>();
-                glm::mat4 transform = tc.GetTransform();
+                Matrix4x4 transform = tc.GetTransform();
 
                 // Snapping
                 bool snap = Input::IsKeyPressed(Key::LeftControl);
@@ -247,13 +253,16 @@ namespace Ethereal
 
                 float snapValues[3] = {snapValue, snapValue, snapValue};
 
-                ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(cameraProjection), (ImGuizmo::OPERATION)m_GizmoType, ImGuizmo::LOCAL,
-                                     glm::value_ptr(transform), nullptr, snap ? snapValues : nullptr);
+                ImGuizmo::Manipulate(cameraView.ptr(), cameraProjection.ptr(), (ImGuizmo::OPERATION)m_GizmoType, ImGuizmo::LOCAL, transform.ptr(),
+                                     nullptr, snap ? snapValues : nullptr);
                 if (ImGuizmo::IsUsing()) {
-                    glm::vec3 translation, rotation, scale;
-                    Math::DecomposeTransform(transform, translation, rotation, scale);
+                    Vector3 translation, scale;
+                    Quaternion rotation;
+                    Math::decomposeTransformMatrix(transform, translation, scale, rotation);
 
-                    glm::vec3 deltaRotation = rotation - tc.Rotation;
+                    Vector3 rot;
+                    rotation.toEulerAngle(rot);
+                    Vector3 deltaRotation = rot - tc.Rotation;
                     tc.Translation = translation;
                     tc.Rotation += deltaRotation;
                     tc.Scale = scale;

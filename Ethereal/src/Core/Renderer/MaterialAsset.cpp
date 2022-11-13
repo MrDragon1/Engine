@@ -32,9 +32,9 @@ namespace Ethereal
 
     MaterialAsset::~MaterialAsset() {}
 
-    glm::vec3 &MaterialAsset::GetAlbedoColor() { return m_Albedo; }
+    Vector3 &MaterialAsset::GetAlbedoColor() { return m_Albedo; }
 
-    void MaterialAsset::SetAlbedoColor(const glm::vec3 &color) { m_Albedo = color; }
+    void MaterialAsset::SetAlbedoColor(const Vector3 &color) { m_Albedo = color; }
 
     float &MaterialAsset::GetMetalness() { return m_Metallic; }
 
@@ -108,7 +108,7 @@ namespace Ethereal
     void MaterialAsset::SetDefaults() {
         Ref<Texture> whiteTexture = GlobalContext::GetRenderSystem().GetWhiteTexture();
         // Set defaults
-        SetAlbedoColor(glm::vec3(0.8f));
+        SetAlbedoColor(Vector3(0.8f));
         SetEmission(0.0f);
         SetMetalness(0.0f);
         SetRoughness(1.0f);

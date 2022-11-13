@@ -30,7 +30,7 @@ namespace Ethereal
         OrthographicCamera m_Camera;
 
         bool m_Rotation = false;
-        glm::vec3 m_CameraPosition = {0.0f, 0.0f, 0.0f};
+        Vector3 m_CameraPosition = {0.0f, 0.0f, 0.0f};
         float m_CameraRotation = 0.0f;
         float m_CameraTranslationSpeed = 5.0f, m_CameraRotationSpeed = 180.0f;
     };

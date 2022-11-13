@@ -14,7 +14,7 @@ namespace Ethereal
         Animator(){};
         void PlayAnimation();
         void UpdateAnimation(TimeStamp ts);
-        std::unordered_map<size_t, glm::mat4> GetFinalBoneMatrices() { return m_Skeleton->GetFinalBoneMatrices(); }
+        std::unordered_map<size_t, Matrix4x4> GetFinalBoneMatrices() { return m_Skeleton->GetFinalBoneMatrices(); }
 
         static AssetType GetStaticType() { return AssetType::Animator; }
         virtual AssetType GetAssetType() const override { return GetStaticType(); }

@@ -220,9 +220,9 @@ namespace Ethereal
                 if (transformComponent) {
                     // Entities always have transforms
                     auto& tc = deserializedEntity.GetComponent<TransformComponent>();
-                    tc.Translation = transformComponent["Translation"].as<glm::vec3>();
-                    tc.Rotation = transformComponent["Rotation"].as<glm::vec3>();
-                    tc.Scale = transformComponent["Scale"].as<glm::vec3>();
+                    tc.Translation = transformComponent["Translation"].as<Vector3>();
+                    tc.Rotation = transformComponent["Rotation"].as<Vector3>();
+                    tc.Scale = transformComponent["Scale"].as<Vector3>();
                 }
 
                 auto staticMeshComponent = entity["StaticMeshComponent"];
@@ -325,8 +325,8 @@ namespace Ethereal
                 auto boxCollider2DComponent = entity["BoxCollider2DComponent"];
                 if (boxCollider2DComponent) {
                     auto& bc2d = deserializedEntity.AddComponent<BoxCollider2DComponent>();
-                    bc2d.Offset = boxCollider2DComponent["Offset"].as<glm::vec2>();
-                    bc2d.Size = boxCollider2DComponent["Size"].as<glm::vec2>();
+                    bc2d.Offset = boxCollider2DComponent["Offset"].as<Vector2>();
+                    bc2d.Size = boxCollider2DComponent["Size"].as<Vector2>();
                     bc2d.Density = boxCollider2DComponent["Density"].as<float>();
                     bc2d.Friction = boxCollider2DComponent["Friction"].as<float>();
                     bc2d.Restitution = boxCollider2DComponent["Restitution"].as<float>();

@@ -10,7 +10,7 @@ namespace Ethereal
 
         void SetLocalTransform(AnimState state);
 
-        glm::mat4 GetLocalTransform() { return m_LocalTransform; }
+        Matrix4x4 GetLocalTransform() { return m_LocalTransform; }
 
       public:
         Ref<Joint> m_Parent = nullptr;
@@ -18,13 +18,13 @@ namespace Ethereal
         std::string m_Name;
         size_t m_ID = -1;
 
-        glm::vec3 m_InitialPosition{glm::vec3(0.0f)};
-        glm::quat m_InitialRotation{glm::quat(glm::vec3(0.0f))};
-        glm::vec3 m_InitialScale{glm::vec3(1.0f)};
+        Vector3 m_InitialPosition{Vector3(0.0f)};
+        Quaternion m_InitialRotation{Quaternion()};
+        Vector3 m_InitialScale{Vector3(1.0f)};
 
-        glm::mat4 m_OffsetMatrix{glm::mat4(1.0f)};
-        glm::mat4 m_InverseOffsetMatrix{glm::mat4(1.0f)};
-        glm::mat4 m_LocalTransform{glm::mat4(1.0f)};
+        Matrix4x4 m_OffsetMatrix{Matrix4x4::IDENTITY};
+        Matrix4x4 m_InverseOffsetMatrix{Matrix4x4::IDENTITY};
+        Matrix4x4 m_LocalTransform{Matrix4x4::IDENTITY};
     };
 
 }  // namespace Ethereal

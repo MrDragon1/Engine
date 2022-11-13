@@ -84,13 +84,13 @@ namespace Ethereal
             return res;
         }
         if (-1 == keyIndex) {
-            res.Position = glm::vec3(0.0f);  // should be initial pose
+            res.Position = Vector3(0.0f);  // should be initial pose
             return res;
         }
         int p0Index = keyIndex;
         int p1Index = p0Index + 1;
         float scaleFactor = GetScaleFactor(keyClip.PositionStates[p0Index].TimeStamp, keyClip.PositionStates[p1Index].TimeStamp, animationTime);
-        res.Position = glm::mix(keyClip.PositionStates[p0Index].Position, keyClip.PositionStates[p1Index].Position, scaleFactor);
+        res.Position = Math::mix(keyClip.PositionStates[p0Index].Position, keyClip.PositionStates[p1Index].Position, scaleFactor);
         return res;
     }
 
@@ -105,14 +105,14 @@ namespace Ethereal
             return res;
         }
         if (-1 == keyIndex) {
-            res.Rotation = glm::quat(glm::vec3(0.0f));  // should be initial pose
+            res.Rotation = Quaternion();  // should be initial pose
             return res;
         }
 
         int p0Index = keyIndex;
         int p1Index = p0Index + 1;
         float scaleFactor = GetScaleFactor(joint.RotationStates[p0Index].TimeStamp, joint.RotationStates[p1Index].TimeStamp, animationTime);
-        res.Rotation = glm::mix(joint.RotationStates[p0Index].Rotation, joint.RotationStates[p1Index].Rotation, scaleFactor);
+        res.Rotation = Math::mix(joint.RotationStates[p0Index].Rotation, joint.RotationStates[p1Index].Rotation, scaleFactor);
         return res;
     }
 
@@ -128,14 +128,14 @@ namespace Ethereal
         }
 
         if (-1 == keyIndex) {
-            res.Scale = glm::vec3(1.0f);  // should be initial pose
+            res.Scale = Vector3(1.0f);  // should be initial pose
             return res;
         }
 
         int p0Index = keyIndex;
         int p1Index = p0Index + 1;
         float scaleFactor = GetScaleFactor(joint.ScaleStates[p0Index].TimeStamp, joint.ScaleStates[p1Index].TimeStamp, animationTime);
-        res.Scale = glm::mix(joint.ScaleStates[p0Index].Scale, joint.ScaleStates[p1Index].Scale, scaleFactor);
+        res.Scale = Math::mix(joint.ScaleStates[p0Index].Scale, joint.ScaleStates[p1Index].Scale, scaleFactor);
         return res;
     }
 

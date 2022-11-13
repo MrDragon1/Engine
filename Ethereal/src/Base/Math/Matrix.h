@@ -133,6 +133,11 @@ namespace Ethereal
         // member access, allows use of construct mat[r][c]
         float* operator[](size_t row_index) const { return (float*)m_mat[row_index]; }
 
+        /// Pointer accessor for direct copying
+        float* ptr() { return Math::getPtr(*this); }
+        /// Pointer accessor for direct copying
+        const float* ptr() const { return Math::getPtr(*this);  }
+
         Vector3 getColumn(size_t col_index) const
         {
             assert(0 <= col_index && col_index < 3);
@@ -410,6 +415,47 @@ namespace Ethereal
         float m_mat[4][4];
 
       public:
+        glm::mat4 toGLM()const
+        {
+            glm::mat4 m;
+            m[0][0]=m_mat[0][0];
+            m[0][1]=m_mat[0][1];
+            m[0][2]=m_mat[0][2];
+            m[0][3]=m_mat[0][3];
+            m[1][0]=m_mat[1][0];
+            m[1][1]=m_mat[1][1];
+            m[1][2]=m_mat[1][2];
+            m[1][3]=m_mat[1][3];
+            m[2][0]=m_mat[2][0];
+            m[2][1]=m_mat[2][1];
+            m[2][2]=m_mat[2][2];
+            m[2][3]=m_mat[2][3];
+            m[3][0]=m_mat[3][0];
+            m[3][1]=m_mat[3][1];
+            m[3][2]=m_mat[3][2];
+            m[3][3]=m_mat[3][3];
+            return m;
+        }
+
+        Matrix4x4(const glm::mat4& mat)
+        {
+            m_mat[0][0] = mat[0][0];
+            m_mat[0][1] = mat[0][1];
+            m_mat[0][2] = mat[0][2];
+            m_mat[0][3] = mat[0][3];
+            m_mat[1][0] = mat[1][0];
+            m_mat[1][1] = mat[1][1];
+            m_mat[1][2] = mat[1][2];
+            m_mat[1][3] = mat[1][3];
+            m_mat[2][0] = mat[2][0];
+            m_mat[2][1] = mat[2][1];
+            m_mat[2][2] = mat[2][2];
+            m_mat[2][3] = mat[2][3];
+            m_mat[3][0] = mat[3][0];
+            m_mat[3][1] = mat[3][1];
+            m_mat[3][2] = mat[3][2];
+            m_mat[3][3] = mat[3][3];
+        }
         /** Default constructor.
         @note
         It does <b>NOT</b> initialize the matrix for efficiency.
@@ -539,6 +585,11 @@ namespace Ethereal
             makeTransform(position, scale, rotation);
         }
 
+        /// Pointer accessor for direct copying
+        float* ptr() { return Math::getPtr(*this); }
+        /// Pointer accessor for direct copying
+        const float* ptr() const { return Math::getPtr(*this); }
+
         void fromData(const float (&float_array)[16])
         {
             m_mat[0][0] = float_array[0];
@@ -612,6 +663,7 @@ namespace Ethereal
             operator=(IDENTITY);
             setMatrix3x3(m3x3);
         }
+
 
         float* operator[](size_t row_index)
         {

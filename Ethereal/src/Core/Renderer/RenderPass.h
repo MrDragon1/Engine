@@ -8,7 +8,7 @@
 namespace Ethereal
 {
     struct TransformVertexData {
-        glm::mat4 Transform;
+        Matrix4x4 Transform;
     };
 
     struct StaticDrawCommand {

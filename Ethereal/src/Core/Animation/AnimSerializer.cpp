@@ -87,7 +87,7 @@ namespace Ethereal
                 auto positionStates = keyStates["PositionStates"];
                 for (auto pos : positionStates) {
                     AnimPositionState state{};
-                    state.Position = pos["Position"].as<glm::vec3>();
+                    state.Position = pos["Position"].as<Vector3>();
                     state.TimeStamp = pos["TimeStamp"].as<float>();
                     keyClip.PositionStates.push_back(state);
                 }
@@ -95,7 +95,7 @@ namespace Ethereal
                 auto rotationStates = keyStates["RotationStates"];
                 for (auto rot : rotationStates) {
                     AnimRotationState state{};
-                    state.Rotation = rot["Rotation"].as<glm::quat>();
+                    state.Rotation = rot["Rotation"].as<Quaternion>();
                     state.TimeStamp = rot["TimeStamp"].as<float>();
                     keyClip.RotationStates.push_back(state);
                 }
@@ -103,7 +103,7 @@ namespace Ethereal
                 auto scaleStates = keyStates["ScaleStates"];
                 for (auto scale : positionStates) {
                     AnimScaleState state{};
-                    state.Scale = scale["Scale"].as<glm::vec3>();
+                    state.Scale = scale["Scale"].as<Vector3>();
                     state.TimeStamp = scale["TimeStamp"].as<float>();
                     keyClip.ScaleStates.push_back(state);
                 }
@@ -178,9 +178,9 @@ namespace Ethereal
         Ref<Joint> joint = Ref<Joint>::Create();
         joint->m_Name = node["m_Name"].as<std::string>();
         joint->m_ID = node["m_ID"].as<AssetHandle>();
-        joint->m_InitialPosition = node["m_InitialPosition"].as<glm::vec3>();
-        joint->m_InitialRotation = node["m_InitialRotation"].as<glm::quat>();
-        joint->m_InitialScale = node["m_InitialScale"].as<glm::vec3>();
+        joint->m_InitialPosition = node["m_InitialPosition"].as<Vector3>();
+        joint->m_InitialRotation = node["m_InitialRotation"].as<Quaternion>();
+        joint->m_InitialScale = node["m_InitialScale"].as<Vector3>();
         // TODO: calculate inverseT
 
         joint->m_Children.clear();
