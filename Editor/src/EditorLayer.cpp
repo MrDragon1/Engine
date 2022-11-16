@@ -48,8 +48,8 @@ namespace Ethereal
                 m_RenderSceneData.FOV = m_EditorCamera.GetFOV();
                 m_ActiveScene->OnUpdateEditor(ts, m_RenderSceneData);
 
-//                std::cout << "View " << Serializer::write(m_RenderSceneData.ViewMatrix.toMatrix4x4_()) << std::endl;
-//                std::cout << "Proj " << Serializer::write(m_RenderSceneData.ProjectionMatrix.toMatrix4x4_()) << std::endl;
+//                std::cout << "View " << Serializer::write(m_RenderSceneData.ViewMatrix.toMatrix4_()) << std::endl;
+//                std::cout << "Proj " << Serializer::write(m_RenderSceneData.ProjectionMatrix.toMatrix4_()) << std::endl;
                 break;
             }
         }
@@ -174,7 +174,7 @@ namespace Ethereal
             ImGui::EndCombo();
         }
 
-        ImGui::DragFloat3("Directional Light Dir", m_RenderSceneData.DirectionalLightDir.ptr(), 0.1);
+        ImGui::DragFloat3("Directional Light Dir", Math::Ptr(m_RenderSceneData.DirectionalLightDir), 0.1);
         ImGui::End();
 
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
@@ -238,12 +238,12 @@ namespace Ethereal
                 ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
 
                 // Editor camera
-                const Matrix4x4& cameraProjection = m_EditorCamera.GetProjection();
-                Matrix4x4 cameraView = m_EditorCamera.GetViewMatrix();
+                const Matrix4& cameraProjection = m_EditorCamera.GetProjection();
+                Matrix4 cameraView = m_EditorCamera.GetViewMatrix();
 
                 // Entity transform
                 auto& tc = selectedEntity.GetComponent<TransformComponent>();
-                Matrix4x4 transform = tc.GetTransform();
+                Matrix4 transform = tc.GetTransform();
 
                 // Snapping
                 bool snap = Input::IsKeyPressed(Key::LeftControl);
@@ -253,15 +253,14 @@ namespace Ethereal
 
                 float snapValues[3] = {snapValue, snapValue, snapValue};
 
-                ImGuizmo::Manipulate(cameraView.ptr(), cameraProjection.ptr(), (ImGuizmo::OPERATION)m_GizmoType, ImGuizmo::LOCAL, transform.ptr(),
+                ImGuizmo::Manipulate(Math::Ptr(cameraView), Math::Ptr(cameraProjection), (ImGuizmo::OPERATION)m_GizmoType, ImGuizmo::LOCAL, Math::Ptr(transform),
                                      nullptr, snap ? snapValues : nullptr);
                 if (ImGuizmo::IsUsing()) {
                     Vector3 translation, scale;
                     Quaternion rotation;
-                    Math::decomposeTransformMatrix(transform, translation, scale, rotation);
+                    Math::DecomposeTransformMatrix(transform, translation, rotation, scale);
 
-                    Vector3 rot;
-                    rotation.toEulerAngle(rot);
+                    Vector3 rot = Vector3(rotation);
                     Vector3 deltaRotation = rot - tc.Rotation;
                     tc.Translation = translation;
                     tc.Rotation += deltaRotation;

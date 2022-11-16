@@ -72,10 +72,10 @@ namespace Ethereal
 
     void SceneHierarchyPanel::SetSelectedEntity(Entity entity) { m_SelectionContext = entity; }
 
-    static std::tuple<Vector3, Quaternion, Vector3> GetTransformDecomposition(const Matrix4x4& transform) {
+    static std::tuple<Vector3, Quaternion, Vector3> GetTransformDecomposition(const Matrix4& transform) {
         Vector3 scale, translation;
         Quaternion orientation;
-        Math::decomposeTransformMatrix(transform, translation, scale, orientation );
+        Math::DecomposeTransformMatrix(transform, translation, orientation, scale);
 
         return {translation, orientation, scale};
     }
@@ -103,8 +103,8 @@ namespace Ethereal
                 auto handle = entity.GetComponent<StaticMeshComponent>().StaticMesh;
                 auto mesh = AssetManager::GetAsset<StaticMesh>(handle);
                 for (auto& submesh : mesh->GetMeshSource()->GetSubmeshes()) {
-                    Matrix4x4 localTransform = submesh.LocalTransform;
-                    Matrix4x4 transform = entity.GetComponent<TransformComponent>().GetTransform() * submesh.Transform;
+                    Matrix4 localTransform = submesh.LocalTransform;
+                    Matrix4 transform = entity.GetComponent<TransformComponent>().GetTransform() * submesh.Transform;
                     if (ImGui::TreeNode(submesh.NodeName.c_str())) {
                         {
                             auto [translation, rotation, scale] = GetTransformDecomposition(transform);
@@ -251,9 +251,9 @@ namespace Ethereal
 
         DrawComponent<TransformComponent>("Transform", entity, [](auto& component) {
             DrawVec3Control("Translation", component.Translation);
-            Vector3 rotation = Math::radiansToDegrees(component.Rotation);
+            Vector3 rotation = Vector3(component.Rotation);
             DrawVec3Control("Rotation", rotation);
-            component.Rotation = Math::degreesToRadians(rotation);
+            component.Rotation = Quaternion(rotation);
             DrawVec3Control("Scale", component.Scale, 1.0f);
         });
 
@@ -354,8 +354,8 @@ namespace Ethereal
             }
 
             if (camera.GetProjectionType() == SceneCamera::ProjectionType::Perspective) {
-                float verticalFov = Math::radiansToDegrees(camera.GetPerspectiveVerticalFOV());
-                if (ImGui::DragFloat("Vertical FOV", &verticalFov)) camera.SetPerspectiveVerticalFOV(Math::degreesToRadians(verticalFov));
+                float verticalFov = Math::Degrees(camera.GetPerspectiveVerticalFOV());
+                if (ImGui::DragFloat("Vertical FOV", &verticalFov)) camera.SetPerspectiveVerticalFOV(Math::Radians(verticalFov));
 
                 float orthoNear = camera.GetPerspectiveNearClip();
                 if (ImGui::DragFloat("Near", &orthoNear)) camera.SetPerspectiveNearClip(orthoNear);
@@ -399,8 +399,8 @@ namespace Ethereal
         });
 
         DrawComponent<BoxCollider2DComponent>("BoxCollider 2D", entity, [](auto& component) {
-            ImGui::DragFloat2("Offset", component.Offset.ptr());
-            ImGui::DragFloat2("Size", component.Size.ptr());
+            ImGui::DragFloat2("Offset", Math::Ptr(component.Offset));
+            ImGui::DragFloat2("Size", Math::Ptr(component.Size));
             ImGui::DragFloat("Density", &component.Density, 0.01f, 0.0f, 1.0f);
             ImGui::DragFloat("Friction", &component.Friction, 0.01f, 0.0f, 1.0f);
             ImGui::DragFloat("Restitution", &component.Restitution, 0.01f, 0.0f, 1.0f);

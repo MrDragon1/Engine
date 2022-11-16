@@ -24,8 +24,8 @@ namespace Ethereal
 
         inline void SetViewportSize() { UpdateProjection(); }
 
-        const Matrix4x4& GetViewMatrix() const { return m_ViewMatrix; }
-        Matrix4x4 GetViewProjection() const { return m_Projection * m_ViewMatrix; }
+        const Matrix4& GetViewMatrix() const { return m_ViewMatrix; }
+        Matrix4 GetViewProjection() const { return m_Projection * m_ViewMatrix; }
 
         Vector3 GetUpDirection() const;
         Vector3 GetRightDirection() const;
@@ -60,7 +60,7 @@ namespace Ethereal
       private:
         float m_FOV = 45.0f, m_AspectRatio = 1.778f, m_NearClip = 0.1f, m_FarClip = 1000.0f;
 
-        Matrix4x4 m_ViewMatrix;
+        Matrix4 m_ViewMatrix;
         Vector3 m_Position = {0.0f, 0.0f, 3.0f};
         Vector3 m_FocalPoint = {0.0f, 0.0f, 0.0f};
 

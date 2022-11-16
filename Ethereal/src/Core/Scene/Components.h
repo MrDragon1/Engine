@@ -35,9 +35,9 @@ namespace Ethereal
         TransformComponent() = default;
         TransformComponent(const TransformComponent&) = default;
 
-        Matrix4x4 GetTransform() {
-            Matrix4x4 rotation = Matrix4x4(Quaternion(Rotation));
-            return Math::getTranslateMatrix(Translation) * rotation * Math::getScaleMatrix(Scale);
+        Matrix4 GetTransform() {
+            Matrix4 rotation = Matrix4(Quaternion(Rotation));
+            return Math::Translate(Matrix4::IDENTITY, Translation) * Math::Rotate(Matrix4::IDENTITY, rotation) * Math::Scale(Matrix4::IDENTITY, Scale);
         }
     };
 

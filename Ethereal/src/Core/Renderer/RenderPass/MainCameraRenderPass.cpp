@@ -3,7 +3,7 @@
 namespace Ethereal
 {
     void MainCameraRenderPass::Init(uint32_t width, uint32_t height) {
-        m_ViewProjectionMatrix = Matrix4x4::IDENTITY;
+        m_ViewProjectionMatrix = Matrix4::IDENTITY;
 
         TextureSpecification hdrSpec, r32Spec, depthSpec;
         hdrSpec.Format = ETHEREAL_PIXEL_FORMAT::R16G16B16A16_HDR;

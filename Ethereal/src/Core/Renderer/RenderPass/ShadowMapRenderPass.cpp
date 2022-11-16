@@ -51,9 +51,9 @@ namespace Ethereal
 
     void ShadowMapRenderPass::CalculateViewProjectionMatrix() {
         GLfloat near_plane = 0.1f, far_plane = 100.0f;
-        Matrix4x4 lightProjection = Math::makeOrthographicProjectionMatrix(-50.0f, 50.0f, -50.0f, 50.0f, near_plane, far_plane);
-        // Matrix4x4 lightProjection = Math::makePerspectiveMatrix(glm::radians(90.0f), 1.0f, near_plane, far_plane);
-        Matrix4x4 lightView = Math::makeLookAtMatrix(m_LightPos, Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f));
+        Matrix4 lightProjection = Math::Ortho(-50.0f, 50.0f, -50.0f, 50.0f, near_plane, far_plane);
+        // Matrix4 lightProjection = Math::Perspective(glm::radians(90.0f), 1.0f, near_plane, far_plane);
+        Matrix4 lightView = Math::LookAt(m_LightPos, Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f));
         m_ViewProjectionMatrix = lightProjection * lightView;
     }
 

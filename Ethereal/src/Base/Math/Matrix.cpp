@@ -2,423 +2,528 @@
 
 namespace Ethereal
 {
-    const Matrix3x3 Matrix3x3::ZERO(0, 0, 0, 0, 0, 0, 0, 0, 0);
-    const Matrix3x3 Matrix3x3::IDENTITY(1, 0, 0, 0, 1, 0, 0, 0, 1);
+    /***********************************************************************
+     ******************************* Matrix3 *******************************
+     ***********************************************************************/
 
-    //-----------------------------------------------------------------------
-    void Matrix3x3::setColumn(size_t col_index, const Vector3& vec)
-    {
-        m_mat[0][col_index] = vec.x;
-        m_mat[1][col_index] = vec.y;
-        m_mat[2][col_index] = vec.z;
+    const Matrix3 Matrix3::IDENTITY(1, 0, 0, 0, 1, 0, 0, 0, 1);
+    const Matrix3 Matrix3::ZERO(0, 0, 0, 0, 0, 0, 0, 0, 0);
+    
+    Matrix3::Matrix3() { operator=(IDENTITY); }
+
+    Matrix3::Matrix3(const Matrix3& m) {
+        value0 = m[0];
+        value1 = m[1];
+        value2 = m[2];
     }
-    //-----------------------------------------------------------------------
-    void Matrix3x3::fromAxes(const Vector3& x_axis, const Vector3& y_axis, const Vector3& z_axis)
-    {
-        setColumn(0, x_axis);
-        setColumn(1, y_axis);
-        setColumn(2, z_axis);
+    Matrix3::Matrix3(float diag) {
+        value0 = Vector3(diag, 0, 0);
+        value1 = Vector3(0, diag, 0);
+        value2 = Vector3(0, 0, diag);
     }
-
-    void Matrix3x3::calculateQDUDecomposition(Matrix3x3& out_Q, Vector3& out_D, Vector3& out_U) const
-    {
-        // Factor M = QR = QDU where Q is orthogonal, D is diagonal,
-        // and U is upper triangular with ones on its diagonal.  Algorithm uses
-        // Gram-Schmidt orthogonalization (the QR algorithm).
-        //
-        // If M = [ m0 | m1 | m2 ] and Q = [ q0 | q1 | q2 ], then
-        //
-        //   q0 = m0/|m0|
-        //   q1 = (m1-(q0*m1)q0)/|m1-(q0*m1)q0|
-        //   q2 = (m2-(q0*m2)q0-(q1*m2)q1)/|m2-(q0*m2)q0-(q1*m2)q1|
-        //
-        // where |V| indicates length of vector V and A*B indicates dot
-        // product of vectors A and B.  The matrix R has entries
-        //
-        //   r00 = q0*m0  r01 = q0*m1  r02 = q0*m2
-        //   r10 = 0      r11 = q1*m1  r12 = q1*m2
-        //   r20 = 0      r21 = 0      r22 = q2*m2
-        //
-        // so D = diag(r00,r11,r22) and U has entries u01 = r01/r00,
-        // u02 = r02/r00, and u12 = r12/r11.
-
-        // Q = rotation
-        // D = scaling
-        // U = shear
-
-        // D stores the three diagonal entries r00, r11, r22
-        // U stores the entries U[0] = u01, U[1] = u02, U[2] = u12
-
-        // build orthogonal matrix Q
-        float inv_length = m_mat[0][0] * m_mat[0][0] + m_mat[1][0] * m_mat[1][0] + m_mat[2][0] * m_mat[2][0];
-        if (!Math::realEqual(inv_length, 0))
-            inv_length = Math::invSqrt(inv_length);
-
-        out_Q[0][0] = m_mat[0][0] * inv_length;
-        out_Q[1][0] = m_mat[1][0] * inv_length;
-        out_Q[2][0] = m_mat[2][0] * inv_length;
-
-        float dot   = out_Q[0][0] * m_mat[0][1] + out_Q[1][0] * m_mat[1][1] + out_Q[2][0] * m_mat[2][1];
-        out_Q[0][1] = m_mat[0][1] - dot * out_Q[0][0];
-        out_Q[1][1] = m_mat[1][1] - dot * out_Q[1][0];
-        out_Q[2][1] = m_mat[2][1] - dot * out_Q[2][0];
-        inv_length  = out_Q[0][1] * out_Q[0][1] + out_Q[1][1] * out_Q[1][1] + out_Q[2][1] * out_Q[2][1];
-        if (!Math::realEqual(inv_length, 0))
-            inv_length = Math::invSqrt(inv_length);
-
-        out_Q[0][1] *= inv_length;
-        out_Q[1][1] *= inv_length;
-        out_Q[2][1] *= inv_length;
-
-        dot         = out_Q[0][0] * m_mat[0][2] + out_Q[1][0] * m_mat[1][2] + out_Q[2][0] * m_mat[2][2];
-        out_Q[0][2] = m_mat[0][2] - dot * out_Q[0][0];
-        out_Q[1][2] = m_mat[1][2] - dot * out_Q[1][0];
-        out_Q[2][2] = m_mat[2][2] - dot * out_Q[2][0];
-        dot         = out_Q[0][1] * m_mat[0][2] + out_Q[1][1] * m_mat[1][2] + out_Q[2][1] * m_mat[2][2];
-        out_Q[0][2] -= dot * out_Q[0][1];
-        out_Q[1][2] -= dot * out_Q[1][1];
-        out_Q[2][2] -= dot * out_Q[2][1];
-        inv_length = out_Q[0][2] * out_Q[0][2] + out_Q[1][2] * out_Q[1][2] + out_Q[2][2] * out_Q[2][2];
-        if (!Math::realEqual(inv_length, 0))
-            inv_length = Math::invSqrt(inv_length);
-
-        out_Q[0][2] *= inv_length;
-        out_Q[1][2] *= inv_length;
-        out_Q[2][2] *= inv_length;
-
-        // guarantee that orthogonal matrix has determinant 1 (no reflections)
-        float det = out_Q[0][0] * out_Q[1][1] * out_Q[2][2] + out_Q[0][1] * out_Q[1][2] * out_Q[2][0] +
-                    out_Q[0][2] * out_Q[1][0] * out_Q[2][1] - out_Q[0][2] * out_Q[1][1] * out_Q[2][0] -
-                    out_Q[0][1] * out_Q[1][0] * out_Q[2][2] - out_Q[0][0] * out_Q[1][2] * out_Q[2][1];
-
-        if (det < 0.0)
-        {
-            for (size_t row_index = 0; row_index < 3; row_index++)
-                for (size_t rol_index = 0; rol_index < 3; rol_index++)
-                    out_Q[row_index][rol_index] = -out_Q[row_index][rol_index];
-        }
-
-        // build "right" matrix R
-        Matrix3x3 R;
-        R[0][0] = out_Q[0][0] * m_mat[0][0] + out_Q[1][0] * m_mat[1][0] + out_Q[2][0] * m_mat[2][0];
-        R[0][1] = out_Q[0][0] * m_mat[0][1] + out_Q[1][0] * m_mat[1][1] + out_Q[2][0] * m_mat[2][1];
-        R[1][1] = out_Q[0][1] * m_mat[0][1] + out_Q[1][1] * m_mat[1][1] + out_Q[2][1] * m_mat[2][1];
-        R[0][2] = out_Q[0][0] * m_mat[0][2] + out_Q[1][0] * m_mat[1][2] + out_Q[2][0] * m_mat[2][2];
-        R[1][2] = out_Q[0][1] * m_mat[0][2] + out_Q[1][1] * m_mat[1][2] + out_Q[2][1] * m_mat[2][2];
-        R[2][2] = out_Q[0][2] * m_mat[0][2] + out_Q[1][2] * m_mat[1][2] + out_Q[2][2] * m_mat[2][2];
-
-        // the scaling component
-        out_D[0] = R[0][0];
-        out_D[1] = R[1][1];
-        out_D[2] = R[2][2];
-
-        // the shear component
-        float inv_d0 = 1.0f / out_D[0];
-        out_U[0]     = R[0][1] * inv_d0;
-        out_U[1]     = R[0][2] * inv_d0;
-        out_U[2]     = R[1][2] / out_D[1];
+    Matrix3::Matrix3(float m00, float m10, float m20,
+                     float m01, float m11, float m21,
+                     float m02, float m12, float m22) {
+        value0 = Vector3(m00, m10, m20);
+        value1 = Vector3(m01, m11, m21);
+        value2 = Vector3(m02, m12, m22);
     }
 
-    void Matrix3x3::toAngleAxis(Vector3& axis, Radian& radian) const
-    {
-        // Let (x,y,z) be the unit-length axis and let A be an angle of rotation.
-        // The rotation matrix is R = I + sin(A)*P + (1-cos(A))*P^2 where
-        // I is the identity and
-        //
-        //       +-        -+
-        //   P = |  0 -z +y |
-        //       | +z  0 -x |
-        //       | -y +x  0 |
-        //       +-        -+
-        //
-        // If A > 0, R represents a counterclockwise rotation about the axis in
-        // the sense of looking from the tip of the axis vector towards the
-        // origin.  Some algebra will show that
-        //
-        //   cos(A) = (trace(R)-1)/2  and  R - R^t = 2*sin(A)*P
-        //
-        // In the event that A = pi, R-R^t = 0 which prevents us from extracting
-        // the axis through P.  Instead note that R = I+2*P^2 when A = pi, so
-        // P^2 = (R-I)/2.  The diagonal entries of P^2 are x^2-1, y^2-1, and
-        // z^2-1.  We can solve these for axis (x,y,z).  Because the angle is pi,
-        // it does not matter which sign you choose on the square roots.
+    Matrix3::Matrix3(const Vector3& col0, const Vector3& col1, const Vector3& col2) {
+        value0 = col0;
+        value1 = col1;
+        value2 = col2;
+    }
 
-        float trace = m_mat[0][0] + m_mat[1][1] + m_mat[2][2];
-        float cos_v = 0.5f * (trace - 1.0f);
-        radian      = Math::acos(cos_v); // in [0,PI]
-
-        if (radian > Radian(0.0))
-        {
-            if (radian < Radian(Math_PI))
-            {
-                axis.x = m_mat[2][1] - m_mat[1][2];
-                axis.y = m_mat[0][2] - m_mat[2][0];
-                axis.z = m_mat[1][0] - m_mat[0][1];
-                axis.normalise();
-            }
-            else
-            {
-                // angle is PI
-                float half_inv;
-                if (m_mat[0][0] >= m_mat[1][1])
-                {
-                    // r00 >= r11
-                    if (m_mat[0][0] >= m_mat[2][2])
-                    {
-                        // r00 is maximum diagonal term
-                        axis.x   = 0.5f * Math::sqrt(m_mat[0][0] - m_mat[1][1] - m_mat[2][2] + 1.0f);
-                        half_inv = 0.5f / axis.x;
-                        axis.y   = half_inv * m_mat[0][1];
-                        axis.z   = half_inv * m_mat[0][2];
-                    }
-                    else
-                    {
-                        // r22 is maximum diagonal term
-                        axis.z   = 0.5f * Math::sqrt(m_mat[2][2] - m_mat[0][0] - m_mat[1][1] + 1.0f);
-                        half_inv = 0.5f / axis.z;
-                        axis.x   = half_inv * m_mat[0][2];
-                        axis.y   = half_inv * m_mat[1][2];
-                    }
-                }
-                else
-                {
-                    // r11 > r00
-                    if (m_mat[1][1] >= m_mat[2][2])
-                    {
-                        // r11 is maximum diagonal term
-                        axis.y   = 0.5f * Math::sqrt(m_mat[1][1] - m_mat[0][0] - m_mat[2][2] + 1.0f);
-                        half_inv = 0.5f / axis.y;
-                        axis.x   = half_inv * m_mat[0][1];
-                        axis.z   = half_inv * m_mat[1][2];
-                    }
-                    else
-                    {
-                        // r22 is maximum diagonal term
-                        axis.z   = 0.5f * Math::sqrt(m_mat[2][2] - m_mat[0][0] - m_mat[1][1] + 1.0f);
-                        half_inv = 0.5f / axis.z;
-                        axis.x   = half_inv * m_mat[0][2];
-                        axis.y   = half_inv * m_mat[1][2];
-                    }
-                }
-            }
-        }
-        else
-        {
-            // The angle is 0 and the matrix is the identity.  Any axis will
-            // work, so just use the x-axis.
-            axis.x = 1.0;
-            axis.y = 0.0;
-            axis.z = 0.0;
+    Vector3& Matrix3::operator[](int i) {
+        assert(i < 3);
+        switch(i){
+            case 0: return value0;
+            case 1: return value1;
+            case 2: return value2;
         }
     }
-    //-----------------------------------------------------------------------
-    void Matrix3x3::fromAngleAxis(const Vector3& axis, const Radian& radian)
-    {
-        float cos_v         = Math::cos(radian);
-        float sin_v         = Math::sin(radian);
-        float one_minus_cos = 1.0f - cos_v;
-        float x2            = axis.x * axis.x;
-        float y2            = axis.y * axis.y;
-        float z2            = axis.z * axis.z;
-        float xym           = axis.x * axis.y * one_minus_cos;
-        float xzm           = axis.x * axis.z * one_minus_cos;
-        float yzm           = axis.y * axis.z * one_minus_cos;
-        float x_sin_v       = axis.x * sin_v;
-        float y_sin_v       = axis.y * sin_v;
-        float z_sinv        = axis.z * sin_v;
 
-        m_mat[0][0] = x2 * one_minus_cos + cos_v;
-        m_mat[0][1] = xym - z_sinv;
-        m_mat[0][2] = xzm + y_sin_v;
-        m_mat[1][0] = xym + z_sinv;
-        m_mat[1][1] = y2 * one_minus_cos + cos_v;
-        m_mat[1][2] = yzm - x_sin_v;
-        m_mat[2][0] = xzm - y_sin_v;
-        m_mat[2][1] = yzm + x_sin_v;
-        m_mat[2][2] = z2 * one_minus_cos + cos_v;
+    const Vector3& Matrix3::operator[](int i) const {
+        assert(i < 3);
+        switch(i){
+            case 0: return value0;
+            case 1: return value1;
+            case 2: return value2;
+        }
     }
 
-    const Matrix4x4 Matrix4x4::ZERO(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-
-    const Matrix4x4 Matrix4x4::ZEROAFFINE(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1);
-
-    const Matrix4x4 Matrix4x4::IDENTITY(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-
-    //-----------------------------------------------------------------------
-    Matrix4x4 Matrix4x4::adjoint() const
-    {
-        return Matrix4x4(getMinor(1, 2, 3, 1, 2, 3),
-                         -getMinor(0, 2, 3, 1, 2, 3),
-                         getMinor(0, 1, 3, 1, 2, 3),
-                         -getMinor(0, 1, 2, 1, 2, 3),
-
-                         -getMinor(1, 2, 3, 0, 2, 3),
-                         getMinor(0, 2, 3, 0, 2, 3),
-                         -getMinor(0, 1, 3, 0, 2, 3),
-                         getMinor(0, 1, 2, 0, 2, 3),
-
-                         getMinor(1, 2, 3, 0, 1, 3),
-                         -getMinor(0, 2, 3, 0, 1, 3),
-                         getMinor(0, 1, 3, 0, 1, 3),
-                         -getMinor(0, 1, 2, 0, 1, 3),
-
-                         -getMinor(1, 2, 3, 0, 1, 2),
-                         getMinor(0, 2, 3, 0, 1, 2),
-                         -getMinor(0, 1, 3, 0, 1, 2),
-                         getMinor(0, 1, 2, 0, 1, 2));
+    Matrix3& Matrix3::operator=(const Matrix3& m) {
+        value0 = m[0];
+        value1 = m[1];
+        value2 = m[2];
+        return *this;
     }
 
-    //-----------------------------------------------------------------------
-    Matrix4x4 Matrix4x4::inverseAffine(void) const
-    {
-        assert(isAffine());
-
-        float m10 = m_mat[1][0], m11 = m_mat[1][1], m12 = m_mat[1][2];
-        float m20 = m_mat[2][0], m21 = m_mat[2][1], m22 = m_mat[2][2];
-
-        float t00 = m22 * m11 - m21 * m12;
-        float t10 = m20 * m12 - m22 * m10;
-        float t20 = m21 * m10 - m20 * m11;
-
-        float m00 = m_mat[0][0], m01 = m_mat[0][1], m02 = m_mat[0][2];
-
-        float inv_det = 1 / (m00 * t00 + m01 * t10 + m02 * t20);
-
-        t00 *= inv_det;
-        t10 *= inv_det;
-        t20 *= inv_det;
-
-        m00 *= inv_det;
-        m01 *= inv_det;
-        m02 *= inv_det;
-
-        float r00 = t00;
-        float r01 = m02 * m21 - m01 * m22;
-        float r02 = m01 * m12 - m02 * m11;
-
-        float r10 = t10;
-        float r11 = m00 * m22 - m02 * m20;
-        float r12 = m02 * m10 - m00 * m12;
-
-        float r20 = t20;
-        float r21 = m01 * m20 - m00 * m21;
-        float r22 = m00 * m11 - m01 * m10;
-
-        float m03 = m_mat[0][3], m13 = m_mat[1][3], m23 = m_mat[2][3];
-
-        float r03 = -(r00 * m03 + r01 * m13 + r02 * m23);
-        float r13 = -(r10 * m03 + r11 * m13 + r12 * m23);
-        float r23 = -(r20 * m03 + r21 * m13 + r22 * m23);
-
-        return Matrix4x4(r00, r01, r02, r03, r10, r11, r12, r13, r20, r21, r22, r23, 0, 0, 0, 1);
-    }
-    //-----------------------------------------------------------------------
-    void Matrix4x4::makeTransform(const Vector3& position, const Vector3& scale, const Quaternion& orientation)
-    {
-        // Ordering:
-        //    1. Scale
-        //    2. Rotate
-        //    3. Translate
-
-        Matrix3x3 rot3x3;
-        orientation.toRotationMatrix(rot3x3);
-
-        // Set up final matrix with scale, rotation and translation
-        m_mat[0][0] = scale.x * rot3x3[0][0];
-        m_mat[0][1] = scale.y * rot3x3[0][1];
-        m_mat[0][2] = scale.z * rot3x3[0][2];
-        m_mat[0][3] = position.x;
-        m_mat[1][0] = scale.x * rot3x3[1][0];
-        m_mat[1][1] = scale.y * rot3x3[1][1];
-        m_mat[1][2] = scale.z * rot3x3[1][2];
-        m_mat[1][3] = position.y;
-        m_mat[2][0] = scale.x * rot3x3[2][0];
-        m_mat[2][1] = scale.y * rot3x3[2][1];
-        m_mat[2][2] = scale.z * rot3x3[2][2];
-        m_mat[2][3] = position.z;
-
-        // No projection term
-        m_mat[3][0] = 0;
-        m_mat[3][1] = 0;
-        m_mat[3][2] = 0;
-        m_mat[3][3] = 1;
+    Matrix3& Matrix3::operator+=(const Matrix3& m) {
+        value0 += m[0];
+        value1 += m[1];
+        value2 += m[2];
+        return *this;
     }
 
-    //-----------------------------------------------------------------------
-    void Matrix4x4::makeInverseTransform(const Vector3& position, const Vector3& scale, const Quaternion& orientation)
-    {
-        // Invert the parameters
-        Vector3    inv_translate = -position;
-        Vector3    inv_scale(1 / scale.x, 1 / scale.y, 1 / scale.z);
-        Quaternion inv_rot = orientation.inverse();
 
-        // Because we're inverting, order is translation, rotation, scale
-        // So make translation relative to scale & rotation
-        inv_translate = inv_rot * inv_translate; // rotate
-        inv_translate *= inv_scale;              // scale
-
-        // Next, make a 3x3 rotation matrix
-        Matrix3x3 rot3x3;
-        inv_rot.toRotationMatrix(rot3x3);
-
-        // Set up final matrix with scale, rotation and translation
-        m_mat[0][0] = inv_scale.x * rot3x3[0][0];
-        m_mat[0][1] = inv_scale.x * rot3x3[0][1];
-        m_mat[0][2] = inv_scale.x * rot3x3[0][2];
-        m_mat[0][3] = inv_translate.x;
-        m_mat[1][0] = inv_scale.y * rot3x3[1][0];
-        m_mat[1][1] = inv_scale.y * rot3x3[1][1];
-        m_mat[1][2] = inv_scale.y * rot3x3[1][2];
-        m_mat[1][3] = inv_translate.y;
-        m_mat[2][0] = inv_scale.z * rot3x3[2][0];
-        m_mat[2][1] = inv_scale.z * rot3x3[2][1];
-        m_mat[2][2] = inv_scale.z * rot3x3[2][2];
-        m_mat[2][3] = inv_translate.z;
-
-        // No projection term
-        m_mat[3][0] = 0;
-        m_mat[3][1] = 0;
-        m_mat[3][2] = 0;
-        m_mat[3][3] = 1;
-    }
-    //-----------------------------------------------------------------------
-    void Matrix4x4::decomposition(Vector3& position, Vector3& scale, Quaternion& orientation) const
-    {
-        // ASSERT(isAffine());
-
-        Matrix3x3 m3x3;
-        extract3x3Matrix(m3x3);
-
-        Matrix3x3 mat_q;
-        Vector3   vec_u;
-        m3x3.calculateQDUDecomposition(mat_q, scale, vec_u);
-
-        orientation = Quaternion(mat_q);
-        position    = Vector3(m_mat[0][3], m_mat[1][3], m_mat[2][3]);
+    Matrix3& Matrix3::operator+=(float m) {
+        value0 += m;
+        value1 += m;
+        value2 += m;
+        return *this;
     }
 
-    //-----------------------------------------------------------------------
-    void Matrix4x4::decompositionWithoutScale(class Vector3& position, class Quaternion& rotation) const
-    {
-        // ASSERT(isAffine());
-
-        Matrix3x3 m3x3;
-        extract3x3Matrix(m3x3);
-
-        Matrix3x3 mat_q;
-        Vector3   vec_u;
-        Vector3   scale;
-        m3x3.calculateQDUDecomposition(mat_q, scale, vec_u);
-
-        rotation = Quaternion(mat_q);
-        position = Vector3(m_mat[0][3], m_mat[1][3], m_mat[2][3]);
+    Matrix3& Matrix3::operator-=(const Matrix3& m) {
+        value0 -= m[0];
+        value1 -= m[1];
+        value2 -= m[2];
+        return *this;
     }
 
-    Vector4 operator*(const Vector4& v, const Matrix4x4& mat)
-    {
-        return Vector4(v.x * mat[0][0] + v.y * mat[1][0] + v.z * mat[2][0] + v.w * mat[3][0],
-                       v.x * mat[0][1] + v.y * mat[1][1] + v.z * mat[2][1] + v.w * mat[3][1],
-                       v.x * mat[0][2] + v.y * mat[1][2] + v.z * mat[2][2] + v.w * mat[3][2],
-                       v.x * mat[0][3] + v.y * mat[1][3] + v.z * mat[2][3] + v.w * mat[3][3]);
+
+    Matrix3& Matrix3::operator-=(float m) {
+        value0 -= m;
+        value1 -= m;
+        value2 -= m;
+        return *this;
     }
+
+    Matrix3& Matrix3::operator*=(const Matrix3& m) {
+        return (*this = *this * m);
+    }
+
+
+    Matrix3& Matrix3::operator*=(float m) {
+        value0 *= m;
+        value1 *= m;
+        value2 *= m;
+        return *this;
+    }
+
+    Matrix3& Matrix3::operator/=(const Matrix3& m) {
+        return *this *= Math::Inverse(m);
+    }
+
+
+    Matrix3& Matrix3::operator/=(float m) {
+        value0 /= m;
+        value1 /= m;
+        value2 /= m;
+        return *this;
+    }
+
+    Matrix3::operator Matrix4() const {
+        return Matrix4(value0.x, value1.x, value2.x, 0,
+                       value0.y, value1.y, value2.y, 0,
+                       value0.z, value1.z, value2.z, 0,
+                       0, 0, 0, 1);
+    }
+
+    // -- Unary operators --
+    Matrix3 operator+(const Matrix3& m) { return m; }
+
+    Matrix3 operator-(const Matrix3& m) { return Matrix3(-m[0], -m[1], -m[2]); }
+
+    // -- Binary operators --
+    Matrix3 operator+(const Matrix3& m, const Matrix3& s) { return Matrix3(m[0] + s[0], m[1] + s[1], m[2] + s[2]); }
+
+
+    Matrix3 operator+(const float& s, const Matrix3& m){
+        return Matrix3(
+            s + m[0],
+            s + m[1],
+            s + m[2]);
+    }
+
+
+    Matrix3 operator+(const Matrix3& m, const float& s){
+        return Matrix3(
+            m[0] + s,
+            m[1] + s,
+            m[2] + s);
+    }
+
+    Matrix3 operator-(const Matrix3& m, const Matrix3& s){
+        return Matrix3(
+            m[0] - s[0],
+            m[1] - s[1],
+            m[2] - s[2]);
+    }
+
+    Matrix3 operator-(const float& m, const Matrix3& s){
+        return Matrix3(
+            m - s[0],
+            m - s[1],
+            m - s[2]);
+    }
+
+    Matrix3 operator-(const Matrix3& s, const float& m){
+        return Matrix3(
+            s[0] - m,
+            s[1] - m,
+            s[2] - m);
+    }
+
+    Matrix3 operator*(const Matrix3& m, const Matrix3& s){
+        const Vector3 SrcA0 = m[0];
+        const Vector3 SrcA1 = m[1];
+        const Vector3 SrcA2 = m[2];
+
+        const Vector3 SrcB0 = s[0];
+        const Vector3 SrcB1 = s[1];
+        const Vector3 SrcB2 = s[2];
+
+        Matrix3 Result;
+        Result[0] = SrcA0 * SrcB0[0] + SrcA1 * SrcB0[1] + SrcA2 * SrcB0[2];
+        Result[1] = SrcA0 * SrcB1[0] + SrcA1 * SrcB1[1] + SrcA2 * SrcB1[2];
+        Result[2] = SrcA0 * SrcB2[0] + SrcA1 * SrcB2[1] + SrcA2 * SrcB2[2];
+        return Result;
+    }
+
+    Vector3 operator*(const Matrix3& m, const Vector3& v){
+        return Vector3(m[0][0] * v[0] + m[1][0] * v[1] + m[2][0] * v[2] + m[3][0] * v[3],
+                       m[0][1] * v[0] + m[1][1] * v[1] + m[2][1] * v[2] + m[3][1] * v[3],
+                       m[0][2] * v[0] + m[1][2] * v[1] + m[2][2] * v[2] + m[3][2] * v[3]);
+    }
+
+    Vector3 operator*(const Vector3& v, const Matrix3& m){
+        return Vector3(m[0][0] * v[0] + m[0][1] * v[1] + m[0][2] * v[2] + m[0][3] * v[3],
+                       m[1][0] * v[0] + m[1][1] * v[1] + m[1][2] * v[2] + m[1][3] * v[3],
+                       m[2][0] * v[0] + m[2][1] * v[1] + m[2][2] * v[2] + m[2][3] * v[3]);
+    }
+
+
+    Matrix3 operator*(const float& m, const Matrix3& s){
+        return Matrix3(
+            m * s[0],
+            m * s[1],
+            m * s[2]);
+    }
+
+
+    Matrix3 operator*(const Matrix3& s, const float& m){
+        return Matrix3(
+            s[0] * m,
+            s[1] * m,
+            s[2] * m);
+    }
+
+    Matrix3 operator/(const Matrix3& m, const Matrix3& s){
+        Matrix3 mc(m);
+        return mc/=s;
+    }
+
+    Vector3 operator/(const Matrix3& m, const Vector3& v){
+        return Math::Inverse(m) * v;
+    }
+
+    Vector3 operator/(const Vector3& v, const Matrix3& m){
+        return v * Math::Inverse(m);
+    }
+
+
+    Matrix3 operator/(const float& m, const Matrix3& s){
+        return Matrix3(
+            m / s[0],
+            m / s[1],
+            m / s[2]);
+    }
+
+
+    Matrix3 operator/(const Matrix3& s, const float& m){
+        return Matrix3(
+            s[0] / m,
+            s[1] / m,
+            s[2] / m);
+    }
+
+    // -- Boolean operators --
+    bool operator==(const Matrix3& m, const Matrix3& s){
+        return (m[0] == s[0]) && (m[1] == s[1]) && (m[2] == s[2]);
+    }
+    bool operator!=(const Matrix3& m, const Matrix3& s){
+        return (m[0] != s[0]) || (m[1] != s[1]) || (m[2] != s[2]);
+    }
+
+    /***********************************************************************
+     ******************************* Matrix4 *******************************
+     ***********************************************************************/
+    const Matrix4 Matrix4::IDENTITY(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+    const Matrix4 Matrix4::ZERO(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+
+    Matrix4::Matrix4() { operator=(IDENTITY); }
+
+    Matrix4::Matrix4(const Matrix4& m) {
+        value0 = m[0];
+        value1 = m[1];
+        value2 = m[2];
+        value3 = m[3];
+    }
+    Matrix4::Matrix4(float diag) {
+        value0 = Vector4(diag, 0, 0, 0);
+        value1 = Vector4(0, diag, 0, 0);
+        value2 = Vector4(0, 0, diag, 0);
+        value3 = Vector4(0, 0, 0, diag);
+    }
+    Matrix4::Matrix4(float m00, float m10, float m20, float m30, float m01, float m11, float m21, float m31, float m02, float m12, float m22,
+                     float m32, float m03, float m13, float m23, float m33) {
+        value0 = Vector4(m00, m10, m20, m30);
+        value1 = Vector4(m01, m11, m21, m31);
+        value2 = Vector4(m02, m12, m22, m32);
+        value3 = Vector4(m03, m13, m23, m33);
+    }
+
+    Matrix4::Matrix4(const Vector4& col0, const Vector4& col1, const Vector4& col2, const Vector4& col3) {
+        value0 = col0;
+        value1 = col1;
+        value2 = col2;
+        value3 = col3;
+    }
+
+    Vector4& Matrix4::operator[](int i) {
+        assert(i < 4);
+        switch (i) {
+            case 0:
+                return value0;
+            case 1:
+                return value1;
+            case 2:
+                return value2;
+            case 3:
+                return value3;
+        }
+    }
+
+    const Vector4& Matrix4::operator[](int i) const {
+        assert(i < 4);
+        switch (i) {
+            case 0:
+                return value0;
+            case 1:
+                return value1;
+            case 2:
+                return value2;
+            case 3:
+                return value3;
+        }
+    }
+
+    Matrix4& Matrix4::operator=(const Matrix4& m) {
+        value0 = m[0];
+        value1 = m[1];
+        value2 = m[2];
+        value3 = m[3];
+        return *this;
+    }
+
+    Matrix4& Matrix4::operator+=(const Matrix4& m) {
+        value0 += m[0];
+        value1 += m[1];
+        value2 += m[2];
+        value3 += m[3];
+        return *this;
+    }
+
+
+    Matrix4& Matrix4::operator+=(float m) {
+        value0 += m;
+        value1 += m;
+        value2 += m;
+        value3 += m;
+        return *this;
+    }
+
+    Matrix4& Matrix4::operator-=(const Matrix4& m) {
+        value0 -= m[0];
+        value1 -= m[1];
+        value2 -= m[2];
+        value3 -= m[3];
+        return *this;
+    }
+
+
+    Matrix4& Matrix4::operator-=(float m) {
+        value0 -= m;
+        value1 -= m;
+        value2 -= m;
+        value3 -= m;
+        return *this;
+    }
+
+    Matrix4& Matrix4::operator*=(const Matrix4& m) {
+        return (*this = *this * m);
+    }
+
+
+    Matrix4& Matrix4::operator*=(float m) {
+        value0 *= m;
+        value1 *= m;
+        value2 *= m;
+        value3 *= m;
+        return *this;
+    }
+
+    Matrix4& Matrix4::operator/=(const Matrix4& m) {
+        return *this *= Math::Inverse(m);
+    }
+
+
+    Matrix4& Matrix4::operator/=(float m) {
+        value0 /= m;
+        value1 /= m;
+        value2 /= m;
+        value3 /= m;
+        return *this;
+    }
+
+    Matrix4::operator Matrix3() const {
+        Matrix3 m;
+        m[0] = Vector3(value0[0], value0[1], value0[2]);
+        m[1] = Vector3(value1[0], value1[1], value1[2]);
+        m[2] = Vector3(value2[0], value2[1], value2[2]);
+        return m;
+    }
+
+    // -- Unary operators --
+    Matrix4 operator+(const Matrix4& m) { return m; }
+
+    Matrix4 operator-(const Matrix4& m) { return Matrix4(-m[0], -m[1], -m[2], -m[3]); }
+
+    // -- Binary operators --
+    Matrix4 operator+(const Matrix4& m, const Matrix4& s) { return Matrix4(m[0] + s[0], m[1] + s[1], m[2] + s[2], m[3] + s[3]); }
+
+
+    Matrix4 operator+(const float& s, const Matrix4& m){
+        return Matrix4(
+            s + m[0],
+            s + m[1],
+            s + m[2],
+            s + m[3]);
+    }
+
+
+    Matrix4 operator+(const Matrix4& m, const float& s){
+        return Matrix4(
+            m[0] + s,
+            m[1] + s,
+            m[2] + s,
+            m[3] + s);
+    }
+
+    Matrix4 operator-(const Matrix4& m, const Matrix4& s){
+        return Matrix4(
+            m[0] - s[0],
+            m[1] - s[1],
+            m[2] - s[2],
+            m[3] - s[3]);
+    }
+
+    Matrix4 operator-(const float& m, const Matrix4& s){
+        return Matrix4(
+            m - s[0],
+            m - s[1],
+            m - s[2],
+            m - s[3]);
+    }
+
+    Matrix4 operator-(const Matrix4& s, const float& m){
+        return Matrix4(
+            s[0] - m,
+            s[1] - m,
+            s[2] - m,
+            s[3] - m);
+    }
+
+    Matrix4 operator*(const Matrix4& m, const Matrix4& s){
+        const Vector4 SrcA0 = m[0];
+        const Vector4 SrcA1 = m[1];
+        const Vector4 SrcA2 = m[2];
+        const Vector4 SrcA3 = m[3];
+
+        const Vector4 SrcB0 = s[0];
+        const Vector4 SrcB1 = s[1];
+        const Vector4 SrcB2 = s[2];
+        const Vector4 SrcB3 = s[3];
+
+        Matrix4 Result;
+        Result[0] = SrcA0 * SrcB0[0] + SrcA1 * SrcB0[1] + SrcA2 * SrcB0[2] + SrcA3 * SrcB0[3];
+        Result[1] = SrcA0 * SrcB1[0] + SrcA1 * SrcB1[1] + SrcA2 * SrcB1[2] + SrcA3 * SrcB1[3];
+        Result[2] = SrcA0 * SrcB2[0] + SrcA1 * SrcB2[1] + SrcA2 * SrcB2[2] + SrcA3 * SrcB2[3];
+        Result[3] = SrcA0 * SrcB3[0] + SrcA1 * SrcB3[1] + SrcA2 * SrcB3[2] + SrcA3 * SrcB3[3];
+        return Result;
+    }
+
+    Vector4 operator*(const Matrix4& m, const Vector4& v){
+        return Vector4(m[0][0] * v[0] + m[1][0] * v[1] + m[2][0] * v[2] + m[3][0] * v[3],
+                       m[0][1] * v[0] + m[1][1] * v[1] + m[2][1] * v[2] + m[3][1] * v[3],
+                       m[0][2] * v[0] + m[1][2] * v[1] + m[2][2] * v[2] + m[3][2] * v[3],
+                       m[0][3] * v[0] + m[1][3] * v[1] + m[2][3] * v[2] + m[3][3] * v[3]);
+    }
+
+    Vector4 operator*(const Vector4& v, const Matrix4& m){
+        return Vector4(m[0][0] * v[0] + m[0][1] * v[1] + m[0][2] * v[2] + m[0][3] * v[3],
+                       m[1][0] * v[0] + m[1][1] * v[1] + m[1][2] * v[2] + m[1][3] * v[3],
+                       m[2][0] * v[0] + m[2][1] * v[1] + m[2][2] * v[2] + m[2][3] * v[3],
+                       m[3][0] * v[0] + m[3][1] * v[1] + m[3][2] * v[2] + m[3][3] * v[3]);
+    }
+
+
+    Matrix4 operator*(const float& m, const Matrix4& s){
+        return Matrix4(
+            m * s[0],
+            m * s[1],
+            m * s[2],
+            m * s[3]);
+    }
+
+
+    Matrix4 operator*(const Matrix4& s, const float& m){
+        return Matrix4(
+            s[0] * m,
+            s[1] * m,
+            s[2] * m,
+            s[3] * m);
+    }
+
+    Matrix4 operator/(const Matrix4& m, const Matrix4& s){
+        Matrix4 mc(m);
+        return mc/=s;
+    }
+
+    Vector4 operator/(const Matrix4& m, const Vector4& v){
+        return Math::Inverse(m) * v;
+    }
+
+    Vector4 operator/(const Vector4& v, const Matrix4& m){
+        return v * Math::Inverse(m);
+    }
+
+
+    Matrix4 operator/(const float& m, const Matrix4& s){
+        return Matrix4(
+            m / s[0],
+            m / s[1],
+            m / s[2],
+            m / s[3]);
+    }
+
+
+    Matrix4 operator/(const Matrix4& s, const float& m){
+        return Matrix4(
+            s[0] / m,
+            s[1] / m,
+            s[2] / m,
+            s[3] / m);
+    }
+
+    // -- Boolean operators --
+    bool operator==(const Matrix4& m, const Matrix4& s){
+        return (m[0] == s[0]) && (m[1] == s[1]) && (m[2] == s[2]) && (m[3] == s[3]);
+    }
+    bool operator!=(const Matrix4& m, const Matrix4& s){
+        return (m[0] != s[0]) || (m[1] != s[1]) || (m[2] != s[2]) || (m[3] != s[3]);
+    }
+
 }  // namespace Ethereal

@@ -17,7 +17,7 @@ namespace Ethereal
         }
 
       private:
-        Matrix4x4 m_ViewProjectionMatrix;
+        Matrix4 m_ViewProjectionMatrix;
 
         Vector3 m_LightPos;
         Ref<Shader> m_Shader;

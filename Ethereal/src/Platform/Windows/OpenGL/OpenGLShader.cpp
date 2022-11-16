@@ -50,7 +50,7 @@ namespace Ethereal
 
     void OpenGLShader::SetFloat4(const std::string& name, const Vector4& value) { UploadUniformFloat4(name, value); }
 
-    void OpenGLShader::SetMat4(const std::string& name, const Matrix4x4& value) { UploadUniformMat4(name, value); }
+    void OpenGLShader::SetMat4(const std::string& name, const Matrix4& value) { UploadUniformMat4(name, value); }
 
     void OpenGLShader::SetInt(const std::string& name, int value) { UploadUniformInt(name, value); }
 
@@ -87,14 +87,14 @@ namespace Ethereal
         glUniform4f(location, value.x, value.y, value.z, value.w);
     }
 
-    void OpenGLShader::UploadUniformMat3(const std::string& name, const Matrix3x3& matrix) {
+    void OpenGLShader::UploadUniformMat3(const std::string& name, const Matrix3& matrix) {
         GLint location = glGetUniformLocation(m_RendererID, name.c_str());
-        glUniformMatrix3fv(location, 1, GL_FALSE, matrix.ptr());
+        glUniformMatrix3fv(location, 1, GL_FALSE, Math::Ptr(matrix));
     }
 
-    void OpenGLShader::UploadUniformMat4(const std::string& name, const Matrix4x4& matrix) {
+    void OpenGLShader::UploadUniformMat4(const std::string& name, const Matrix4& matrix) {
         GLint location = glGetUniformLocation(m_RendererID, name.c_str());
-        glUniformMatrix4fv(location, 1, GL_FALSE, matrix.ptr());
+        glUniformMatrix4fv(location, 1, GL_FALSE, Math::Ptr(matrix));
     }
 
     std::string OpenGLShader::ReadFile(const std::string& filepath) {

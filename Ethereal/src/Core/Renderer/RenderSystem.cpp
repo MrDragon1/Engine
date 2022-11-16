@@ -93,11 +93,11 @@ namespace Ethereal
 
     int RenderSystem::GetMousePicking(int x, int y) { return m_MainCameraRenderPass->GetMousePicking(x, y); }
 
-    void RenderSystem::SubmitStaticMesh(Ref<StaticMesh> staticMesh, Ref<MaterialTable> materialTable, uint32_t EntityID, const Matrix4x4& transform) {
+    void RenderSystem::SubmitStaticMesh(Ref<StaticMesh> staticMesh, Ref<MaterialTable> materialTable, uint32_t EntityID, const Matrix4& transform) {
         Ref<MeshSource> meshSource = staticMesh->GetMeshSource();
         const auto& submeshData = meshSource->GetSubmeshes();
         for (uint32_t submeshIndex : staticMesh->GetSubmeshes()) {
-            Matrix4x4 submeshTransform = transform * submeshData[submeshIndex].Transform;
+            Matrix4 submeshTransform = transform * submeshData[submeshIndex].Transform;
 
             const auto& submeshes = staticMesh->GetMeshSource()->GetSubmeshes();
             uint32_t materialIndex = submeshes[submeshIndex].MaterialIndex;
@@ -121,11 +121,11 @@ namespace Ethereal
         }
     }
 
-    void RenderSystem::SubmitMesh(Ref<Mesh> mesh, Ref<MaterialTable> materialTable, uint32_t EntityID, const Matrix4x4& transform) {
+    void RenderSystem::SubmitMesh(Ref<Mesh> mesh, Ref<MaterialTable> materialTable, uint32_t EntityID, const Matrix4& transform) {
         Ref<MeshSource> meshSource = mesh->GetMeshSource();
         const auto& submeshData = meshSource->GetSubmeshes();
         for (uint32_t submeshIndex : mesh->GetSubmeshes()) {
-            Matrix4x4 submeshTransform = transform * submeshData[submeshIndex].Transform;
+            Matrix4 submeshTransform = transform * submeshData[submeshIndex].Transform;
 
             const auto& submeshes = mesh->GetMeshSource()->GetSubmeshes();
             uint32_t materialIndex = submeshes[submeshIndex].MaterialIndex;

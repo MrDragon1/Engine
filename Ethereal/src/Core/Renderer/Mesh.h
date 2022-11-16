@@ -76,8 +76,8 @@ namespace Ethereal
         uint32_t IndexCount;
         uint32_t VertexCount;
 
-        Matrix4x4 Transform{Matrix4x4::IDENTITY};  // World transform
-        Matrix4x4 LocalTransform{Matrix4x4::IDENTITY};
+        Matrix4 Transform{Matrix4::IDENTITY};  // World transform
+        Matrix4 LocalTransform{Matrix4::IDENTITY};
         AABB BoundingBox;
 
         std::string NodeName, MeshName;
@@ -88,7 +88,7 @@ namespace Ethereal
     class MeshSource : public Asset {
       public:
         MeshSource(const std::string& filename);
-        MeshSource(const std::vector<Vertex>& vertices, const std::vector<Index>& indices, const Matrix4x4& transform);
+        MeshSource(const std::vector<Vertex>& vertices, const std::vector<Index>& indices, const Matrix4& transform);
         MeshSource(const std::vector<Vertex>& vertices, const std::vector<Index>& indices, const std::vector<Submesh>& submeshes);
         virtual ~MeshSource();
 
@@ -115,7 +115,7 @@ namespace Ethereal
         void LoadMaterials(Ref<MaterialTable>& materials);
 
       private:
-        void TraverseNodes(aiNode* node, const Matrix4x4& parentTransform = Matrix4x4::IDENTITY, uint32_t level = 0);
+        void TraverseNodes(aiNode* node, const Matrix4& parentTransform = Matrix4::IDENTITY, uint32_t level = 0);
         void TraverseNodesAnim(aiNode* node, Ref<Joint>& joint);
 
       private:
@@ -123,7 +123,7 @@ namespace Ethereal
         const aiScene* m_Scene;
         std::string m_FilePath;
 
-        Matrix4x4 m_InverseTransform;
+        Matrix4 m_InverseTransform;
 
         Ref<VertexArray> m_VertexArray;
         Ref<VertexBuffer> m_VertexBuffer;

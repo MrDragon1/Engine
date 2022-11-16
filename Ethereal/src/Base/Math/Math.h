@@ -7,300 +7,115 @@
 
 namespace Ethereal
 {
-    static const float Math_POS_INFINITY = std::numeric_limits<float>::infinity();
-    static const float Math_NEG_INFINITY = -std::numeric_limits<float>::infinity();
-    static const float Math_PI = 3.14159265358979323846264338327950288f;
-    static const float Math_ONE_OVER_PI = 1.0f / Math_PI;
-    static const float Math_TWO_PI = 2.0f * Math_PI;
-    static const float Math_HALF_PI = 0.5f * Math_PI;
-    static const float Math_fDeg2Rad = Math_PI / 180.0f;
-    static const float Math_fRad2Deg = 180.0f / Math_PI;
-    static const float Math_LOG2 = log(2.0f);
-    static const float Math_EPSILON = 1e-6f;
-
-    static const float Float_EPSILON = FLT_EPSILON;
-    static const float Double_EPSILON = DBL_EPSILON;
-
-    class Radian;
-    class Angle;
-    class Degree;
-
     class Vector2;
     class Vector3;
     class Vector4;
-    class Matrix3x3;
-    class Matrix4x4;
+    class Matrix3;
+    class Matrix4;
     class Quaternion;
 
-    class Radian {
-        float m_rad;
 
-      public:
-        explicit Radian(float r = 0) : m_rad(r) {}
-        explicit Radian(const Degree& d);
-        Radian& operator=(float f) {
-            m_rad = f;
-            return *this;
-        }
-        Radian& operator=(const Degree& d);
+    namespace Math{
+        static const float POS_INFINITY = std::numeric_limits<float>::infinity();
+        static const float NEG_INFINITY = -std::numeric_limits<float>::infinity();
+        static const float PI = 3.14159265358979323846264338327950288f;
+        static const float ONE_OVER_PI = 1.0f / PI;
+        static const float TWO_PI = 2.0f * PI;
+        static const float HALF_PI = 0.5f * PI;
+        static const float fDeg2Rad = PI / 180.0f;
+        static const float fRad2Deg = 180.0f / PI;
+        static const float LOG2 = log(2.0f);
+        static const float EPSILON = 1e-6f;
 
-        float valueRadians() const { return m_rad; }
-        float valueDegrees() const;  // see bottom of this file
-        float valueAngleUnits() const;
+        static const float EPSILONF = FLT_EPSILON;
+        static const float EPSILOND = DBL_EPSILON;
 
-        void setValue(float f) { m_rad = f; }
+        float Radians(float degrees);
+        float Degrees(float radians);
 
-        const Radian& operator+() const { return *this; }
-        Radian operator+(const Radian& r) const { return Radian(m_rad + r.m_rad); }
-        Radian operator+(const Degree& d) const;
-        Radian& operator+=(const Radian& r) {
-            m_rad += r.m_rad;
-            return *this;
-        }
-        Radian& operator+=(const Degree& d);
-        Radian operator-() const { return Radian(-m_rad); }
-        Radian operator-(const Radian& r) const { return Radian(m_rad - r.m_rad); }
-        Radian operator-(const Degree& d) const;
-        Radian& operator-=(const Radian& r) {
-            m_rad -= r.m_rad;
-            return *this;
-        }
-        Radian& operator-=(const Degree& d);
-        Radian operator*(float f) const { return Radian(m_rad * f); }
-        Radian operator*(const Radian& f) const { return Radian(m_rad * f.m_rad); }
-        Radian& operator*=(float f) {
-            m_rad *= f;
-            return *this;
-        }
-        Radian operator/(float f) const { return Radian(m_rad / f); }
-        Radian& operator/=(float f) {
-            m_rad /= f;
-            return *this;
-        }
+        float* Ptr(Vector2& v);
+        const float* Ptr(const Vector2& v);
+        float* Ptr(Vector3& v);
+        const float* Ptr(const Vector3& v);
+        float* Ptr(Vector4& v);
+        const float* Ptr(const Vector4& v);
+        float* Ptr(Matrix3& v);
+        const float* Ptr(const Matrix3& v);
+        float* Ptr(Matrix4& v);
+        const float* Ptr(const Matrix4& v);
 
-        bool operator<(const Radian& r) const { return m_rad < r.m_rad; }
-        bool operator<=(const Radian& r) const { return m_rad <= r.m_rad; }
-        bool operator==(const Radian& r) const { return m_rad == r.m_rad; }
-        bool operator!=(const Radian& r) const { return m_rad != r.m_rad; }
-        bool operator>=(const Radian& r) const { return m_rad >= r.m_rad; }
-        bool operator>(const Radian& r) const { return m_rad > r.m_rad; }
-    };
+        float Sin(float v);
+        Vector2 Sin(const Vector2& v);
+        Vector3 Sin(const Vector3& v);
+        Vector4 Sin(const Vector4& v);
+        float Cos(float v);
+        Vector2 Cos(const Vector2& v);
+        Vector3 Cos(const Vector3& v);
+        Vector4 Cos(const Vector4& v);
+        float Tan(float v);
+        Vector2 Tan(const Vector2& v);
+        Vector3 Tan(const Vector3& v);
+        Vector4 Tan(const Vector4& v);
 
-    /** Wrapper class which indicates a given angle value is in Degrees.
-    @remarks
-        Degree values are interchangeable with Radian values, and conversions
-        will be done automatically between them.
-    */
-    class Degree {
-        float m_deg;  // if you get an error here - make sure to define/typedef 'float' first
+        float Min(float a, float b);
 
-      public:
-        explicit Degree(float d = 0) : m_deg(d) {}
-        explicit Degree(const Radian& r) : m_deg(r.valueDegrees()) {}
-        Degree& operator=(float f) {
-            m_deg = f;
-            return *this;
-        }
-        Degree& operator=(const Degree& d) = default;
-        Degree& operator=(const Radian& r) {
-            m_deg = r.valueDegrees();
-            return *this;
-        }
+        float Max(float a, float b);
 
-        float valueDegrees() const { return m_deg; }
-        float valueRadians() const;  // see bottom of this file
-        float valueAngleUnits() const;
+        /*********************************************************************
+        ******************************* Vector *******************************
+        **********************************************************************/
 
-        const Degree& operator+() const { return *this; }
-        Degree operator+(const Degree& d) const { return Degree(m_deg + d.m_deg); }
-        Degree operator+(const Radian& r) const { return Degree(m_deg + r.valueDegrees()); }
-        Degree& operator+=(const Degree& d) {
-            m_deg += d.m_deg;
-            return *this;
-        }
-        Degree& operator+=(const Radian& r) {
-            m_deg += r.valueDegrees();
-            return *this;
-        }
-        Degree operator-() const { return Degree(-m_deg); }
-        Degree operator-(const Degree& d) const { return Degree(m_deg - d.m_deg); }
-        Degree operator-(const Radian& r) const { return Degree(m_deg - r.valueDegrees()); }
-        Degree& operator-=(const Degree& d) {
-            m_deg -= d.m_deg;
-            return *this;
-        }
-        Degree& operator-=(const Radian& r) {
-            m_deg -= r.valueDegrees();
-            return *this;
-        }
-        Degree operator*(float f) const { return Degree(m_deg * f); }
-        Degree operator*(const Degree& f) const { return Degree(m_deg * f.m_deg); }
-        Degree& operator*=(float f) {
-            m_deg *= f;
-            return *this;
-        }
-        Degree operator/(float f) const { return Degree(m_deg / f); }
-        Degree& operator/=(float f) {
-            m_deg /= f;
-            return *this;
-        }
+        float Dot(const Vector2& a,const Vector2& b);
+        float Dot(const Vector3& a,const Vector3& b);
+        float Dot(const Vector4& a,const Vector4& b);
 
-        bool operator<(const Degree& d) const { return m_deg < d.m_deg; }
-        bool operator<=(const Degree& d) const { return m_deg <= d.m_deg; }
-        bool operator==(const Degree& d) const { return m_deg == d.m_deg; }
-        bool operator!=(const Degree& d) const { return m_deg != d.m_deg; }
-        bool operator>=(const Degree& d) const { return m_deg >= d.m_deg; }
-        bool operator>(const Degree& d) const { return m_deg > d.m_deg; }
-    };
+        Vector2 Cross(const Vector2& a,const Vector2& b);
+        Vector3 Cross(const Vector3& a,const Vector3& b);
+        Vector4 Cross(const Vector4& a,const Vector4& b);
 
-    /** Wrapper class which identifies a value as the currently default angle
-        type, as defined by Math::setAngleUnit.
-    @remarks
-        Angle values will be automatically converted between radians and degrees,
-        as appropriate.
-    */
-    class Angle {
-        float m_angle;
+        Vector2 Normalize(const Vector2& v);
+        Vector3 Normalize(const Vector3& v);
+        Vector4 Normalize(const Vector4& v);
 
-      public:
-        explicit Angle(float angle) : m_angle(angle) {}
-        Angle() { m_angle = 0; }
+        float Length(const Vector2& v);
+        float Length(const Vector3& v);
+        float Length(const Vector4& v);
 
-        explicit operator Radian() const;
-        explicit operator Degree() const;
-    };
+        float Mix(const float& a,const float& b,float t);
+        Vector2 Mix(const Vector2& a,const Vector2& b,float t);
+        Vector3 Mix(const Vector3& a,const Vector3& b,float t);
+        Vector4 Mix(const Vector4& a,const Vector4& b,float t);
 
-    class Math {
-        enum class AngleUnit
-        {
-            AU_DEGREE,
-            AU_RADIAN
-        };
 
-        // angle units used by the api
-        static AngleUnit k_AngleUnit;
-      public:
-        Math();
-        static float abs(float value) { return std::fabs(value); }
-        static bool isNan(float f) { return std::isnan(f); }
-        static float sqr(float value) { return value * value; }
-        static float sqrt(float fValue) { return std::sqrt(fValue); }
-        static float invSqrt(float value) { return 1.f / sqrt(value); }
-        static bool realEqual(float a, float b, float tolerance = std::numeric_limits<float>::epsilon());
-        static float clamp(float v, float min, float max) { return std::clamp(v, min, max); }
-        static float getMaxElement(float x, float y, float z) { return std::max({x, y, z}); }
+        /*********************************************************************
+        ******************************* Matrix *******************************
+        **********************************************************************/
 
-        static float degreesToRadians(float degrees);
-        static Vector3 degreesToRadians(const Vector3& degrees);
-        static float radiansToDegrees(float radians);
-        static Vector3 radiansToDegrees(const Vector3& radians);
-        static float angleUnitsToRadians(float units);
-        static float radiansToAngleUnits(float radians);
-        static float angleUnitsToDegrees(float units);
-        static float degreesToAngleUnits(float degrees);
+        Matrix3 Inverse(const Matrix3& m);
+        Matrix4 Inverse(const Matrix4& m);
 
-        static float sin(const Radian& rad) { return std::sin(rad.valueRadians()); }
-        static float sin(float value) { return std::sin(value); }
-        static float cos(const Radian& rad) { return std::cos(rad.valueRadians()); }
-        static float cos(float value) { return std::cos(value); }
-        static float tan(const Radian& rad) { return std::tan(rad.valueRadians()); }
-        static float tan(float value) { return std::tan(value); }
-        static Radian acos(float value);
-        static Radian asin(float value);
-        static Radian atan(float value) { return Radian(std::atan(value)); }
-        static Radian atan2(float y_v, float x_v) { return Radian(std::atan2(y_v, x_v)); }
 
-        template <class T>
-        static bool epsilonNotEqual(const T A, const T B){
-            return abs(A-B) >= Math_EPSILON;
-        }
+        Matrix4 Ortho(float left, float right, float bottom, float top, float zNear, float zFar);
+        Matrix4 Perspective(float fovy, float aspect, float zNear, float zFar);
+        Matrix4 LookAt(const Vector3& eye, const Vector3& center, const Vector3& up);
+        Matrix4 Translate(const Matrix4& m, const Vector3& v);
+        Matrix4 Rotate(const Matrix4& m, float angle, const Vector3& v);
+        Matrix4 Rotate(const Matrix4& m, const Quaternion& q);
+        Vector3 Rotate(const Quaternion& q, const Vector3& v);
+        Matrix4 Scale(const Matrix4& m, const Vector3& v);
 
-        template <class T>
-        static bool epsilonEqual(const T A, const T B){
-            return !epsilonNotEqual(A,B);
-        }
+        bool DecomposeTransformMatrix(const Matrix4& m, Vector3& translation, Quaternion& rotation, Vector3& scale);
 
-        template <class T>
-        static constexpr T mix(const T A, const T B, float factor) {
-            return A * (1 - factor) + B * factor;
-        }
+        /*********************************************************************
+        ******************************* Quaternion ***************************
+        **********************************************************************/
+        float Dot(const Quaternion& a,const Quaternion& b);
+        Quaternion Mix(const Quaternion& a, const Quaternion& b, float t);
+        float Length(const Quaternion& q);
+        Quaternion Normalize(const Quaternion& q);
+        Quaternion Conjugate(const Quaternion& q);
+        Quaternion Inverse(const Quaternion& q);
 
-        template <class T>
-        static constexpr T max(const T A, const T B) {
-            return std::max(A, B);
-        }
-
-        template <class T>
-        static constexpr T min(const T A, const T B) {
-            return std::min(A, B);
-        }
-
-        template <class T>
-        static constexpr T max3(const T A, const T B, const T C) {
-            return std::max({A, B, C});
-        }
-
-        template <class T>
-        static constexpr T min3(const T A, const T B, const T C) {
-            return std::min({A, B, C});
-        }
-
-        static Matrix4x4 makeViewMatrix(const Vector3& position, const Quaternion& orientation, const Matrix4x4* reflect_matrix = nullptr);
-
-        static Matrix4x4 makeLookAtMatrix(const Vector3& eye_position, const Vector3& target_position, const Vector3& up_dir);
-
-        static Matrix4x4 makePerspectiveMatrix(Radian fovy, float aspect, float znear, float zfar);
-
-        static Matrix4x4 makeOrthographicProjectionMatrix(float left, float right, float bottom, float top, float znear, float zfar);
-
-        static Matrix4x4 getTranslateMatrix(const Vector3& trans);
-        static Matrix4x4 getRotateMatrix(const Quaternion& quat);
-        static Matrix4x4 getRotateMatrix(Radian rad, const Vector3& axis);
-        static Vector3 getRotate(const Quaternion& quat, const Vector3& v);
-        static Matrix4x4 getScaleMatrix(const Vector3& scale);
-
-        static float* getPtr(const Matrix4x4& mat4);
-        static float* getPtr(const Matrix3x3& mat3);
-
-        static bool decomposeTransformMatrix(const Matrix4x4& mat, Vector3& translate, Vector3& scale, Quaternion& rotate);
-    };
-
-    // these functions could not be defined within the class definition of class
-    // Radian because they required class Degree to be defined
-    inline Radian::Radian(const Degree& d) : m_rad(d.valueRadians()) {}
-    inline Radian& Radian::operator=(const Degree& d) {
-        m_rad = d.valueRadians();
-        return *this;
     }
-    inline Radian Radian::operator+(const Degree& d) const { return Radian(m_rad + d.valueRadians()); }
-    inline Radian& Radian::operator+=(const Degree& d) {
-        m_rad += d.valueRadians();
-        return *this;
-    }
-    inline Radian Radian::operator-(const Degree& d) const { return Radian(m_rad - d.valueRadians()); }
-    inline Radian& Radian::operator-=(const Degree& d) {
-        m_rad -= d.valueRadians();
-        return *this;
-    }
-
-    inline float Radian::valueDegrees() const { return Math::radiansToDegrees(m_rad); }
-
-    inline float Radian::valueAngleUnits() const { return Math::radiansToAngleUnits(m_rad); }
-
-    inline float Degree::valueRadians() const { return Math::degreesToRadians(m_deg); }
-
-    inline float Degree::valueAngleUnits() const { return Math::degreesToAngleUnits(m_deg); }
-
-    inline Angle::operator Radian() const { return Radian(Math::angleUnitsToRadians(m_angle)); }
-
-    inline Angle::operator Degree() const { return Degree(Math::angleUnitsToDegrees(m_angle)); }
-
-    inline Radian operator*(float a, const Radian& b) { return Radian(a * b.valueRadians()); }
-
-    inline Radian operator/(float a, const Radian& b) { return Radian(a / b.valueRadians()); }
-
-    inline Degree operator*(float a, const Degree& b) { return Degree(a * b.valueDegrees()); }
-
-    inline Degree operator/(float a, const Degree& b) { return Degree(a / b.valueDegrees()); }
 
 }  // namespace Ethereal

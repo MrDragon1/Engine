@@ -90,7 +90,7 @@ namespace Ethereal
         int p0Index = keyIndex;
         int p1Index = p0Index + 1;
         float scaleFactor = GetScaleFactor(keyClip.PositionStates[p0Index].TimeStamp, keyClip.PositionStates[p1Index].TimeStamp, animationTime);
-        res.Position = Math::mix(keyClip.PositionStates[p0Index].Position, keyClip.PositionStates[p1Index].Position, scaleFactor);
+        res.Position = Math::Mix(keyClip.PositionStates[p0Index].Position, keyClip.PositionStates[p1Index].Position, scaleFactor);
         return res;
     }
 
@@ -112,7 +112,7 @@ namespace Ethereal
         int p0Index = keyIndex;
         int p1Index = p0Index + 1;
         float scaleFactor = GetScaleFactor(joint.RotationStates[p0Index].TimeStamp, joint.RotationStates[p1Index].TimeStamp, animationTime);
-        res.Rotation = Math::mix(joint.RotationStates[p0Index].Rotation, joint.RotationStates[p1Index].Rotation, scaleFactor);
+        res.Rotation = Math::Mix(joint.RotationStates[p0Index].Rotation, joint.RotationStates[p1Index].Rotation, scaleFactor);
         return res;
     }
 
@@ -135,7 +135,7 @@ namespace Ethereal
         int p0Index = keyIndex;
         int p1Index = p0Index + 1;
         float scaleFactor = GetScaleFactor(joint.ScaleStates[p0Index].TimeStamp, joint.ScaleStates[p1Index].TimeStamp, animationTime);
-        res.Scale = Math::mix(joint.ScaleStates[p0Index].Scale, joint.ScaleStates[p1Index].Scale, scaleFactor);
+        res.Scale = Math::Mix(joint.ScaleStates[p0Index].Scale, joint.ScaleStates[p1Index].Scale, scaleFactor);
         return res;
     }
 

@@ -170,7 +170,7 @@ namespace Ethereal
         }
 
         SceneCamera* mainCamera = nullptr;
-        Matrix4x4 cameraTransform = Matrix4x4::IDENTITY;
+        Matrix4 cameraTransform = Matrix4::IDENTITY;
         Vector3 cameraPosition = Vector3(1.0f);
         {
             auto view = m_Registry.view<TransformComponent, CameraComponent>();
@@ -187,8 +187,8 @@ namespace Ethereal
 
         if (mainCamera) {
             RenderSceneData renderSceneData;
-            renderSceneData.ViewProjectionMatrix = mainCamera->GetProjection() * cameraTransform.inverse();
-            renderSceneData.ViewMatrix = cameraTransform.inverse();
+            renderSceneData.ViewProjectionMatrix = mainCamera->GetProjection() * Math::Inverse(cameraTransform);
+            renderSceneData.ViewMatrix = Math::Inverse(cameraTransform);
             renderSceneData.ProjectionMatrix = mainCamera->GetProjection();
             renderSceneData.CameraPosition = cameraPosition;
             if (!m_Environment) m_Environment = GlobalContext::GetRenderSystem().GetDefaultEnvironment();
@@ -221,7 +221,7 @@ namespace Ethereal
             auto staticMesh = AssetManager::GetAsset<StaticMesh>(staticMeshComponent.StaticMesh);
             if (staticMesh && !staticMesh->IsFlagSet(AssetFlag::Missing)) {
                 Entity e = Entity(entity, this);
-                Matrix4x4 transform = transformComponent.GetTransform();  // GetWorldSpaceTransformMatrix(e);
+                Matrix4 transform = transformComponent.GetTransform();  // GetWorldSpaceTransformMatrix(e);
                 GlobalContext::GetRenderSystem().SubmitStaticMesh(staticMesh, staticMeshComponent.MaterialTable, (uint32_t)e, transform);
             }
         }
@@ -232,7 +232,7 @@ namespace Ethereal
             auto mesh = AssetManager::GetAsset<StaticMesh>(meshComponent.Mesh);
             if (mesh && !mesh->IsFlagSet(AssetFlag::Missing)) {
                 Entity e = Entity(entity, this);
-                Matrix4x4 transform = transformComponent.GetTransform();  // GetWorldSpaceTransformMatrix(e);
+                Matrix4 transform = transformComponent.GetTransform();  // GetWorldSpaceTransformMatrix(e);
                 GlobalContext::GetRenderSystem().SubmitMesh(mesh, meshComponent.MaterialTable, (uint32_t)e, transform);
             }
         }

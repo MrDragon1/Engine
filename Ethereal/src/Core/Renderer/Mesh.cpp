@@ -17,8 +17,8 @@ namespace Ethereal
 {
     namespace Utils
     {
-        Matrix4x4 Mat4FromAssimpMat4(const aiMatrix4x4& matrix) {
-            Matrix4x4 result;
+        Matrix4 Mat4FromAssimpMat4(const aiMatrix4x4& matrix) {
+            Matrix4 result;
             // the a,b,c,d in assimp is the row ; the 1,2,3,4 is the column
             result[0][0] = matrix.a1;
             result[1][0] = matrix.a2;
@@ -83,7 +83,7 @@ namespace Ethereal
         }
 
         m_Scene = scene;
-        m_InverseTransform = Utils::Mat4FromAssimpMat4(scene->mRootNode->mTransformation).inverse();
+        m_InverseTransform = Math::Inverse(Utils::Mat4FromAssimpMat4(scene->mRootNode->mTransformation));
         m_IsAnimated = scene->mAnimations != nullptr;
         if (m_IsAnimated) {
             Ref<Skeleton> skel = Ref<Skeleton>::Create();
@@ -141,12 +141,12 @@ namespace Ethereal
                     Vertex vertex;
                     vertex.Position = {mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z};
                     vertex.Normal = {mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z};
-                    aabb.Min.x = Math::min(vertex.Position.x, aabb.Min.x);
-                    aabb.Min.y = Math::min(vertex.Position.y, aabb.Min.y);
-                    aabb.Min.z = Math::min(vertex.Position.z, aabb.Min.z);
-                    aabb.Max.x = Math::max(vertex.Position.x, aabb.Max.x);
-                    aabb.Max.y = Math::max(vertex.Position.y, aabb.Max.y);
-                    aabb.Max.z = Math::max(vertex.Position.z, aabb.Max.z);
+                    aabb.Min.x = Math::Min(vertex.Position.x, aabb.Min.x);
+                    aabb.Min.y = Math::Min(vertex.Position.y, aabb.Min.y);
+                    aabb.Min.z = Math::Min(vertex.Position.z, aabb.Min.z);
+                    aabb.Max.x = Math::Max(vertex.Position.x, aabb.Max.x);
+                    aabb.Max.y = Math::Max(vertex.Position.y, aabb.Max.y);
+                    aabb.Max.z = Math::Max(vertex.Position.z, aabb.Max.z);
 
                     if (mesh->HasTangentsAndBitangents()) {
                         vertex.Tangent = {mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z};
@@ -177,12 +177,12 @@ namespace Ethereal
             Vector3 min = Vector3(submesh.Transform * Vector4(transformedSubmeshAABB.Min, 1.0f));
             Vector3 max = Vector3(submesh.Transform * Vector4(transformedSubmeshAABB.Max, 1.0f));
 
-            m_BoundingBox.Min.x = Math::min(m_BoundingBox.Min.x, min.x);
-            m_BoundingBox.Min.y = Math::min(m_BoundingBox.Min.y, min.y);
-            m_BoundingBox.Min.z = Math::min(m_BoundingBox.Min.z, min.z);
-            m_BoundingBox.Max.x = Math::max(m_BoundingBox.Max.x, max.x);
-            m_BoundingBox.Max.y = Math::max(m_BoundingBox.Max.y, max.y);
-            m_BoundingBox.Max.z = Math::max(m_BoundingBox.Max.z, max.z);
+            m_BoundingBox.Min.x = Math::Min(m_BoundingBox.Min.x, min.x);
+            m_BoundingBox.Min.y = Math::Min(m_BoundingBox.Min.y, min.y);
+            m_BoundingBox.Min.z = Math::Min(m_BoundingBox.Min.z, min.z);
+            m_BoundingBox.Max.x = Math::Max(m_BoundingBox.Max.x, max.x);
+            m_BoundingBox.Max.y = Math::Max(m_BoundingBox.Max.y, max.y);
+            m_BoundingBox.Max.z = Math::Max(m_BoundingBox.Max.z, max.z);
         }
 
         // Bones
@@ -203,7 +203,7 @@ namespace Ethereal
                     Ref<Joint> joint = m_Animator->m_Skeleton->m_JointsMap[boneID];
 
                     joint->m_OffsetMatrix = Utils::Mat4FromAssimpMat4(bone->mOffsetMatrix);
-                    joint->m_InverseOffsetMatrix = joint->m_OffsetMatrix.inverse();
+                    joint->m_InverseOffsetMatrix = Math::Inverse(joint->m_OffsetMatrix);
 
                     for (size_t j = 0; j < bone->mNumWeights; j++) {
                         int VertexID = submesh.BaseVertex + bone->mWeights[j].mVertexId;
@@ -286,9 +286,9 @@ namespace Ethereal
         m_VertexArray->SetIndexBuffer(m_IndexBuffer);
     }
 
-    void MeshSource::TraverseNodes(aiNode* node, const Matrix4x4& parentTransform, uint32_t level) {
-        Matrix4x4 localTransform = Utils::Mat4FromAssimpMat4(node->mTransformation);
-        Matrix4x4 transform = parentTransform * localTransform;
+    void MeshSource::TraverseNodes(aiNode* node, const Matrix4& parentTransform, uint32_t level) {
+        Matrix4 localTransform = Utils::Mat4FromAssimpMat4(node->mTransformation);
+        Matrix4 transform = parentTransform * localTransform;
         m_NodeMap[node].resize(node->mNumMeshes);
         for (uint32_t i = 0; i < node->mNumMeshes; i++) {
             uint32_t mesh = node->mMeshes[i];
@@ -315,7 +315,7 @@ namespace Ethereal
         }
     }
 
-    MeshSource::MeshSource(const std::vector<Vertex>& vertices, const std::vector<Index>& indices, const Matrix4x4& transform)
+    MeshSource::MeshSource(const std::vector<Vertex>& vertices, const std::vector<Index>& indices, const Matrix4& transform)
         : m_StaticVertices(vertices), m_Indices(indices), m_IsAnimated(false), m_Animator(nullptr) {
         // Generate a new asset handle
         Handle = {};
@@ -397,7 +397,7 @@ namespace Ethereal
 
                 if (aiMaterial->Get(AI_MATKEY_REFLECTIVITY, metalness) != aiReturn_SUCCESS) metalness = 0.0f;
 
-                float roughness = 1.0f - Math::sqrt(shininess / 100.0f);
+                float roughness = 1.0f - sqrt(shininess / 100.0f);
                 bool hasAlbedoMap = aiMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &aiTexPath) == AI_SUCCESS;
                 mi->SetUseAlbedoMap(hasAlbedoMap);
                 bool fallback = !hasAlbedoMap;

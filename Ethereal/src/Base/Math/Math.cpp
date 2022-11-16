@@ -4,269 +4,359 @@
 
 namespace Ethereal
 {
-    Math::AngleUnit Math::k_AngleUnit;
+    namespace Math{
+        float Radians(float degrees) { return degrees * PI / 180.f; }
+        float Degrees(float radians) { return radians * 180.f / PI; }
 
-    Math::Math() { k_AngleUnit = AngleUnit::AU_DEGREE; }
+        float Sin(float v) { return sinf(v); }
+        Vector2 Sin(const Vector2& v) { return Vector2(sinf(v.x), sinf(v.y)); }
+        Vector3 Sin(const Vector3& v) { return Vector3(sinf(v.x), sinf(v.y), sinf(v.z)); }
+        Vector4 Sin(const Vector4& v) { return Vector4(sinf(v.x), sinf(v.y), sinf(v.z), sinf(v.w)); }
+        float Cos(float v) { return cosf(v); }
+        Vector2 Cos(const Vector2& v) { return Vector2(cosf(v.x), cosf(v.y)); }
+        Vector3 Cos(const Vector3& v) { return Vector3(cosf(v.x), cosf(v.y), cosf(v.z)); }
+        Vector4 Cos(const Vector4& v) { return Vector4(cosf(v.x), cosf(v.y), cosf(v.z), cosf(v.w)); }
+        float Tan(float v) { return tanf(v); }
+        Vector2 Tan(const Vector2& v) { return Vector2(tanf(v.x), tanf(v.y)); }
+        Vector3 Tan(const Vector3& v) { return Vector3(tanf(v.x), tanf(v.y), tanf(v.z)); }
+        Vector4 Tan(const Vector4& v) { return Vector4(tanf(v.x), tanf(v.y), tanf(v.z), tanf(v.w)); }
 
-    bool Math::realEqual(float a, float b, float tolerance /* = std::numeric_limits<float>::epsilon() */) { return std::fabs(b - a) <= tolerance; }
+        float Min(float a, float b) { return a < b ? a : b; }
+        float Max(float a, float b) { return a > b ? a : b; }
+        /*********************************************************************
+        ******************************* Vector *******************************
+        **********************************************************************/
+        float* Ptr(Vector2& v) { return &v.x; }
+        const float* Ptr(const Vector2& v) { return &v.x; }
+        float* Ptr(Vector3& v) { return &v.x; }
+        const float* Ptr(const Vector3& v) { return &v.x; }
+        float* Ptr(Vector4& v) { return &v.x; }
+        const float* Ptr(const Vector4& v) { return &v.x; }
 
-    float Math::degreesToRadians(float degrees) { return degrees * Math_fDeg2Rad; }
-    Vector3 Math::degreesToRadians(const Vector3& degrees) { return degrees * Math_fDeg2Rad; }
-
-    float Math::radiansToDegrees(float radians) { return radians * Math_fRad2Deg; }
-    Vector3 Math::radiansToDegrees(const Vector3& radians) { return radians * Math_fRad2Deg; }
-
-    float Math::angleUnitsToRadians(float angleunits) {
-        if (k_AngleUnit == AngleUnit::AU_DEGREE) return angleunits * Math_fDeg2Rad;
-
-        return angleunits;
-    }
-
-    float Math::radiansToAngleUnits(float radians) {
-        if (k_AngleUnit == AngleUnit::AU_DEGREE) return radians * Math_fRad2Deg;
-
-        return radians;
-    }
-
-    float Math::angleUnitsToDegrees(float angleunits) {
-        if (k_AngleUnit == AngleUnit::AU_RADIAN) return angleunits * Math_fRad2Deg;
-
-        return angleunits;
-    }
-
-    float Math::degreesToAngleUnits(float degrees) {
-        if (k_AngleUnit == AngleUnit::AU_RADIAN) return degrees * Math_fDeg2Rad;
-
-        return degrees;
-    }
-
-    Radian Math::acos(float value) {
-        if (-1.0 < value) {
-            if (value < 1.0) return Radian(::acos(value));
-
-            return Radian(0.0);
+        float Dot(const Vector2& a,const Vector2& b){
+            Vector2 tmp(a * b);
+            return tmp.x + tmp.y;
+        }
+        float Dot(const Vector3& a,const Vector3& b){
+            Vector3 tmp(a * b);
+            return tmp.x + tmp.y + tmp.z;
+        }
+        float Dot(const Vector4& a,const Vector4& b){
+            Vector4 tmp(a * b);
+            return tmp.x + tmp.y + tmp.z + tmp.w;
         }
 
-        return Radian(Math_PI);
-    }
-    //-----------------------------------------------------------------------
-    Radian Math::asin(float value) {
-        if (-1.0 < value) {
-            if (value < 1.0) return Radian(::asin(value));
-
-            return Radian(Math_HALF_PI);
+        Vector2 Cross(const Vector2& a,const Vector2& b){
+            return {a.x * b.y - a.y * b.x};
+        }
+        Vector3 Cross(const Vector3& a,const Vector3& b){
+            return {a.y * b.z - a.z * b.y,
+                   a.z * b.x - a.x * b.z,
+                   a.x * b.y - a.y * b.x};
+        }
+        Vector4 Cross(const Vector4& a,const Vector4& b){
+            return {
+                a.y * b.z - a.z * b.y,
+                a.z * b.x - a.x * b.z,
+                a.x * b.y - a.y * b.x,
+                0
+            };
         }
 
-        return Radian(-Math_HALF_PI);
-    }
-
-    Matrix4x4 Math::makeViewMatrix(const Vector3& position, const Quaternion& orientation, const Matrix4x4* reflect_matrix) {
-        Matrix4x4 viewMatrix;
-
-        // View matrix is:
-        //
-        //  [ Lx  Uy  Dz  Tx  ]
-        //  [ Lx  Uy  Dz  Ty  ]
-        //  [ Lx  Uy  Dz  Tz  ]
-        //  [ 0   0   0   1   ]
-        //
-        // Where T = -(Transposed(Rot) * Pos)
-
-        // This is most efficiently done using 3x3 Matrices
-        Matrix3x3 rot;
-        orientation.toRotationMatrix(rot);
-
-        // Make the translation relative to new axes
-        Matrix3x3 rotT = rot.transpose();
-        Vector3 trans = -rotT * position;
-
-        // Make final matrix
-        viewMatrix = Matrix4x4::IDENTITY;
-        viewMatrix.setMatrix3x3(rotT);  // fills upper 3x3
-        viewMatrix[0][3] = trans.x;
-        viewMatrix[1][3] = trans.y;
-        viewMatrix[2][3] = trans.z;
-
-        // Deal with reflections
-        if (reflect_matrix) {
-            viewMatrix = viewMatrix * (*reflect_matrix);
+        float Length(const Vector2& v){
+            return sqrtf(Dot(v,v));
+        }
+        float Length(const Vector3& v){
+            return sqrtf(Dot(v,v));
+        }
+        float Length(const Vector4& v){
+            return sqrtf(Dot(v,v));
         }
 
-        return viewMatrix;
-    }
 
-    Matrix4x4 Math::makeLookAtMatrix(const Vector3& eye_position, const Vector3& target_position, const Vector3& up_dir) {
-        const Vector3& up = up_dir.normalisedCopy();
 
-        Vector3 f = (target_position - eye_position).normalisedCopy();
-        Vector3 s = f.crossProduct(up).normalisedCopy();
-        Vector3 u = s.crossProduct(f);
-
-        Matrix4x4 view_mat = Matrix4x4::IDENTITY;
-
-        view_mat[0][0] = s.x;
-        view_mat[0][1] = s.y;
-        view_mat[0][2] = s.z;
-        view_mat[0][3] = -s.dotProduct(eye_position);
-        view_mat[1][0] = u.x;
-        view_mat[1][1] = u.y;
-        view_mat[1][2] = u.z;
-        view_mat[1][3] = -u.dotProduct(eye_position);
-        view_mat[2][0] = -f.x;
-        view_mat[2][1] = -f.y;
-        view_mat[2][2] = -f.z;
-        view_mat[2][3] = f.dotProduct(eye_position);
-        return view_mat;
-    }
-
-    Matrix4x4 Math::makePerspectiveMatrix(Radian fovy, float aspect, float znear, float zfar) {
-        float tan_half_fovy = Math::tan(fovy / 2.f);
-
-        Matrix4x4 ret = Matrix4x4::ZERO;
-        ret[0][0] = 1.f / (aspect * tan_half_fovy);
-        ret[1][1] = 1.f / tan_half_fovy;
-        ret[2][2] = zfar / (znear - zfar);
-        ret[3][2] = -1.f;
-        ret[2][3] = -(zfar * znear) / (zfar - znear);
-
-        return ret;
-    }
-
-    Matrix4x4 Math::makeOrthographicProjectionMatrix(float left, float right, float bottom, float top, float znear, float zfar) {
-        float inv_width = 1.0f / (right - left);
-        float inv_height = 1.0f / (top - bottom);
-        float inv_distance = 1.0f / (zfar - znear);
-
-        float A = 2 * inv_width;
-        float B = 2 * inv_height;
-        float C = -(right + left) * inv_width;
-        float D = -(top + bottom) * inv_height;
-        float q = -2 * inv_distance;
-        float qn = qn = -(zfar + znear) * inv_distance;
-
-        // NB: This creates 'uniform' orthographic projection matrix,
-        // which depth range [-1,1], right-handed rules
-        //
-        // [ A   0   0   C  ]
-        // [ 0   B   0   D  ]
-        // [ 0   0   q   qn ]
-        // [ 0   0   0   1  ]
-        //
-        // A = 2 * / (right - left)
-        // B = 2 * / (top - bottom)
-        // C = - (right + left) / (right - left)
-        // D = - (top + bottom) / (top - bottom)
-        // q = - 2 / (far - near)
-        // qn = - (far + near) / (far - near)
-
-        Matrix4x4 proj_matrix = Matrix4x4::ZERO;
-        proj_matrix[0][0] = A;
-        proj_matrix[0][3] = C;
-        proj_matrix[1][1] = B;
-        proj_matrix[1][3] = D;
-        proj_matrix[2][2] = q;
-        proj_matrix[2][3] = qn;
-        proj_matrix[3][3] = 1;
-
-        return proj_matrix;
-    }
-
-    Matrix4x4 Math::getRotateMatrix(const Quaternion& quat) { return Matrix4x4{quat}; }
-    Matrix4x4 Math::getRotateMatrix(Radian rad, const Vector3& axis) { return Matrix4x4{Quaternion{rad, axis}}; }
-    Vector3 Math::getRotate(const Quaternion& quat, const Vector3& v) { return quat * v; }
-
-    Matrix4x4 Math::getTranslateMatrix(const Vector3& trans) { return Matrix4x4::getTrans(trans); }
-
-    Matrix4x4 Math::getScaleMatrix(const Vector3& scale) { return Matrix4x4::getScale(scale); }
-
-    float* Math::getPtr(const Matrix4x4& mat4) {
-        float data[16];
-        mat4.transpose().toData(data);
-
-        float* res = new float[16];
-        memcpy(res, data, 16 * sizeof(float));
-        return res;
-    }
-
-    float* Math::getPtr(const Matrix3x3& mat3) {
-        float data[9];
-        mat3.transpose().toData(data);
-
-        float* res = new float[9];
-        memcpy(res, data, 9 * sizeof(float));
-        return res;
-    }
-
-    bool Math::decomposeTransformMatrix(const Matrix4x4& mat, Vector3& translation, Vector3& scale, Quaternion& rotation) {
-        //        glm::vec3 sca, trans, skew;
-        //        glm::vec4 perspective;
-        //        glm::quat orientation;
-        //        glm::decompose(mat.toGLM(), sca, orientation, trans, skew, perspective);
-        //
-        //        translation = Vector3(trans);
-        //        scale = Vector3(sca);
-        //        rotation = Quaternion(orientation);
-        //        return true;
-
-        using T = float;
-
-        Matrix4x4 LocalMatrix(mat);
-
-        // Normalize the matrix.
-        if (Math::epsilonEqual(LocalMatrix[3][3], static_cast<float>(0))) return false;
-
-        // First, isolate perspective.  This is the messiest.
-        if (Math::epsilonNotEqual(LocalMatrix[0][3], static_cast<T>(0)) || Math::epsilonNotEqual(LocalMatrix[1][3], static_cast<T>(0)) ||
-            Math::epsilonNotEqual(LocalMatrix[2][3], static_cast<T>(0))) {
-            // Clear the perspective partition
-            LocalMatrix[0][3] = LocalMatrix[1][3] = LocalMatrix[2][3] = static_cast<T>(0);
-            LocalMatrix[3][3] = static_cast<T>(1);
+        Vector2 Normalize(const Vector2& v) {
+            return v / Length(v);
+        }
+        Vector3 Normalize(const Vector3& v) {
+            return v / Length(v);
+        }
+        Vector4 Normalize(const Vector4& v) {
+            return v / Length(v);
         }
 
-        // Next take care of translation (easy).
-        translation = Vector3(LocalMatrix[3]);
-        LocalMatrix[3][0] = 0;
-        LocalMatrix[3][1] = 0;
-        LocalMatrix[3][2] = 0;
-
-        Vector3 Row[3], Pdum3;
-
-        // Now get scale and shear.
-        for (int i = 0; i < 3; ++i)
-            for (int j = 0; j < 3; ++j) Row[i][j] = LocalMatrix[i][j];
-
-        // Compute X scale factor and normalize first row.
-        scale.x = Row[0].length();
-        Row[0].normalise();
-        scale.y = Row[1].length();
-        Row[1].normalise();
-        scale.z = Row[2].length();
-        Row[2].normalise();
-
-        // At this point, the matrix (in rows[]) is orthonormal.
-        // Check for a coordinate system flip.  If the determinant
-        // is -1, then negate the matrix and the scaling factors.
-#if 0
-        		Pdum3 = cross(Row[1], Row[2]); // v3Cross(row[1], row[2], Pdum3);
-        		if (dot(Row[0], Pdum3) < 0)
-        		{
-        			for (length_t i = 0; i < 3; i++)
-        			{
-        				scale[i] *= static_cast<T>(-1);
-        				Row[i] *= static_cast<T>(-1);
-        			}
-        		}
-#endif
-        Vector3 rot;
-        rot.y = Math::asin(-Row[0][2]).valueRadians();
-        if (cos(rot.y) != 0) {
-            rot.x = Math::atan2(Row[1][2], Row[2][2]).valueRadians();
-            rot.z = Math::atan2(Row[0][1], Row[0][0]).valueRadians();
-        } else {
-            rot.x = Math::atan2(-Row[2][0], Row[1][1]).valueRadians();
-            rot.z = 0;
+        float Mix(const float& a, const float& b, float t) {
+            return a * (1 - t) + b * t;
         }
-        glm::mat4 a;
-        rotation.fromEulerAngle(rot);
+        Vector2 Mix(const Vector2& a,const Vector2& b,float t){
+            return a * (1 - t) + b * t;
+        }
+        Vector3 Mix(const Vector3& a,const Vector3& b,float t){
+            return a * (1 - t) + b * t;
+        }
+        Vector4 Mix(const Vector4& a,const Vector4& b,float t){
+            return a * (1 - t) + b * t;
+        }
+
+
+        /*********************************************************************
+        ******************************* Matrix *******************************
+        **********************************************************************/
+        float* Ptr(Matrix3& m){
+            return &m.value0[0];
+        }
+        const float* Ptr(const Matrix3& m){
+            return &m.value0[0];
+        }
+        float* Ptr(Matrix4& m){
+            return &m.value0[0];
+        }
+        const float* Ptr(const Matrix4& m){
+            return &m.value0[0];
+        }
+
+
+        Matrix4 Inverse(const Matrix4& m) {
+            float Coef00 = m[2][2] * m[3][3] - m[3][2] * m[2][3];
+            float Coef02 = m[1][2] * m[3][3] - m[3][2] * m[1][3];
+            float Coef03 = m[1][2] * m[2][3] - m[2][2] * m[1][3];
+
+            float Coef04 = m[2][1] * m[3][3] - m[3][1] * m[2][3];
+            float Coef06 = m[1][1] * m[3][3] - m[3][1] * m[1][3];
+            float Coef07 = m[1][1] * m[2][3] - m[2][1] * m[1][3];
+
+            float Coef08 = m[2][1] * m[3][2] - m[3][1] * m[2][2];
+            float Coef10 = m[1][1] * m[3][2] - m[3][1] * m[1][2];
+            float Coef11 = m[1][1] * m[2][2] - m[2][1] * m[1][2];
+
+            float Coef12 = m[2][0] * m[3][3] - m[3][0] * m[2][3];
+            float Coef14 = m[1][0] * m[3][3] - m[3][0] * m[1][3];
+            float Coef15 = m[1][0] * m[2][3] - m[2][0] * m[1][3];
+
+            float Coef16 = m[2][0] * m[3][2] - m[3][0] * m[2][2];
+            float Coef18 = m[1][0] * m[3][2] - m[3][0] * m[1][2];
+            float Coef19 = m[1][0] * m[2][2] - m[2][0] * m[1][2];
+
+            float Coef20 = m[2][0] * m[3][1] - m[3][0] * m[2][1];
+            float Coef22 = m[1][0] * m[3][1] - m[3][0] * m[1][1];
+            float Coef23 = m[1][0] * m[2][1] - m[2][0] * m[1][1];
+
+            Vector4 Fac0(Coef00, Coef00, Coef02, Coef03);
+            Vector4 Fac1(Coef04, Coef04, Coef06, Coef07);
+            Vector4 Fac2(Coef08, Coef08, Coef10, Coef11);
+            Vector4 Fac3(Coef12, Coef12, Coef14, Coef15);
+            Vector4 Fac4(Coef16, Coef16, Coef18, Coef19);
+            Vector4 Fac5(Coef20, Coef20, Coef22, Coef23);
+
+            Vector4 Vec0(m[1][0], m[0][0], m[0][0], m[0][0]);
+            Vector4 Vec1(m[1][1], m[0][1], m[0][1], m[0][1]);
+            Vector4 Vec2(m[1][2], m[0][2], m[0][2], m[0][2]);
+            Vector4 Vec3(m[1][3], m[0][3], m[0][3], m[0][3]);
+
+            Vector4 Inv0(Vec1 * Fac0 - Vec2 * Fac1 + Vec3 * Fac2);
+            Vector4 Inv1(Vec0 * Fac0 - Vec2 * Fac3 + Vec3 * Fac4);
+            Vector4 Inv2(Vec0 * Fac1 - Vec1 * Fac3 + Vec3 * Fac5);
+            Vector4 Inv3(Vec0 * Fac2 - Vec1 * Fac4 + Vec2 * Fac5);
+
+            Vector4 SignA(+1, -1, +1, -1);
+            Vector4 SignB(-1, +1, -1, +1);
+            Matrix4 Inverse(Inv0 * SignA, Inv1 * SignB, Inv2 * SignA, Inv3 * SignB);
+
+            Vector4 Row0(Inverse[0][0], Inverse[1][0], Inverse[2][0], Inverse[3][0]);
+
+            Vector4 Dot0(m[0] * Row0);
+            float Dot1 = (Dot0.x + Dot0.y) + (Dot0.z + Dot0.w);
+
+            float OneOverDeterminant = static_cast<float>(1) / Dot1;
+
+            return Inverse * OneOverDeterminant;
+        }
+
+        Matrix3 Inverse(const Matrix3& m) {
+
+            float OneOverDeterminant = static_cast<float>(1) / (
+                                                                   + m[0][0] * (m[1][1] * m[2][2] - m[2][1] * m[1][2])
+                                                                   - m[1][0] * (m[0][1] * m[2][2] - m[2][1] * m[0][2])
+                                                                   + m[2][0] * (m[0][1] * m[1][2] - m[1][1] * m[0][2]));
+
+            Matrix3 Inverse;
+            Inverse[0][0] = + (m[1][1] * m[2][2] - m[2][1] * m[1][2]) * OneOverDeterminant;
+            Inverse[1][0] = - (m[1][0] * m[2][2] - m[2][0] * m[1][2]) * OneOverDeterminant;
+            Inverse[2][0] = + (m[1][0] * m[2][1] - m[2][0] * m[1][1]) * OneOverDeterminant;
+            Inverse[0][1] = - (m[0][1] * m[2][2] - m[2][1] * m[0][2]) * OneOverDeterminant;
+            Inverse[1][1] = + (m[0][0] * m[2][2] - m[2][0] * m[0][2]) * OneOverDeterminant;
+            Inverse[2][1] = - (m[0][0] * m[2][1] - m[2][0] * m[0][1]) * OneOverDeterminant;
+            Inverse[0][2] = + (m[0][1] * m[1][2] - m[1][1] * m[0][2]) * OneOverDeterminant;
+            Inverse[1][2] = - (m[0][0] * m[1][2] - m[1][0] * m[0][2]) * OneOverDeterminant;
+            Inverse[2][2] = + (m[0][0] * m[1][1] - m[1][0] * m[0][1]) * OneOverDeterminant;
+
+            return Inverse;
+        }
+
+        Matrix4 Ortho(float left, float right, float bottom, float top, float zNear, float zFar) {
+            Matrix4 Result(static_cast<float>(1));
+            Result[0][0] = static_cast<float>(2) / (right - left);
+            Result[1][1] = static_cast<float>(2) / (top - bottom);
+            Result[2][2] = - static_cast<float>(2) / (zFar - zNear);
+            Result[3][0] = - (right + left) / (right - left);
+            Result[3][1] = - (top + bottom) / (top - bottom);
+            Result[3][2] = - (zFar + zNear) / (zFar - zNear);
+            return Result;
+        }
+
+        Matrix4 Perspective(float fovy, float aspect, float zNear, float zFar) {
+            assert(abs(aspect - EPSILONF) > static_cast<float>(0));
+
+            float const tanHalfFovy = tan(fovy / static_cast<float>(2));
+
+            Matrix4 Result(static_cast<float>(0));
+            Result[0][0] = static_cast<float>(1) / (aspect * tanHalfFovy);
+            Result[1][1] = static_cast<float>(1) / (tanHalfFovy);
+            Result[2][2] = - (zFar + zNear) / (zFar - zNear);
+            Result[2][3] = - static_cast<float>(1);
+            Result[3][2] = - (static_cast<float>(2) * zFar * zNear) / (zFar - zNear);
+            return Result;
+        }
+
+        Matrix4 LookAt(const Vector3& eye, const Vector3& center, const Vector3& up) {
+            Vector3 const f(Normalize(center - eye));
+            Vector3 const s(Normalize(Cross(f, up)));
+            Vector3 const u(Cross(s, f));
+
+            Matrix4 Result(1);
+            Result[0][0] = s.x;
+            Result[1][0] = s.y;
+            Result[2][0] = s.z;
+            Result[0][1] = u.x;
+            Result[1][1] = u.y;
+            Result[2][1] = u.z;
+            Result[0][2] =-f.x;
+            Result[1][2] =-f.y;
+            Result[2][2] =-f.z;
+            Result[3][0] =-Dot(s, eye);
+            Result[3][1] =-Dot(u, eye);
+            Result[3][2] = Dot(f, eye);
+            return Result;
+        }
+
+        Matrix4 Translate(const Matrix4& m, const Vector3& v) {
+            Matrix4 Result(m);
+            Result[3] = m[0] * v[0] + m[1] * v[1] + m[2] * v[2] + m[3];
+            return Result;
+        }
+
+        Matrix4 Rotate(const Matrix4& m, float angle, const Vector3& v) {
+            float const c = cos(angle);
+            float const s = sin(angle);
+
+            Vector3 axis(Normalize(v));
+            Vector3 temp((static_cast<float>(1) - c) * axis);
+
+            Matrix4 Rotate;
+            Rotate[0][0] = c + temp[0] * axis[0];
+            Rotate[0][1] = 0 + temp[0] * axis[1] + s * axis[2];
+            Rotate[0][2] = 0 + temp[0] * axis[2] - s * axis[1];
+
+            Rotate[1][0] = 0 + temp[1] * axis[0] - s * axis[2];
+            Rotate[1][1] = c + temp[1] * axis[1];
+            Rotate[1][2] = 0 + temp[1] * axis[2] + s * axis[0];
+
+            Rotate[2][0] = 0 + temp[2] * axis[0] + s * axis[1];
+            Rotate[2][1] = 0 + temp[2] * axis[1] - s * axis[0];
+            Rotate[2][2] = c + temp[2] * axis[2];
+
+            Matrix4 Result;
+            Result[0] = m[0] * Rotate[0][0] + m[1] * Rotate[0][1] + m[2] * Rotate[0][2];
+            Result[1] = m[0] * Rotate[1][0] + m[1] * Rotate[1][1] + m[2] * Rotate[1][2];
+            Result[2] = m[0] * Rotate[2][0] + m[1] * Rotate[2][1] + m[2] * Rotate[2][2];
+            Result[3] = m[3];
+            return Result;
+        }
+
+        Matrix4 Rotate(const Matrix4& m, const Quaternion& q) {
+            return m * Matrix4(q);
+        }
+
+        Vector3 Rotate(const Quaternion& q, const Vector3& v) { return q*v; }
+
+        Matrix4 Scale(const Matrix4& m, const Vector3& v) {
+            Matrix4 Result(m);
+            Result[0][0] *= v.x;
+            Result[1][1] *= v.y;
+            Result[2][2] *= v.z;
+            return Result;
+        }
+        
+        bool DecomposeTransformMatrix(const Matrix4& m, Vector3& translation, Quaternion& rotation, Vector3& scale) {
+            translation = Vector3(m[3][0], m[3][1], m[3][2]);
+
+            scale.x = Length(Vector3(m[0][0], m[0][1], m[0][2]));
+            scale.y = Length(Vector3(m[1][0], m[1][1], m[1][2]));
+            scale.z = Length(Vector3(m[2][0], m[2][1], m[2][2]));
+
+            if (scale.x == 0.0f || scale.y == 0.0f || scale.z == 0.0f) {
+                rotation = Quaternion(0.0f, 0.0f, 0.0f, 1.0f);
+                return false;
+            }
+
+            Matrix4 rotMatrix(m);
+            rotMatrix[0][0] /= scale.x;
+            rotMatrix[0][1] /= scale.x;
+            rotMatrix[0][2] /= scale.x;
+
+            rotMatrix[1][0] /= scale.y;
+            rotMatrix[1][1] /= scale.y;
+            rotMatrix[1][2] /= scale.y;
+
+            rotMatrix[2][0] /= scale.z;
+            rotMatrix[2][1] /= scale.z;
+            rotMatrix[2][2] /= scale.z;
+
+            rotation = Quaternion(rotMatrix);
+            return true;
+        }
+            
+        
+        float Dot(const Quaternion& a, const Quaternion& b) {
+            return a.w * b.w + a.x * b.x + a.y * b.y + a.z * b.z;
+        }
+
+        Quaternion Mix(const Quaternion& a, const Quaternion& b, float t) {
+            float const cosTheta = Dot(a, b);
+            
+            // Perform a linear interpolation when cosTheta is close to 1 to avoid side effect of sin(angle) becoming a zero denominator
+            if(cosTheta > static_cast<float>(1) - EPSILONF)
+            {
+                // Linear interpolation
+                return Quaternion(
+                    Mix(a.w, b.w, t),
+                    Mix(a.x, b.x, t),
+                    Mix(a.y, b.y, t),
+                    Mix(a.z, b.z, t));
+            }
+            else
+            {
+                // Essential Mathematics, page 467
+                float angle = acos(cosTheta);
+                return (sin((static_cast<float>(1) - t) * angle) * a + sin(t * angle) * b) / sin(angle);
+            }
+        }
+        
+        float Length(const Quaternion& q) {
+            return sqrt(q.w*q.w + q.x*q.x + q.y*q.y + q.z*q.z);
+        }
+        Quaternion Normalize(const Quaternion& q) {
+            float len = Length(q);
+            return Quaternion(q.w / len, q.x / len, q.y / len, q.z / len);
+        }
+        Quaternion Conjugate(const Quaternion& q) {
+            return Quaternion(q.w, -q.x, -q.y, -q.z);
+        }
+        Quaternion Inverse(const Quaternion& q) {
+            return Conjugate(q) / (q.w*q.w + q.x*q.x + q.y*q.y + q.z*q.z);
+        }
+
+
     }
+
 }  // namespace Ethereal

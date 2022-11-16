@@ -10,7 +10,7 @@ namespace Ethereal
 
         void SetLocalTransform(AnimState state);
 
-        Matrix4x4 GetLocalTransform() { return m_LocalTransform; }
+        Matrix4 GetLocalTransform() { return m_LocalTransform; }
 
       public:
         Ref<Joint> m_Parent = nullptr;
@@ -22,9 +22,9 @@ namespace Ethereal
         Quaternion m_InitialRotation{Quaternion()};
         Vector3 m_InitialScale{Vector3(1.0f)};
 
-        Matrix4x4 m_OffsetMatrix{Matrix4x4::IDENTITY};
-        Matrix4x4 m_InverseOffsetMatrix{Matrix4x4::IDENTITY};
-        Matrix4x4 m_LocalTransform{Matrix4x4::IDENTITY};
+        Matrix4 m_OffsetMatrix{Matrix4::IDENTITY};
+        Matrix4 m_InverseOffsetMatrix{Matrix4::IDENTITY};
+        Matrix4 m_LocalTransform{Matrix4::IDENTITY};
     };
 
 }  // namespace Ethereal

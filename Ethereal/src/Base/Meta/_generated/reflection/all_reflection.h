@@ -11,7 +11,8 @@ namespace Ethereal
     namespace Reflection
     {
         void TypeMetaRegister::Register() {
-            TypeWrappersRegister::Matrix4x4_();
+            TypeWrappersRegister::Matrix3();
+            TypeWrappersRegister::Matrix4();
             TypeWrappersRegister::Quaternion();
             TypeWrappersRegister::Vector2();
             TypeWrappersRegister::Vector3();

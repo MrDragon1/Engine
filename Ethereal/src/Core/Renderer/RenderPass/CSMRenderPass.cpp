@@ -57,8 +57,8 @@ namespace Ethereal
 
     void CSMRenderPass::OnResize(uint32_t width, uint32_t height) {}
 
-    std::vector<Vector4> CSMRenderPass::GetFrustumCornersWorldSpace(const Matrix4x4& projview) {
-        const auto inv = projview.inverse();
+    std::vector<Vector4> CSMRenderPass::GetFrustumCornersWorldSpace(const Matrix4& projview) {
+        const auto inv = Math::Inverse(projview);
 
         std::vector<Vector4> frustumCorners;
         for (unsigned int x = 0; x < 2; ++x) {
@@ -73,12 +73,12 @@ namespace Ethereal
         return frustumCorners;
     }
 
-    std::vector<Vector4> CSMRenderPass::GetFrustumCornersWorldSpace(const Matrix4x4& proj, const Matrix4x4& view) {
+    std::vector<Vector4> CSMRenderPass::GetFrustumCornersWorldSpace(const Matrix4& proj, const Matrix4& view) {
         return GetFrustumCornersWorldSpace(proj * view);
     }
 
-    Matrix4x4 CSMRenderPass::GetLightSpaceMatrix(float nearPlane, float farPlane) {
-        const auto proj = Math::makePerspectiveMatrix(Radian(Math::degreesToRadians(m_Data.FOV)), m_Data.AspectRatio, nearPlane, farPlane);
+    Matrix4 CSMRenderPass::GetLightSpaceMatrix(float nearPlane, float farPlane) {
+        const auto proj = Math::Perspective(Math::Radians(m_Data.FOV), m_Data.AspectRatio, nearPlane, farPlane);
         const auto corners = GetFrustumCornersWorldSpace(proj, m_Data.View);
 
         Vector3 center = Vector3(0, 0, 0);
@@ -87,7 +87,7 @@ namespace Ethereal
         }
         center /= corners.size();
 
-        const auto lightView = Math::makeLookAtMatrix(center + m_Data.LightDir, center, Vector3(0.0f, 1.0f, 0.0f));
+        const auto lightView = Math::LookAt(center + m_Data.LightDir, center, Vector3(0.0f, 1.0f, 0.0f));
 
         float minX = std::numeric_limits<float>::max();
         float maxX = std::numeric_limits<float>::min();
@@ -118,13 +118,13 @@ namespace Ethereal
             maxZ *= zMult;
         }
 
-        const Matrix4x4 lightProjection = Math::makeOrthographicProjectionMatrix(minX, maxX, minY, maxY, minZ, maxZ);
+        const Matrix4 lightProjection = Math::Ortho(minX, maxX, minY, maxY, minZ, maxZ);
 
         return lightProjection * lightView;
     }
 
-    std::vector<Matrix4x4> CSMRenderPass::GetLightSpaceMatrices() {
-        std::vector<Matrix4x4> ret;
+    std::vector<Matrix4> CSMRenderPass::GetLightSpaceMatrices() {
+        std::vector<Matrix4> ret;
         for (size_t i = 0; i < m_Distance.size() + 1; ++i) {
             if (i == 0) {
                 ret.push_back(GetLightSpaceMatrix(m_Data.NearPlane, m_Distance[i]));

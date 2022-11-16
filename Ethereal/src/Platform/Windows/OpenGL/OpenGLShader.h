@@ -20,7 +20,7 @@ namespace Ethereal
         virtual void SetFloat(const std::string& name, float value) override;
         virtual void SetFloat3(const std::string& name, const Vector3& value) override;
         virtual void SetFloat4(const std::string& name, const Vector4& value) override;
-        virtual void SetMat4(const std::string& name, const Matrix4x4& value) override;
+        virtual void SetMat4(const std::string& name, const Matrix4& value) override;
         virtual void SetInt(const std::string& name, int value) override;
         virtual void SetIntArray(const std::string& name, int* values, uint32_t count) override;
 
@@ -32,8 +32,8 @@ namespace Ethereal
         void UploadUniformFloat3(const std::string& name, const Vector3& value);
         void UploadUniformFloat4(const std::string& name, const Vector4& value);
 
-        void UploadUniformMat3(const std::string& name, const Matrix3x3& matrix);
-        void UploadUniformMat4(const std::string& name, const Matrix4x4& matrix);
+        void UploadUniformMat3(const std::string& name, const Matrix3& matrix);
+        void UploadUniformMat4(const std::string& name, const Matrix4& matrix);
 
         virtual const std::string& GetName() const override { return m_Name; };
 

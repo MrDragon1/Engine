@@ -6,76 +6,50 @@
 namespace Ethereal
 {
     template <>
-    YNode Serializer::write(const Matrix4x4_ & instance) {
+    YNode Serializer::write(const Matrix3 & instance) {
         YNode ret_context;
-        ret_context["v0"] = Serializer::write(instance.v0);
-        ret_context["v1"] = Serializer::write(instance.v1);
-        ret_context["v2"] = Serializer::write(instance.v2);
-        ret_context["v3"] = Serializer::write(instance.v3);
-        ret_context["v4"] = Serializer::write(instance.v4);
-        ret_context["v5"] = Serializer::write(instance.v5);
-        ret_context["v6"] = Serializer::write(instance.v6);
-        ret_context["v7"] = Serializer::write(instance.v7);
-        ret_context["v8"] = Serializer::write(instance.v8);
-        ret_context["v9"] = Serializer::write(instance.v9);
-        ret_context["v10"] = Serializer::write(instance.v10);
-        ret_context["v11"] = Serializer::write(instance.v11);
-        ret_context["v12"] = Serializer::write(instance.v12);
-        ret_context["v13"] = Serializer::write(instance.v13);
-        ret_context["v14"] = Serializer::write(instance.v14);
-        ret_context["v15"] = Serializer::write(instance.v15);
+        ret_context["value0"] = Serializer::write(instance.value0);
+        ret_context["value1"] = Serializer::write(instance.value1);
+        ret_context["value2"] = Serializer::write(instance.value2);
         return ret_context;
     }
     template <>
-    Matrix4x4_&Serializer::read(const YNode& yaml_context, Matrix4x4_&instance) {
+    Matrix3&Serializer::read(const YNode& yaml_context, Matrix3&instance) {
         assert(!yaml_context.IsNull());
-        if (!yaml_context["v0"].IsNull()) {
-            Serializer::read(yaml_context["v0"], instance.v0);
+        if (!yaml_context["value0"].IsNull()) {
+            Serializer::read(yaml_context["value0"], instance.value0);
         }
-        if (!yaml_context["v1"].IsNull()) {
-            Serializer::read(yaml_context["v1"], instance.v1);
+        if (!yaml_context["value1"].IsNull()) {
+            Serializer::read(yaml_context["value1"], instance.value1);
         }
-        if (!yaml_context["v2"].IsNull()) {
-            Serializer::read(yaml_context["v2"], instance.v2);
+        if (!yaml_context["value2"].IsNull()) {
+            Serializer::read(yaml_context["value2"], instance.value2);
         }
-        if (!yaml_context["v3"].IsNull()) {
-            Serializer::read(yaml_context["v3"], instance.v3);
+        return instance;
+    }
+    template <>
+    YNode Serializer::write(const Matrix4 & instance) {
+        YNode ret_context;
+        ret_context["value0"] = Serializer::write(instance.value0);
+        ret_context["value1"] = Serializer::write(instance.value1);
+        ret_context["value2"] = Serializer::write(instance.value2);
+        ret_context["value3"] = Serializer::write(instance.value3);
+        return ret_context;
+    }
+    template <>
+    Matrix4&Serializer::read(const YNode& yaml_context, Matrix4&instance) {
+        assert(!yaml_context.IsNull());
+        if (!yaml_context["value0"].IsNull()) {
+            Serializer::read(yaml_context["value0"], instance.value0);
         }
-        if (!yaml_context["v4"].IsNull()) {
-            Serializer::read(yaml_context["v4"], instance.v4);
+        if (!yaml_context["value1"].IsNull()) {
+            Serializer::read(yaml_context["value1"], instance.value1);
         }
-        if (!yaml_context["v5"].IsNull()) {
-            Serializer::read(yaml_context["v5"], instance.v5);
+        if (!yaml_context["value2"].IsNull()) {
+            Serializer::read(yaml_context["value2"], instance.value2);
         }
-        if (!yaml_context["v6"].IsNull()) {
-            Serializer::read(yaml_context["v6"], instance.v6);
-        }
-        if (!yaml_context["v7"].IsNull()) {
-            Serializer::read(yaml_context["v7"], instance.v7);
-        }
-        if (!yaml_context["v8"].IsNull()) {
-            Serializer::read(yaml_context["v8"], instance.v8);
-        }
-        if (!yaml_context["v9"].IsNull()) {
-            Serializer::read(yaml_context["v9"], instance.v9);
-        }
-        if (!yaml_context["v10"].IsNull()) {
-            Serializer::read(yaml_context["v10"], instance.v10);
-        }
-        if (!yaml_context["v11"].IsNull()) {
-            Serializer::read(yaml_context["v11"], instance.v11);
-        }
-        if (!yaml_context["v12"].IsNull()) {
-            Serializer::read(yaml_context["v12"], instance.v12);
-        }
-        if (!yaml_context["v13"].IsNull()) {
-            Serializer::read(yaml_context["v13"], instance.v13);
-        }
-        if (!yaml_context["v14"].IsNull()) {
-            Serializer::read(yaml_context["v14"], instance.v14);
-        }
-        if (!yaml_context["v15"].IsNull()) {
-            Serializer::read(yaml_context["v15"], instance.v15);
+        if (!yaml_context["value3"].IsNull()) {
+            Serializer::read(yaml_context["value3"], instance.value3);
         }
         return instance;
     }

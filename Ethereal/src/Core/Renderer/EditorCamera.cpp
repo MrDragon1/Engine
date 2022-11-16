@@ -13,13 +13,13 @@ namespace Ethereal
           m_AspectRatio(aspectRatio),
           m_NearClip(nearClip),
           m_FarClip(farClip),
-          Camera(Math::makePerspectiveMatrix(Radian(Math::degreesToRadians(fov)), aspectRatio, nearClip, farClip)) {
+          Camera(Math::Perspective(Math::Radians(fov), aspectRatio, nearClip, farClip)) {
         UpdateView();
     }
 
     void EditorCamera::UpdateProjection() {
         m_AspectRatio = GlobalContext::GetViewportSize().x / GlobalContext::GetViewportSize().y;
-        m_Projection = Math::makePerspectiveMatrix(Radian(Math::degreesToRadians(m_FOV)), m_AspectRatio, m_NearClip, m_FarClip);
+        m_Projection = Math::Perspective(Math::Radians(m_FOV), m_AspectRatio, m_NearClip, m_FarClip);
     }
 
     void EditorCamera::UpdateView() {
@@ -27,10 +27,10 @@ namespace Ethereal
         m_Position = CalculatePosition();
 
         //        Quaternion orientation = GetOrientation();
-        //        m_ViewMatrix = glm::translate(Matrix4x4::IDENTITY, m_Position) * glm::toMat4(orientation);
+        //        m_ViewMatrix = glm::translate(Matrix4::IDENTITY, m_Position) * glm::toMat4(orientation);
         //        m_ViewMatrix = glm::inverse(m_ViewMatrix);
 
-        m_ViewMatrix = Math::makeLookAtMatrix(m_Position, m_Position + GetForwardDirection(), GetUpDirection());
+        m_ViewMatrix = Math::LookAt(m_Position, m_Position + GetForwardDirection(), GetUpDirection());
     }
 
     std::pair<float, float> EditorCamera::PanSpeed() const {
@@ -102,11 +102,11 @@ namespace Ethereal
         }
     }
 
-    Vector3 EditorCamera::GetUpDirection() const { return Math::getRotate(GetOrientation(), Vector3(0.0f, 1.0f, 0.0f)); }
+    Vector3 EditorCamera::GetUpDirection() const { return Math::Rotate(GetOrientation(), Vector3(0.0f, 1.0f, 0.0f)); }
 
-    Vector3 EditorCamera::GetRightDirection() const { return Math::getRotate(GetOrientation(), Vector3(1.0f, 0.0f, 0.0f)); }
+    Vector3 EditorCamera::GetRightDirection() const { return Math::Rotate(GetOrientation(), Vector3(1.0f, 0.0f, 0.0f)); }
 
-    Vector3 EditorCamera::GetForwardDirection() const { return Math::getRotate(GetOrientation(), Vector3(0.0f, 0.0f, -1.0f)); }
+    Vector3 EditorCamera::GetForwardDirection() const { return Math::Rotate(GetOrientation(), Vector3(0.0f, 0.0f, -1.0f)); }
 
     Vector3 EditorCamera::CalculatePosition() const { return m_FocalPoint - GetForwardDirection() * m_Distance; }
 
