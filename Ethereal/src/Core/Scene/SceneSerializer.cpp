@@ -221,7 +221,7 @@ namespace Ethereal
                     // Entities always have transforms
                     auto& tc = deserializedEntity.GetComponent<TransformComponent>();
                     tc.Translation = transformComponent["Translation"].as<Vector3>();
-                    tc.Rotation = transformComponent["Rotation"].as<Vector3>();
+                    tc.Rotation = Quaternion(transformComponent["Rotation"].as<Vector3>());//!TODO: repalce vector3 with quaternion
                     tc.Scale = transformComponent["Scale"].as<Vector3>();
                 }
 

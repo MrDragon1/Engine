@@ -31,7 +31,9 @@ namespace Ethereal
         static const float EPSILOND = DBL_EPSILON;
 
         float Radians(float degrees);
+        Vector3 Radians(const Vector3& degrees);
         float Degrees(float radians);
+        Vector3 Degrees(const Vector3& radians);
 
         float* Ptr(Vector2& v);
         const float* Ptr(const Vector2& v);
@@ -61,6 +63,11 @@ namespace Ethereal
 
         float Max(float a, float b);
 
+        bool EpsilonEqual(float a, float b, float epsilon = EPSILONF);
+        bool EpsilonEqual(const Vector2& a, const Vector2& b, float epsilon = EPSILONF);
+
+        float Clamp(float v, float min, float max);
+
         /*********************************************************************
         ******************************* Vector *******************************
         **********************************************************************/
@@ -86,6 +93,13 @@ namespace Ethereal
         Vector3 Mix(const Vector3& a,const Vector3& b,float t);
         Vector4 Mix(const Vector4& a,const Vector4& b,float t);
 
+        Vector2 Scale(const Vector2& v,float length);
+        Vector3 Scale(const Vector3& v,float length);
+        Vector4 Scale(const Vector4& v,float length);
+
+        Vector2 Combine(const Vector2& a,const Vector2& b,float fa,float fb);
+        Vector3 Combine(const Vector3& a,const Vector3& b,float fa,float fb);
+        Vector4 Combine(const Vector4& a,const Vector4& b,float fa,float fb);
 
         /*********************************************************************
         ******************************* Matrix *******************************
@@ -94,6 +108,11 @@ namespace Ethereal
         Matrix3 Inverse(const Matrix3& m);
         Matrix4 Inverse(const Matrix4& m);
 
+        Matrix3 Transpose(const Matrix3& m);
+        Matrix4 Transpose(const Matrix4& m);
+
+        float Determinant(const Matrix3& m);
+        float Determinant(const Matrix4& m);
 
         Matrix4 Ortho(float left, float right, float bottom, float top, float zNear, float zFar);
         Matrix4 Perspective(float fovy, float aspect, float zNear, float zFar);
@@ -104,7 +123,7 @@ namespace Ethereal
         Vector3 Rotate(const Quaternion& q, const Vector3& v);
         Matrix4 Scale(const Matrix4& m, const Vector3& v);
 
-        bool DecomposeTransformMatrix(const Matrix4& m, Vector3& translation, Quaternion& rotation, Vector3& scale);
+        bool DecomposeTransformMatrix(const Matrix4& m, Vector3& translation, Quaternion& rotation, Vector3& scale, Vector3& skew, Vector4& perspective);
 
         /*********************************************************************
         ******************************* Quaternion ***************************

@@ -29,15 +29,14 @@ namespace Ethereal
     };
     struct TransformComponent {
         Vector3 Translation = Vector3(0.0f);
-        Vector3 Rotation = Vector3(0.0f);
+        Quaternion Rotation = Quaternion();
         Vector3 Scale = Vector3(1.0f);
 
         TransformComponent() = default;
         TransformComponent(const TransformComponent&) = default;
 
         Matrix4 GetTransform() {
-            Matrix4 rotation = Matrix4(Quaternion(Rotation));
-            return Math::Translate(Matrix4::IDENTITY, Translation) * Math::Rotate(Matrix4::IDENTITY, rotation) * Math::Scale(Matrix4::IDENTITY, Scale);
+            return Math::Translate(Matrix4::IDENTITY, Translation) * Math::Rotate(Matrix4::IDENTITY, Rotation) * Math::Scale(Matrix4::IDENTITY, Scale);
         }
     };
 

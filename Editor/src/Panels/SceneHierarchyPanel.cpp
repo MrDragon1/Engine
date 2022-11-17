@@ -73,11 +73,12 @@ namespace Ethereal
     void SceneHierarchyPanel::SetSelectedEntity(Entity entity) { m_SelectionContext = entity; }
 
     static std::tuple<Vector3, Quaternion, Vector3> GetTransformDecomposition(const Matrix4& transform) {
-        Vector3 scale, translation;
-        Quaternion orientation;
-        Math::DecomposeTransformMatrix(transform, translation, orientation, scale);
+        Vector3 translation, scale, skew;
+        Vector4 perspective;
+        Quaternion rotation;
+        Math::DecomposeTransformMatrix(transform, translation, rotation, scale, skew, perspective);
 
-        return {translation, orientation, scale};
+        return {translation, rotation, scale};
     }
 
     void SceneHierarchyPanel::DrawEntityNode(Entity entity) {
@@ -251,9 +252,9 @@ namespace Ethereal
 
         DrawComponent<TransformComponent>("Transform", entity, [](auto& component) {
             DrawVec3Control("Translation", component.Translation);
-            Vector3 rotation = Vector3(component.Rotation);
+            Vector3 rotation = Math::Degrees(Vector3(component.Rotation));
             DrawVec3Control("Rotation", rotation);
-            component.Rotation = Quaternion(rotation);
+            component.Rotation = Quaternion(Math::Radians(rotation));
             DrawVec3Control("Scale", component.Scale, 1.0f);
         });
 

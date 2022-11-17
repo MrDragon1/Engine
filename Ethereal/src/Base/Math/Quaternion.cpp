@@ -22,6 +22,7 @@ namespace Ethereal
         this->z = z;
     }
     Quaternion::Quaternion(const Vector3& eulerAngle) {
+        // Pitch Yaw Roll
         Vector3 c = Math::Cos(eulerAngle * 0.5f);
         Vector3 s = Math::Sin(eulerAngle * 0.5f);
 
@@ -29,6 +30,7 @@ namespace Ethereal
         this->x = s.x * c.y * c.z - c.x * s.y * s.z;
         this->y = c.x * s.y * c.z + s.x * c.y * s.z;
         this->z = c.x * c.y * s.z - s.x * s.y * c.z;
+        *this = Math::Normalize(*this);
     }
 
     Quaternion::Quaternion(const Matrix3& m) {
@@ -42,14 +44,10 @@ namespace Ethereal
         assert(i<4);
         switch (i) {
             default:
-            case 0:
-                return w;
-            case 1:
-                return x;
-            case 2:
-                return y;
-            case 3:
-                return z;
+            case 0: return x;
+            case 1: return y;
+            case 2: return z;
+            case 3: return w;
         }
     }
 
@@ -57,14 +55,10 @@ namespace Ethereal
         assert(i<4);
         switch (i) {
             default:
-            case 0:
-                return w;
-            case 1:
-                return x;
-            case 2:
-                return y;
-            case 3:
-                return z;
+            case 0: return x;
+            case 1: return y;
+            case 2: return z;
+            case 3: return w;
         }
     }
 
@@ -128,6 +122,30 @@ namespace Ethereal
 
     Quaternion::operator Vector3() const {
         return QuaternionToEuler();
+    }
+
+    float Quaternion::Roll() const {
+        float a = static_cast<float>(2) * (x * y + w * z);
+        float b = w * w + x * x - y * y - z * z;
+
+        if(Math::EpsilonEqual(Vector2(a, b), Vector2(0))) //avoid atan2(0,0) - handle singularity - Matiis
+            return static_cast<float>(0);
+
+        return static_cast<float>(atan2(a, b));
+    }
+    float Quaternion::Pitch() const {
+        //return T(atan(T(2) * (q.y * q.z + q.w * q.x), q.w * q.w - q.x * q.x - q.y * q.y + q.z * q.z));
+        float a = static_cast<float>(2) * (y * z + w * x);
+        float b = w * w - x * x - y * y + z * z;
+
+        if(Math::EpsilonEqual(Vector2(b, a), Vector2(0)))//avoid atan2(0,0) - handle singularity - Matiis
+            return static_cast<float>(static_cast<float>(2) * atan2(x, w));
+
+        return static_cast<float>(atan2(a, b));
+    }
+
+    float Quaternion::Yaw() const {
+        return asin(Math::Clamp(static_cast<float>(-2) * (x * z - w * y), static_cast<float>(-1), static_cast<float>(1)));
     }
 
     Quaternion Quaternion::Matrix3ToQuaternion(const Matrix3& m) {
@@ -200,29 +218,7 @@ namespace Ethereal
     }
 
     Vector3 Quaternion::QuaternionToEuler() const {
-        Vector3 Result;
-        float sqw = w*w;
-        float sqx = x*x;
-        float sqy = y*y;
-        float sqz = z*z;
-        float unit = sqx + sqy + sqz + sqw; // if normalised is one, otherwise is correction factor
-        float test = x*y + z*w;
-        if (test > 0.499*unit) { // singularity at north pole
-            Result.y = 2 * atan2(x,w);
-            Result.z = Math::PI/2;
-            Result.x = 0;
-            return Result;
-        }
-        if (test < -0.499*unit) { // singularity at south pole
-            Result.y = -2 * atan2(x,w);
-            Result.z = - Math::PI/2;
-            Result.x = 0;
-            return Result;
-        }
-        Result.y = atan2(2*y*w-2*x*z , sqx - sqy - sqz + sqw);
-        Result.z = asin(2*test/unit);
-        Result.x = atan2(2*x*w-2*y*z , -sqx + sqy - sqz + sqw);
-        return Result;
+        return Vector3(Pitch(), Yaw(), Roll());
     }
 
     // -- Unary operators --

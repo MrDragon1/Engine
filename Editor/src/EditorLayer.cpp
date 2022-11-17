@@ -256,14 +256,14 @@ namespace Ethereal
                 ImGuizmo::Manipulate(Math::Ptr(cameraView), Math::Ptr(cameraProjection), (ImGuizmo::OPERATION)m_GizmoType, ImGuizmo::LOCAL, Math::Ptr(transform),
                                      nullptr, snap ? snapValues : nullptr);
                 if (ImGuizmo::IsUsing()) {
-                    Vector3 translation, scale;
+                    Vector3 translation, scale, skew;
+                    Vector4 perspective;
                     Quaternion rotation;
-                    Math::DecomposeTransformMatrix(transform, translation, rotation, scale);
 
-                    Vector3 rot = Vector3(rotation);
-                    Vector3 deltaRotation = rot - tc.Rotation;
+                    Math::DecomposeTransformMatrix(transform, translation, rotation, scale, skew, perspective);
+
                     tc.Translation = translation;
-                    tc.Rotation += deltaRotation;
+                    tc.Rotation = rotation;
                     tc.Scale = scale;
                 }
             }

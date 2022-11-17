@@ -12,7 +12,7 @@ namespace Ethereal
         REFLECTION_BODY(Quaternion);
 
       public:
-        float w{1.f}, x{0.f}, y{0.f}, z{0.f};
+        float  x{0.f}, y{0.f}, z{0.f},w {1.0f};
 
       public:
         Quaternion();
@@ -36,6 +36,10 @@ namespace Ethereal
         operator Matrix3() const;
         operator Matrix4() const;
         operator Vector3() const;
+
+        float Roll() const;
+        float Pitch() const;
+        float Yaw() const;
 
 
         // special values

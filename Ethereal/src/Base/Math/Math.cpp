@@ -6,7 +6,9 @@ namespace Ethereal
 {
     namespace Math{
         float Radians(float degrees) { return degrees * PI / 180.f; }
+        Vector3 Radians(const Vector3& degrees) { return degrees * PI / 180.f; }
         float Degrees(float radians) { return radians * 180.f / PI; }
+        Vector3 Degrees(const Vector3& radians) { return radians * 180.f / PI; }
 
         float Sin(float v) { return sinf(v); }
         Vector2 Sin(const Vector2& v) { return Vector2(sinf(v.x), sinf(v.y)); }
@@ -23,6 +25,11 @@ namespace Ethereal
 
         float Min(float a, float b) { return a < b ? a : b; }
         float Max(float a, float b) { return a > b ? a : b; }
+
+        bool EpsilonEqual(float a, float b, float epsilon /* = EPSILONF*/ ) { return fabsf(a - b) < epsilon; }
+        bool EpsilonEqual(const Vector2& a, const Vector2& b, float epsilon /* = EPSILONF*/ ) { return EpsilonEqual(a.x, b.x, epsilon) && EpsilonEqual(a.y, b.y, epsilon); }
+
+        float Clamp(float v, float min, float max) { return v < min ? min : v > max ? max : v; }
         /*********************************************************************
         ******************************* Vector *******************************
         **********************************************************************/
@@ -98,6 +105,25 @@ namespace Ethereal
             return a * (1 - t) + b * t;
         }
 
+        Vector2 Scale(const Vector2& v,float length) {
+            return Normalize(v) * length;
+        }
+        Vector3 Scale(const Vector3& v,float length) {
+            return Normalize(v) * length;
+        }
+        Vector4 Scale(const Vector4& v,float length) {
+            return Normalize(v) * length;
+        }
+
+        Vector2 Combine(const Vector2& a,const Vector2& b,float fa,float fb) {
+            return a * fa + b * fb;
+        }
+        Vector3 Combine(const Vector3& a,const Vector3& b,float fa,float fb) {
+            return a * fa + b * fb;
+        }
+        Vector4 Combine(const Vector4& a,const Vector4& b,float fa,float fb) {
+            return a * fa + b * fb;
+        }
 
         /*********************************************************************
         ******************************* Matrix *******************************
@@ -191,6 +217,42 @@ namespace Ethereal
             Inverse[2][2] = + (m[0][0] * m[1][1] - m[1][0] * m[0][1]) * OneOverDeterminant;
 
             return Inverse;
+        }
+
+        Matrix3 Transpose(const Matrix3& m) {
+            return Matrix3(m[0][0], m[1][0], m[2][0],
+                           m[0][1], m[1][1], m[2][1],
+                           m[0][2], m[1][2], m[2][2]);
+        }
+        Matrix4 Transpose(const Matrix4& m) {
+            return Matrix4(m[0][0], m[1][0], m[2][0], m[3][0],
+                           m[0][1], m[1][1], m[2][1], m[3][1],
+                           m[0][2], m[1][2], m[2][2], m[3][2],
+                           m[0][3], m[1][3], m[2][3], m[3][3]);
+        }
+
+        float Determinant(const Matrix3& m) {
+            return m[0][0] * (m[1][1] * m[2][2] - m[2][1] * m[1][2])
+                   - m[1][0] * (m[0][1] * m[2][2] - m[2][1] * m[0][2])
+                   + m[2][0] * (m[0][1] * m[1][2] - m[1][1] * m[0][2]);
+        }
+        float Determinant(const Matrix4& m) {
+            float SubFactor00 = m[2][2] * m[3][3] - m[3][2] * m[2][3];
+            float SubFactor01 = m[2][1] * m[3][3] - m[3][1] * m[2][3];
+            float SubFactor02 = m[2][1] * m[3][2] - m[3][1] * m[2][2];
+            float SubFactor03 = m[2][0] * m[3][3] - m[3][0] * m[2][3];
+            float SubFactor04 = m[2][0] * m[3][2] - m[3][0] * m[2][2];
+            float SubFactor05 = m[2][0] * m[3][1] - m[3][0] * m[2][1];
+
+            Vector4 DetCof(
+                + (m[1][1] * SubFactor00 - m[1][2] * SubFactor01 + m[1][3] * SubFactor02),
+                - (m[1][0] * SubFactor00 - m[1][2] * SubFactor03 + m[1][3] * SubFactor04),
+                + (m[1][0] * SubFactor01 - m[1][1] * SubFactor03 + m[1][3] * SubFactor05),
+                - (m[1][0] * SubFactor02 - m[1][1] * SubFactor04 + m[1][2] * SubFactor05));
+
+            return
+                m[0][0] * DetCof[0] + m[0][1] * DetCof[1] +
+                m[0][2] * DetCof[2] + m[0][3] * DetCof[3];
         }
 
         Matrix4 Ortho(float left, float right, float bottom, float top, float zNear, float zFar) {
@@ -287,32 +349,157 @@ namespace Ethereal
             return Result;
         }
         
-        bool DecomposeTransformMatrix(const Matrix4& m, Vector3& translation, Quaternion& rotation, Vector3& scale) {
-            translation = Vector3(m[3][0], m[3][1], m[3][2]);
+        bool DecomposeTransformMatrix(const Matrix4& m, Vector3& translation, Quaternion& rotation, Vector3& scale, Vector3& skew, Vector4& perspective) {
+            Matrix4 LocalMatrix(m);
 
-            scale.x = Length(Vector3(m[0][0], m[0][1], m[0][2]));
-            scale.y = Length(Vector3(m[1][0], m[1][1], m[1][2]));
-            scale.z = Length(Vector3(m[2][0], m[2][1], m[2][2]));
-
-            if (scale.x == 0.0f || scale.y == 0.0f || scale.z == 0.0f) {
-                rotation = Quaternion(0.0f, 0.0f, 0.0f, 1.0f);
+            // Normalize the matrix.
+            if(Math::EpsilonEqual(LocalMatrix[3][3], static_cast<float>(0)))
                 return false;
+
+            for(int i = 0; i < 4; ++i)
+                for(int j = 0; j < 4; ++j)
+                    LocalMatrix[i][j] /= LocalMatrix[3][3];
+
+            // perspectiveMatrix is used to solve for perspective, but it also provides
+            // an easy way to test for singularity of the upper 3x3 component.
+            Matrix4 PerspectiveMatrix(LocalMatrix);
+
+            for(int i = 0; i < 3; i++)
+                PerspectiveMatrix[i][3] = static_cast<float>(0);
+            PerspectiveMatrix[3][3] = static_cast<float>(1);
+
+            /// TODO: Fixme!
+            if(Math::EpsilonEqual(Math::Determinant(PerspectiveMatrix), static_cast<float>(0)))
+                return false;
+
+            // First, isolate perspective.  This is the messiest.
+            if(
+                Math::EpsilonEqual(LocalMatrix[0][3], static_cast<float>(0)) ||
+                Math::EpsilonEqual(LocalMatrix[1][3], static_cast<float>(0)) ||
+                Math::EpsilonEqual(LocalMatrix[2][3], static_cast<float>(0)))
+            {
+                // rightHandSide is the right hand side of the equation.
+                Vector4 RightHandSide;
+                RightHandSide[0] = LocalMatrix[0][3];
+                RightHandSide[1] = LocalMatrix[1][3];
+                RightHandSide[2] = LocalMatrix[2][3];
+                RightHandSide[3] = LocalMatrix[3][3];
+
+                // Solve the equation by inverting PerspectiveMatrix and multiplying
+                // rightHandSide by the inverse.  (This is the easiest way, not
+                // necessarily the best.)
+                Matrix4 InversePerspectiveMatrix = Math::Inverse(PerspectiveMatrix);//   inverse(PerspectiveMatrix, inversePerspectiveMatrix);
+                Matrix4 TransposedInversePerspectiveMatrix = Math::Transpose(InversePerspectiveMatrix);//   transposeMatrix4(inversePerspectiveMatrix, transposedInversePerspectiveMatrix);
+
+                perspective = TransposedInversePerspectiveMatrix * RightHandSide;
+                //  v4MulPointByMatrix(rightHandSide, transposedInversePerspectiveMatrix, perspectivePoint);
+
+                // Clear the perspective partition
+                LocalMatrix[0][3] = LocalMatrix[1][3] = LocalMatrix[2][3] = static_cast<float>(0);
+                LocalMatrix[3][3] = static_cast<float>(1);
+            }
+            else
+            {
+                // No perspective.
+                perspective = Vector4(0, 0, 0, 1);
             }
 
-            Matrix4 rotMatrix(m);
-            rotMatrix[0][0] /= scale.x;
-            rotMatrix[0][1] /= scale.x;
-            rotMatrix[0][2] /= scale.x;
+            // Next take care of translation (easy).
+            translation = Vector3(LocalMatrix[3]);
+            LocalMatrix[3] = Vector4(0, 0, 0, LocalMatrix[3].w);
 
-            rotMatrix[1][0] /= scale.y;
-            rotMatrix[1][1] /= scale.y;
-            rotMatrix[1][2] /= scale.y;
+            Vector3 Row[3], Pdum3;
 
-            rotMatrix[2][0] /= scale.z;
-            rotMatrix[2][1] /= scale.z;
-            rotMatrix[2][2] /= scale.z;
+            // Now get scale and shear.
+            for(int i = 0; i < 3; ++i)
+                for(int j = 0; j < 3; ++j)
+                    Row[i][j] = LocalMatrix[i][j];
 
-            rotation = Quaternion(rotMatrix);
+            // Compute X scale factor and normalize first row.
+            scale.x = Math::Length(Row[0]);// v3Length(Row[0]);
+
+            Row[0] = Math::Scale(Row[0], static_cast<float>(1));
+
+            // Compute XY shear factor and make 2nd row orthogonal to 1st.
+            skew.z = Math::Dot(Row[0], Row[1]);
+            Row[1] = Math::Combine(Row[1], Row[0], static_cast<float>(1), -skew.z);
+
+            // Now, compute Y scale and normalize 2nd row.
+            scale.y = Math::Length(Row[1]);
+            Row[1] = Math::Scale(Row[1], static_cast<float>(1));
+            skew.z /= scale.y;
+
+            // Compute XZ and YZ shears, orthogonalize 3rd row.
+            skew.y = Math::Dot(Row[0], Row[2]);
+            Row[2] = Math::Combine(Row[2], Row[0], static_cast<float>(1), -skew.y);
+            skew.x = Math::Dot(Row[1], Row[2]);
+            Row[2] = Math::Combine(Row[2], Row[1], static_cast<float>(1), -skew.x);
+
+            // Next, get Z scale and normalize 3rd row.
+            scale.z = Math::Length(Row[2]);
+            Row[2] = Math::Scale(Row[2], static_cast<float>(1));
+            skew.y /= scale.z;
+            skew.x /= scale.z;
+            // At this point, the matrix (in rows[]) is orthonormal.
+            // Check for a coordinate system flip.  If the determinant
+            // is -1, then negate the matrix and the scaling factors.
+            Pdum3 = Math::Cross(Row[1], Row[2]); // v3Cross(row[1], row[2], Pdum3);
+            if(Math::Dot(Row[0], Pdum3) < 0)
+            {
+                for(int i = 0; i < 3; i++)
+                {
+                    scale[i] *= static_cast<float>(-1);
+                    Row[i] *= static_cast<float>(-1);
+                }
+            }
+
+            // Now, get the rotations out, as described in the gem.
+
+            // FIXME - Add the ability to return either quaternions (which are
+            // easier to recompose with) or Euler angles (rx, ry, rz), which
+            // are easier for authors to deal with. The latter will only be useful
+            // when we fix https://bugs.webkit.org/show_bug.cgi?id=23799, so I
+            // will leave the Euler angle code here for now.
+
+            // ret.rotateY = asin(-Row[0][2]);
+            // if (cos(ret.rotateY) != 0) {
+            //     ret.rotateX = atan2(Row[1][2], Row[2][2]);
+            //     ret.rotateZ = atan2(Row[0][1], Row[0][0]);
+            // } else {
+            //     ret.rotateX = atan2(-Row[2][0], Row[1][1]);
+            //     ret.rotateZ = 0;
+            // }
+
+            int i, j, k = 0;
+            float root, trace = Row[0].x + Row[1].y + Row[2].z;
+            if(trace > static_cast<float>(0))
+            {
+                root = sqrt(trace + static_cast<float>(1.0));
+                rotation.w = static_cast<float>(0.5) * root;
+                root = static_cast<float>(0.5) / root;
+                rotation.x = root * (Row[1].z - Row[2].y);
+                rotation.y = root * (Row[2].x - Row[0].z);
+                rotation.z = root * (Row[0].y - Row[1].x);
+            } // End if > 0
+            else
+            {
+                // TODO: check this
+                static int Next[3] = {1, 2, 0};
+                i = 0;
+                if(Row[1].y > Row[0].x) i = 1;
+                if(Row[2].z > Row[i][i]) i = 2;
+                j = Next[i];
+                k = Next[j];
+
+                root = sqrt(Row[i][i] - Row[j][j] - Row[k][k] + static_cast<float>(1.0));
+
+                rotation[i] = static_cast<float>(0.5) * root;
+                root = static_cast<float>(0.5) / root;
+                rotation[j] = root * (Row[i][j] + Row[j][i]);
+                rotation[k] = root * (Row[i][k] + Row[k][i]);
+                rotation.w = root * (Row[j][k] - Row[k][j]);
+            } // End if <= 0
+
             return true;
         }
             

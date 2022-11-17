@@ -115,10 +115,11 @@ namespace Ethereal
     }
 
     Matrix3::operator Matrix4() const {
-        return Matrix4(value0.x, value1.x, value2.x, 0,
-                       value0.y, value1.y, value2.y, 0,
-                       value0.z, value1.z, value2.z, 0,
-                       0, 0, 0, 1);
+        return Matrix4(value0.x, value0.y, value0.z, 0,
+                      value1.x, value1.y, value1.z, 0,
+                      value2.x, value2.y, value2.z, 0,
+                      0, 0, 0, 1);
+
     }
 
     // -- Unary operators --
@@ -267,8 +268,10 @@ namespace Ethereal
         value2 = Vector4(0, 0, diag, 0);
         value3 = Vector4(0, 0, 0, diag);
     }
-    Matrix4::Matrix4(float m00, float m10, float m20, float m30, float m01, float m11, float m21, float m31, float m02, float m12, float m22,
-                     float m32, float m03, float m13, float m23, float m33) {
+    Matrix4::Matrix4(float m00, float m10, float m20, float m30,
+                     float m01, float m11, float m21, float m31,
+                     float m02, float m12, float m22, float m32,
+                     float m03, float m13, float m23, float m33) {
         value0 = Vector4(m00, m10, m20, m30);
         value1 = Vector4(m01, m11, m21, m31);
         value2 = Vector4(m02, m12, m22, m32);
