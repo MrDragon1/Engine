@@ -6,11 +6,11 @@ namespace Ethereal
 {
     {{#class_defines}}
     template <>
-    YNode Serializer::write(const {{class_name}} & instance) {
+    YNode Serializer::write(const {{class_name}}& instance) {
         YNode ret_context;
         {{#class_base_class_defines}}
         auto&& yaml_context_{{class_base_class_index}} = Serializer::write(*({{class_base_class_name}}*)&instance);
-        assert(!yaml_context_{{class_base_class_index}}.IsNull());
+        assert(yaml_context_{{class_base_class_index}}.IsDefined());
         ret_context = yaml_context_{{class_base_class_index}};
         {{/class_base_class_defines}} {{#class_field_defines}} {{#class_field_is_vector}}
         YNode {{class_field_name}}_yaml;
@@ -24,8 +24,8 @@ namespace Ethereal
         return ret_context;
     }
     template <>
-    {{class_name}}&Serializer::read(const YNode& yaml_context, {{class_name}}&instance) {
-        assert(!yaml_context.IsNull());
+    {{class_name}}&Serializer::read(const YNode& yaml_context, {{class_name}}& instance) {
+        assert(yaml_context.IsDefined());
         {{#class_base_class_defines}}
         Serializer::read(yaml_context, *({{class_base_class_name}}*)&instance);
         {{/class_base_class_defines}} {{#class_field_defines}}

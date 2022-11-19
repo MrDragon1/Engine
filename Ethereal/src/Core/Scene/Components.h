@@ -5,85 +5,130 @@
 #include "Core/Renderer/Mesh.h"
 #include "Core/Renderer/MaterialAsset.h"
 
+#include "Base/Meta/Reflection.h"
+#include "Base/Meta/Raw/Camera.h"
+#include "Base/Meta/Raw/Mesh.h"
+
 #include <functional>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 #include <string>
 
 namespace Ethereal
 {
-    struct IDComponent {
-        UUID ID;
-
-        IDComponent() = default;
-        IDComponent(UUID uuid) : ID(uuid){};
-        IDComponent(const IDComponent&) = default;
+    REFLECTION_TYPE(Component)
+    CLASS(Component,WhiteListFields)
+    {
+        REFLECTION_BODY(Component);
+        public:
+          virtual void PostLoad(){};
     };
 
-    struct TagComponent {
-        std::string Tag;
-
-        TagComponent() = default;
-        TagComponent(const TagComponent&) = default;
-        TagComponent(const std::string& tag) : Tag(tag) {}
-    };
-    struct TransformComponent {
-        Vector3 Translation = Vector3(0.0f);
-        Quaternion Rotation = Quaternion();
-        Vector3 Scale = Vector3(1.0f);
-
-        TransformComponent() = default;
-        TransformComponent(const TransformComponent&) = default;
-
-        Matrix4 GetTransform() {
-            return Math::Translate(Matrix4::IDENTITY, Translation) * Math::Rotate(Matrix4::IDENTITY, Rotation) * Math::Scale(Matrix4::IDENTITY, Scale);
-        }
+    REFLECTION_TYPE(IDComponent)
+    CLASS(IDComponent: public Component, WhiteListFields)
+    {
+        REFLECTION_BODY(IDComponent);
+        public:
+          META(Enable)
+          UUID ID;
+          IDComponent() = default;
+          IDComponent(const UUID& id)
+              : ID(id) {}
+          IDComponent(const IDComponent& other)
+              : ID(other.ID) {}
     };
 
-    struct StaticMeshComponent {
-        AssetHandle StaticMesh;
-        Ref<Ethereal::MaterialTable> MaterialTable = Ref<Ethereal::MaterialTable>::Create();
-
-        StaticMeshComponent() = default;
-        StaticMeshComponent(const StaticMeshComponent& other)
-            : StaticMesh(other.StaticMesh), MaterialTable(Ref<Ethereal::MaterialTable>::Create(other.MaterialTable)) {}
-        StaticMeshComponent(AssetHandle staticMesh) : StaticMesh(staticMesh) {}
+    REFLECTION_TYPE(TagComponent)
+    CLASS(TagComponent: public Component, WhiteListFields)
+    {
+        REFLECTION_BODY(TagComponent);
+        public:
+          META(Enable)
+          std::string Tag;
+          TagComponent() = default;
+          TagComponent(const std::string& tag)
+              : Tag(tag) {}
+          TagComponent(const TagComponent& other)
+              : Tag(other.Tag) {}
     };
 
-    struct MeshComponent {
-        AssetHandle Mesh;
-        Ref<Ethereal::MaterialTable> MaterialTable = Ref<Ethereal::MaterialTable>::Create();
+    REFLECTION_TYPE(TransformComponent)
+    CLASS(TransformComponent: public Component, WhiteListFields)
+    {
+        REFLECTION_BODY(TransformComponent);
+        public:
+          META(Enable)
+          Vector3 Position{Vector3::ZERO};
+          META(Enable)
+          Vector3 Scale{Vector3::ONE};
+          META(Enable)
+          Quaternion Rotation{Quaternion::IDENTITY};
 
-        MeshComponent() = default;
-        MeshComponent(const MeshComponent& other) : Mesh(other.Mesh), MaterialTable(Ref<Ethereal::MaterialTable>::Create(other.MaterialTable)) {}
-        MeshComponent(AssetHandle mesh) : Mesh(mesh) {}
+          TransformComponent() = default;
+          TransformComponent(const Vector3& position, const Quaternion& rotation, const Vector3& scale)
+              : Position{position}, Scale{scale}, Rotation{rotation} {}
+          TransformComponent(const TransformComponent& other)
+              : Position(other.Position), Scale(other.Scale), Rotation(other.Rotation) {}
+
+          Matrix4 getMatrix() const {
+              Matrix4 temp = Math::Translate(Matrix4::IDENTITY, Position) * Matrix4(Rotation) * Math::Scale(Matrix4::IDENTITY, Scale);
+              return temp;
+          }
     };
 
-    struct CameraComponent {
-        SceneCamera Camera;
-        bool Primary = true;
-        bool FixedAspectRatio = false;
+    REFLECTION_TYPE(StaticMeshComponent)
+    CLASS(StaticMeshComponent: public Component, WhiteListFields)
+    {
+        REFLECTION_BODY(StaticMeshComponent);
+        public:
+          META(Enable)
+          AssetHandle StaticMeshHandle;
+          META(Enable)
+          MaterialTableRaw MaterialTableRaw;
 
-        CameraComponent() = default;
-        CameraComponent(const CameraComponent&) = default;
+          Ref<MaterialTable> materialTable {nullptr};
+          StaticMeshComponent() = default;
+          StaticMeshComponent(const StaticMeshComponent& other)
+              : StaticMeshHandle(other.StaticMeshHandle), MaterialTableRaw(other.MaterialTableRaw) {}
+          StaticMeshComponent(AssetHandle handle) : StaticMeshHandle(handle) {}
+
+          void PostLoad() override;
     };
 
-    class ScriptableEntity;
-    struct NativeScriptComponent {
-        ScriptableEntity* Instance = nullptr;
+    REFLECTION_TYPE(MeshComponent)
+    CLASS(MeshComponent: public Component, WhiteListFields)
+    {
+        REFLECTION_BODY(MeshComponent);
+        public:
+          META(Enable)
+          AssetHandle MeshHandle;
+          Ref<MaterialTable> materialTable {nullptr};
 
-        std::function<void()> InstantiateFunction;
-        std::function<void()> DestroyInstanceFunction;
-
-        template <typename T>
-        void Bind() {
-            InstantiateFunction = [&]() { Instance = new T(); };
-            DestroyInstanceFunction = [&]() {
-                delete (T*)Instance;
-                Instance = nullptr;
-            };
-        }
+          MeshComponent() = default;
+          MeshComponent(const MeshComponent& other)
+          : MeshHandle(other.MeshHandle) {}
+          MeshComponent(AssetHandle handle) : MeshHandle(handle) {}
     };
+
+    REFLECTION_TYPE(CameraComponent)
+    CLASS(CameraComponent: public Component, WhiteListFields)
+    {
+        REFLECTION_BODY(CameraComponent);
+        public:
+          META(Enable)
+          CameraRaw Camera;
+          CameraComponent() = default;
+          CameraComponent(const CameraComponent& other)
+              : Camera(other.Camera) {}
+
+          void PostLoad() override {
+              SceneCamera.SetProjectionType(Camera.Perspective ? SceneCamera::ProjectionType::Perspective : SceneCamera::ProjectionType::Orthographic);
+              SceneCamera.SetPerspective(Camera.Fov, Camera.OrthographicNear, Camera.OrthographicFar);
+              SceneCamera.SetOrthographic(Camera.OrthographicSize, Camera.Near, Camera.Far);
+              SceneCamera.SetAspectRatio(Camera.AspectRatio);
+          }
+
+          SceneCamera SceneCamera;
+    };
+
 
     struct Rigidbody2DComponent {
         enum class BodyType

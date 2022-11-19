@@ -1,18 +1,19 @@
 #pragma once
 #include <xhash>
-
+#include "Base/Meta/Reflection.h"
 namespace Ethereal
 {
-    class UUID {
+    REFLECTION_TYPE(UUID)
+    CLASS(UUID, Fields){
       public:
         UUID();
         UUID(uint64_t uuid);
         UUID(const UUID&) = default;
         operator uint64_t() const { return m_UUID; };
 
-      private:
         uint64_t m_UUID;
     };
+
 }  // namespace Ethereal
 
 namespace std

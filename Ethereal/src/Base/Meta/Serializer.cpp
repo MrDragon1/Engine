@@ -71,4 +71,14 @@ namespace Ethereal
         assert(yaml_context.IsScalar());
         return instance = yaml_context.as<std::string>();
     }
+
+    template <>
+    YNode Serializer::write(const uint64_t & instance) {
+        return YNode(instance);
+    }
+    template <>
+    uint64_t& Serializer::read(const YNode& yaml_context, uint64_t& instance){
+        assert(yaml_context.IsScalar());
+        return instance = yaml_context.as<uint64_t>();
+    }
 }  // namespace Ethereal

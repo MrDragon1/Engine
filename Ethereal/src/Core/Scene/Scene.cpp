@@ -1,8 +1,10 @@
 #include "Scene.h"
 
 #include "Components.h"
-#include "Ethereal/src/Base/GlobalContext.h"
-#include "ScriptableEntity.h"
+#include "Base/GlobalContext.h"
+#include "Base/Meta/Raw/Scene.h"
+#include "Core/Scene/Entity.h"
+
 #include "Utils/IniParser.h"
 #include "Core/Asset/AssetManager.h"
 
@@ -72,7 +74,6 @@ namespace Ethereal
         CopyComponent<TransformComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
         CopyComponent<StaticMeshComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
         CopyComponent<CameraComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
-        CopyComponent<NativeScriptComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
         CopyComponent<Rigidbody2DComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
         CopyComponent<BoxCollider2DComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
         return newScene;
@@ -86,6 +87,7 @@ namespace Ethereal
         entity.AddComponent<TransformComponent>();
         auto& tag = entity.AddComponent<TagComponent>();
         tag.Tag = name.empty() ? "DefaultEntity" : name;
+        entity.SetName(tag.Tag);
         return entity;
     }
 
@@ -130,24 +132,18 @@ namespace Ethereal
         std::filesystem::path path = Project::GetActive()->GetMeshPath() / filePath;
         Ref<StaticMesh> mesh = AssetManager::GetAsset<StaticMesh>(path.string());
         auto& staticMeshComponent = Object.AddComponent<StaticMeshComponent>();
-        staticMeshComponent.StaticMesh = mesh->Handle;
-        staticMeshComponent.MaterialTable = Ref<MaterialTable>::Create(mesh->GetMaterials());
+        staticMeshComponent.StaticMeshHandle = mesh->Handle;
+        staticMeshComponent.materialTable = Ref<MaterialTable>::Create(mesh->GetMaterials());
+        staticMeshComponent.MaterialTableRaw.Materials.resize(staticMeshComponent.materialTable->GetMaterials().size());
+        for(auto [index, asset]: staticMeshComponent.materialTable->GetMaterials()) {
+            staticMeshComponent.MaterialTableRaw.Materials[index] = asset->Handle;
+        }
+
 
         return Object;
     }
 
     void Scene::OnUpdateRuntime(TimeStamp ts) {
-        // Update Scripts
-        {
-            m_Registry.view<NativeScriptComponent>().each([=](auto entity, auto& scriptable) {
-                if (!scriptable.Instance) {
-                    scriptable.InstantiateFunction();
-                    scriptable.Instance->m_Entity = Entity{entity, this};
-                    scriptable.Instance->OnCreate();
-                }
-                scriptable.Instance->OnUpdate(ts);
-            });
-        }
         // Physics
         {
             const int32_t velocityIterations = 6;
@@ -163,8 +159,8 @@ namespace Ethereal
 
                 b2Body* body = (b2Body*)rb2d.Body;
                 const auto& position = body->GetPosition();
-                transform.Translation.x = position.x;
-                transform.Translation.y = position.y;
+                transform.Position.x = position.x;
+                transform.Position.y = position.y;
                 transform.Rotation.z = body->GetAngle();
             }
         }
@@ -176,10 +172,10 @@ namespace Ethereal
             auto view = m_Registry.view<TransformComponent, CameraComponent>();
             for (auto entity : view) {
                 const auto [transform, camera] = view.get<TransformComponent, CameraComponent>(entity);
-                if (camera.Primary) {
-                    mainCamera = &camera.Camera;
-                    cameraTransform = transform.GetTransform();
-                    cameraPosition = transform.Translation;
+                if (camera.Camera.Primary) {
+                    mainCamera = &camera.SceneCamera;
+                    cameraTransform = transform.getMatrix();
+                    cameraPosition = transform.Position;
                     break;
                 }
             }
@@ -205,7 +201,7 @@ namespace Ethereal
         auto view = m_Registry.view<MeshComponent>();
         for (auto& entity : view) {
             const auto meshComponent = view.get<MeshComponent>(entity);
-            auto mesh = AssetManager::GetAsset<Mesh>(meshComponent.Mesh);
+            auto mesh = AssetManager::GetAsset<Mesh>(meshComponent.MeshHandle);
             mesh->GetAnimator()->UpdateAnimation(ts);
         }
 
@@ -218,22 +214,22 @@ namespace Ethereal
         auto staticMeshView = m_Registry.view<TransformComponent, StaticMeshComponent>();
         for (auto entity : staticMeshView) {
             const auto [transformComponent, staticMeshComponent] = staticMeshView.get<TransformComponent, StaticMeshComponent>(entity);
-            auto staticMesh = AssetManager::GetAsset<StaticMesh>(staticMeshComponent.StaticMesh);
+            auto staticMesh = AssetManager::GetAsset<StaticMesh>(staticMeshComponent.StaticMeshHandle);
             if (staticMesh && !staticMesh->IsFlagSet(AssetFlag::Missing)) {
                 Entity e = Entity(entity, this);
-                Matrix4 transform = transformComponent.GetTransform();  // GetWorldSpaceTransformMatrix(e);
-                GlobalContext::GetRenderSystem().SubmitStaticMesh(staticMesh, staticMeshComponent.MaterialTable, (uint32_t)e, transform);
+                Matrix4 transform = transformComponent.getMatrix();  // GetWorldSpaceTransformMatrix(e);
+                GlobalContext::GetRenderSystem().SubmitStaticMesh(staticMesh, staticMeshComponent.materialTable, (uint32_t)e, transform);
             }
         }
 
         auto meshView = m_Registry.view<TransformComponent, MeshComponent>();
         for (auto entity : meshView) {
             const auto [transformComponent, meshComponent] = meshView.get<TransformComponent, MeshComponent>(entity);
-            auto mesh = AssetManager::GetAsset<StaticMesh>(meshComponent.Mesh);
+            auto mesh = AssetManager::GetAsset<StaticMesh>(meshComponent.MeshHandle);
             if (mesh && !mesh->IsFlagSet(AssetFlag::Missing)) {
                 Entity e = Entity(entity, this);
-                Matrix4 transform = transformComponent.GetTransform();  // GetWorldSpaceTransformMatrix(e);
-                GlobalContext::GetRenderSystem().SubmitMesh(mesh, meshComponent.MaterialTable, (uint32_t)e, transform);
+                Matrix4 transform = transformComponent.getMatrix();  // GetWorldSpaceTransformMatrix(e);
+                GlobalContext::GetRenderSystem().SubmitMesh(mesh, meshComponent.materialTable, (uint32_t)e, transform);
             }
         }
     }
@@ -246,7 +242,6 @@ namespace Ethereal
 
         CopyComponentIfExists<TransformComponent>(newEntity, entity);
         CopyComponentIfExists<CameraComponent>(newEntity, entity);
-        CopyComponentIfExists<NativeScriptComponent>(newEntity, entity);
         CopyComponentIfExists<Rigidbody2DComponent>(newEntity, entity);
         CopyComponentIfExists<BoxCollider2DComponent>(newEntity, entity);
     }
@@ -257,7 +252,7 @@ namespace Ethereal
             Entity entity{e, this};
             b2BodyDef bodyDef;
             bodyDef.type = Rigidbody2DTypeToBox2DBody(rb2d.Type);
-            bodyDef.position.Set(tranform.Translation.x, tranform.Translation.y);
+            bodyDef.position.Set(tranform.Position.x, tranform.Position.y);
             bodyDef.angle = tranform.Rotation.z;
 
             b2Body* body = m_PhysicsWorld->CreateBody(&bodyDef);
@@ -294,7 +289,7 @@ namespace Ethereal
         auto view = m_Registry.view<CameraComponent>();
         for (auto entity : view) {
             auto& cameraComponent = view.get<CameraComponent>(entity);
-            if (!cameraComponent.FixedAspectRatio) cameraComponent.Camera.SetViewportSize(width, height);
+            if (!cameraComponent.Camera.FixedAspectRatio) cameraComponent.SceneCamera.SetViewportSize(width, height);
         }
     }
 
@@ -302,10 +297,46 @@ namespace Ethereal
         auto view = m_Registry.view<CameraComponent>();
         for (auto entity : view) {
             const auto& camera = view.get<CameraComponent>(entity);
-            if (camera.Primary) return Entity{entity, this};
+            if (camera.Camera.Primary) return Entity{entity, this};
         }
         return {};
     }
+
+    void Scene::Load(const std::filesystem::path& url) {
+        ET_CORE_INFO("Loading scene from {0}", url.string());
+        m_ScenePath = url;
+        SceneRaw data;
+        const bool IsLoadSuccess = AssetManager::LoadAsset_Ref(url, data);
+        if (!IsLoadSuccess) {
+            ET_CORE_ERROR("Failed to load scene: {0}", url.string());
+            return;
+        }
+        m_SceneName = data.Name;
+        for (const EntityRaw entityraw: data.Entities){
+            Entity entity = {m_Registry.create(), this};
+            bool is_loaded = entity.Load(entityraw);
+            if (!is_loaded)
+            {
+                ET_CORE_ERROR("loading object " + entityraw.Name + " failed");
+            }
+
+        }
+    }
+
+    void Scene::Save() {
+        SceneRaw data;
+        data.Name = m_SceneName;
+        data.Entities.reserve(m_Registry.size());
+        auto view = m_Registry.view<IDComponent>();
+        for (auto entity : view) {
+            Entity e = {entity, this};
+            EntityRaw entityRaw;
+            e.Save(entityRaw);
+            data.Entities.push_back(entityRaw);
+        }
+        AssetManager::SaveAsset_Ref(m_ScenePath, data);
+    }
+
 
     Entity Scene::CreateEntityWithStaticMesh(AssetHandle assetHandle) {
         if (!AssetManager::IsAssetHandleValid(assetHandle)) {
@@ -316,17 +347,17 @@ namespace Ethereal
 
         Entity entity = CreateEntity(assetData.FilePath.stem().string());
         auto& component = entity.AddComponent<StaticMeshComponent>();
-        component.StaticMesh = assetHandle;
+        component.StaticMeshHandle = assetHandle;
 
         auto mesh = AssetManager::GetAsset<StaticMesh>(assetHandle);
-        if (mesh->GetMaterials()->GetMaterialCount() > component.MaterialTable->GetMaterialCount()) {
-            component.MaterialTable->SetMaterialCount(mesh->GetMaterials()->GetMaterialCount());
+        if (mesh->GetMaterials()->GetMaterialCount() > component.materialTable->GetMaterialCount()) {
+            component.materialTable->SetMaterialCount(mesh->GetMaterials()->GetMaterialCount());
         }
 
         // Get a material from meshComponent materialTable if it has (not the copy of the material)
-        for (int index = 0; index < component.MaterialTable->GetMaterialCount(); index++) {
+        for (int index = 0; index < component.materialTable->GetMaterialCount(); index++) {
             if (mesh->GetMaterials()->HasMaterial(index)) {
-                component.MaterialTable->SetMaterial(index, mesh->GetMaterials()->GetMaterial(index));
+                component.materialTable->SetMaterial(index, mesh->GetMaterials()->GetMaterial(index));
             }
         }
         return entity;
@@ -341,17 +372,17 @@ namespace Ethereal
 
         Entity entity = CreateEntity(assetData.FilePath.stem().string());
         auto& component = entity.AddComponent<MeshComponent>();
-        component.Mesh = assetHandle;
+        component.MeshHandle = assetHandle;
 
         auto mesh = AssetManager::GetAsset<Mesh>(assetHandle);
-        if (mesh->GetMaterials()->GetMaterialCount() > component.MaterialTable->GetMaterialCount()) {
-            component.MaterialTable->SetMaterialCount(mesh->GetMaterials()->GetMaterialCount());
+        if (mesh->GetMaterials()->GetMaterialCount() > component.materialTable->GetMaterialCount()) {
+            component.materialTable->SetMaterialCount(mesh->GetMaterials()->GetMaterialCount());
         }
 
         // Get a material from meshComponent materialTable if it has (not the copy of the material)
-        for (int index = 0; index < component.MaterialTable->GetMaterialCount(); index++) {
+        for (int index = 0; index < component.materialTable->GetMaterialCount(); index++) {
             if (mesh->GetMaterials()->HasMaterial(index)) {
-                component.MaterialTable->SetMaterial(index, mesh->GetMaterials()->GetMaterial(index));
+                component.materialTable->SetMaterial(index, mesh->GetMaterials()->GetMaterial(index));
             }
         }
         return entity;
@@ -371,12 +402,10 @@ namespace Ethereal
     void Scene::OnComponentAdded<MeshComponent>(Entity entity, MeshComponent& component) {}
     template <>
     void Scene::OnComponentAdded<CameraComponent>(Entity entity, CameraComponent& component) {
-        component.Camera.SetViewportSize(m_ViewportWidth, m_ViewportHeight);
+        component.SceneCamera.SetViewportSize(m_ViewportWidth, m_ViewportHeight);
     }
     template <>
     void Scene::OnComponentAdded<TagComponent>(Entity entity, TagComponent& component) {}
-    template <>
-    void Scene::OnComponentAdded<NativeScriptComponent>(Entity entity, NativeScriptComponent& component) {}
     template <>
     void Scene::OnComponentAdded<BoxCollider2DComponent>(Entity entity, BoxCollider2DComponent& component) {}
     template <>

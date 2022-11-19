@@ -243,7 +243,7 @@ namespace Ethereal
 
                 // Entity transform
                 auto& tc = selectedEntity.GetComponent<TransformComponent>();
-                Matrix4 transform = tc.GetTransform();
+                Matrix4 transform = tc.getMatrix();
 
                 // Snapping
                 bool snap = Input::IsKeyPressed(Key::LeftControl);
@@ -262,7 +262,7 @@ namespace Ethereal
 
                     Math::DecomposeTransformMatrix(transform, translation, rotation, scale, skew, perspective);
 
-                    tc.Translation = translation;
+                    tc.Position = translation;
                     tc.Rotation = rotation;
                     tc.Scale = scale;
                 }

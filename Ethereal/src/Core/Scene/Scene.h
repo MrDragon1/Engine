@@ -1,5 +1,6 @@
 #pragma once
 
+#include <filesystem>
 #include "Base/UUID.h"
 #include "Base/TimeStamp.h"
 #include "Core/Renderer/EditorCamera.h"
@@ -39,6 +40,10 @@ namespace Ethereal
         void OnViewportResize(uint32_t width, uint32_t height);
         Entity GetPrimaryCameraEntity();
 
+        void Load(const std::filesystem::path& url);
+        void Save();
+
+
         entt::registry& GetRegistry() { return m_Registry; }
         const std::string& GetName() const { return m_SceneName; }
         Ref<Environment> GetEnvironment() const { return m_Environment; }
@@ -53,10 +58,12 @@ namespace Ethereal
         entt::registry m_Registry;
         uint32_t m_ViewportWidth = 0, m_ViewportHeight = 0;
         std::string m_SceneName = "Untitled";
+        std::filesystem::path m_ScenePath;
 
         Ref<Environment> m_Environment;
 
         b2World* m_PhysicsWorld = nullptr;
+
 
         friend class Entity;
         friend class SceneSerializer;

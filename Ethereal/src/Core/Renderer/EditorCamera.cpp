@@ -25,11 +25,6 @@ namespace Ethereal
     void EditorCamera::UpdateView() {
         // m_Yaw = m_Pitch = 0.0f; // Lock the camera's rotation
         m_Position = CalculatePosition();
-
-        //        Quaternion orientation = GetOrientation();
-        //        m_ViewMatrix = glm::translate(Matrix4::IDENTITY, m_Position) * glm::toMat4(orientation);
-        //        m_ViewMatrix = glm::inverse(m_ViewMatrix);
-
         m_ViewMatrix = Math::LookAt(m_Position, m_Position + GetForwardDirection(), GetUpDirection());
     }
 

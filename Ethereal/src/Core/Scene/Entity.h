@@ -1,6 +1,7 @@
 #pragma once
 #include "Core/Scene/Scene.h"
 #include "Core/Scene/Components.h"
+#include "Base/Meta/Raw/Scene.h"
 #include "entt/entt.hpp"
 
 namespace Ethereal
@@ -10,6 +11,9 @@ namespace Ethereal
         Entity() = default;
         Entity(const Entity&) = default;
         Entity(entt::entity handle, Scene* Scene);
+
+        bool Load(const EntityRaw& raw);
+        bool Save(EntityRaw& raw);
 
         template <typename T, typename... Args>
         T& AddComponent(Args&&... args) {
@@ -44,7 +48,8 @@ namespace Ethereal
         }
 
         UUID GetUUID() { return GetComponent<IDComponent>().ID; };
-        const std::string& GetName() { return GetComponent<TagComponent>().Tag; }
+        const std::string& GetName() { return m_Name; }
+        void SetName(const std::string& name) { m_Name = name; }
 
         operator bool() const { return m_Entity != entt::null && m_Scene != nullptr; }
         operator uint32_t() const { return (uint32_t)m_Entity; }
@@ -56,5 +61,6 @@ namespace Ethereal
       private:
         entt::entity m_Entity = entt::null;
         Scene* m_Scene = nullptr;
+        std::string m_Name;
     };
 }  // namespace Ethereal

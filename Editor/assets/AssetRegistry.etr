@@ -341,6 +341,9 @@ Assets:
   - Handle: 12042048444511593788
     FilePath: meshes\cornell_box\cornell_box.hsmesh
     Type: StaticMesh
+  - Handle: 12057588983460254927
+    FilePath: scenes\meta.hscene
+    Type: Scene
   - Handle: 12066573877665610509
     FilePath: meshes\gun\Cerberus_LP.hsmesh
     Type: StaticMesh

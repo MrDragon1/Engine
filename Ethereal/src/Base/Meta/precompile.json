@@ -5,3 +5,8 @@ E:/Code/Engine/Ethereal/src/Base/Math/Transform.h
 E:/Code/Engine/Ethereal/src/Base/Meta/Reflection.h
 E:/Code/Engine/Ethereal/src/Base/Meta/Serializer.h
 E:/Code/Engine/Ethereal/src/Base/yaml.h
+E:/Code/Engine/Ethereal/src/Base/Meta/Raw/Scene.h
+E:/Code/Engine/Ethereal/src/Base/Meta/Raw/Camera.h
+E:/Code/Engine/Ethereal/src/Base/Meta/Raw/Mesh.h
+E:/Code/Engine/Ethereal/src/Core/Scene/Components.h
+E:/Code/Engine/Ethereal/src/Base/UUID.h

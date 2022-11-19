@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Core/Renderer/Camera.h"
-
 namespace Ethereal
 {
 
@@ -21,6 +20,8 @@ namespace Ethereal
         void SetPerspective(float verticalFOV, float nearClip, float farClip);
 
         void SetViewportSize(uint32_t width, uint32_t height);
+
+        void SetAspectRatio(float aspectRatio) { m_AspectRatio = aspectRatio; RecalculateProjection(); }
 
         float GetPerspectiveVerticalFOV() const { return m_PerspectiveFOV; }
         void SetPerspectiveVerticalFOV(float verticalFov) {

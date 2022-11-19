@@ -3,6 +3,8 @@
 #include "Core/Asset/AssetRegistry.h"
 #include "Core/Project/Project.h"
 #include "Utils/FileSystem.h"
+#include "Base/Meta/Serializer.h"
+#include "Base/Meta/_generated/serializer/all_serializer.h"
 
 #include <map>
 #include <unordered_map>
@@ -28,6 +30,34 @@ namespace Ethereal
 
         static AssetType GetAssetTypeFromExtension(const std::string& extension);
         static AssetType GetAssetTypeFromPath(const std::filesystem::path& path);
+
+        template <typename T>
+        static bool LoadAsset_Ref(const std::filesystem::path& filepath, T& asset) {
+            YNode data;
+            try {
+                data = YAML::LoadFile(filepath.string());
+            } catch (YAML::ParserException e) {
+                ET_CORE_ERROR("Failed to load file '{0}'\n     {1}", filepath.string(), e.what());
+                return false;
+            }
+            Serializer::read(data, asset);
+            return true;
+        }
+
+        template <typename T>
+        static bool SaveAsset_Ref(const std::filesystem::path& filepath, const T& asset) {
+            YNode&& node = Serializer::write(asset);
+            std::ofstream fout(filepath.string());
+            if (!fout)
+            {
+                ET_CORE_ERROR("open file {} failed!", filepath.string());
+                return false;
+            }
+            YAML::Emitter out;
+            out << node;
+            fout << out.c_str();
+            return true;
+        }
 
         static AssetHandle LoadAsset(const std::filesystem::path& filepath);
         static AssetHandle ImportAsset(const std::filesystem::path& filepath);

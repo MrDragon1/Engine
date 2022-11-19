@@ -20,15 +20,15 @@ namespace Ethereal
         ImGui::SetNextWindowSize(ImVec2(200.0f, 300.0f), ImGuiCond_Appearing);
         if (ImGui::Begin("Materials", &Open) && hasValidEntity) {
             const bool hasStaticMesh = m_SelectedEntity.HasComponent<StaticMeshComponent>() &&
-                                       AssetManager::IsAssetHandleValid(m_SelectedEntity.GetComponent<StaticMeshComponent>().StaticMesh);
+                                       AssetManager::IsAssetHandleValid(m_SelectedEntity.GetComponent<StaticMeshComponent>().StaticMeshHandle);
 
             if (hasStaticMesh) {
                 Ref<MaterialTable> meshMaterialTable, componentMaterialTable;
 
                 if (m_SelectedEntity.HasComponent<StaticMeshComponent>()) {
                     const auto& staticMeshComponent = m_SelectedEntity.GetComponent<StaticMeshComponent>();
-                    componentMaterialTable = staticMeshComponent.MaterialTable;
-                    auto mesh = AssetManager::GetAsset<StaticMesh>(staticMeshComponent.StaticMesh);
+                    componentMaterialTable = staticMeshComponent.materialTable;
+                    auto mesh = AssetManager::GetAsset<StaticMesh>(staticMeshComponent.StaticMeshHandle);
                     if (mesh) meshMaterialTable = mesh->GetMaterials();
                 }
 

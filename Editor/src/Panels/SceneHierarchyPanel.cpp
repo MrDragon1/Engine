@@ -101,11 +101,11 @@ namespace Ethereal
 
         if (opened) {
             if (entity.HasComponent<StaticMeshComponent>()) {
-                auto handle = entity.GetComponent<StaticMeshComponent>().StaticMesh;
+                auto handle = entity.GetComponent<StaticMeshComponent>().StaticMeshHandle;
                 auto mesh = AssetManager::GetAsset<StaticMesh>(handle);
                 for (auto& submesh : mesh->GetMeshSource()->GetSubmeshes()) {
                     Matrix4 localTransform = submesh.LocalTransform;
-                    Matrix4 transform = entity.GetComponent<TransformComponent>().GetTransform() * submesh.Transform;
+                    Matrix4 transform = entity.GetComponent<TransformComponent>().getMatrix() * submesh.Transform;
                     if (ImGui::TreeNode(submesh.NodeName.c_str())) {
                         {
                             auto [translation, rotation, scale] = GetTransformDecomposition(transform);
@@ -251,7 +251,7 @@ namespace Ethereal
         ImGui::PopItemWidth();
 
         DrawComponent<TransformComponent>("Transform", entity, [](auto& component) {
-            DrawVec3Control("Translation", component.Translation);
+            DrawVec3Control("Translation", component.Position);
             Vector3 rotation = Math::Degrees(Vector3(component.Rotation));
             DrawVec3Control("Rotation", rotation);
             component.Rotation = Quaternion(Math::Radians(rotation));
@@ -259,8 +259,8 @@ namespace Ethereal
         });
 
         DrawComponent<StaticMeshComponent>("StaticMesh", entity, [this](auto& component) {
-            Ref<StaticMesh> mesh = AssetManager::GetAsset<StaticMesh>(component.StaticMesh);
-            Ref<MaterialTable> componentMaterialTable = component.MaterialTable;
+            Ref<StaticMesh> mesh = AssetManager::GetAsset<StaticMesh>(component.StaticMeshHandle);
+            Ref<MaterialTable> componentMaterialTable = component.materialTable;
             Ref<MaterialTable> meshMaterialTable = mesh->GetMaterials();
 
             if (componentMaterialTable) {
@@ -270,7 +270,7 @@ namespace Ethereal
                 }
             }
 
-            AssetHandle meshHandle = component.StaticMesh;
+            AssetHandle meshHandle = component.StaticMeshHandle;
             std::string buttonText = "Null";
 
             UI::BeginPropertyGrid();
@@ -293,8 +293,8 @@ namespace Ethereal
         });
 
         DrawComponent<MeshComponent>("Mesh", entity, [this](auto& component) {
-            Ref<Mesh> mesh = AssetManager::GetAsset<StaticMesh>(component.Mesh);
-            Ref<MaterialTable> componentMaterialTable = component.MaterialTable;
+            Ref<Mesh> mesh = AssetManager::GetAsset<StaticMesh>(component.MeshHandle);
+            Ref<MaterialTable> componentMaterialTable = component.materialTable;
             Ref<MaterialTable> meshMaterialTable = mesh->GetMaterials();
 
             if (componentMaterialTable) {
@@ -304,7 +304,7 @@ namespace Ethereal
                 }
             }
 
-            AssetHandle meshHandle = component.Mesh;
+            AssetHandle meshHandle = component.MeshHandle;
             std::string buttonText = "Null";
 
             UI::BeginPropertyGrid();
@@ -330,22 +330,22 @@ namespace Ethereal
         });
 
         DrawComponent<CameraComponent>("Camera", entity, [&](auto& cameraComponent) {
-            auto& camera = cameraComponent.Camera;
+            auto& camera = cameraComponent;
 
-            if (ImGui::Checkbox("Primary", &cameraComponent.Primary)) {
-                if (cameraComponent.Primary) {
-                    m_Context->m_Registry.view<CameraComponent>().each([&](const auto otherEntity, auto& cc) { cc.Primary = otherEntity == entity; });
+            if (ImGui::Checkbox("Primary", &cameraComponent.Camera.Primary)) {
+                if (cameraComponent.Camera.Primary) {
+                    m_Context->m_Registry.view<CameraComponent>().each([&](const auto otherEntity, auto& cc) { cc.Camera.Primary = otherEntity == entity; });
                 }
             }
 
             const char* projectionTypeStrings[] = {"Perspective", "Orthographic"};
-            const char* currentProjectionTypeString = projectionTypeStrings[(int)camera.GetProjectionType()];
+            const char* currentProjectionTypeString = projectionTypeStrings[(int)camera.SceneCamera.GetProjectionType()];
             if (ImGui::BeginCombo("Projection", currentProjectionTypeString)) {
                 for (int i = 0; i < 2; i++) {
                     bool isSelected = currentProjectionTypeString == projectionTypeStrings[i];
                     if (ImGui::Selectable(projectionTypeStrings[i], isSelected)) {
                         currentProjectionTypeString = projectionTypeStrings[i];
-                        camera.SetProjectionType((SceneCamera::ProjectionType)i);
+                        camera.SceneCamera.SetProjectionType((SceneCamera::ProjectionType)i);
                     }
 
                     if (isSelected) ImGui::SetItemDefaultFocus();
@@ -354,28 +354,28 @@ namespace Ethereal
                 ImGui::EndCombo();
             }
 
-            if (camera.GetProjectionType() == SceneCamera::ProjectionType::Perspective) {
-                float verticalFov = Math::Degrees(camera.GetPerspectiveVerticalFOV());
-                if (ImGui::DragFloat("Vertical FOV", &verticalFov)) camera.SetPerspectiveVerticalFOV(Math::Radians(verticalFov));
+            if (camera.SceneCamera.GetProjectionType() == SceneCamera::ProjectionType::Perspective) {
+                float verticalFov = Math::Degrees(camera.SceneCamera.GetPerspectiveVerticalFOV());
+                if (ImGui::DragFloat("Vertical FOV", &verticalFov)) camera.SceneCamera.SetPerspectiveVerticalFOV(Math::Radians(verticalFov));
 
-                float orthoNear = camera.GetPerspectiveNearClip();
-                if (ImGui::DragFloat("Near", &orthoNear)) camera.SetPerspectiveNearClip(orthoNear);
+                float orthoNear = camera.SceneCamera.GetPerspectiveNearClip();
+                if (ImGui::DragFloat("Near", &orthoNear)) camera.SceneCamera.SetPerspectiveNearClip(orthoNear);
 
-                float orthoFar = camera.GetPerspectiveFarClip();
-                if (ImGui::DragFloat("Far", &orthoFar)) camera.SetPerspectiveFarClip(orthoFar);
+                float orthoFar = camera.SceneCamera.GetPerspectiveFarClip();
+                if (ImGui::DragFloat("Far", &orthoFar)) camera.SceneCamera.SetPerspectiveFarClip(orthoFar);
             }
 
-            if (camera.GetProjectionType() == SceneCamera::ProjectionType::Orthographic) {
-                float orthoSize = camera.GetOrthographicSize();
-                if (ImGui::DragFloat("Size", &orthoSize)) camera.SetOrthographicSize(orthoSize);
+            if (camera.SceneCamera.GetProjectionType() == SceneCamera::ProjectionType::Orthographic) {
+                float orthoSize = camera.SceneCamera.GetOrthographicSize();
+                if (ImGui::DragFloat("Size", &orthoSize)) camera.SceneCamera.SetOrthographicSize(orthoSize);
 
-                float orthoNear = camera.GetOrthographicNearClip();
-                if (ImGui::DragFloat("Near", &orthoNear)) camera.SetOrthographicNearClip(orthoNear);
+                float orthoNear = camera.SceneCamera.GetOrthographicNearClip();
+                if (ImGui::DragFloat("Near", &orthoNear)) camera.SceneCamera.SetOrthographicNearClip(orthoNear);
 
-                float orthoFar = camera.GetOrthographicFarClip();
-                if (ImGui::DragFloat("Far", &orthoFar)) camera.SetOrthographicFarClip(orthoFar);
+                float orthoFar = camera.SceneCamera.GetOrthographicFarClip();
+                if (ImGui::DragFloat("Far", &orthoFar)) camera.SceneCamera.SetOrthographicFarClip(orthoFar);
 
-                ImGui::Checkbox("Fixed Aspect Ratio", &cameraComponent.FixedAspectRatio);
+                ImGui::Checkbox("Fixed Aspect Ratio", &cameraComponent.Camera.FixedAspectRatio);
             }
         });
 
