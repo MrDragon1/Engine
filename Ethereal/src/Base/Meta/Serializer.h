@@ -108,7 +108,7 @@ namespace Ethereal
     std::string& Serializer::read(const YNode& yaml_context, std::string& instance);
 
     template <>
-    YNode Serializer::write(const uint64_t & instance);
+    YNode Serializer::write(const uint64_t& instance);
     template <>
     uint64_t& Serializer::read(const YNode& yaml_context, uint64_t& instance);
 

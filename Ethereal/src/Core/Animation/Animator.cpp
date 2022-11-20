@@ -1,3 +1,4 @@
+#include <Core/Asset/AssetManager.h>
 #include "Animator.h"
 
 namespace Ethereal
@@ -12,6 +13,16 @@ namespace Ethereal
         m_Animation = anim->m_Animation;
         m_Skeleton = anim->m_Skeleton;
         m_CurrentTime = 0.0f;
+    }
+
+    void Animator::Load(const AnimatorDesc& desc) {
+        m_Animation = AssetManager::GetAsset<Animation>(desc.Animation);
+        m_Skeleton = AssetManager::GetAsset<Skeleton>(desc.Skeleton);
+        m_CurrentTime = 0.0f;
+    }
+    void Animator::Save(AnimatorDesc& desc) {
+        desc.Animation = m_Animation->Handle;
+        desc.Skeleton = m_Skeleton->Handle;
     }
 
     void Animator::PlayAnimation() { m_CurrentTime = 0.0f; }

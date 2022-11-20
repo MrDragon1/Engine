@@ -14,6 +14,27 @@ namespace Ethereal
         m_JointsMap = skel->m_JointsMap;
     }
 
+    void Skeleton::Load(const SkeletonDesc& desc) {
+        m_Name = desc.Name;
+        m_Root = Ref<Joint>::Create();
+        m_Root->Load(desc.RootJoint);
+        m_JointsMap.clear();
+        m_NameIDMap.clear();
+        m_JointsMap[m_Root->m_ID] = m_Root;
+        m_NameIDMap[m_Root->m_Name] = m_Root->m_ID;
+        for (auto& child : m_Root->m_Children) {
+            m_JointsMap[child->m_ID] = child;
+            m_NameIDMap[child->m_Name] = child->m_ID;
+        }
+    }
+
+
+    void Skeleton::Save(SkeletonDesc& desc) {
+        desc.Name = m_Name;
+        m_Root->Save(desc.RootJoint);
+    }
+
+
     void Skeleton::UpdatePose(AnimInterClip clip) {
         // Update LocalTranform in every joint
         for (auto state : clip.States) {
@@ -35,4 +56,5 @@ namespace Ethereal
             CalculateMatrices(children, globalTransform);
         }
     }
+
 }  // namespace Ethereal

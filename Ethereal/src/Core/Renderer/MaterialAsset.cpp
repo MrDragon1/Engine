@@ -1,9 +1,11 @@
-#include <Ethereal/src/Base/GlobalContext.h>
 #include "MaterialAsset.h"
+
+#include <Ethereal/src/Base/GlobalContext.h>
+#include <Core/Asset/AssetManager.h>
 
 namespace Ethereal
 {
-    MaterialAsset::MaterialAsset(const std::string &name, bool transparent) : m_Transparent(transparent) {
+    MaterialAsset::MaterialAsset(const std::string &name, bool transparent) : b_Transparent(transparent) {
         m_Name = name;
         SetDefaults();
     }
@@ -21,7 +23,7 @@ namespace Ethereal
         m_Roughness = other->m_Roughness;
         m_Emisstion = other->m_Emisstion;
         m_Transparency = other->m_Transparency;
-        m_Transparent = other->m_Transparent;
+        b_Transparent = other->b_Transparent;
 
         b_Albedo = other->b_Albedo;
         b_Metallic = other->b_Metallic;
@@ -31,6 +33,53 @@ namespace Ethereal
     }
 
     MaterialAsset::~MaterialAsset() {}
+
+    void MaterialAsset::Load(const MaterialDesc& desc) {
+        m_Name = desc.Name;
+
+        m_AlbedoMap = AssetManager::GetAsset<Texture>(desc.AlbedoMap);
+        m_NormalMap = AssetManager::GetAsset<Texture>(desc.NormalMap);
+        m_MetallicMap = AssetManager::GetAsset<Texture>(desc.MetallicMap);
+        m_RoughnessMap = AssetManager::GetAsset<Texture>(desc.RoughnessMap);
+        m_OcclusionMap = AssetManager::GetAsset<Texture>(desc.OcclusionMap);
+
+        m_Albedo = desc.Albedo;
+        m_Metallic = desc.Metallic;
+        m_Roughness = desc.Roughness;
+        m_Emisstion = desc.Emisstion;
+        m_Transparency = desc.Transparency;
+
+
+        b_Albedo = desc.IsAlbedo;
+        b_Metallic = desc.IsMetallic;
+        b_Roughness = desc.IsRoughness;
+        b_Normal = desc.IsNormal;
+        b_Occlusion = desc.IsOcclusion;
+        b_Transparent = desc.IsTransparent;
+    }
+
+    void MaterialAsset::Save(MaterialDesc& desc) {
+        desc.Name = m_Name;
+
+        desc.AlbedoMap = m_AlbedoMap->Handle;
+        desc.NormalMap = m_NormalMap->Handle;
+        desc.MetallicMap = m_MetallicMap->Handle;
+        desc.RoughnessMap = m_RoughnessMap->Handle;
+        desc.OcclusionMap = m_OcclusionMap->Handle;
+
+        desc.Albedo = m_Albedo;
+        desc.Metallic = m_Metallic;
+        desc.Roughness = m_Roughness;
+        desc.Emisstion = m_Emisstion;
+        desc.Transparency = m_Transparency;
+
+        desc.IsAlbedo = b_Albedo;
+        desc.IsMetallic = b_Metallic;
+        desc.IsRoughness = b_Roughness;
+        desc.IsNormal = b_Normal;
+        desc.IsOcclusion = b_Occlusion;
+        desc.IsTransparent = b_Transparent;
+    }
 
     Vector3 &MaterialAsset::GetAlbedoColor() { return m_Albedo; }
 

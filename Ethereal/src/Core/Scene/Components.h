@@ -7,7 +7,7 @@
 
 #include "Base/Meta/Reflection.h"
 #include "Base/Meta/Raw/Camera.h"
-#include "Base/Meta/Raw/Mesh.h"
+#include "Resource/Descriptor/Material.h"
 
 #include <functional>
 #include <string>
@@ -100,12 +100,15 @@ namespace Ethereal
         public:
           META(Enable)
           AssetHandle MeshHandle;
+          MaterialTableRaw MaterialTableRaw;
           Ref<MaterialTable> materialTable {nullptr};
 
           MeshComponent() = default;
           MeshComponent(const MeshComponent& other)
           : MeshHandle(other.MeshHandle) {}
           MeshComponent(AssetHandle handle) : MeshHandle(handle) {}
+
+          void PostLoad() override;
     };
 
     REFLECTION_TYPE(CameraComponent)

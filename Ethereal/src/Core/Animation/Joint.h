@@ -1,12 +1,16 @@
 #pragma once
 #include "pch.h"
 #include "Core/Animation/Animation.h"
+#include "Resource/Descriptor/Animation.h"
 namespace Ethereal
 {
     // The Joint infomation, not include any animation info
     class Joint : public RefCounted {
       public:
         Joint() = default;
+
+        void Load(const JointDesc& desc);
+        void Save(JointDesc& desc);
 
         void SetLocalTransform(AnimState state);
 

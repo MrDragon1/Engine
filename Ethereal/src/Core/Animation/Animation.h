@@ -2,35 +2,9 @@
 #include "pch.h"
 #include "Base/Math/Vector.h"
 #include "Core/Asset/Asset.h"
+#include "Resource/Descriptor/Animation.h"
 namespace Ethereal
 {
-    struct AnimPositionState {
-        Vector3 Position;
-        TimeStamp TimeStamp;
-    };
-    struct AnimRotationState {
-        Quaternion Rotation;
-        TimeStamp TimeStamp;
-    };
-    struct AnimScaleState {
-        Vector3 Scale;
-        TimeStamp TimeStamp;
-    };
-
-    struct AnimKeyClip {
-        std::vector<AnimPositionState> PositionStates;
-        std::vector<AnimRotationState> RotationStates;
-        std::vector<AnimScaleState> ScaleStates;
-        size_t JointID;
-    };
-
-    struct AnimState {
-        AnimPositionState PositionState;
-        AnimRotationState RotationState;
-        AnimScaleState ScaleState;
-        size_t JointID;
-    };
-
     struct AnimInterClip {
         std::vector<AnimState> States;
     };
@@ -40,6 +14,10 @@ namespace Ethereal
         Animation() = default;
         Animation(const Ref<Animation>& anim);
         AnimInterClip GetInterpolateClip(TimeStamp animationTime);
+
+        void Load(const AnimationDesc& desc);
+        void Save(AnimationDesc& desc);
+
         double GetFramesPerSecond() const { return m_FramesPersecond; }
         TimeStamp GetDuration() const { return m_Duration; }
 

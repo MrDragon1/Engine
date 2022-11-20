@@ -1,6 +1,7 @@
 #pragma once
 #include "Core/Asset/Asset.h"
-
+#include "Core/Renderer/Texture.h"
+#include "Resource/Descriptor/Material.h"
 #include <map>
 namespace Ethereal
 {
@@ -18,6 +19,9 @@ namespace Ethereal
         MaterialAsset(const std::string& name = "Empty Name", bool transparent = false);
         MaterialAsset(const Ref<MaterialAsset>& other);
         ~MaterialAsset();
+
+        void Load(const MaterialDesc& desc);
+        void Save(MaterialDesc& desc);
 
         Vector3& GetAlbedoColor();
         void SetAlbedoColor(const Vector3& color);
@@ -70,7 +74,7 @@ namespace Ethereal
         static AssetType GetStaticType() { return AssetType::Material; }
         virtual AssetType GetAssetType() const override { return GetStaticType(); }
 
-        bool IsTransparent() const { return m_Transparent; }
+        bool IsTransparent() const { return b_Transparent; }
         std::string GetName() const { return m_Name; }
 
       private:
@@ -96,7 +100,7 @@ namespace Ethereal
         bool b_Normal = false;
         bool b_Occlusion = false;
 
-        bool m_Transparent = false;
+        bool b_Transparent = false;
 
         std::string m_Name;
     };

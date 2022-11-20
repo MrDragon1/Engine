@@ -9,6 +9,10 @@ namespace Ethereal
       public:
         Skeleton();
         Skeleton(const Ref<Skeleton>& skel);
+
+        void Load(const SkeletonDesc& desc);
+        void Save(SkeletonDesc& desc);
+
         void UpdatePose(AnimInterClip clip);
         size_t GetJointID(std::string name) {
             if (m_NameIDMap.find(name) == m_NameIDMap.end()) {

@@ -29,6 +29,9 @@ namespace Ethereal
 
     namespace Utils
     {
+        inline bool IsBaseType(AssetType type) {
+            return type == AssetType::MeshSource || type == AssetType::Texture || type == AssetType::EnvMap || type == AssetType::Font;
+        }
 
         inline AssetType AssetTypeFromString(const std::string& assetType) {
             if (assetType == "None") return AssetType::None;

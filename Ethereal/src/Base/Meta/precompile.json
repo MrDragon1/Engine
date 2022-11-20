@@ -8,5 +8,12 @@ E:/Code/Engine/Ethereal/src/Base/yaml.h
 E:/Code/Engine/Ethereal/src/Base/Meta/Raw/Scene.h
 E:/Code/Engine/Ethereal/src/Base/Meta/Raw/Camera.h
 E:/Code/Engine/Ethereal/src/Base/Meta/Raw/Mesh.h
-E:/Code/Engine/Ethereal/src/Core/Scene/Components.h
 E:/Code/Engine/Ethereal/src/Base/UUID.h
+E:/Code/Engine/Ethereal/src/Base/Ref.h
+E:/Code/Engine/Ethereal/src/Core/Asset/Asset.h
+E:/Code/Engine/Ethereal/src/Core/Scene/Components.h
+E:/Code/Engine/Ethereal/src/Resource/Descriptor/Animation.h
+E:/Code/Engine/Ethereal/src/Resource/Descriptor/Mesh.h
+E:/Code/Engine/Ethereal/src/Resource/Descriptor/Material.h
+E:/Code/Engine/Ethereal/src/Resource/Descriptor/Environment.h
+

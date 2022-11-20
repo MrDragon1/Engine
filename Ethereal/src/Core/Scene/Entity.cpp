@@ -10,32 +10,32 @@ namespace Ethereal
         m_Name = raw.Name;
         for(auto component: raw.Components) {
             if(component.getTypeName() == "IDComponent") {
-                auto id = static_cast<IDComponent*>(component.getPtr());
+                auto id = dynamic_cast<IDComponent*>(component.getPtr());
                 auto& c = AddComponent<IDComponent>(*id);
                 c.PostLoad();
             }
             else if(component.getTypeName() == "TagComponent") {
-                auto tag = static_cast<TagComponent*>(component.getPtr());
+                auto tag = dynamic_cast<TagComponent*>(component.getPtr());
                 auto& c = AddComponent<TagComponent>(*tag);
                 c.PostLoad();
             }
             else if(component.getTypeName() == "TransformComponent") {
-                auto transform = static_cast<TransformComponent*>(component.getPtr());
+                auto transform = dynamic_cast<TransformComponent*>(component.getPtr());
                 auto& c = AddComponent<TransformComponent>(*transform);
                 c.PostLoad();
             }
             else if(component.getTypeName() == "CameraComponent") {
-                auto camera = static_cast<CameraComponent*>(component.getPtr());
+                auto camera = dynamic_cast<CameraComponent*>(component.getPtr());
                 auto& c = AddComponent<CameraComponent>(*camera);
                 c.PostLoad();
             }
             else if(component.getTypeName() == "StaticMeshComponent") {
-                auto mesh = static_cast<StaticMeshComponent*>(component.getPtr());
+                auto mesh = dynamic_cast<StaticMeshComponent*>(component.getPtr());
                 auto& c = AddComponent<StaticMeshComponent>(*mesh);
                 c.PostLoad();
             }
             else if(component.getTypeName() == "MeshComponent") {
-                auto light = static_cast<MeshComponent*>(component.getPtr());
+                auto light = dynamic_cast<MeshComponent*>(component.getPtr());
                 auto& c = AddComponent<MeshComponent>(*light);
                 c.PostLoad();
             }

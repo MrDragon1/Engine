@@ -1,3 +1,4 @@
+#include <Resource/ResourceImporter.h>
 #include "Core/Asset/AssetManager.h"
 #include "EditorLayer.h"
 #include "pch.h"
@@ -130,7 +131,7 @@ namespace Ethereal
                 if (ImGui::MenuItem("Import File", nullptr)) {
                     std::string filepath = FileDialogs::OpenFile("All (*.*)\0*.*\0");
                     if (!filepath.empty()) {
-                        AssetManager::ImportAsset(std::filesystem::path(filepath));
+                        ResourceImporter::Import(filepath);
                     }
                 }
                 if (ImGui::MenuItem("Exit")) Application::Get().Close();

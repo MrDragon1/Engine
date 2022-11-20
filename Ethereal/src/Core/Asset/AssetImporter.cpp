@@ -1,46 +1,49 @@
+#include <Resource/ResourceLoader.h>
 #include "pch.h"
 #include "AssetImporter.h"
 #include "AssetManager.h"
-#include "MeshSerializer.h"
+#include "Ethereal/src/Resource/Descriptor/Descriptor.h"
 
 namespace Ethereal
 {
-    void AssetImporter::Init() {
-        s_Serializers[AssetType::Texture] = CreateScope<TextureSerializer>();
-        s_Serializers[AssetType::Scene] = CreateScope<SceneAssetSerializer>();
-        s_Serializers[AssetType::StaticMesh] = CreateScope<StaticMeshSerializer>();
-        s_Serializers[AssetType::Mesh] = CreateScope<MeshSerializer>();
-        s_Serializers[AssetType::MeshSource] = CreateScope<MeshAssetSerializer>();
-        s_Serializers[AssetType::Material] = CreateScope<MaterialAssetSerializer>();
-        s_Serializers[AssetType::EnvMap] = CreateScope<EnvironmentSerializer>();
-        s_Serializers[AssetType::Animation] = CreateScope<AnimationAssetSerializer>();
-        s_Serializers[AssetType::Skeleton] = CreateScope<SkeletonAssetSerializer>();
-        s_Serializers[AssetType::Animator] = CreateScope<AnimatorAssetSerializer>();
-    }
-
-    void AssetImporter::Serialize(const AssetMetaData& metadata, const Ref<Asset>& asset) {
-        if (s_Serializers.find(metadata.Type) == s_Serializers.end()) {
-            ET_CORE_WARN("There's currently no importer for assets of type {0}", metadata.FilePath.stem().string());
-            return;
-        }
-
-        s_Serializers[asset->GetAssetType()]->Serialize(metadata, asset);
-    }
-
-    void AssetImporter::Serialize(const Ref<Asset>& asset) {
-        const AssetMetaData& metadata = AssetManager::GetMetadata(asset->Handle);
-        Serialize(metadata, asset);
-    }
-
     bool AssetImporter::TryLoadData(const AssetMetaData& metadata, Ref<Asset>& asset) {
-        if (s_Serializers.find(metadata.Type) == s_Serializers.end()) {
-            ET_CORE_WARN("There's currently no importer for assets of type {0}", metadata.FilePath.stem().string());
-            return false;
+
+        switch(metadata.Type){
+            case AssetType::Texture:
+                asset = ResourceLoader::LoadTexture(AssetManager::GetFileSystemPath(metadata).string());
+                break;
+            case AssetType::MeshSource:
+                asset = ResourceLoader::LoadMeshSource(AssetManager::GetFileSystemPath(metadata).string());
+                break;
+            case AssetType::EnvMap:
+                asset = ResourceLoader::LoadEnvironmentMap(AssetManager::GetFileSystemPath(metadata).string());
+                break;
+            case AssetType::StaticMesh:
+                AssetManager::LoadAsset_Ref(AssetManager::GetFileSystemPath(metadata).string(), *(asset.As<StaticMeshDesc>()));
+                break;
+            case AssetType::Mesh:
+                AssetManager::LoadAsset_Ref(AssetManager::GetFileSystemPath(metadata).string(), *(asset.As<MeshDesc>()));
+                break;
+            case AssetType::Material:{
+                // TODO: refactor asset type like this way
+                MaterialDesc desc;
+                AssetManager::LoadAsset_Ref(AssetManager::GetFileSystemPath(metadata).string(), desc);
+                asset = Ref<MaterialDesc>::Create(desc);
+                break;
+            }
+            case AssetType::Animation:
+                AssetManager::LoadAsset_Ref(AssetManager::GetFileSystemPath(metadata).string(), *(asset.As<AnimationDesc>()));
+                break;
+            case AssetType::Skeleton:
+                AssetManager::LoadAsset_Ref(AssetManager::GetFileSystemPath(metadata).string(), *(asset.As<SkeletonDesc>()));
+                break;
+            case AssetType::Animator:
+                AssetManager::LoadAsset_Ref(AssetManager::GetFileSystemPath(metadata).string(), *(asset.As<AnimatorDesc>()));
+                break;
+            default:
+                return false;
         }
-
-        return s_Serializers[metadata.Type]->TryLoadData(metadata, asset);
+        asset->Handle = metadata.Handle;
+        return true;
     }
-
-    std::unordered_map<AssetType, Scope<AssetSerializer>> AssetImporter::s_Serializers;
-
 }  // namespace Ethereal

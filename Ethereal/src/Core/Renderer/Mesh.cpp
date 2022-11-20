@@ -15,349 +15,7 @@
 
 namespace Ethereal
 {
-    namespace Utils
-    {
-        Matrix4 Mat4FromAssimpMat4(const aiMatrix4x4& matrix) {
-            Matrix4 result;
-            // the a,b,c,d in assimp is the row ; the 1,2,3,4 is the column
-            result[0][0] = matrix.a1;
-            result[1][0] = matrix.a2;
-            result[2][0] = matrix.a3;
-            result[3][0] = matrix.a4;
-            result[0][1] = matrix.b1;
-            result[1][1] = matrix.b2;
-            result[2][1] = matrix.b3;
-            result[3][1] = matrix.b4;
-            result[0][2] = matrix.c1;
-            result[1][2] = matrix.c2;
-            result[2][2] = matrix.c3;
-            result[3][2] = matrix.c4;
-            result[0][3] = matrix.d1;
-            result[1][3] = matrix.d2;
-            result[2][3] = matrix.d3;
-            result[3][3] = matrix.d4;
-            return result;
-        }
-
-        Vector3 Vec3FromAssimpVec3(const aiVector3D& vec) { return Vector3(vec.x, vec.y, vec.z); }
-
-        Quaternion QuatFromAssimpQuat(const aiQuaternion& pOrientation) {
-            return Quaternion(pOrientation.w, pOrientation.x, pOrientation.y, pOrientation.z);
-        }
-
-    }  // namespace Utils
-
-    static const uint32_t s_MeshImportFlags = aiProcess_CalcTangentSpace |  // Create binormals/tangents just in case
-                                              aiProcess_Triangulate |       // Make sure we're triangles
-                                              aiProcess_SortByPType |       // Split meshes by primitive type
-                                              aiProcess_GenNormals |        // Make sure we have legit normals
-                                              aiProcess_GenUVCoords |       // Convert UVs if required
-                                                                            // 		aiProcess_OptimizeGraph |
-                                              aiProcess_OptimizeMeshes |    // Batch draws where possible
-                                              aiProcess_JoinIdenticalVertices |
-                                              aiProcess_GlobalScale |  // e.g. convert cm to m for fbx import (and other formats where cm is native)
-                                              aiProcess_ValidateDataStructure;  // Validation
-
-    struct LogStream : public Assimp::LogStream {
-        static void Initialize() {
-            if (Assimp::DefaultLogger::isNullLogger()) {
-                Assimp::DefaultLogger::create("", Assimp::Logger::VERBOSE);
-                Assimp::DefaultLogger::get()->attachStream(new LogStream, Assimp::Logger::Err | Assimp::Logger::Warn);
-            }
-        }
-        virtual void write(const char* message) override { ET_CORE_ERROR("Assimp error: {0}", message); }
-    };
-
-    MeshSource::MeshSource(const std::string& filename) : m_FilePath(filename) {
-        LogStream::Initialize();
-
-        ET_CORE_INFO("Loading mesh: {0}", filename.c_str());
-
-        m_Importer = std::make_unique<Assimp::Importer>();
-
-        const aiScene* scene = m_Importer->ReadFile(filename, s_MeshImportFlags);
-        if (!scene || !scene->HasMeshes()) {
-            ET_CORE_ERROR("Failed to load mesh file: {0}", filename);
-            SetFlag(AssetFlag::Invalid);
-            return;
-        }
-
-        m_Scene = scene;
-        m_InverseTransform = Math::Inverse(Utils::Mat4FromAssimpMat4(scene->mRootNode->mTransformation));
-        m_IsAnimated = scene->mAnimations != nullptr;
-        if (m_IsAnimated) {
-            Ref<Skeleton> skel = Ref<Skeleton>::Create();
-            Ref<Animation> anim = Ref<Animation>::Create();
-            m_Animator = Ref<Animator>::Create(anim, skel);
-        }
-
-        uint32_t vertexCount = 0;
-        uint32_t indexCount = 0;
-
-        m_BoundingBox.Min = {FLT_MAX, FLT_MAX, FLT_MAX};
-        m_BoundingBox.Max = {-FLT_MAX, -FLT_MAX, -FLT_MAX};
-
-        m_Submeshes.reserve(scene->mNumMeshes);
-
-        for (unsigned m = 0; m < scene->mNumMeshes; m++) {
-            aiMesh* mesh = scene->mMeshes[m];
-            Submesh& submesh = m_Submeshes.emplace_back();
-            submesh.BaseVertex = vertexCount;
-            submesh.BaseIndex = indexCount;
-            submesh.MaterialIndex = mesh->mMaterialIndex;
-            submesh.VertexCount = mesh->mNumVertices;
-            submesh.IndexCount = mesh->mNumFaces * 3;
-            submesh.MeshName = mesh->mName.C_Str();
-            vertexCount += mesh->mNumVertices;
-            indexCount += submesh.IndexCount;
-
-            ET_CORE_ASSERT(mesh->HasPositions(), "Meshes require positions.");
-            ET_CORE_ASSERT(mesh->HasNormals(), "Meshes require normals.");
-
-            // Vertices
-            if (m_IsAnimated) {
-                for (size_t i = 0; i < mesh->mNumVertices; i++) {
-                    AnimationVertex vertex;
-                    vertex.Position = {mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z};
-                    vertex.Normal = {mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z};
-
-                    if (mesh->HasTangentsAndBitangents()) {
-                        vertex.Tangent = {mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z};
-                        vertex.Binormal = {mesh->mBitangents[i].x, mesh->mBitangents[i].y, mesh->mBitangents[i].z};
-                    }
-
-                    if (mesh->HasTextureCoords(0))
-                        vertex.Texcoord = {mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y};
-                    else
-                        vertex.Texcoord = {0, 0};
-
-                    m_AnimationVertices.push_back(vertex);
-                }
-            } else {
-                auto& aabb = submesh.BoundingBox;
-                aabb.Min = {FLT_MAX, FLT_MAX, FLT_MAX};
-                aabb.Max = {-FLT_MAX, -FLT_MAX, -FLT_MAX};
-                for (size_t i = 0; i < mesh->mNumVertices; i++) {
-                    Vertex vertex;
-                    vertex.Position = {mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z};
-                    vertex.Normal = {mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z};
-                    aabb.Min.x = Math::Min(vertex.Position.x, aabb.Min.x);
-                    aabb.Min.y = Math::Min(vertex.Position.y, aabb.Min.y);
-                    aabb.Min.z = Math::Min(vertex.Position.z, aabb.Min.z);
-                    aabb.Max.x = Math::Max(vertex.Position.x, aabb.Max.x);
-                    aabb.Max.y = Math::Max(vertex.Position.y, aabb.Max.y);
-                    aabb.Max.z = Math::Max(vertex.Position.z, aabb.Max.z);
-
-                    if (mesh->HasTangentsAndBitangents()) {
-                        vertex.Tangent = {mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z};
-                        vertex.Binormal = {mesh->mBitangents[i].x, mesh->mBitangents[i].y, mesh->mBitangents[i].z};
-                    }
-
-                    if (mesh->HasTextureCoords(0))
-                        vertex.Texcoord = {mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y};
-                    else
-                        vertex.Texcoord = {0, 0};
-
-                    m_StaticVertices.push_back(vertex);
-                }
-            }
-
-            // Indices
-            for (size_t i = 0; i < mesh->mNumFaces; i++) {
-                ET_CORE_ASSERT(mesh->mFaces[i].mNumIndices == 3, "Must have 3 indices.");
-                Index index = {mesh->mFaces[i].mIndices[0], mesh->mFaces[i].mIndices[1], mesh->mFaces[i].mIndices[2]};
-                m_Indices.push_back(index);
-            }
-        }
-
-        TraverseNodes(scene->mRootNode);
-
-        for (const auto& submesh : m_Submeshes) {
-            AABB transformedSubmeshAABB = submesh.BoundingBox;
-            Vector3 min = Vector3(submesh.Transform * Vector4(transformedSubmeshAABB.Min, 1.0f));
-            Vector3 max = Vector3(submesh.Transform * Vector4(transformedSubmeshAABB.Max, 1.0f));
-
-            m_BoundingBox.Min.x = Math::Min(m_BoundingBox.Min.x, min.x);
-            m_BoundingBox.Min.y = Math::Min(m_BoundingBox.Min.y, min.y);
-            m_BoundingBox.Min.z = Math::Min(m_BoundingBox.Min.z, min.z);
-            m_BoundingBox.Max.x = Math::Max(m_BoundingBox.Max.x, max.x);
-            m_BoundingBox.Max.y = Math::Max(m_BoundingBox.Max.y, max.y);
-            m_BoundingBox.Max.z = Math::Max(m_BoundingBox.Max.z, max.z);
-        }
-
-        // Bones
-        if (m_IsAnimated) {
-            // Create Hierarchy Joint Skeleton without offset matrix
-            TraverseNodesAnim(scene->mRootNode, m_Animator->m_Skeleton->m_Root);
-
-            // Update offset matrix
-            for (size_t m = 0; m < scene->mNumMeshes; m++) {
-                aiMesh* mesh = scene->mMeshes[m];
-                Submesh& submesh = m_Submeshes[m];
-
-                for (size_t i = 0; i < mesh->mNumBones; i++) {
-                    aiBone* bone = mesh->mBones[i];
-                    std::string boneName(bone->mName.data);
-                    size_t boneID = m_Animator->m_Skeleton->m_NameIDMap[boneName];
-                    ET_CORE_ASSERT(boneID >= 0, "Can not find bone with name {0}", boneName);
-                    Ref<Joint> joint = m_Animator->m_Skeleton->m_JointsMap[boneID];
-
-                    joint->m_OffsetMatrix = Utils::Mat4FromAssimpMat4(bone->mOffsetMatrix);
-                    joint->m_InverseOffsetMatrix = Math::Inverse(joint->m_OffsetMatrix);
-
-                    for (size_t j = 0; j < bone->mNumWeights; j++) {
-                        int VertexID = submesh.BaseVertex + bone->mWeights[j].mVertexId;
-                        float Weight = bone->mWeights[j].mWeight;
-                        m_AnimationVertices[VertexID].AddBoneData(boneID, Weight);
-                    }
-                }
-            }
-
-            // Create Animation (Only support one anim for now)
-            auto& animation = m_Animator->m_Animation;
-            auto& rawAnim = scene->mAnimations[0];
-            animation->m_Name = rawAnim->mName.data;
-            animation->m_Duration = rawAnim->mDuration;
-            animation->m_FramesPersecond = rawAnim->mTicksPerSecond;
-            animation->m_KeyClips.clear();
-
-            // fill key clip
-            auto& channels = rawAnim->mChannels;
-            auto& keyClips = animation->m_KeyClips;
-            for (int i = 0; i < rawAnim->mNumChannels; i++) {
-                aiNodeAnim* channel = channels[i];
-                AnimKeyClip keyClip;
-                keyClip.JointID = m_Animator->m_Skeleton->GetJointID(channel->mNodeName.data);
-
-                int m_NumPositions = channel->mNumPositionKeys;
-                for (int positionIndex = 0; positionIndex < m_NumPositions; ++positionIndex) {
-                    aiVector3D aiPosition = channel->mPositionKeys[positionIndex].mValue;
-                    float timeStamp = channel->mPositionKeys[positionIndex].mTime;
-                    AnimPositionState data;
-                    data.Position = Utils::Vec3FromAssimpVec3(aiPosition);
-                    data.TimeStamp = timeStamp;
-                    keyClip.PositionStates.push_back(data);
-                }
-
-                int m_NumRotations = channel->mNumRotationKeys;
-                for (int rotationIndex = 0; rotationIndex < m_NumRotations; ++rotationIndex) {
-                    aiQuaternion aiOrientation = channel->mRotationKeys[rotationIndex].mValue;
-                    float timeStamp = channel->mRotationKeys[rotationIndex].mTime;
-                    AnimRotationState data;
-                    data.Rotation = Utils::QuatFromAssimpQuat(aiOrientation);
-                    data.TimeStamp = timeStamp;
-                    keyClip.RotationStates.push_back(data);
-                }
-
-                int m_NumScalings = channel->mNumScalingKeys;
-                for (int keyIndex = 0; keyIndex < m_NumScalings; ++keyIndex) {
-                    aiVector3D scale = channel->mScalingKeys[keyIndex].mValue;
-                    float timeStamp = channel->mScalingKeys[keyIndex].mTime;
-                    AnimScaleState data;
-                    data.Scale = Utils::Vec3FromAssimpVec3(scale);
-                    data.TimeStamp = timeStamp;
-                    keyClip.ScaleStates.push_back(data);
-                }
-
-                animation->m_KeyClips.push_back(keyClip);
-            }
-        }
-
-        if (m_IsAnimated) {
-            m_VertexBuffer = VertexBuffer::Create(m_AnimationVertices.data(), (uint32_t)(m_AnimationVertices.size() * sizeof(AnimationVertex)));
-            m_VertexBufferLayout = {
-                {ShaderDataType::Float3, "a_Position"},    {ShaderDataType::Float3, "a_Normal"},   {ShaderDataType::Float3, "a_Tangent"},
-                {ShaderDataType::Float3, "a_Binormal"},    {ShaderDataType::Float2, "a_TexCoord"}, {ShaderDataType::Int4, "a_BoneIDs"},
-                {ShaderDataType::Float4, "a_BoneWeights"},
-            };
-        } else {
-            m_VertexBuffer = VertexBuffer::Create(m_StaticVertices.data(), (uint32_t)(m_StaticVertices.size() * sizeof(Vertex)));
-            m_VertexBufferLayout = {
-                {ShaderDataType::Float3, "a_Position"}, {ShaderDataType::Float3, "a_Normal"},   {ShaderDataType::Float3, "a_Tangent"},
-                {ShaderDataType::Float3, "a_Binormal"}, {ShaderDataType::Float2, "a_TexCoord"},
-            };
-        }
-
-        m_IndexBuffer = IndexBuffer::Create(m_Indices.data(), (uint32_t)(m_Indices.size() * sizeof(Index)));
-
-        m_VertexArray = VertexArray::Create();
-        m_VertexBuffer->SetLayout(m_VertexBufferLayout);
-        m_VertexArray->AddVertexBuffer(m_VertexBuffer);
-        m_VertexArray->SetIndexBuffer(m_IndexBuffer);
-    }
-
-    void MeshSource::TraverseNodes(aiNode* node, const Matrix4& parentTransform, uint32_t level) {
-        Matrix4 localTransform = Utils::Mat4FromAssimpMat4(node->mTransformation);
-        Matrix4 transform = parentTransform * localTransform;
-        m_NodeMap[node].resize(node->mNumMeshes);
-        for (uint32_t i = 0; i < node->mNumMeshes; i++) {
-            uint32_t mesh = node->mMeshes[i];
-            auto& submesh = m_Submeshes[mesh];
-            submesh.NodeName = node->mName.C_Str();
-            submesh.Transform = transform;
-            submesh.LocalTransform = localTransform;
-            m_NodeMap[node][i] = mesh;
-        }
-        for (uint32_t i = 0; i < node->mNumChildren; i++) TraverseNodes(node->mChildren[i], transform, level + 1);
-    }
-
-    void MeshSource::TraverseNodesAnim(aiNode* node, Ref<Joint>& joint) {
-        ET_CORE_ASSERT(node, "Empty aiNode!")
-        joint->m_Name = node->mName.data;
-        joint->m_ID = m_JointCount++;
-        m_Animator->m_Skeleton->m_NameIDMap[joint->m_Name] = joint->m_ID;
-        m_Animator->m_Skeleton->m_JointsMap[joint->m_ID] = joint;
-        for (uint32_t i = 0; i < node->mNumChildren; i++) {
-            Ref<Joint> childJoint = Ref<Joint>::Create();
-            childJoint->m_Parent = joint;
-            TraverseNodesAnim(node->mChildren[i], childJoint);
-            joint->m_Children.push_back(childJoint);
-        }
-    }
-
-    MeshSource::MeshSource(const std::vector<Vertex>& vertices, const std::vector<Index>& indices, const Matrix4& transform)
-        : m_StaticVertices(vertices), m_Indices(indices), m_IsAnimated(false), m_Animator(nullptr) {
-        // Generate a new asset handle
-        Handle = {};
-
-        Submesh submesh;
-        submesh.BaseVertex = 0;
-        submesh.BaseIndex = 0;
-        submesh.IndexCount = (uint32_t)indices.size() * 3u;
-        submesh.Transform = transform;
-        m_Submeshes.push_back(submesh);
-
-        m_VertexBuffer = VertexBuffer::Create(m_StaticVertices.data(), (uint32_t)(m_StaticVertices.size() * sizeof(Vertex)));
-        m_IndexBuffer = IndexBuffer::Create(m_Indices.data(), (uint32_t)(m_Indices.size() * sizeof(Index)));
-        m_VertexBufferLayout = {
-            {ShaderDataType::Float3, "a_Position"}, {ShaderDataType::Float3, "a_Normal"},   {ShaderDataType::Float3, "a_Tangent"},
-            {ShaderDataType::Float3, "a_Binormal"}, {ShaderDataType::Float2, "a_TexCoord"},
-        };
-
-        m_VertexArray = VertexArray::Create();
-        m_VertexBuffer->SetLayout(m_VertexBufferLayout);
-        m_VertexArray->AddVertexBuffer(m_VertexBuffer);
-        m_VertexArray->SetIndexBuffer(m_IndexBuffer);
-    }
-
-    MeshSource::MeshSource(const std::vector<Vertex>& vertices, const std::vector<Index>& indices, const std::vector<Submesh>& submeshes)
-        : m_StaticVertices(vertices), m_Indices(indices), m_Submeshes(submeshes), m_IsAnimated(false), m_Animator(nullptr) {
-        // Generate a new asset handle
-        Handle = {};
-
-        m_VertexBuffer = VertexBuffer::Create(m_StaticVertices.data(), (uint32_t)(m_StaticVertices.size() * sizeof(Vertex)));
-        m_IndexBuffer = IndexBuffer::Create(m_Indices.data(), (uint32_t)(m_Indices.size() * sizeof(Index)));
-        m_VertexBufferLayout = {
-            {ShaderDataType::Float3, "a_Position"}, {ShaderDataType::Float3, "a_Normal"},   {ShaderDataType::Float3, "a_Tangent"},
-            {ShaderDataType::Float3, "a_Binormal"}, {ShaderDataType::Float2, "a_TexCoord"},
-        };
-
-        m_VertexArray = VertexArray::Create();
-        m_VertexBuffer->SetLayout(m_VertexBufferLayout);
-        m_VertexArray->AddVertexBuffer(m_VertexBuffer);
-        m_VertexArray->SetIndexBuffer(m_IndexBuffer);
-        // TODO: generate bounding box for submeshes, etc.
-    }
+    MeshSource::MeshSource() {}
 
     MeshSource::~MeshSource() {}
 
@@ -373,7 +31,11 @@ namespace Ethereal
                 std::string materialName = aiMaterialName.C_Str();
 
                 if (materialName == "DefaultMaterial") {
-                    auto mi = AssetManager::GetAsset<MaterialAsset>("materials/M_Default.hmaterial");
+                    MaterialDesc desc;
+                    AssetManager::LoadAsset_Ref("assets/materials/M_Default.EMaterial", desc);
+
+                    auto mi = Ref<MaterialAsset>::Create();
+                    mi->Load(desc);
                     materials->SetMaterial(i, mi);
                     continue;
                 }
@@ -538,6 +200,32 @@ namespace Ethereal
 
     StaticMesh::~StaticMesh() {}
 
+    void StaticMesh::Load(const StaticMeshDesc& desc) {
+        m_MeshSource = AssetManager::GetAsset<MeshSource>(desc.Mesh);
+        m_Materials = Ref<MaterialTable>::Create();
+        for (int i = 0; i < desc.Materials.size(); i++) {
+            auto materialdesc = AssetManager::GetAsset<MaterialDesc>(desc.Materials[i]);
+            auto material = Ref<MaterialAsset>::Create();
+            material->Load(*materialdesc);
+            m_Materials->SetMaterial(i, material);
+        }
+        SetSubmeshes({});
+    }
+
+    void StaticMesh::Save(StaticMeshDesc& desc) {
+        desc.Mesh = m_MeshSource->Handle;
+        // TODO: Rewrite this when support map reflection
+        int len = 0;
+        for (auto& m : m_Materials->GetMaterials()) {
+            len = len > m.first ? len : m.first;
+        }
+        desc.Materials.resize(len + 1);
+        for (auto& m : m_Materials->GetMaterials()) {
+            desc.Materials[m.first] = m.second->Handle;
+        }
+    }
+
+
     void StaticMesh::SetSubmeshes(const std::vector<uint32_t>& submeshes) {
         if (!submeshes.empty()) {
             m_Submeshes = submeshes;
@@ -573,6 +261,35 @@ namespace Ethereal
     Mesh::Mesh(const Ref<Mesh>& other) : m_MeshSource(other->m_MeshSource), m_Materials(other->m_Materials) { SetSubmeshes(other->m_Submeshes); }
 
     Mesh::~Mesh() {}
+
+    void Mesh::Load(const MeshDesc& desc) {
+        m_MeshSource = AssetManager::GetAsset<MeshSource>(desc.Mesh);
+        m_Materials = Ref<MaterialTable>::Create();
+        for (int i = 0; i < desc.Materials.size(); i++) {
+            auto material = AssetManager::GetAsset<MaterialAsset>(desc.Materials[i]);
+            m_Materials->SetMaterial(i, material);
+        }
+        SetSubmeshes({});
+
+        // TODO: load animator according desc, and set animator to mesh
+        // but for now, animator info is loaded in mesh source
+    }
+
+    void Mesh::Save(MeshDesc& desc) {
+        desc.Mesh = m_MeshSource->Handle;
+        // TODO: Rewrite this when support map reflection
+        int len = 0;
+        for (auto& m : m_Materials->GetMaterials()) {
+            len = len > m.first ? len : m.first;
+        }
+        desc.Materials.resize(len + 1);
+        for (auto& m : m_Materials->GetMaterials()) {
+            desc.Materials[m.first] = m.second->Handle;
+        }
+
+        desc.Animator = m_MeshSource->GetAnimator()->Handle;
+    }
+
 
     void Mesh::SetSubmeshes(const std::vector<uint32_t>& submeshes) {
         if (!submeshes.empty()) {

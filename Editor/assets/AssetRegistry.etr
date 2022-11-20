@@ -161,6 +161,9 @@ Assets:
   - Handle: 5768072336176421466
     FilePath: meshes\cornell_box\cornell_box.hsmesh
     Type: StaticMesh
+  - Handle: 5859052072133214403
+    FilePath: meshes\default\basicCube.ESMesh
+    Type: StaticMesh
   - Handle: 5902503613824294823
     FilePath: meshes\vampire\dancing_vampire.dae
     Type: MeshSource
@@ -245,6 +248,9 @@ Assets:
   - Handle: 9088285154242030299
     FilePath: icons\StopButton.png
     Type: Texture
+  - Handle: 9102962350420186113
+    FilePath: materials\M_Default.EMaterial
+    Type: Material
   - Handle: 9144879518730628124
     FilePath: meshes\default\plane.hsmesh
     Type: StaticMesh
@@ -500,6 +506,12 @@ Assets:
   - Handle: 17356469065209931330
     FilePath: fonts\opensans\OpenSans-Italic.ttf
     Type: Font
+  - Handle: 17534843823767222065
+    FilePath: meshes\source\DefaultMaterial.EMaterial
+    Type: Material
+  - Handle: 17726340539778796791
+    FilePath: meshes\default\quad.ESMesh
+    Type: StaticMesh
   - Handle: 18118471782484879931
     FilePath: meshes\cornell_box\cornell_box.hsmesh
     Type: StaticMesh

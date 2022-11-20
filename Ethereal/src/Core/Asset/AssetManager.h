@@ -5,6 +5,7 @@
 #include "Utils/FileSystem.h"
 #include "Base/Meta/Serializer.h"
 #include "Base/Meta/_generated/serializer/all_serializer.h"
+#include "AssetExtensions.h"
 
 #include <map>
 #include <unordered_map>
@@ -59,35 +60,44 @@ namespace Ethereal
             return true;
         }
 
-        static AssetHandle LoadAsset(const std::filesystem::path& filepath);
-        static AssetHandle ImportAsset(const std::filesystem::path& filepath);
-        static bool ReloadData(AssetHandle assetHandle);
-
-        template <typename T, typename... Args>
-        static Ref<T> CreateNewAsset(const std::string& filename, const std::string& directoryPath, Args&&... args) {
+        template <typename T>
+        static bool CreateAsset_Ref(const std::string& filename, const std::string& directoryPath, T& asset) {
             static_assert(std::is_base_of<Asset, T>::value, "CreateNewAsset only works for types derived from Asset");
-            ET_CORE_INFO("Create new asset: {0}", directoryPath + "\\" + filename);
             AssetMetaData metadata;
             metadata.Type = T::GetStaticType();
             metadata.Handle = AssetHandle();
 
+            std::string suffix = GetAssetSuffix(metadata.Type);
+            auto path = directoryPath + "\\" + filename + suffix;
+            ET_CORE_INFO("Create new asset: {0}", path);
+            std::ofstream fout(path);
+            if (!fout)
+            {
+                ET_CORE_ERROR("open file {} failed!", path);
+                return false;
+            }
             if (directoryPath.empty() || directoryPath == ".")
-                metadata.FilePath = filename;
+                metadata.FilePath = filename + suffix;
             else
-                metadata.FilePath = AssetManager::GetRelativePath(directoryPath + "/" + filename);
+                metadata.FilePath = AssetManager::GetRelativePath(directoryPath + "/" + filename + suffix);
             metadata.IsDataLoaded = true;
 
             s_AssetRegistry[metadata.Handle] = metadata;
 
             WriteRegistryToFile();
 
-            Ref<T> asset = Ref<T>::Create(std::forward<Args>(args)...);
-            asset->Handle = metadata.Handle;
-            s_LoadedAssets[asset->Handle] = asset;
-            AssetImporter::Serialize(metadata, asset);
+            asset.Handle = metadata.Handle;
+            s_LoadedAssets[asset.Handle] = &asset;
 
-            return asset;
+            YNode&& node = Serializer::write(asset);
+            YAML::Emitter out;
+            out << node;
+            fout << out.c_str();
+            return true;
         }
+
+        static AssetHandle LoadAsset(const std::filesystem::path& filepath);
+        static bool ReloadData(AssetHandle assetHandle);
 
         template <typename T>
         static Ref<T> GetAsset(AssetHandle assetHandle) {
@@ -127,7 +137,6 @@ namespace Ethereal
         static void ProcessDirectory(const std::filesystem::path& directoryPath);
         static void ReloadAssets();
         static void WriteRegistryToFile();
-        static void PostProcessAfterImport(const AssetMetaData& metadata);
 
         static AssetMetaData& GetMetadataInternal(AssetHandle handle);
       private:

@@ -28,6 +28,21 @@ namespace Ethereal
         return clips;
     }
 
+    void Animation::Load(const AnimationDesc& desc) {
+        m_KeyClips = desc.Clips;
+        m_FramesPersecond = desc.FramesPersecond;
+        m_Duration = desc.Duration;
+        m_Name = desc.Name;
+    }
+
+    void Animation::Save(AnimationDesc& desc) {
+        desc.Clips = m_KeyClips;
+        desc.FramesPersecond = m_FramesPersecond;
+        desc.Duration = m_Duration;
+        desc.Name = m_Name;
+    }
+
+
     std::vector<int> Animation::GetPositionIndex(TimeStamp animationTime) {
         std::vector<int> res;
         res.clear();

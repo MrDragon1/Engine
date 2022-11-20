@@ -2,10 +2,12 @@
 
 #include <stdint.h>
 #include <atomic>
-
+#include "Base/Meta/Reflection.h"
 namespace Ethereal
 {
-    class RefCounted {
+    REFLECTION_TYPE(RefCounted)
+    CLASS(RefCounted, WhiteListFields){
+        REFLECTION_BODY(RefCounted);
       public:
         void IncRefCount() const { ++m_RefCount; }
         void DecRefCount() const { --m_RefCount; }

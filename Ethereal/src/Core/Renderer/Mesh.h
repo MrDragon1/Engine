@@ -9,7 +9,7 @@
 #include "Core/Renderer/MaterialAsset.h"
 #include "Core/Renderer/VertexArray.h"
 #include "Core/Animation/Animator.h"
-
+#include "Resource/Descriptor/Mesh.h"
 #include <vector>
 #include <glm/glm.hpp>
 
@@ -87,9 +87,7 @@ namespace Ethereal
     // Meshes are created from MeshSource
     class MeshSource : public Asset {
       public:
-        MeshSource(const std::string& filename);
-        MeshSource(const std::vector<Vertex>& vertices, const std::vector<Index>& indices, const Matrix4& transform);
-        MeshSource(const std::vector<Vertex>& vertices, const std::vector<Index>& indices, const std::vector<Submesh>& submeshes);
+        MeshSource();
         virtual ~MeshSource();
 
         std::vector<Submesh>& GetSubmeshes() { return m_Submeshes; }
@@ -121,6 +119,7 @@ namespace Ethereal
       private:
         std::unique_ptr<Assimp::Importer> m_Importer;
         const aiScene* m_Scene;
+
         std::string m_FilePath;
 
         Matrix4 m_InverseTransform;
@@ -141,6 +140,8 @@ namespace Ethereal
         std::vector<AnimationVertex> m_AnimationVertices;
         Ref<Animator> m_Animator;
         size_t m_JointCount = 0;
+
+        friend class ResourceLoader;
     };
 
     // Static Mesh - no skeletal animation, flattened hierarchy
@@ -149,7 +150,11 @@ namespace Ethereal
         explicit StaticMesh(Ref<MeshSource> meshSource, Ref<MaterialTable> materialTable);
         StaticMesh(Ref<MeshSource> meshSource, const std::vector<uint32_t>& submeshes);
         StaticMesh(const Ref<StaticMesh>& other);
+        StaticMesh() {};
         virtual ~StaticMesh();
+
+        void Load(const StaticMeshDesc& desc);
+        void Save(StaticMeshDesc& desc);
 
         std::vector<uint32_t>& GetSubmeshes() { return m_Submeshes; }
         const std::vector<uint32_t>& GetSubmeshes() const { return m_Submeshes; }
@@ -183,7 +188,11 @@ namespace Ethereal
         explicit Mesh(Ref<MeshSource> meshSource, Ref<MaterialTable> materialTable);
         Mesh(Ref<MeshSource> meshSource, const std::vector<uint32_t>& submeshes);
         Mesh(const Ref<Mesh>& other);
+        Mesh() {};
         virtual ~Mesh();
+
+        void Load(const MeshDesc& desc);
+        void Save(MeshDesc& desc);
 
         std::vector<uint32_t>& GetSubmeshes() { return m_Submeshes; }
         const std::vector<uint32_t>& GetSubmeshes() const { return m_Submeshes; }

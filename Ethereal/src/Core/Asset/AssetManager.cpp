@@ -15,8 +15,6 @@ namespace Ethereal
     static AssetMetaData s_NullMetadata;
 
     void AssetManager::Init() {
-        AssetImporter::Init();
-
         LoadAssetRegistry();
         ReloadAssets();
     }
@@ -66,7 +64,8 @@ namespace Ethereal
     AssetHandle AssetManager::GetAssetHandleFromFilePath(const std::filesystem::path& filepath) { return GetMetadata(filepath).Handle; }
 
     AssetType AssetManager::GetAssetTypeFromExtension(const std::string& extension) {
-        std::string ext = Utils::String::ToLowerCopy(extension);
+        std::string ext = extension;
+//        std::string ext = Utils::String::ToLowerCopy(extension);
         if (s_AssetExtensionMap.find(ext) == s_AssetExtensionMap.end()) return AssetType::None;
 
         return s_AssetExtensionMap.at(ext.c_str());
@@ -130,6 +129,7 @@ namespace Ethereal
         AssetType type = GetAssetTypeFromPath(path);
         if (type == AssetType::None) return 0;
 
+
         AssetMetaData metadata;
         metadata.Handle = AssetHandle();
         metadata.FilePath = path;
@@ -137,43 +137,6 @@ namespace Ethereal
         s_AssetRegistry[metadata.Handle] = metadata;
 
         return metadata.Handle;
-    }
-
-    AssetHandle AssetManager::ImportAsset(const std::filesystem::path& filepath) {
-        AssetHandle handle = LoadAsset(filepath);
-        PostProcessAfterImport(GetMetadata(handle));
-        return handle;
-    }
-
-    void AssetManager::PostProcessAfterImport(const AssetMetaData& metadata) {
-        // Convert MeshSource to hsmesh and other asset file
-        if (metadata.Type == AssetType::MeshSource) {
-            auto meshSource = GetAsset<MeshSource>(metadata.Handle);
-            if (!meshSource->IsValid()) return;
-            std::filesystem::path path = GetFileSystemPath(metadata);
-
-            // Create materials that mesh used
-            Ref<MaterialTable> mt = Ref<MaterialTable>::Create();
-            meshSource->LoadMaterials(mt);
-            for (auto& m : mt->GetMaterials()) {
-                if (m.second->IsValid() && !m.second->IsCreated()) {
-                    // TODO: create file in materials subdirectory, but this needs to create directory automatically which has not been implemented.
-                    m.second = CreateNewAsset<MaterialAsset>(m.second->GetName() + ".hmaterial", path.parent_path().string(), m.second);
-                }
-            }
-
-            // Create animator that mesh used
-            if (meshSource->IsAnimated()) {
-                auto animatorAsset = CreateNewAsset<Animator>(metadata.FilePath.stem().string() + ".hAnimator", path.parent_path().string(),
-                                                              meshSource->GetAnimator());
-                meshSource->GetAnimator()->Handle = animatorAsset->Handle;
-            }
-
-            if (meshSource->IsAnimated())
-                CreateNewAsset<Mesh>(metadata.FilePath.stem().string() + ".hmesh", path.parent_path().string(), meshSource, mt);
-            else
-                CreateNewAsset<StaticMesh>(metadata.FilePath.stem().string() + ".hsmesh", path.parent_path().string(), meshSource, mt);
-        }
     }
 
     bool AssetManager::ReloadData(AssetHandle assetHandle) {
