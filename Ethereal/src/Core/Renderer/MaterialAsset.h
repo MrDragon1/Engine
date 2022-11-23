@@ -18,6 +18,7 @@ namespace Ethereal
       public:
         MaterialAsset(const std::string& name = "Empty Name", bool transparent = false);
         MaterialAsset(const Ref<MaterialAsset>& other);
+        MaterialAsset(const MaterialDesc& desc) { Load(desc); };
         ~MaterialAsset();
 
         void Load(const MaterialDesc& desc);

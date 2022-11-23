@@ -57,6 +57,13 @@ namespace Ethereal
         REFLECTION_BODY(AnimationDesc);
 
       public:
+        AnimationDesc() = default;
+        AnimationDesc(const AnimationDesc& other) {
+            this->Name = other.Name;
+            this->Duration = other.Duration;
+            this->FramesPersecond = other.FramesPersecond;
+            this->Clips = other.Clips;
+        }
         virtual AssetType GetAssetType() const override { return AssetType::Animation; }
 
         std::vector<AnimKeyClip> Clips;
@@ -71,6 +78,13 @@ namespace Ethereal
         REFLECTION_BODY(AnimatorDesc);
 
       public:
+        AnimatorDesc() = default;
+        AnimatorDesc(const AnimatorDesc& other) {
+            this->Animation = other.Animation;
+            this->Skeleton = other.Skeleton;
+        }
+
+
         virtual AssetType GetAssetType() const override { return AssetType::Animator; }
 
         UUID Animation;
@@ -102,6 +116,12 @@ namespace Ethereal
         REFLECTION_BODY(SkeletonDesc);
 
       public:
+        SkeletonDesc() = default;
+        SkeletonDesc(const SkeletonDesc& other) {
+            this->RootJoint = other.RootJoint;
+            this->Name = other.Name;
+
+        }
         virtual AssetType GetAssetType() const override { return AssetType::Skeleton; }
       public:
         JointDesc RootJoint;

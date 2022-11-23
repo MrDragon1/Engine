@@ -14,11 +14,11 @@ Entities:
           Position:
             x: 0
             y: 0
-            z: 3.10870886
+            z: 0
           Scale:
-            x: 1
-            y: 1
-            z: 4.39104033
+            x: 0.1
+            y: 0.1
+            z: 0.1
           Rotation:
             x: 0
             y: 0
@@ -27,7 +27,7 @@ Entities:
       - TypeName: StaticMeshComponent
         Context:
           StaticMeshHandle:
-            UUID: 17060509455937462602
+            UUID: 11764163912919184602
           MaterialTableRaw:
             Materials:
-              - UUID: 5521013208314249089
+              - UUID: 9102962350420186113

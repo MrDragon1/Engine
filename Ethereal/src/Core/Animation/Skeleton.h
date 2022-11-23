@@ -9,7 +9,7 @@ namespace Ethereal
       public:
         Skeleton();
         Skeleton(const Ref<Skeleton>& skel);
-
+        Skeleton(const SkeletonDesc& desc) { Load(desc); }
         void Load(const SkeletonDesc& desc);
         void Save(SkeletonDesc& desc);
 

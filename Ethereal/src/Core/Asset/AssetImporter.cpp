@@ -18,28 +18,42 @@ namespace Ethereal
             case AssetType::EnvMap:
                 asset = ResourceLoader::LoadEnvironmentMap(AssetManager::GetFileSystemPath(metadata).string());
                 break;
-            case AssetType::StaticMesh:
-                AssetManager::LoadAsset_Ref(AssetManager::GetFileSystemPath(metadata).string(), *(asset.As<StaticMeshDesc>()));
-                break;
-            case AssetType::Mesh:
-                AssetManager::LoadAsset_Ref(AssetManager::GetFileSystemPath(metadata).string(), *(asset.As<MeshDesc>()));
-                break;
-            case AssetType::Material:{
-                // TODO: refactor asset type like this way
-                MaterialDesc desc;
+            case AssetType::StaticMesh: {
+                StaticMeshDesc desc;
                 AssetManager::LoadAsset_Ref(AssetManager::GetFileSystemPath(metadata).string(), desc);
-                asset = Ref<MaterialDesc>::Create(desc);
+                asset = Ref<StaticMesh>::Create(desc);
                 break;
             }
-            case AssetType::Animation:
-                AssetManager::LoadAsset_Ref(AssetManager::GetFileSystemPath(metadata).string(), *(asset.As<AnimationDesc>()));
+            case AssetType::Mesh: {
+                MeshDesc desc;
+                AssetManager::LoadAsset_Ref(AssetManager::GetFileSystemPath(metadata).string(), desc);
+                asset = Ref<Mesh>::Create(desc);
                 break;
-            case AssetType::Skeleton:
-                AssetManager::LoadAsset_Ref(AssetManager::GetFileSystemPath(metadata).string(), *(asset.As<SkeletonDesc>()));
+            }
+            case AssetType::Material: {
+                MaterialDesc desc;
+                AssetManager::LoadAsset_Ref(AssetManager::GetFileSystemPath(metadata).string(), desc);
+                asset = Ref<MaterialAsset>::Create(desc);
                 break;
-            case AssetType::Animator:
-                AssetManager::LoadAsset_Ref(AssetManager::GetFileSystemPath(metadata).string(), *(asset.As<AnimatorDesc>()));
+            }
+            case AssetType::Animation: {
+                AnimationDesc desc;
+                AssetManager::LoadAsset_Ref(AssetManager::GetFileSystemPath(metadata).string(), desc);
+                asset = Ref<Animation>::Create(desc);
                 break;
+            }
+            case AssetType::Skeleton: {
+                SkeletonDesc desc;
+                AssetManager::LoadAsset_Ref(AssetManager::GetFileSystemPath(metadata).string(), desc);
+                asset = Ref<Skeleton>::Create(desc);
+                break;
+            }
+            case AssetType::Animator: {
+                AnimatorDesc desc;
+                AssetManager::LoadAsset_Ref(AssetManager::GetFileSystemPath(metadata).string(), desc);
+                asset = Ref<Animator>::Create(desc);
+                break;
+            }
             default:
                 return false;
         }

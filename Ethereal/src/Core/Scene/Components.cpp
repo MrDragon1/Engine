@@ -21,11 +21,13 @@ namespace Ethereal {
 
         // Override the materialTable
         for (int index = 0; index < materialTable->GetMaterialCount(); index++) {
-            AssetHandle materialAsset = MaterialTableRaw.Materials[index];
+            if(MaterialTableRaw.Materials.size() > index) { // TODO: remove this when support map reflection
+                AssetHandle materialAsset = MaterialTableRaw.Materials[index];
 
-            // User has specified an override material, just point to that material
-            if (materialAsset && AssetManager::IsAssetHandleValid(materialAsset))
-                materialTable->SetMaterial(index, AssetManager::GetAsset<MaterialAsset>(materialAsset));
+                // User has specified an override material, just point to that material
+                if (materialAsset && AssetManager::IsAssetHandleValid(materialAsset))
+                    materialTable->SetMaterial(index, AssetManager::GetAsset<MaterialAsset>(materialAsset));
+            }
         }
     }
 

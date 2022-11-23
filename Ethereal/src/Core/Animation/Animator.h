@@ -14,6 +14,7 @@ namespace Ethereal
         Animator(Ref<Animation> anim, Ref<Skeleton> skel);
         Animator(const Ref<Animator>& anim);
         Animator(){};
+        Animator(const AnimatorDesc& desc) { Load(desc); };
 
         void Load(const AnimatorDesc& desc);
         void Save(AnimatorDesc& desc);

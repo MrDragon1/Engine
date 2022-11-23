@@ -204,9 +204,7 @@ namespace Ethereal
         m_MeshSource = AssetManager::GetAsset<MeshSource>(desc.Mesh);
         m_Materials = Ref<MaterialTable>::Create();
         for (int i = 0; i < desc.Materials.size(); i++) {
-            auto materialdesc = AssetManager::GetAsset<MaterialDesc>(desc.Materials[i]);
-            auto material = Ref<MaterialAsset>::Create();
-            material->Load(*materialdesc);
+            auto material = AssetManager::GetAsset<MaterialAsset>(desc.Materials[i]);
             m_Materials->SetMaterial(i, material);
         }
         SetSubmeshes({});

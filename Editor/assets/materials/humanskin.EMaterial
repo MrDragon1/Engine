@@ -1,17 +1,17 @@
 AlbedoMap:
-  UUID: 7309008298981451249
+  UUID: 13733117128754555817
 NormalMap:
-  UUID: 7309008298981451249
+  UUID: 16016150646620525778
 MetallicMap:
-  UUID: 7309008298981451249
+  UUID: 10396357330847663768
 RoughnessMap:
-  UUID: 7309008298981451249
+  UUID: 5103235480894822041
 OcclusionMap:
   UUID: 7309008298981451249
 Albedo:
-  x: 0.800000012
-  y: 0.800000012
-  z: 0.800000012
+  x: 1
+  y: 1
+  z: 1
 Metallic: 0
 Roughness: 1
 Emisstion: 0
@@ -20,6 +20,6 @@ IsAlbedo: true
 IsMetallic: true
 IsRoughness: true
 IsNormal: true
-IsOcclusion: true
+IsOcclusion: false
 IsTransparent: false
-Name: M_Default
+Name: HumanSkin

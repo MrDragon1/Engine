@@ -96,31 +96,31 @@ namespace Ethereal
         std::string name;
         switch (type) {
             case ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_CUBE:
-                filePath = "default/cube.hsmesh";
+                filePath = "default/cube.ESMesh";
                 name = "Cube";
                 break;
             case ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_SPHERE:
-                filePath = "default/sphere.hsmesh";
+                filePath = "default/sphere.ESMesh";
                 name = "Sphere";
                 break;
             case ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_CYLINDER:
-                filePath = "default/cylinder.hsmesh";
+                filePath = "default/cylinder.ESMesh";
                 name = "Cylinder";
                 break;
             case ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_CONE:
-                filePath = "default/cone.hsmesh";
+                filePath = "default/cone.ESMesh";
                 name = "Cone";
                 break;
             case ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_TORUS:
-                filePath = "default/torus.hsmesh";
+                filePath = "default/torus.ESMesh";
                 name = "Torus";
                 break;
             case ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_PLANE:
-                filePath = "default/plane.hsmesh";
+                filePath = "default/plane.ESMesh";
                 name = "Plane";
                 break;
             case ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_MONKEY:
-                filePath = "default/monkey.hsmesh";
+                filePath = "default/monkey.ESMesh";
                 name = "Monkey";
                 break;
             default:

@@ -13,6 +13,7 @@ namespace Ethereal
       public:
         Animation() = default;
         Animation(const Ref<Animation>& anim);
+        Animation(const AnimationDesc& desc) { Load(desc); };
         AnimInterClip GetInterpolateClip(TimeStamp animationTime);
 
         void Load(const AnimationDesc& desc);

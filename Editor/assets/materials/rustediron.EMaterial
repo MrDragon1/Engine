@@ -1,17 +1,17 @@
 AlbedoMap:
-  UUID: 7309008298981451249
+  UUID: 10159681062242942540
 NormalMap:
-  UUID: 7309008298981451249
+  UUID: 3684156870783348000
 MetallicMap:
-  UUID: 7309008298981451249
+  UUID: 9179399177065297379
 RoughnessMap:
-  UUID: 7309008298981451249
+  UUID: 11961565015974153655
 OcclusionMap:
   UUID: 7309008298981451249
 Albedo:
-  x: 0.800000012
-  y: 0.800000012
-  z: 0.800000012
+  x: 1
+  y: 1
+  z: 1
 Metallic: 0
 Roughness: 1
 Emisstion: 0
@@ -20,6 +20,6 @@ IsAlbedo: true
 IsMetallic: true
 IsRoughness: true
 IsNormal: true
-IsOcclusion: true
+IsOcclusion: false
 IsTransparent: false
-Name: M_Default
+Name: RustedIron

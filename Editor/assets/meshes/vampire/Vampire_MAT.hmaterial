@@ -1,16 +1,25 @@
-Material:
-  UseAlbedo: true
-  UseNormal: false
-  UseRoughness: false
-  UseMetallic: false
-  UseOcclusion: false
-  AlbedoColor: [1, 1, 1]
-  Metallic: 1
-  Roughness: 0.858578682
-  Emission: 1
-  Transparency: 0
-  AlbedoMap: 10532273288035071592
-  NormalMap: 7309008298981451249
-  MetalnessMap: 7309008298981451249
-  RoughnessMap: 7309008298981451249
-  occlusionMap: 7309008298981451249
+AlbedoMap:
+  UUID: 10532273288035071592
+NormalMap:
+  UUID: 7309008298981451249
+MetallicMap:
+  UUID: 7309008298981451249
+RoughnessMap:
+  UUID: 7309008298981451249
+OcclusionMap:
+  UUID: 7309008298981451249
+Albedo:
+  x: 1
+  y: 1
+  z: 1
+Metallic: 0
+Roughness: 0.858578682
+Emisstion: 0
+Transparency: 0
+IsAlbedo: true
+IsMetallic: false
+IsRoughness: false
+IsNormal: false
+IsOcclusion: false
+IsTransparent: false
+Name: Vampire_MAT

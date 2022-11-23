@@ -9,6 +9,11 @@ namespace Ethereal
     {
         REFLECTION_BODY(StaticMeshDesc);
       public:
+        StaticMeshDesc() = default;
+        StaticMeshDesc(const StaticMeshDesc& other) {
+            this->Mesh = other.Mesh;
+            this->Materials = other.Materials;
+        }
         virtual AssetType GetAssetType() const override { return AssetType::StaticMesh; }
       public:
         UUID Mesh;
@@ -19,6 +24,12 @@ namespace Ethereal
     CLASS(MeshDesc : public Asset, Fields) {
         REFLECTION_BODY(MeshDesc);
       public:
+        MeshDesc() = default;
+        MeshDesc(const MeshDesc& other) {
+            this->Mesh = other.Mesh;
+            this->Animator = other.Animator;
+            this->Materials = other.Materials;
+        }
         virtual AssetType GetAssetType() const override { return AssetType::Mesh; }
 
       public:

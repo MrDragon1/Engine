@@ -150,7 +150,8 @@ namespace Ethereal
         explicit StaticMesh(Ref<MeshSource> meshSource, Ref<MaterialTable> materialTable);
         StaticMesh(Ref<MeshSource> meshSource, const std::vector<uint32_t>& submeshes);
         StaticMesh(const Ref<StaticMesh>& other);
-        StaticMesh() {};
+        StaticMesh(){};
+        StaticMesh(const StaticMeshDesc& desc) { Load(desc); }
         virtual ~StaticMesh();
 
         void Load(const StaticMeshDesc& desc);
@@ -188,7 +189,8 @@ namespace Ethereal
         explicit Mesh(Ref<MeshSource> meshSource, Ref<MaterialTable> materialTable);
         Mesh(Ref<MeshSource> meshSource, const std::vector<uint32_t>& submeshes);
         Mesh(const Ref<Mesh>& other);
-        Mesh() {};
+        Mesh(){};
+        Mesh(const MeshDesc& desc) { Load(desc); }
         virtual ~Mesh();
 
         void Load(const MeshDesc& desc);

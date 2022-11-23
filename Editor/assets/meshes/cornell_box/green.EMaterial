@@ -9,17 +9,17 @@ RoughnessMap:
 OcclusionMap:
   UUID: 7309008298981451249
 Albedo:
-  x: 0.800000012
-  y: 0.800000012
-  z: 0.800000012
+  x: 0
+  y: 1
+  z: 0
 Metallic: 0
 Roughness: 1
 Emisstion: 0
 Transparency: 0
-IsAlbedo: true
-IsMetallic: true
-IsRoughness: true
-IsNormal: true
-IsOcclusion: true
+IsAlbedo: false
+IsMetallic: false
+IsRoughness: false
+IsNormal: false
+IsOcclusion: false
 IsTransparent: false
-Name: M_Default
+Name: green

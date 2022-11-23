@@ -8,9 +8,6 @@ Assets:
   - Handle: 70615365145783185
     FilePath: meshes\vampire\Vampire_MAT.hmaterial
     Type: Material
-  - Handle: 112827165426887902
-    FilePath: meshes\default\cylinder.hsmesh
-    Type: StaticMesh
   - Handle: 257226758694430484
     FilePath: fonts\opensans\OpenSans-BoldItalic.ttf
     Type: Font
@@ -20,24 +17,18 @@ Assets:
   - Handle: 472868447295227411
     FilePath: fonts\opensans\OpenSans-MediumItalic.ttf
     Type: Font
+  - Handle: 505821991061973240
+    FilePath: materials\gold.EMaterial
+    Type: Material
   - Handle: 664648298263591012
     FilePath: meshes\vampire\dancing_vampire.hSkeleton
     Type: Skeleton
-  - Handle: 743188567960440942
-    FilePath: meshes\cornell_box\cornell_box.hsmesh
-    Type: StaticMesh
-  - Handle: 907565599402912077
-    FilePath: materials\rustediron.hmaterial
-    Type: Material
-  - Handle: 1339853416729350087
-    FilePath: meshes\cornell_box\blue.hmaterial
-    Type: Material
   - Handle: 1467296346629872072
     FilePath: meshes\source\quad.obj
     Type: MeshSource
-  - Handle: 1559470105849742676
-    FilePath: meshes\default\basicCube.hsmesh
-    Type: StaticMesh
+  - Handle: 1605699596722893402
+    FilePath: materials\humanskin.EMaterial
+    Type: Material
   - Handle: 1815109911821718148
     FilePath: meshes\gun\Cerberus_LP.hsmesh
     Type: StaticMesh
@@ -47,6 +38,9 @@ Assets:
   - Handle: 1864105716926570769
     FilePath: textures\gold\albedo.png
     Type: Texture
+  - Handle: 1984218531929197878
+    FilePath: meshes\default\cylinder.ESMesh
+    Type: StaticMesh
   - Handle: 2063455660349834177
     FilePath: meshes\source\Cube.gltf
     Type: MeshSource
@@ -56,48 +50,42 @@ Assets:
   - Handle: 2129339068717190932
     FilePath: fonts\opensans\OpenSans-SemiBoldItalic.ttf
     Type: Font
-  - Handle: 2140384664763106134
-    FilePath: meshes\cornell_box\cornell_box.hsmesh
-    Type: StaticMesh
   - Handle: 2240383051901346787
     FilePath: meshes\gun\Cerberus_LP.FBX
     Type: MeshSource
-  - Handle: 2348022839419931696
-    FilePath: meshes\cornell_box\green.hmaterial
+  - Handle: 2251481281418220190
+    FilePath: meshes\default\torus.ESMesh
+    Type: StaticMesh
+  - Handle: 2326805676567177651
+    FilePath: meshes\cornell_box\red.EMaterial
     Type: Material
+  - Handle: 2570073233343120292
+    FilePath: meshes\default\cube.ESMesh
+    Type: StaticMesh
   - Handle: 2801276543070836935
     FilePath: fonts\opensans\OpenSans-Medium.ttf
     Type: Font
   - Handle: 2837452743871074761
     FilePath: scenes\basic.hscene
     Type: Scene
-  - Handle: 3009148178995972491
-    FilePath: meshes\source\DefaultMaterial.hmaterial
-    Type: Material
   - Handle: 3067973634919230891
     FilePath: meshes\source\Sphere.gltf
     Type: MeshSource
-  - Handle: 3149032363285503491
-    FilePath: meshes\cornell_box\blue.hmaterial
-    Type: Material
   - Handle: 3184234908745819317
     FilePath: textures\humanskin\human-skin1_preview3.jpg
     Type: Texture
+  - Handle: 3514443418350597859
+    FilePath: meshes\cornell_box\green.EMaterial
+    Type: Material
   - Handle: 3684156870783348000
     FilePath: textures\rustediron\rustediron2_normal.png
     Type: Texture
   - Handle: 4055964299062396106
     FilePath: meshes\gun\Textures\Raw\Cerberus_AO.tga
     Type: Texture
-  - Handle: 4111733622557296639
-    FilePath: meshes\cornell_box\cornell_box.hsmesh
-    Type: StaticMesh
   - Handle: 4209009144955814373
     FilePath: icons\ContentBrowser\FileIcon.png
     Type: Texture
-  - Handle: 4334893977301233861
-    FilePath: meshes\cornell_box\cornell_box.hsmesh
-    Type: StaticMesh
   - Handle: 4358083813901327212
     FilePath: meshes\gun\Textures\Raw\Cerberus_UV.tga
     Type: Texture
@@ -107,9 +95,6 @@ Assets:
   - Handle: 4917435649131397342
     FilePath: meshes\vampire\Vampire_MAT.hmaterial
     Type: Material
-  - Handle: 4956907738453405018
-    FilePath: meshes\default\cone.hsmesh
-    Type: StaticMesh
   - Handle: 4980735168443109901
     FilePath: scenes\PBR.hscene
     Type: Scene
@@ -125,27 +110,18 @@ Assets:
   - Handle: 5103235480894822041
     FilePath: textures\humanskin\human-skin1_roughness.png
     Type: Texture
-  - Handle: 5158575785993661850
-    FilePath: materials\humanskin.hmaterial
-    Type: Material
-  - Handle: 5164372370771938880
-    FilePath: meshes\default\torus.hsmesh
-    Type: StaticMesh
   - Handle: 5187981355644582993
     FilePath: meshes\gun\Textures\Cerberus_M.tga
     Type: Texture
-  - Handle: 5215050425112420971
-    FilePath: meshes\cornell_box\cornell_box.hsmesh
-    Type: StaticMesh
+  - Handle: 5204121644499627694
+    FilePath: materials\rustediron.EMaterial
+    Type: Material
   - Handle: 5318166422931294396
     FilePath: meshes\vampire\dancing_vampire.hSkeleton
     Type: Skeleton
   - Handle: 5403180726194224146
     FilePath: meshes\source\Torus.gltf
     Type: MeshSource
-  - Handle: 5521013208314249089
-    FilePath: materials\gold.hmaterial
-    Type: Material
   - Handle: 5536727321129387625
     FilePath: buildin\textures\Checkerboard.tga
     Type: Texture
@@ -158,20 +134,20 @@ Assets:
   - Handle: 5643262825732316959
     FilePath: fonts\opensans\OpenSans-Light.ttf
     Type: Font
-  - Handle: 5768072336176421466
-    FilePath: meshes\cornell_box\cornell_box.hsmesh
-    Type: StaticMesh
   - Handle: 5859052072133214403
     FilePath: meshes\default\basicCube.ESMesh
     Type: StaticMesh
   - Handle: 5902503613824294823
     FilePath: meshes\vampire\dancing_vampire.dae
     Type: MeshSource
-  - Handle: 6266248153726710475
-    FilePath: materials\M_Default.hmaterial
+  - Handle: 6221811997121267358
+    FilePath: meshes\cornell_box\light.EMaterial
     Type: Material
   - Handle: 6285195207540677147
     FilePath: meshes\vampire\Vampire_MAT.hmaterial
+    Type: Material
+  - Handle: 6310116487016262958
+    FilePath: meshes\cornell_box\white.EMaterial
     Type: Material
   - Handle: 6541381828760894743
     FilePath: meshes\vampire\Vampire_MAT.hmaterial
@@ -182,44 +158,26 @@ Assets:
   - Handle: 6607202353073020882
     FilePath: icons\ContentBrowser\DirectoryIcon.png
     Type: Texture
-  - Handle: 6813668241187430370
-    FilePath: meshes\cornell_box\red.hmaterial
-    Type: Material
   - Handle: 6876456294960671059
     FilePath: meshes\TestScene.hsmesh
     Type: StaticMesh
   - Handle: 7012128274853532247
     FilePath: meshes\source\basicCube.obj
     Type: MeshSource
-  - Handle: 7104205274710093481
-    FilePath: meshes\cornell_box\light.hmaterial
-    Type: Material
   - Handle: 7263571438218922053
     FilePath: meshes\vampire\dancing_vampire.hAnimation
     Type: Animation
   - Handle: 7309008298981451249
     FilePath: buildin\textures\white.png
     Type: Texture
-  - Handle: 7515865243955731945
-    FilePath: meshes\cornell_box\cornell_box.hsmesh
-    Type: StaticMesh
-  - Handle: 7523621751766000173
-    FilePath: meshes\cornell_box\cornell_box.hsmesh
-    Type: StaticMesh
   - Handle: 7567381472881404084
     FilePath: textures\global\brdf_schilk.hdr
     Type: EnvMap
-  - Handle: 7601110656142150094
-    FilePath: meshes\cornell_box\green.hmaterial
-    Type: Material
-  - Handle: 7649619848848107862
-    FilePath: meshes\cornell_box\cornell_box.hsmesh
-    Type: StaticMesh
   - Handle: 7714422435788874728
     FilePath: textures\humanskin\human-skin1_preview.jpg
     Type: Texture
-  - Handle: 7840265104736997893
-    FilePath: meshes\cornell_box\cornell_box.hsmesh
+  - Handle: 7855740297512081586
+    FilePath: meshes\default\monkey.ESMesh
     Type: StaticMesh
   - Handle: 7860783800334730501
     FilePath: textures\gold\gold-scuffed_basecolor-boosted.png
@@ -236,12 +194,9 @@ Assets:
   - Handle: 8716458809046413660
     FilePath: meshes\vampire\Vampire_MAT.hmaterial
     Type: Material
-  - Handle: 8729042463168201760
-    FilePath: meshes\boy\Martelo 2.fbx
-    Type: MeshSource
-  - Handle: 8791887480241883289
-    FilePath: meshes\default\monkey.hsmesh
-    Type: StaticMesh
+  - Handle: 9045733898898178365
+    FilePath: meshes\cornell_box\blue.EMaterial
+    Type: Material
   - Handle: 9082851471189368623
     FilePath: textures\humanskin\human-skin1_albedo_5.png
     Type: Texture
@@ -251,21 +206,12 @@ Assets:
   - Handle: 9102962350420186113
     FilePath: materials\M_Default.EMaterial
     Type: Material
-  - Handle: 9144879518730628124
-    FilePath: meshes\default\plane.hsmesh
-    Type: StaticMesh
   - Handle: 9179399177065297379
     FilePath: textures\rustediron\rustediron2_metallic.png
     Type: Texture
-  - Handle: 9253145019631705207
-    FilePath: meshes\default\quad.hsmesh
-    Type: StaticMesh
   - Handle: 9351061147775420680
     FilePath: meshes\vampire\Vampire_MAT.hmaterial
     Type: Material
-  - Handle: 9378122927255444766
-    FilePath: meshes\cornell_box\cornell_box.hsmesh
-    Type: StaticMesh
   - Handle: 9437989654649627846
     FilePath: meshes\vampire\textures\Vampire_normal.png
     Type: Texture
@@ -326,17 +272,11 @@ Assets:
   - Handle: 11435407174954141404
     FilePath: textures\default\default_metallic.png
     Type: Texture
-  - Handle: 11499262898942076834
-    FilePath: meshes\cornell_box\red.hmaterial
-    Type: Material
   - Handle: 11619546686591897210
     FilePath: meshes\TestScene.fbx
     Type: MeshSource
-  - Handle: 11622693775950571930
-    FilePath: meshes\cornell_box\cornell_box.hsmesh
-    Type: StaticMesh
-  - Handle: 11900230987010435218
-    FilePath: meshes\cornell_box\cornell_box.hsmesh
+  - Handle: 11764163912919184602
+    FilePath: meshes\cornell_box\cornell_box.ESMesh
     Type: StaticMesh
   - Handle: 11961565015974153655
     FilePath: textures\rustediron\rustediron2_roughness.png
@@ -344,17 +284,11 @@ Assets:
   - Handle: 11990970196583506654
     FilePath: meshes\gun\Textures\Raw\Cerberus_N.tga
     Type: Texture
-  - Handle: 12042048444511593788
-    FilePath: meshes\cornell_box\cornell_box.hsmesh
-    Type: StaticMesh
   - Handle: 12057588983460254927
     FilePath: scenes\meta.hscene
     Type: Scene
   - Handle: 12066573877665610509
     FilePath: meshes\gun\Cerberus_LP.hsmesh
-    Type: StaticMesh
-  - Handle: 12276738029059600330
-    FilePath: meshes\cornell_box\cornell_box.hsmesh
     Type: StaticMesh
   - Handle: 12294864179002628096
     FilePath: meshes\vampire\dancing_vampire.hmesh
@@ -362,9 +296,6 @@ Assets:
   - Handle: 12384679521450533381
     FilePath: meshes\gun\Cerberus_LP.hsmesh
     Type: StaticMesh
-  - Handle: 12391263048381964791
-    FilePath: meshes\cornell_box\white.hmaterial
-    Type: Material
   - Handle: 12447451253582744139
     FilePath: skyboxs\HWSign3-Fence_2k.hdr
     Type: EnvMap
@@ -374,63 +305,36 @@ Assets:
   - Handle: 12717353975045953519
     FilePath: scenes\test.hscene
     Type: Scene
-  - Handle: 12838739588801333892
-    FilePath: meshes\cornell_box\cornell_box.hsmesh
-    Type: StaticMesh
   - Handle: 12991496061341425589
     FilePath: fonts\opensans\OpenSans-LightItalic.ttf
     Type: Font
-  - Handle: 13046622228350703823
-    FilePath: meshes\source\DefaultMaterial.hmaterial
-    Type: Material
-  - Handle: 13056173822974123526
-    FilePath: meshes\cornell_box\cornell_box.hsmesh
-    Type: StaticMesh
   - Handle: 13088833478060461387
     FilePath: skyboxs\Ridgecrest_Road_Ref.hdr
     Type: EnvMap
   - Handle: 13088851488106444026
     FilePath: meshes\gun\08 - Default.hmaterial
     Type: Material
-  - Handle: 13437552004259238276
-    FilePath: meshes\default\sphere.hsmesh
-    Type: StaticMesh
-  - Handle: 13482749080701748976
-    FilePath: meshes\cornell_box\cornell_box.hsmesh
-    Type: StaticMesh
   - Handle: 13733117128754555817
     FilePath: textures\humanskin\human-skin1_albedo.png
     Type: Texture
   - Handle: 13741325085810708696
     FilePath: textures\gold\roughness.png
     Type: Texture
-  - Handle: 13743545906097785929
-    FilePath: meshes\cornell_box\cornell_box.hsmesh
-    Type: StaticMesh
   - Handle: 13808348361145947964
     FilePath: meshes\vampire\dancing_vampire.hmesh
     Type: Mesh
   - Handle: 13896290564190477560
     FilePath: textures\default\default_normal.png
     Type: Texture
-  - Handle: 13950380195846137352
-    FilePath: meshes\cornell_box\cornell_box.hsmesh
-    Type: StaticMesh
   - Handle: 14180194868529914398
     FilePath: textures\default\default_roughness.png
     Type: Texture
-  - Handle: 14267756768597356953
-    FilePath: meshes\cornell_box\white.hmaterial
-    Type: Material
-  - Handle: 14355345937695127609
-    FilePath: meshes\cornell_box\cornell_box.hsmesh
+  - Handle: 14258822285678245173
+    FilePath: meshes\default\cone.ESMesh
     Type: StaticMesh
   - Handle: 14473103724496630534
     FilePath: textures\gold\metallic.png
     Type: Texture
-  - Handle: 14664112580432978546
-    FilePath: meshes\cornell_box\cornell_box.hsmesh
-    Type: StaticMesh
   - Handle: 15298088384928640906
     FilePath: skyboxs\Factory_Catwalk_2k.hdr
     Type: EnvMap
@@ -443,12 +347,6 @@ Assets:
   - Handle: 15419492658370523544
     FilePath: meshes\gun\08 - Default.hmaterial
     Type: Material
-  - Handle: 15509787934398350272
-    FilePath: meshes\cornell_box\cornell_box.hsmesh
-    Type: StaticMesh
-  - Handle: 15538580911191225888
-    FilePath: meshes\cornell_box\cornell_box.hsmesh
-    Type: StaticMesh
   - Handle: 15562064418557568677
     FilePath: meshes\vampire\Vampire_MAT.hmaterial
     Type: Material
@@ -458,9 +356,6 @@ Assets:
   - Handle: 15831349221331264664
     FilePath: textures\humanskin\human-skin1_albedo_4.png
     Type: Texture
-  - Handle: 15862136936855892309
-    FilePath: meshes\cornell_box\cornell_box.hsmesh
-    Type: StaticMesh
   - Handle: 16016150646620525778
     FilePath: textures\humanskin\human-skin1_normal-ogl.png
     Type: Texture
@@ -476,21 +371,18 @@ Assets:
   - Handle: 16686991826098416408
     FilePath: fonts\opensans\OpenSans-ExtraBoldItalic.ttf
     Type: Font
+  - Handle: 16743531669682171693
+    FilePath: meshes\default\sphere.ESMesh
+    Type: StaticMesh
   - Handle: 16817130134590078098
     FilePath: skyboxs\Alexs_Apt_2k.hdr
     Type: EnvMap
-  - Handle: 16903944524580968091
-    FilePath: meshes\cornell_box\light.hmaterial
-    Type: Material
   - Handle: 16963609796035919729
     FilePath: meshes\vampire\Vampire_MAT.hmaterial
     Type: Material
   - Handle: 16976040922641325788
     FilePath: meshes\source\Capsule.gltf
     Type: MeshSource
-  - Handle: 17060509455937462602
-    FilePath: meshes\default\cube.hsmesh
-    Type: StaticMesh
   - Handle: 17079521824983022135
     FilePath: fonts\opensans\OpenSans-ExtraBold.ttf
     Type: Font
@@ -509,11 +401,11 @@ Assets:
   - Handle: 17534843823767222065
     FilePath: meshes\source\DefaultMaterial.EMaterial
     Type: Material
+  - Handle: 17546716981100183172
+    FilePath: meshes\default\plane.ESMesh
+    Type: StaticMesh
   - Handle: 17726340539778796791
     FilePath: meshes\default\quad.ESMesh
-    Type: StaticMesh
-  - Handle: 18118471782484879931
-    FilePath: meshes\cornell_box\cornell_box.hsmesh
     Type: StaticMesh
   - Handle: 18245045781855712380
     FilePath: meshes\gun\Cerberus_LP.fbx
