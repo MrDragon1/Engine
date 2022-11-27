@@ -11,12 +11,12 @@ namespace Ethereal {
         std::vector<Reflection::ReflectionPtr<Component>> Components;
     };
 
-
     REFLECTION_TYPE(SceneRaw)
     CLASS(SceneRaw, Fields) {
         REFLECTION_BODY(SceneRaw);
       public:
         std::string Name;
+        UUID Environment;
         std::vector<EntityRaw> Entities;
     };
 

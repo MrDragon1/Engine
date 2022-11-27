@@ -201,6 +201,7 @@ namespace Ethereal
     StaticMesh::~StaticMesh() {}
 
     void StaticMesh::Load(const StaticMeshDesc& desc) {
+        Handle = desc.Handle;
         m_MeshSource = AssetManager::GetAsset<MeshSource>(desc.Mesh);
         m_Materials = Ref<MaterialTable>::Create();
         for (int i = 0; i < desc.Materials.size(); i++) {
@@ -211,6 +212,7 @@ namespace Ethereal
     }
 
     void StaticMesh::Save(StaticMeshDesc& desc) {
+        desc.Handle = Handle;
         desc.Mesh = m_MeshSource->Handle;
         // TODO: Rewrite this when support map reflection
         int len = 0;
@@ -261,6 +263,7 @@ namespace Ethereal
     Mesh::~Mesh() {}
 
     void Mesh::Load(const MeshDesc& desc) {
+        Handle = desc.Handle;
         m_MeshSource = AssetManager::GetAsset<MeshSource>(desc.Mesh);
         m_Materials = Ref<MaterialTable>::Create();
         for (int i = 0; i < desc.Materials.size(); i++) {
@@ -274,6 +277,7 @@ namespace Ethereal
     }
 
     void Mesh::Save(MeshDesc& desc) {
+        desc.Handle = Handle;
         desc.Mesh = m_MeshSource->Handle;
         // TODO: Rewrite this when support map reflection
         int len = 0;

@@ -14,7 +14,6 @@
 #include "Base/Meta/_generated/reflection/Camera.reflection.gen.h"
 #include "Base/Meta/_generated/reflection/Components.reflection.gen.h"
 #include "Base/Meta/_generated/reflection/Scene.reflection.gen.h"
-#include "Base/Meta/_generated/reflection/Environment.reflection.gen.h"
 
 namespace Ethereal
 {
@@ -54,7 +53,6 @@ namespace Ethereal
             TypeWrappersRegister::TransformComponent();
             TypeWrappersRegister::EntityRaw();
             TypeWrappersRegister::SceneRaw();
-            TypeWrappersRegister::EnvironmentDesc();
         }
     }  // namespace Reflection
 }  // namespace Ethereal

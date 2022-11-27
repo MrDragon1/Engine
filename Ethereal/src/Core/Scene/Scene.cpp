@@ -312,6 +312,7 @@ namespace Ethereal
             return;
         }
         m_SceneName = data.Name;
+        m_Environment = AssetManager::GetAsset<Environment>(data.Environment);
         for (const EntityRaw entityraw: data.Entities){
             Entity entity = {m_Registry.create(), this};
             bool is_loaded = entity.Load(entityraw);
@@ -327,6 +328,7 @@ namespace Ethereal
         SceneRaw data;
         data.Name = m_SceneName;
         data.Entities.reserve(m_Registry.size());
+        data.Environment = m_Environment->Handle;
         auto view = m_Registry.view<IDComponent>();
         for (auto entity : view) {
             Entity e = {entity, this};
@@ -375,16 +377,11 @@ namespace Ethereal
         component.MeshHandle = assetHandle;
 
         auto mesh = AssetManager::GetAsset<Mesh>(assetHandle);
-        if (mesh->GetMaterials()->GetMaterialCount() > component.materialTable->GetMaterialCount()) {
-            component.materialTable->SetMaterialCount(mesh->GetMaterials()->GetMaterialCount());
-        }
+        MeshDesc meshdesc;
+        mesh->Save(meshdesc);
+        component.MaterialTableRaw.Materials = meshdesc.Materials;
+        component.PostLoad();
 
-        // Get a material from meshComponent materialTable if it has (not the copy of the material)
-        for (int index = 0; index < component.materialTable->GetMaterialCount(); index++) {
-            if (mesh->GetMaterials()->HasMaterial(index)) {
-                component.materialTable->SetMaterial(index, mesh->GetMaterials()->GetMaterial(index));
-            }
-        }
         return entity;
     }
 

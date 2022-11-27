@@ -37,8 +37,8 @@ namespace Ethereal
             this->IsOcclusion = other.IsOcclusion;
             this->IsTransparent = other.IsTransparent;
         }
-        virtual AssetType GetAssetType() const override { return AssetType::Material; }
-
+        static AssetType GetStaticType() { return AssetType::Material; }
+        virtual AssetType GetAssetType() const override { return GetStaticType(); }
       public:
         UUID AlbedoMap;
         UUID NormalMap;

@@ -1,5 +1,5 @@
 #include "ResourceImporter.h"
-
+#include "ResourceLoader.h"
 namespace Ethereal
 {
     bool ResourceImporter::Import(const std::string& filepath) {
@@ -26,16 +26,26 @@ namespace Ethereal
                 MaterialDesc desc;
                 m.second->Save(desc);
                 AssetManager::CreateAsset_Ref(m.second->GetName(), path.parent_path().string(), desc);
+                m.second->Load(desc);
             }
         }
 
         // Create animator that mesh used
         if (meshSource->IsAnimated()) {
+            AnimationDesc animationDesc;
+            meshSource->GetAnimator()->m_Animation->Save(animationDesc);
+            AssetManager::CreateAsset_Ref(metaData.FilePath.stem().string(), path.parent_path().string(), animationDesc);
+            meshSource->GetAnimator()->m_Animation->Load(animationDesc);
+
+            SkeletonDesc skeletonDesc;
+            meshSource->GetAnimator()->m_Skeleton->Save(skeletonDesc);
+            AssetManager::CreateAsset_Ref(metaData.FilePath.stem().string(), path.parent_path().string(), skeletonDesc);
+            meshSource->GetAnimator()->m_Skeleton->Load(skeletonDesc);
+
             AnimatorDesc desc;
             meshSource->GetAnimator()->Save(desc);
             AssetManager::CreateAsset_Ref(metaData.FilePath.stem().string(), path.parent_path().string(), desc);
-
-            // meshSource->GetAnimator()->Handle = animatorAsset->Handle;
+            meshSource->GetAnimator()->Load(desc);
         }
 
         if (meshSource->IsAnimated()) {
@@ -43,11 +53,13 @@ namespace Ethereal
             Ref<Mesh> mesh = Ref<Mesh>::Create(meshSource, mt);
             mesh->Save(desc);
             AssetManager::CreateAsset_Ref(metaData.FilePath.stem().string(), path.parent_path().string(), desc);
+            mesh->Load(desc);
         } else {
             StaticMeshDesc desc;
             Ref<StaticMesh> mesh = Ref<StaticMesh>::Create(meshSource, mt);
             mesh->Save(desc);
             AssetManager::CreateAsset_Ref(metaData.FilePath.stem().string(), path.parent_path().string(), desc);
+            mesh->Load(desc);
         }
     }
 

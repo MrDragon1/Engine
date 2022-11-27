@@ -13,5 +13,4 @@
 #include "Base/Meta/_generated/serializer/Camera.serializer.gen.h"
 #include "Base/Meta/_generated/serializer/Components.serializer.gen.h"
 #include "Base/Meta/_generated/serializer/Scene.serializer.gen.h"
-#include "Base/Meta/_generated/serializer/Environment.serializer.gen.h"
 

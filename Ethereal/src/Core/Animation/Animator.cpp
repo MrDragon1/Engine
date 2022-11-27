@@ -16,11 +16,13 @@ namespace Ethereal
     }
 
     void Animator::Load(const AnimatorDesc& desc) {
+        Handle = desc.Handle;
         m_Animation = AssetManager::GetAsset<Animation>(desc.Animation);
         m_Skeleton = AssetManager::GetAsset<Skeleton>(desc.Skeleton);
         m_CurrentTime = 0.0f;
     }
     void Animator::Save(AnimatorDesc& desc) {
+        desc.Handle = Handle;
         desc.Animation = m_Animation->Handle;
         desc.Skeleton = m_Skeleton->Handle;
     }

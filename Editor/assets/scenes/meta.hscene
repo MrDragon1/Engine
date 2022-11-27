@@ -1,4 +1,6 @@
-Name: Untitled
+Name: Meta
+Environment:
+  UUID: 10111825085121754573
 Entities:
   - Name: ""
     Components:
@@ -16,9 +18,9 @@ Entities:
             y: 0
             z: 0
           Scale:
-            x: 0.1
-            y: 0.1
-            z: 0.1
+            x: 0.100000001
+            y: 0.100000001
+            z: 0.100000001
           Rotation:
             x: 0
             y: 0

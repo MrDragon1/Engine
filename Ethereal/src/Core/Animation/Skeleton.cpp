@@ -15,6 +15,8 @@ namespace Ethereal
     }
 
     void Skeleton::Load(const SkeletonDesc& desc) {
+        Handle = desc.Handle;
+
         m_Name = desc.Name;
         m_Root = Ref<Joint>::Create();
         m_Root->Load(desc.RootJoint);
@@ -30,6 +32,8 @@ namespace Ethereal
 
 
     void Skeleton::Save(SkeletonDesc& desc) {
+        desc.Handle = Handle;
+
         desc.Name = m_Name;
         m_Root->Save(desc.RootJoint);
     }

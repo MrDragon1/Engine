@@ -74,7 +74,7 @@ namespace Ethereal
         ET_CORE_INFO("Loading mesh: {0}", path.c_str());
 
         ms->m_Importer = std::make_unique<Assimp::Importer>();
-
+        ms->m_FilePath = path;
         const aiScene* scene = ms->m_Importer->ReadFile(path, s_MeshImportFlags);
         if (!scene || !scene->HasMeshes()) {
             ET_CORE_ERROR("Failed to load mesh file: {0}", path.c_str());

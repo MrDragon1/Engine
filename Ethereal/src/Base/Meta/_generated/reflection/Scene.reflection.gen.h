@@ -113,6 +113,11 @@ namespace ArrayReflectionOperator{
         static void set_Name(void* instance, void* field_value){ static_cast<SceneRaw*>(instance)->Name = *static_cast<std::string*>(field_value);}
         static void* get_Name(void* instance){ return static_cast<void*>(&(static_cast<SceneRaw*>(instance)->Name));}
         static bool isArray_Name(){ return false; }
+        static const char* getFieldName_Environment(){ return "Environment";}
+        static const char* getFieldTypeName_Environment(){ return "UUID";}
+        static void set_Environment(void* instance, void* field_value){ static_cast<SceneRaw*>(instance)->Environment = *static_cast<UUID*>(field_value);}
+        static void* get_Environment(void* instance){ return static_cast<void*>(&(static_cast<SceneRaw*>(instance)->Environment));}
+        static bool isArray_Environment(){ return false; }
         static const char* getFieldName_Entities(){ return "Entities";}
         static const char* getFieldTypeName_Entities(){ return "std::vector<EntityRaw>";}
         static void set_Entities(void* instance, void* field_value){ static_cast<SceneRaw*>(instance)->Entities = *static_cast<std::vector<EntityRaw>*>(field_value);}
@@ -152,6 +157,14 @@ namespace ArrayReflectionOperator{
             &TypeFieldReflectionOparator::TypeSceneRawOperator::getFieldTypeName_Name,
             &TypeFieldReflectionOparator::TypeSceneRawOperator::isArray_Name);
         REGISTER_FIELD_TO_MAP("SceneRaw", f_field_function_tuple_Name);
+        FieldFunctionTuple* f_field_function_tuple_Environment=new FieldFunctionTuple(
+            &TypeFieldReflectionOparator::TypeSceneRawOperator::set_Environment,
+            &TypeFieldReflectionOparator::TypeSceneRawOperator::get_Environment,
+            &TypeFieldReflectionOparator::TypeSceneRawOperator::getClassName,
+            &TypeFieldReflectionOparator::TypeSceneRawOperator::getFieldName_Environment,
+            &TypeFieldReflectionOparator::TypeSceneRawOperator::getFieldTypeName_Environment,
+            &TypeFieldReflectionOparator::TypeSceneRawOperator::isArray_Environment);
+        REGISTER_FIELD_TO_MAP("SceneRaw", f_field_function_tuple_Environment);
         FieldFunctionTuple* f_field_function_tuple_Entities=new FieldFunctionTuple(
             &TypeFieldReflectionOparator::TypeSceneRawOperator::set_Entities,
             &TypeFieldReflectionOparator::TypeSceneRawOperator::get_Entities,

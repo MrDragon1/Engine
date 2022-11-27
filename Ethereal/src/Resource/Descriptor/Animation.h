@@ -64,8 +64,8 @@ namespace Ethereal
             this->FramesPersecond = other.FramesPersecond;
             this->Clips = other.Clips;
         }
-        virtual AssetType GetAssetType() const override { return AssetType::Animation; }
-
+        static AssetType GetStaticType() { return AssetType::Animation; }
+        virtual AssetType GetAssetType() const override { return GetStaticType(); }
         std::vector<AnimKeyClip> Clips;
         double FramesPersecond;
         TimeStamp Duration;
@@ -84,9 +84,8 @@ namespace Ethereal
             this->Skeleton = other.Skeleton;
         }
 
-
-        virtual AssetType GetAssetType() const override { return AssetType::Animator; }
-
+        static AssetType GetStaticType() { return AssetType::Animator; }
+        virtual AssetType GetAssetType() const override { return GetStaticType(); }
         UUID Animation;
         UUID Skeleton;
     };
@@ -122,7 +121,8 @@ namespace Ethereal
             this->Name = other.Name;
 
         }
-        virtual AssetType GetAssetType() const override { return AssetType::Skeleton; }
+        static AssetType GetStaticType() { return AssetType::Skeleton; }
+        virtual AssetType GetAssetType() const override { return GetStaticType(); }
       public:
         JointDesc RootJoint;
         std::string Name;

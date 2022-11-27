@@ -12,9 +12,9 @@ Albedo:
   x: 1
   y: 1
   z: 1
-Metallic: 0
+Metallic: 1
 Roughness: 0.858578682
-Emisstion: 0
+Emisstion: 1
 Transparency: 0
 IsAlbedo: true
 IsMetallic: false

@@ -29,6 +29,7 @@ namespace Ethereal
     }
 
     void Animation::Load(const AnimationDesc& desc) {
+        Handle = desc.Handle;
         m_KeyClips = desc.Clips;
         m_FramesPersecond = desc.FramesPersecond;
         m_Duration = desc.Duration;
@@ -36,6 +37,7 @@ namespace Ethereal
     }
 
     void Animation::Save(AnimationDesc& desc) {
+        desc.Handle = Handle;
         desc.Clips = m_KeyClips;
         desc.FramesPersecond = m_FramesPersecond;
         desc.Duration = m_Duration;

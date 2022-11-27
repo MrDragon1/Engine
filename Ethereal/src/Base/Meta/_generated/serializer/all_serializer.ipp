@@ -12,7 +12,6 @@
 #include "Base/Meta/_generated/serializer/Camera.serializer.gen.h"
 #include "Base/Meta/_generated/serializer/Components.serializer.gen.h"
 #include "Base/Meta/_generated/serializer/Scene.serializer.gen.h"
-#include "Base/Meta/_generated/serializer/Environment.serializer.gen.h"
 namespace Ethereal
 {
     template <>
@@ -872,6 +871,7 @@ namespace Ethereal
     YNode Serializer::write(const SceneRaw& instance) {
         YNode ret_context;
         ret_context["Name"] = Serializer::write(instance.Name);
+        ret_context["Environment"] = Serializer::write(instance.Environment);
         YNode Entities_yaml;
         for (auto& item : instance.Entities) {
         Entities_yaml.push_back(Serializer::write(item));
@@ -885,6 +885,9 @@ namespace Ethereal
         if (!yaml_context["Name"].IsNull()) {
             Serializer::read(yaml_context["Name"], instance.Name);
         }
+        if (!yaml_context["Environment"].IsNull()) {
+            Serializer::read(yaml_context["Environment"], instance.Environment);
+        }
         if (!yaml_context["Entities"].IsNull()) {
             assert(yaml_context["Entities"].IsSequence());
             YNode array_Entities = yaml_context["Entities"];
@@ -892,24 +895,6 @@ namespace Ethereal
             for (size_t index = 0; index < array_Entities.size(); ++index) {
                 Serializer::read(array_Entities[index], instance.Entities[index]);
             }
-        }
-        return instance;
-    }
-    template <>
-    YNode Serializer::write(const EnvironmentDesc& instance) {
-        YNode ret_context;
-        auto&& yaml_context_0 = Serializer::write(*(Ethereal::Asset*)&instance);
-        assert(yaml_context_0.IsDefined());
-        ret_context = yaml_context_0;
-        ret_context["EnvironmentMap"] = Serializer::write(instance.EnvironmentMap);
-        return ret_context;
-    }
-    template <>
-    EnvironmentDesc&Serializer::read(const YNode& yaml_context, EnvironmentDesc& instance) {
-        assert(yaml_context.IsDefined());
-        Serializer::read(yaml_context, *(Ethereal::Asset*)&instance);
-        if (!yaml_context["EnvironmentMap"].IsNull()) {
-            Serializer::read(yaml_context["EnvironmentMap"], instance.EnvironmentMap);
         }
         return instance;
     }

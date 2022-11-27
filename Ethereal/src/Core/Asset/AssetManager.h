@@ -93,6 +93,8 @@ namespace Ethereal
             YAML::Emitter out;
             out << node;
             fout << out.c_str();
+
+            ReloadAssets();
             return true;
         }
 

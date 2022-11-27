@@ -14,7 +14,8 @@ namespace Ethereal
             this->Mesh = other.Mesh;
             this->Materials = other.Materials;
         }
-        virtual AssetType GetAssetType() const override { return AssetType::StaticMesh; }
+        static AssetType GetStaticType() { return AssetType::StaticMesh; }
+        virtual AssetType GetAssetType() const override { return GetStaticType(); }
       public:
         UUID Mesh;
         std::vector<UUID> Materials;
@@ -30,8 +31,8 @@ namespace Ethereal
             this->Animator = other.Animator;
             this->Materials = other.Materials;
         }
-        virtual AssetType GetAssetType() const override { return AssetType::Mesh; }
-
+        static AssetType GetStaticType() { return AssetType::Mesh; }
+        virtual AssetType GetAssetType() const override { return GetStaticType(); }
       public:
         UUID Mesh;
         std::vector<UUID> Materials;

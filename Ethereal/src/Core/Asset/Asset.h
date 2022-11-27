@@ -9,9 +9,9 @@ namespace Ethereal
     using AssetHandle = UUID;
 
     REFLECTION_TYPE(Asset)
-    CLASS(Asset : public RefCounted, WhiteListFields)
-    {
+    CLASS(Asset : public RefCounted, WhiteListFields) {
         REFLECTION_BODY(Asset);
+
       public:
         AssetHandle Handle = 0;
         uint16_t Flags = (uint16_t)AssetFlag::None;

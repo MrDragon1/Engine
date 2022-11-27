@@ -78,8 +78,8 @@ namespace Ethereal
             Vector3(-10.0f, 0.0f, 10.0f),
             Vector3(10.0f, 0.0f, 10.0f),
         };
-        Vector3 lightColors[] = {Vector3(300.0f, 300.0f, 300.0f), Vector3(300.0f, 300.0f, 300.0f), Vector3(300.0f, 300.0f, 300.0f),
-                                   Vector3(300.0f, 300.0f, 300.0f)};
+        Vector3 lightColors[] = {Vector3(.0f, .0f, .0f), Vector3(.0f, .0f, .0f), Vector3(.0f, .0f, .0f),
+                                   Vector3(.0f, .0f, .0f)};
 
         // Draw StaticMesh
         {
