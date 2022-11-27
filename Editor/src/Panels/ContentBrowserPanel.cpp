@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "ContentBrowserPanel.h"
-#include "Asset/AssetManager.h"
+#include "Core/Asset/AssetManager.h"
 
 #include "imgui.h"
 

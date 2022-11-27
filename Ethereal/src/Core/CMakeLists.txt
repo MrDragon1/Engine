@@ -1,4 +1,8 @@
-add_subdirectory(Base)
+add_subdirectory(Animation)
+add_subdirectory(Asset)
+add_subdirectory(Project)
+add_subdirectory(Renderer)
+add_subdirectory(Scene)
 
 set(HFILES "")
 set(CPPFILES "")

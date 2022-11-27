@@ -1,0 +1,25 @@
+AlbedoMap:
+  UUID: 7309008298981451249
+NormalMap:
+  UUID: 7309008298981451249
+MetallicMap:
+  UUID: 7309008298981451249
+RoughnessMap:
+  UUID: 7309008298981451249
+OcclusionMap:
+  UUID: 7309008298981451249
+Albedo:
+  x: 0
+  y: 0
+  z: 1
+Metallic: 0
+Roughness: 1
+Emisstion: 0
+Transparency: 0
+IsAlbedo: false
+IsMetallic: false
+IsRoughness: false
+IsNormal: false
+IsOcclusion: false
+IsTransparent: false
+Name: blue

@@ -1,8 +1,8 @@
 #include "pch.h"
 #include "Utils/FileSystem.h"
-#include "Asset/AssetManager.h"
+#include "Core/Asset/AssetManager.h"
 
-#include "Core/Application.h"
+#include "Ethereal/src/Base/Application.h"
 
 #include <GLFW/glfw3.h>
 

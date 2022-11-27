@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Core/Base/Singleton.h"
-#include <Renderer/Texture.h>
+#include "Base/Singleton.h"
+#include "Core/Renderer/Texture.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>

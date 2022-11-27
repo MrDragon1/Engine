@@ -1,6 +1,6 @@
 #include "MaterialEditPanel.h"
-#include "Asset/AssetManager.h"
-#include "Core/GlobalContext.h"
+#include "Core/Asset/AssetManager.h"
+#include "Base/GlobalContext.h"
 #include "imgui.h"
 namespace Ethereal
 {
@@ -20,15 +20,15 @@ namespace Ethereal
         ImGui::SetNextWindowSize(ImVec2(200.0f, 300.0f), ImGuiCond_Appearing);
         if (ImGui::Begin("Materials", &Open) && hasValidEntity) {
             const bool hasStaticMesh = m_SelectedEntity.HasComponent<StaticMeshComponent>() &&
-                                       AssetManager::IsAssetHandleValid(m_SelectedEntity.GetComponent<StaticMeshComponent>().StaticMesh);
+                                       AssetManager::IsAssetHandleValid(m_SelectedEntity.GetComponent<StaticMeshComponent>().StaticMeshHandle);
 
             if (hasStaticMesh) {
                 Ref<MaterialTable> meshMaterialTable, componentMaterialTable;
 
                 if (m_SelectedEntity.HasComponent<StaticMeshComponent>()) {
                     const auto& staticMeshComponent = m_SelectedEntity.GetComponent<StaticMeshComponent>();
-                    componentMaterialTable = staticMeshComponent.MaterialTable;
-                    auto mesh = AssetManager::GetAsset<StaticMesh>(staticMeshComponent.StaticMesh);
+                    componentMaterialTable = staticMeshComponent.materialTable;
+                    auto mesh = AssetManager::GetAsset<StaticMesh>(staticMeshComponent.StaticMeshHandle);
                     if (mesh) meshMaterialTable = mesh->GetMaterials();
                 }
 
@@ -140,7 +140,7 @@ namespace Ethereal
                 bool useAlbedoMap = material->IsUseAlbedoMap();
                 if (ImGui::Checkbox("Use##Albedo", &useAlbedoMap)) material->SetUseAlbedoMap(useAlbedoMap);
 
-                if (ImGui::ColorEdit3("Color##Albedo", glm::value_ptr(albedoColor), ImGuiColorEditFlags_NoInputs))
+                if (ImGui::ColorEdit3("Color##Albedo", Math::Ptr(albedoColor), ImGuiColorEditFlags_NoInputs))
                     material->SetAlbedoColor(albedoColor);
                 float& emissive = material->GetEmission();
 

@@ -5,8 +5,8 @@
 #include "Panels/ContentBrowserPanel.h"
 #include "Panels/MaterialEditPanel.h"
 
-#include "Renderer/EditorCamera.h"
-#include "Core/Base/Ref.h"
+#include "Core/Renderer/EditorCamera.h"
+#include "Base/Ref.h"
 
 namespace Ethereal
 {
@@ -56,7 +56,7 @@ namespace Ethereal
 
         Entity m_HoveredEntity;
 
-        glm::vec2 m_ViewportBounds[2];
+        Vector2 m_ViewportBounds[2];
 
         bool m_ViewportFocused = false, m_ViewportHovered = false;
 
@@ -76,7 +76,7 @@ namespace Ethereal
         bool b_ShowDemoImGui = false;
         bool b_ShowSkyboxSettings = false;
         bool b_ShowProjectSettings = true;
-        glm::vec3 m_LightPos = glm::vec3(-20, 40, -10);  // as far as possiable (away from the scene to avoid clamp shadow)
+        Vector3 m_LightPos = Vector3(-20, 40, -10);  // as far as possiable (away from the scene to avoid clamp shadow)
 
         RenderSceneData m_RenderSceneData;
     };

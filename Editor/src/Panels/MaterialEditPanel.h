@@ -1,7 +1,7 @@
 #pragma once
-#include "Scene/Scene.h"
-#include "Scene/Entity.h"
-#include "Renderer/MaterialAsset.h"
+#include "src/Core/Scene/Scene.h"
+#include "src/Core/Scene/Entity.h"
+#include "src/Core/Renderer/MaterialAsset.h"
 namespace Ethereal
 {
     class MaterialEditPanel {

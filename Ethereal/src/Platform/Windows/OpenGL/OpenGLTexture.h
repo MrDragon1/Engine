@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Renderer/Texture.h"
+#include "Core/Renderer/Texture.h"
 
 namespace Ethereal
 {

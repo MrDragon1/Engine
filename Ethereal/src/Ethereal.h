@@ -1,36 +1,35 @@
 #pragma once
 
-// ---Core----------------------------
+// ---Base----------------------------
 #include <stdio.h>
-#include "Core/Application.h"
-#include "Core/Log.h"
-#include "Core/Layer.h"
-#include "Core/Input.h"
-#include "Core/OrthographicCameraController.h"
-#include "Core/TimeStamp.h"
+#include "Base/Application.h"
+#include "Base/Log.h"
+#include "Base/Layer/Layer.h"
+#include "Base/Input.h"
+#include "Base/OrthographicCameraController.h"
+#include "Base/TimeStamp.h"
 
-#include "Core/GlobalContext.h"
+#include "Base/GlobalContext.h"
 
 // ---Imgui----------------------------
-#include "ImGui/ImGuiLayer.h"
-
+#include "Base/ImGui/ImGuiLayer.h"
 
 // ---Renderer-------------------------
-#include "Renderer/RenderCommand.h"
-#include "Renderer/Buffer.h"
-#include "Renderer/VertexArray.h"
-#include "Renderer/Shader.h"
-#include "Renderer/OrthographicCamera.h"
-#include "Renderer/Texture.h"
-#include "Renderer/SubTexture.h"
-#include "Renderer/Framebuffer.h"
+#include "Core/Renderer/RenderCommand.h"
+#include "Core/Renderer/Buffer.h"
+#include "Core/Renderer/VertexArray.h"
+#include "Core/Renderer/Shader.h"
+#include "Core/Renderer/OrthographicCamera.h"
+#include "Core/Renderer/Texture.h"
+#include "Core/Renderer/SubTexture.h"
+#include "Core/Renderer/Framebuffer.h"
 
 // ---Scene----------------------------
-#include "Scene/Scene.h"
-#include "Scene/Components.h"
-#include "Scene/Entity.h"
-#include "Scene/ScriptableEntity.h"
+#include "Core/Scene/Scene.h"
+#include "Core/Scene/Components.h"
+#include "Core/Scene/Entity.h"
+#include "Core/Scene/ScriptableEntity.h"
 
 // ---KeyCodes-------------------------
-#include "Core/KeyCodes.h"
-#include "Core/MouseButtonCodes.h"
+#include "Base/KeyCodes.h"
+#include "Base/MouseButtonCodes.h"

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Core/Input.h"
+#include "Base/Input.h"
 
 namespace Ethereal
 {

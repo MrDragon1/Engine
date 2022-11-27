@@ -2,7 +2,7 @@
 #include "OpenGLFramebuffer.h"
 
 #include <glad/glad.h>
-#include "Core/Log.h"
+#include "Ethereal/src/Base/Log.h"
 
 namespace Ethereal
 {

@@ -1,0 +1,35 @@
+Name: Meta
+Environment:
+  UUID: 10111825085121754573
+Entities:
+  - Name: ""
+    Components:
+      - TypeName: IDComponent
+        Context:
+          ID:
+            UUID: 15214892317694007416
+      - TypeName: TagComponent
+        Context:
+          Tag: Cube
+      - TypeName: TransformComponent
+        Context:
+          Position:
+            x: 0
+            y: 0
+            z: 0
+          Scale:
+            x: 0.100000001
+            y: 0.100000001
+            z: 0.100000001
+          Rotation:
+            x: 0
+            y: 0
+            z: 0
+            w: 1
+      - TypeName: StaticMeshComponent
+        Context:
+          StaticMeshHandle:
+            UUID: 11764163912919184602
+          MaterialTableRaw:
+            Materials:
+              - UUID: 9102962350420186113

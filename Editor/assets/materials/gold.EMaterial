@@ -1,0 +1,25 @@
+AlbedoMap:
+  UUID: 1864105716926570769
+NormalMap:
+  UUID: 4437595807192615377
+MetallicMap:
+  UUID: 14473103724496630534
+RoughnessMap:
+  UUID: 13741325085810708696
+OcclusionMap:
+  UUID: 7309008298981451249
+Albedo:
+  x: 1
+  y: 1
+  z: 1
+Metallic: 0
+Roughness: 1
+Emisstion: 0
+Transparency: 0
+IsAlbedo: true
+IsMetallic: true
+IsRoughness: true
+IsNormal: true
+IsOcclusion: false
+IsTransparent: false
+Name: Gold

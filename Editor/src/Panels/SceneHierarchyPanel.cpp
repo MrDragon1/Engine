@@ -1,12 +1,12 @@
 #include "SceneHierarchyPanel.h"
 
+#include "Core/Asset/AssetManager.h"
+#include "Base/ImGui/UI.h"
+
 #include <imgui.h>
 #include <imgui_internal.h>
-
 #include <filesystem>
 #include <glm/gtc/type_ptr.hpp>
-#include <Asset/AssetManager.h>
-#include <ImGui/UI.h>
 
 namespace Ethereal
 {
@@ -52,8 +52,9 @@ namespace Ethereal
                     ImGui::EndMenu();
                 }
                 if (ImGui::MenuItem("Material")) {
-                    AssetManager::CreateNewAsset<MaterialAsset>("M_Default.hmaterial", (Project::GetAssetDirectory() / "materials").string(),
-                                                                "M_Default");
+                    MaterialDesc desc;
+                    desc.Name = "M_Default";
+                    AssetManager::CreateAsset_Ref("M_Default",(Project::GetAssetDirectory() / "materials").string(), desc);
                 }
 
                 ImGui::EndPopup();
@@ -72,13 +73,13 @@ namespace Ethereal
 
     void SceneHierarchyPanel::SetSelectedEntity(Entity entity) { m_SelectionContext = entity; }
 
-    static std::tuple<glm::vec3, glm::quat, glm::vec3> GetTransformDecomposition(const glm::mat4& transform) {
-        glm::vec3 scale, translation, skew;
-        glm::vec4 perspective;
-        glm::quat orientation;
-        glm::decompose(transform, scale, orientation, translation, skew, perspective);
+    static std::tuple<Vector3, Quaternion, Vector3> GetTransformDecomposition(const Matrix4& transform) {
+        Vector3 translation, scale, skew;
+        Vector4 perspective;
+        Quaternion rotation;
+        Math::DecomposeTransformMatrix(transform, translation, rotation, scale, skew, perspective);
 
-        return {translation, orientation, scale};
+        return {translation, rotation, scale};
     }
 
     void SceneHierarchyPanel::DrawEntityNode(Entity entity) {
@@ -101,11 +102,11 @@ namespace Ethereal
 
         if (opened) {
             if (entity.HasComponent<StaticMeshComponent>()) {
-                auto handle = entity.GetComponent<StaticMeshComponent>().StaticMesh;
+                auto handle = entity.GetComponent<StaticMeshComponent>().StaticMeshHandle;
                 auto mesh = AssetManager::GetAsset<StaticMesh>(handle);
                 for (auto& submesh : mesh->GetMeshSource()->GetSubmeshes()) {
-                    glm::mat4 localTransform = submesh.LocalTransform;
-                    glm::mat4 transform = entity.GetComponent<TransformComponent>().GetTransform() * submesh.Transform;
+                    Matrix4 localTransform = submesh.LocalTransform;
+                    Matrix4 transform = entity.GetComponent<TransformComponent>().getMatrix() * submesh.Transform;
                     if (ImGui::TreeNode(submesh.NodeName.c_str())) {
                         {
                             auto [translation, rotation, scale] = GetTransformDecomposition(transform);
@@ -132,7 +133,7 @@ namespace Ethereal
         }
     }
 
-    static void DrawVec3Control(const std::string& label, glm::vec3& values, float resetValue = 0.0f, float columnWidth = 100.0f) {
+    static void DrawVec3Control(const std::string& label, Vector3& values, float resetValue = 0.0f, float columnWidth = 100.0f) {
         ImGuiIO& io = ImGui::GetIO();
         auto boldFont = io.Fonts->Fonts[0];
 
@@ -251,16 +252,16 @@ namespace Ethereal
         ImGui::PopItemWidth();
 
         DrawComponent<TransformComponent>("Transform", entity, [](auto& component) {
-            DrawVec3Control("Translation", component.Translation);
-            glm::vec3 rotation = glm::degrees(component.Rotation);
+            DrawVec3Control("Translation", component.Position);
+            Vector3 rotation = Math::Degrees(Vector3(component.Rotation));
             DrawVec3Control("Rotation", rotation);
-            component.Rotation = glm::radians(rotation);
+            component.Rotation = Quaternion(Math::Radians(rotation));
             DrawVec3Control("Scale", component.Scale, 1.0f);
         });
 
-        DrawComponent<StaticMeshComponent>("StaticMesh", entity, [](auto& component) {
-            Ref<StaticMesh> mesh = AssetManager::GetAsset<StaticMesh>(component.StaticMesh);
-            Ref<MaterialTable> componentMaterialTable = component.MaterialTable;
+        DrawComponent<StaticMeshComponent>("StaticMesh", entity, [this](auto& component) {
+            Ref<StaticMesh> mesh = AssetManager::GetAsset<StaticMesh>(component.StaticMeshHandle);
+            Ref<MaterialTable> componentMaterialTable = component.materialTable;
             Ref<MaterialTable> meshMaterialTable = mesh->GetMaterials();
 
             if (componentMaterialTable) {
@@ -270,7 +271,7 @@ namespace Ethereal
                 }
             }
 
-            AssetHandle meshHandle = component.StaticMesh;
+            AssetHandle meshHandle = component.StaticMeshHandle;
             std::string buttonText = "Null";
 
             UI::BeginPropertyGrid();
@@ -289,71 +290,63 @@ namespace Ethereal
 
             UI::EndPropertyGrid();
 
-            if (UI::BeginTreeNode("Materials")) {
-                for (size_t index = 0; index < componentMaterialTable->GetMaterialCount(); index++) {
-                    UI::BeginPropertyGrid();
+            DrawMaterialTable(componentMaterialTable);
+        });
 
-                    Ref<MaterialAsset> material = componentMaterialTable->GetMaterial(index);
-                    std::string label = fmt::format("[Material {0}]", index);
-                    ImGui::PushID(label.c_str());
+        DrawComponent<MeshComponent>("Mesh", entity, [this](auto& component) {
+            Ref<Mesh> mesh = AssetManager::GetAsset<StaticMesh>(component.MeshHandle);
+            Ref<MaterialTable> componentMaterialTable = component.materialTable;
+            Ref<MaterialTable> meshMaterialTable = mesh->GetMaterials();
 
-                    UI::ShiftCursor(10.0f, 9.0f);
-                    ImGui::Text(label.c_str());
-                    ImGui::NextColumn();
-                    UI::ShiftCursorY(9.0f);
-
-                    ImGui::PushItemWidth(-1);
-                    ImVec2 originalButtonTextAlign = ImGui::GetStyle().ButtonTextAlign;
-                    ImGui::GetStyle().ButtonTextAlign = {0.0f, 0.5f};
-                    float width = ImGui::GetContentRegionAvail().x;
-                    UI::PushID();
-                    {
-                        float itemHeight = 28.0f;
-                        std::string materialname = material->GetName();
-                        if (materialname.empty()) materialname = "Empty Name";
-                        ImGui::Button(materialname.c_str(), ImVec2{width, itemHeight});
-                        ImGui::GetStyle().ButtonTextAlign = originalButtonTextAlign;
-                    }
-                    UI::PopID();
-
-                    if (ImGui::BeginDragDropTarget()) {
-                        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
-                            AssetHandle assetHandle = *((AssetHandle*)payload->Data);
-                            Ref<Asset> asset = AssetManager::GetAsset<Asset>(assetHandle);
-                            if (asset && asset->GetAssetType() == AssetType::Material) {
-                                componentMaterialTable->SetMaterial(index, asset.As<MaterialAsset>());
-                            }
-                        }
-                        ImGui::EndDragDropTarget();
-                    }
-
-                    UI::DrawItemActivityOutline(2.0f, true, Colors::Theme::accent);
-
-                    ImGui::PopID();
-                    UI::EndPropertyGrid();
+            if (componentMaterialTable) {
+                if (meshMaterialTable) {
+                    if (componentMaterialTable->GetMaterialCount() < meshMaterialTable->GetMaterialCount())
+                        componentMaterialTable->SetMaterialCount(meshMaterialTable->GetMaterialCount());
                 }
-
-                UI::EndTreeNode();
             }
+
+            AssetHandle meshHandle = component.MeshHandle;
+            std::string buttonText = "Null";
+
+            UI::BeginPropertyGrid();
+
+            ImGui::Text("Mesh");
+            ImGui::NextColumn();
+            if (AssetManager::IsAssetHandleValid(meshHandle)) {
+                auto object = AssetManager::GetAsset<StaticMesh>(meshHandle);
+                if (object && !object->IsFlagSet(AssetFlag::Missing)) {
+                    buttonText = AssetManager::GetMetadata(meshHandle).FilePath.stem().string();
+                } else {
+                    buttonText = "Missing";
+                }
+            }
+            ImGui::Text(buttonText.c_str());
+
+            UI::EndPropertyGrid();
+
+            DrawMaterialTable(componentMaterialTable);
+
+            Ref<Animator> animator = mesh->GetAnimator();
+            // TODO: draw animator component
         });
 
         DrawComponent<CameraComponent>("Camera", entity, [&](auto& cameraComponent) {
-            auto& camera = cameraComponent.Camera;
+            auto& camera = cameraComponent;
 
-            if (ImGui::Checkbox("Primary", &cameraComponent.Primary)) {
-                if (cameraComponent.Primary) {
-                    m_Context->m_Registry.view<CameraComponent>().each([&](const auto otherEntity, auto& cc) { cc.Primary = otherEntity == entity; });
+            if (ImGui::Checkbox("Primary", &cameraComponent.Camera.Primary)) {
+                if (cameraComponent.Camera.Primary) {
+                    m_Context->m_Registry.view<CameraComponent>().each([&](const auto otherEntity, auto& cc) { cc.Camera.Primary = otherEntity == entity; });
                 }
             }
 
             const char* projectionTypeStrings[] = {"Perspective", "Orthographic"};
-            const char* currentProjectionTypeString = projectionTypeStrings[(int)camera.GetProjectionType()];
+            const char* currentProjectionTypeString = projectionTypeStrings[(int)camera.SceneCamera.GetProjectionType()];
             if (ImGui::BeginCombo("Projection", currentProjectionTypeString)) {
                 for (int i = 0; i < 2; i++) {
                     bool isSelected = currentProjectionTypeString == projectionTypeStrings[i];
                     if (ImGui::Selectable(projectionTypeStrings[i], isSelected)) {
                         currentProjectionTypeString = projectionTypeStrings[i];
-                        camera.SetProjectionType((SceneCamera::ProjectionType)i);
+                        camera.SceneCamera.SetProjectionType((SceneCamera::ProjectionType)i);
                     }
 
                     if (isSelected) ImGui::SetItemDefaultFocus();
@@ -362,28 +355,28 @@ namespace Ethereal
                 ImGui::EndCombo();
             }
 
-            if (camera.GetProjectionType() == SceneCamera::ProjectionType::Perspective) {
-                float verticalFov = glm::degrees(camera.GetPerspectiveVerticalFOV());
-                if (ImGui::DragFloat("Vertical FOV", &verticalFov)) camera.SetPerspectiveVerticalFOV(glm::radians(verticalFov));
+            if (camera.SceneCamera.GetProjectionType() == SceneCamera::ProjectionType::Perspective) {
+                float verticalFov = Math::Degrees(camera.SceneCamera.GetPerspectiveVerticalFOV());
+                if (ImGui::DragFloat("Vertical FOV", &verticalFov)) camera.SceneCamera.SetPerspectiveVerticalFOV(Math::Radians(verticalFov));
 
-                float orthoNear = camera.GetPerspectiveNearClip();
-                if (ImGui::DragFloat("Near", &orthoNear)) camera.SetPerspectiveNearClip(orthoNear);
+                float orthoNear = camera.SceneCamera.GetPerspectiveNearClip();
+                if (ImGui::DragFloat("Near", &orthoNear)) camera.SceneCamera.SetPerspectiveNearClip(orthoNear);
 
-                float orthoFar = camera.GetPerspectiveFarClip();
-                if (ImGui::DragFloat("Far", &orthoFar)) camera.SetPerspectiveFarClip(orthoFar);
+                float orthoFar = camera.SceneCamera.GetPerspectiveFarClip();
+                if (ImGui::DragFloat("Far", &orthoFar)) camera.SceneCamera.SetPerspectiveFarClip(orthoFar);
             }
 
-            if (camera.GetProjectionType() == SceneCamera::ProjectionType::Orthographic) {
-                float orthoSize = camera.GetOrthographicSize();
-                if (ImGui::DragFloat("Size", &orthoSize)) camera.SetOrthographicSize(orthoSize);
+            if (camera.SceneCamera.GetProjectionType() == SceneCamera::ProjectionType::Orthographic) {
+                float orthoSize = camera.SceneCamera.GetOrthographicSize();
+                if (ImGui::DragFloat("Size", &orthoSize)) camera.SceneCamera.SetOrthographicSize(orthoSize);
 
-                float orthoNear = camera.GetOrthographicNearClip();
-                if (ImGui::DragFloat("Near", &orthoNear)) camera.SetOrthographicNearClip(orthoNear);
+                float orthoNear = camera.SceneCamera.GetOrthographicNearClip();
+                if (ImGui::DragFloat("Near", &orthoNear)) camera.SceneCamera.SetOrthographicNearClip(orthoNear);
 
-                float orthoFar = camera.GetOrthographicFarClip();
-                if (ImGui::DragFloat("Far", &orthoFar)) camera.SetOrthographicFarClip(orthoFar);
+                float orthoFar = camera.SceneCamera.GetOrthographicFarClip();
+                if (ImGui::DragFloat("Far", &orthoFar)) camera.SceneCamera.SetOrthographicFarClip(orthoFar);
 
-                ImGui::Checkbox("Fixed Aspect Ratio", &cameraComponent.FixedAspectRatio);
+                ImGui::Checkbox("Fixed Aspect Ratio", &cameraComponent.Camera.FixedAspectRatio);
             }
         });
 
@@ -408,13 +401,62 @@ namespace Ethereal
         });
 
         DrawComponent<BoxCollider2DComponent>("BoxCollider 2D", entity, [](auto& component) {
-            ImGui::DragFloat2("Offset", glm::value_ptr(component.Offset));
-            ImGui::DragFloat2("Size", glm::value_ptr(component.Size));
+            ImGui::DragFloat2("Offset", Math::Ptr(component.Offset));
+            ImGui::DragFloat2("Size", Math::Ptr(component.Size));
             ImGui::DragFloat("Density", &component.Density, 0.01f, 0.0f, 1.0f);
             ImGui::DragFloat("Friction", &component.Friction, 0.01f, 0.0f, 1.0f);
             ImGui::DragFloat("Restitution", &component.Restitution, 0.01f, 0.0f, 1.0f);
             ImGui::DragFloat("Restitution Threshold", &component.RestitutionThreshold, 0.01f, 0.0f);
         });
+    }
+
+    void SceneHierarchyPanel::DrawMaterialTable(Ref<MaterialTable> materialTable) {
+        if (UI::BeginTreeNode("Materials")) {
+            for (size_t index = 0; index < materialTable->GetMaterialCount(); index++) {
+                UI::BeginPropertyGrid();
+
+                Ref<MaterialAsset> material = materialTable->GetMaterial(index);
+                std::string label = fmt::format("[Material {0}]", index);
+                ImGui::PushID(label.c_str());
+
+                UI::ShiftCursor(10.0f, 9.0f);
+                ImGui::Text(label.c_str());
+                ImGui::NextColumn();
+                UI::ShiftCursorY(9.0f);
+
+                ImGui::PushItemWidth(-1);
+                ImVec2 originalButtonTextAlign = ImGui::GetStyle().ButtonTextAlign;
+                ImGui::GetStyle().ButtonTextAlign = {0.0f, 0.5f};
+                float width = ImGui::GetContentRegionAvail().x;
+                UI::PushID();
+                {
+                    float itemHeight = 28.0f;
+                    std::string materialname = material->GetName();
+                    if (materialname.empty()) materialname = "Empty Name";
+                    ImGui::Button(materialname.c_str(), ImVec2{width, itemHeight});
+                    ImGui::GetStyle().ButtonTextAlign = originalButtonTextAlign;
+                }
+                UI::PopID();
+
+                if (ImGui::BeginDragDropTarget()) {
+                    if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
+                        AssetHandle assetHandle = *((AssetHandle*)payload->Data);
+                        Ref<Asset> asset = AssetManager::GetAsset<Asset>(assetHandle);
+                        if (asset && asset->GetAssetType() == AssetType::Material) {
+                            materialTable->SetMaterial(index, asset.As<MaterialAsset>());
+                        }
+                    }
+                    ImGui::EndDragDropTarget();
+                }
+
+                UI::DrawItemActivityOutline(2.0f, true, Colors::Theme::accent);
+
+                ImGui::PopID();
+                UI::EndPropertyGrid();
+            }
+
+            UI::EndTreeNode();
+        }
     }
 
     template <typename T>

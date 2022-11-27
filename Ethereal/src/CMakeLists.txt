@@ -1,13 +1,9 @@
-add_subdirectory(Animation)
-add_subdirectory(Asset)
+add_subdirectory(Base)
 add_subdirectory(Core)
-add_subdirectory(Event)
-add_subdirectory(ImGui)
-add_subdirectory(Renderer)
-add_subdirectory(Scene)
 add_subdirectory(Utils)
 add_subdirectory(Platform)
-add_subdirectory(Project)
+add_subdirectory(Resource)
+
 
 set(HFILES "")
 set(CPPFILES "")
