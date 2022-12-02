@@ -352,16 +352,11 @@ namespace Ethereal
         component.StaticMeshHandle = assetHandle;
 
         auto mesh = AssetManager::GetAsset<StaticMesh>(assetHandle);
-        if (mesh->GetMaterials()->GetMaterialCount() > component.materialTable->GetMaterialCount()) {
-            component.materialTable->SetMaterialCount(mesh->GetMaterials()->GetMaterialCount());
-        }
+        StaticMeshDesc meshdesc;
+        mesh->Save(meshdesc);
+        component.MaterialTableRaw.Materials = meshdesc.Materials;
+        component.PostLoad();
 
-        // Get a material from meshComponent materialTable if it has (not the copy of the material)
-        for (int index = 0; index < component.materialTable->GetMaterialCount(); index++) {
-            if (mesh->GetMaterials()->HasMaterial(index)) {
-                component.materialTable->SetMaterial(index, mesh->GetMaterials()->GetMaterial(index));
-            }
-        }
         return entity;
     }
 

@@ -8,9 +8,6 @@ Assets:
   - Handle: 257226758694430484
     FilePath: fonts\opensans\OpenSans-BoldItalic.ttf
     Type: Font
-  - Handle: 454433617306027320
-    FilePath: meshes\gun\Cerberus_LP.hsmesh
-    Type: StaticMesh
   - Handle: 472868447295227411
     FilePath: fonts\opensans\OpenSans-MediumItalic.ttf
     Type: Font
@@ -32,9 +29,6 @@ Assets:
   - Handle: 1605699596722893402
     FilePath: materials\humanskin.EMaterial
     Type: Material
-  - Handle: 1815109911821718148
-    FilePath: meshes\gun\Cerberus_LP.hsmesh
-    Type: StaticMesh
   - Handle: 1850952412942147138
     FilePath: textures\default\default_occlusion.png
     Type: Texture
@@ -98,6 +92,9 @@ Assets:
   - Handle: 3367218387622807080
     FilePath: meshes\vampire\dancing_vampire.EAnimator
     Type: Animator
+  - Handle: 3411737668355452368
+    FilePath: meshes\gun\08 - Default.EMaterial
+    Type: Material
   - Handle: 3514443418350597859
     FilePath: meshes\cornell_box\green.EMaterial
     Type: Material
@@ -128,9 +125,6 @@ Assets:
   - Handle: 4980735168443109901
     FilePath: scenes\PBR.hscene
     Type: Scene
-  - Handle: 5065889348537517837
-    FilePath: meshes\gun\Cerberus_LP.hsmesh
-    Type: StaticMesh
   - Handle: 5095451425471151322
     FilePath: fonts\opensans\OpenSans-Bold.ttf
     Type: Font
@@ -194,6 +188,9 @@ Assets:
   - Handle: 6310116487016262958
     FilePath: meshes\cornell_box\white.EMaterial
     Type: Material
+  - Handle: 6488004164323411286
+    FilePath: meshes\gun\Cerberus_LP.ESMesh
+    Type: StaticMesh
   - Handle: 6560143709909394794
     FilePath: icons\PlayButton.png
     Type: Texture
@@ -293,9 +290,6 @@ Assets:
   - Handle: 10159681062242942540
     FilePath: textures\rustediron\rustediron2_albedo.png
     Type: Texture
-  - Handle: 10351878036272105763
-    FilePath: meshes\gun\Cerberus_LP.hsmesh
-    Type: StaticMesh
   - Handle: 10396357330847663768
     FilePath: textures\humanskin\human-skin1_metallic.png
     Type: Texture
@@ -350,18 +344,12 @@ Assets:
   - Handle: 12057588983460254927
     FilePath: scenes\meta.hscene
     Type: Scene
-  - Handle: 12066573877665610509
-    FilePath: meshes\gun\Cerberus_LP.hsmesh
-    Type: StaticMesh
   - Handle: 12187915844800072216
     FilePath: meshes\vampire\dancing_vampire.EAnimator
     Type: Animator
   - Handle: 12373901122377199596
     FilePath: meshes\vampire\dancing_vampire.EMesh
     Type: Mesh
-  - Handle: 12384679521450533381
-    FilePath: meshes\gun\Cerberus_LP.hsmesh
-    Type: StaticMesh
   - Handle: 12447451253582744139
     FilePath: skyboxs\HWSign3-Fence_2k.hdr
     Type: EnvMap
@@ -383,9 +371,6 @@ Assets:
   - Handle: 13088833478060461387
     FilePath: skyboxs\Ridgecrest_Road_Ref.hdr
     Type: EnvMap
-  - Handle: 13088851488106444026
-    FilePath: meshes\gun\08 - Default.hmaterial
-    Type: Material
   - Handle: 13358980791626819263
     FilePath: meshes\vampire\dancing_vampire.ESkeleton
     Type: Skeleton
@@ -422,9 +407,6 @@ Assets:
   - Handle: 15410943530872631803
     FilePath: meshes\source\Cylinder.gltf
     Type: MeshSource
-  - Handle: 15419492658370523544
-    FilePath: meshes\gun\08 - Default.hmaterial
-    Type: Material
   - Handle: 15629598353572669012
     FilePath: meshes\cornell_box\cornell_box.obj
     Type: MeshSource

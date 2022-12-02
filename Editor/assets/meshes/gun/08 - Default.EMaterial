@@ -1,0 +1,25 @@
+AlbedoMap:
+  UUID: 17347330393561903503
+NormalMap:
+  UUID: 7309008298981451249
+MetallicMap:
+  UUID: 7309008298981451249
+RoughnessMap:
+  UUID: 7309008298981451249
+OcclusionMap:
+  UUID: 7309008298981451249
+Albedo:
+  x: 1
+  y: 1
+  z: 1
+Metallic: 1
+Roughness: 0.858578682
+Emisstion: 0
+Transparency: 0
+IsAlbedo: true
+IsMetallic: false
+IsRoughness: false
+IsNormal: false
+IsOcclusion: false
+IsTransparent: false
+Name: 08 - Default
