@@ -7,10 +7,11 @@
 #include <imgui_internal.h>
 #include <filesystem>
 #include <glm/gtc/type_ptr.hpp>
+#include <Base/ImGui/TreeNode.h>
 
 namespace Ethereal
 {
-    extern const std::filesystem::path g_AssetPath;
+    SelectionContext SceneHierarchyPanel::s_ActiveSelectionContext = SelectionContext::Scene;
 
     SceneHierarchyPanel::SceneHierarchyPanel(const Ref<Scene>& scene) { SetContext(scene); }
 
@@ -20,58 +21,153 @@ namespace Ethereal
     }
 
     void SceneHierarchyPanel::OnImGuiRender() {
-        ImGui::Begin("Scene Hierarchy");
-        if (m_Context) {
-            m_Context->m_Registry.each([&](auto entityID) {
-                Entity entity{entityID, m_Context.Raw()};
-                DrawEntityNode(entity);
-            });
+        {
+            UI::ScopedStyle padding(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+            ImGui::Begin("Scene Hierarchy");
+        }
 
-            if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered()) m_SelectionContext = {};
+        s_ActiveSelectionContext = m_SelectionContext;
 
-            // Right click context menu
-            if (ImGui::BeginPopupContextWindow(0, 1, false)) {
-                if (ImGui::MenuItem("Create Empty Entity")) m_Context->CreateEntity("Empty Entity");
-                if (ImGui::BeginMenu("3D Object")) {
-                    if (ImGui::MenuItem("Cube"))
-                        m_SelectionContext = m_Context->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_CUBE);
-                    if (ImGui::MenuItem("Sphere"))
-                        m_SelectionContext = m_Context->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_SPHERE);
-                    if (ImGui::MenuItem("Cylinder"))
-                        m_SelectionContext = m_Context->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_CYLINDER);
-                    if (ImGui::MenuItem("Cone"))
-                        m_SelectionContext = m_Context->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_CONE);
-                    if (ImGui::MenuItem("Torus"))
-                        m_SelectionContext = m_Context->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_TORUS);
-                    if (ImGui::MenuItem("Plane"))
-                        m_SelectionContext = m_Context->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_PLANE);
-                    if (ImGui::MenuItem("Quad"))
-                        m_SelectionContext = m_Context->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_QUAD);
-                    if (ImGui::MenuItem("Monkey"))
-                        m_SelectionContext = m_Context->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_MONKEY);
-                    ImGui::EndMenu();
+        m_IsWindowFocused = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows);
+        ImRect windowRect = { ImGui::GetWindowContentRegionMin(), ImGui::GetWindowContentRegionMax() };
+
+        {
+            const float edgeOffset = 4.0f;
+            UI::ShiftCursorX(edgeOffset * 3.0f);
+            UI::ShiftCursorY(edgeOffset * 2.0f);
+
+            ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - edgeOffset * 3.0f);
+
+            ImGui::Spacing();
+            ImGui::Spacing();
+
+            // Entity list
+            //------------
+
+            UI::ScopedStyle cellPadding(ImGuiStyleVar_CellPadding, ImVec2(4.0f, 0.0f));
+
+            // Alt row Color
+            const ImU32 colRowAlt = UI::ColorWithMultipliedValue(Colors::Theme::backgroundDark, 1.3f);
+            UI::ScopedColor tableBGAlt(ImGuiCol_TableRowBgAlt, colRowAlt);
+
+            // Table
+            {
+                // Scrollable Table uses child window internally
+                UI::ScopedColor tableBg(ImGuiCol_ChildBg, Colors::Theme::backgroundDark);
+
+                ImGuiTableFlags tableFlags = ImGuiTableFlags_NoPadInnerX
+                                             | ImGuiTableFlags_Resizable
+                                             | ImGuiTableFlags_Reorderable
+                                             | ImGuiTableFlags_ScrollY
+                    /*| ImGuiTableFlags_RowBg *//*| ImGuiTableFlags_Sortable*/;
+
+                const int numColumns = 3;
+                if (ImGui::BeginTable("##SceneHierarchy-Table", numColumns, tableFlags, ImVec2(ImGui::GetContentRegionAvail())))
+                {
+
+                    ImGui::TableSetupColumn("Label");
+                    ImGui::TableSetupColumn("Type");
+                    ImGui::TableSetupColumn("Visibility");
+
+                    // Headers
+                    {
+                        const ImU32 colActive = UI::ColorWithMultipliedValue(Colors::Theme::groupHeader, 1.2f);
+                        UI::ScopedColorStack headerColors(ImGuiCol_HeaderHovered, colActive,
+                                                            ImGuiCol_HeaderActive, colActive);
+
+                        ImGui::TableSetupScrollFreeze(ImGui::TableGetColumnCount(), 1);
+
+                        ImGui::TableNextRow(ImGuiTableRowFlags_Headers, 22.0f);
+                        for (int column = 0; column < ImGui::TableGetColumnCount(); column++)
+                        {
+                            ImGui::TableSetColumnIndex(column);
+                            const char* column_name = ImGui::TableGetColumnName(column);
+                            UI::ScopedID columnID(column);
+
+                            UI::ShiftCursor(edgeOffset * 3.0f, edgeOffset * 2.0f);
+                            ImGui::TableHeader(column_name);
+                            UI::ShiftCursor(-edgeOffset * 3.0f, -edgeOffset * 2.0f);
+                        }
+                        ImGui::SetCursorPosX(ImGui::GetCurrentTable()->OuterRect.Min.x);
+                        UI::Draw::Underline(true, 0.0f, 5.0f);
+                    }
+
+                    // List
+                    {
+                        UI::ScopedColorStack entitySelection(ImGuiCol_Header, IM_COL32_DISABLE,
+                                                              ImGuiCol_HeaderHovered, IM_COL32_DISABLE,
+                                                              ImGuiCol_HeaderActive, IM_COL32_DISABLE);
+                        if(m_Context){
+                            m_Context->m_Registry.each([&](auto entityID) {
+                                Entity entity{entityID, m_Context.Raw()};
+                                DrawEntityNode(entity);
+                            });
+                        }
+                    }
+
+                    if (ImGui::BeginPopupContextWindow(nullptr, ImGuiPopupFlags_MouseButtonRight | ImGuiPopupFlags_NoOpenOverItems))
+                    {
+                        DrawEntityCreateMenu({});
+                        ImGui::EndPopup();
+                    }
+
+                    ImGui::EndTable();
                 }
-                if (ImGui::MenuItem("Material")) {
-                    MaterialDesc desc;
-                    desc.Name = "M_Default";
-                    AssetManager::CreateAsset_Ref("M_Default",(Project::GetAssetDirectory() / "materials").string(), desc);
-                }
-
-                ImGui::EndPopup();
             }
         }
 
-        ImGui::End();
-
-        ImGui::Begin("Properties");
-        if (m_SelectionContext) {
-            DrawComponents(m_SelectionContext);
+        {
+            UI::ScopedStyle windowPadding(ImGuiStyleVar_WindowPadding, ImVec2(2.0, 4.0f));
+            ImGui::Begin("Properties");
+            const std::vector<UUID> entities = SelectionManager::GetSelections(s_ActiveSelectionContext);
+            if(!entities.empty()) DrawComponents(m_Context->GetEntityWithUUID(entities[0]));
+            ImGui::End();
         }
 
         ImGui::End();
     }
 
-    void SceneHierarchyPanel::SetSelectedEntity(Entity entity) { m_SelectionContext = entity; }
+    void SceneHierarchyPanel::DrawEntityCreateMenu(Entity parent){
+        Entity newEntity;
+        if (ImGui::MenuItem("Create Empty Entity")) m_Context->CreateEntity("Empty Entity");
+        if (ImGui::BeginMenu("3D Object")) {
+            if (ImGui::MenuItem("Cube"))
+                newEntity = m_Context->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_CUBE);
+            if (ImGui::MenuItem("Sphere"))
+                newEntity = m_Context->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_SPHERE);
+            if (ImGui::MenuItem("Cylinder"))
+                newEntity = m_Context->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_CYLINDER);
+            if (ImGui::MenuItem("Cone"))
+                newEntity = m_Context->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_CONE);
+            if (ImGui::MenuItem("Torus"))
+                newEntity = m_Context->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_TORUS);
+            if (ImGui::MenuItem("Plane"))
+                newEntity = m_Context->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_PLANE);
+            if (ImGui::MenuItem("Quad"))
+                newEntity = m_Context->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_QUAD);
+            if (ImGui::MenuItem("Monkey"))
+                newEntity = m_Context->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_MONKEY);
+            ImGui::EndMenu();
+        }
+        if (newEntity)
+        {
+//            if (parent)
+//                m_Context->ParentEntity(newEntity, parent);
+
+            SelectionManager::DeselectAll();
+            SelectionManager::Select(s_ActiveSelectionContext, newEntity.GetUUID());
+        }
+
+        if (ImGui::MenuItem("Material")) {
+            MaterialDesc desc;
+            desc.Name = "M_Default";
+            AssetManager::CreateAsset_Ref("M_Default",(Project::GetAssetDirectory() / "materials").string(), desc);
+        }
+
+        ImGui::EndPopup();
+    }
+
+    void SceneHierarchyPanel::SetSelectedEntity(Entity entity) { SelectionManager::Select(m_SelectionContext,entity.GetUUID()); }
 
     static std::tuple<Vector3, Quaternion, Vector3> GetTransformDecomposition(const Matrix4& transform) {
         Vector3 translation, scale, skew;
@@ -83,53 +179,267 @@ namespace Ethereal
     }
 
     void SceneHierarchyPanel::DrawEntityNode(Entity entity) {
-        auto& tag = entity.GetComponent<TagComponent>().Tag;
+        const char* name = "Unnamed Entity";
+        if (entity.HasComponent<TagComponent>())
+            name = entity.GetComponent<TagComponent>().Tag.c_str();
 
-        ImGuiTreeNodeFlags flags = ((m_SelectionContext == entity) ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
+        const float edgeOffset = 4.0f;
+        const float rowHeight = 21.0f;
+
+        // ImGui item height tweaks
+        auto* window = ImGui::GetCurrentWindow();
+        window->DC.CurrLineSize.y = rowHeight;
+        //---------------------------------------------
+        ImGui::TableNextRow(0, rowHeight);
+
+        // Label column
+        //-------------
+
+        ImGui::TableNextColumn();
+
+        window->DC.CurrLineTextBaseOffset = 3.0f;
+
+        const ImVec2 rowAreaMin = ImGui::TableGetCellBgRect(ImGui::GetCurrentTable(), 0).Min;
+        const ImVec2 rowAreaMax = { ImGui::TableGetCellBgRect(ImGui::GetCurrentTable(), ImGui::TableGetColumnCount() - 1).Max.x - 20,
+                                   rowAreaMin.y + rowHeight };
+
+        const bool isSelected = SelectionManager::IsSelected(s_ActiveSelectionContext, entity.GetUUID());
+
+        ImGuiTreeNodeFlags flags = (isSelected ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
         flags |= ImGuiTreeNodeFlags_SpanAvailWidth;
+        flags |= ImGuiTreeNodeFlags_Leaf;
 
-        bool opened = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)entity, flags, "%s", tag.c_str());
-        if (ImGui::IsItemClicked()) {
-            m_SelectionContext = entity;
+        const std::string strID = fmt::format("{0}{1}", name, (uint64_t)entity.GetUUID());
+
+        ImGui::PushClipRect(rowAreaMin, rowAreaMax, false);
+        bool isRowHovered, held;
+        bool isRowClicked = ImGui::ButtonBehavior(ImRect(rowAreaMin, rowAreaMax), ImGui::GetID(strID.c_str()),
+                                                  &isRowHovered, &held, ImGuiButtonFlags_AllowItemOverlap | ImGuiButtonFlags_PressedOnClickRelease | ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight);
+        bool wasRowRightClicked = ImGui::IsMouseReleased(ImGuiMouseButton_Right);
+
+        ImGui::SetItemAllowOverlap();
+
+        ImGui::PopClipRect();
+
+        const bool isWindowFocused = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows);
+
+
+        // Row coloring
+        //--------------
+
+        // Fill with light selection Color if any of the child entities selected
+        auto isAnyDescendantSelected = [&](Entity ent, auto isAnyDescendantSelected) -> bool
+        {
+            if (SelectionManager::IsSelected(s_ActiveSelectionContext, ent.GetUUID()))
+                return true;
+            // check children here
+
+            return false;
+        };
+
+
+        auto fillRowWithColor = [](const ImColor& Color)
+        {
+            for (int column = 0; column < ImGui::TableGetColumnCount(); column++)
+                ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, Color, column);
+        };
+
+        if (isSelected)
+        {
+            if (isWindowFocused || UI::NavigatedTo())
+                fillRowWithColor(Colors::Theme::selection);
+            else
+            {
+                const ImColor col = UI::ColorWithMultipliedValue(Colors::Theme::selection, 0.9f);
+                fillRowWithColor(UI::ColorWithMultipliedSaturation(col, 0.7f));
+            }
+        }
+        else if (isRowHovered)
+        {
+            fillRowWithColor(Colors::Theme::groupHeader);
+        }
+        else if (isAnyDescendantSelected(entity, isAnyDescendantSelected))
+        {
+            fillRowWithColor(Colors::Theme::selectionMuted);
         }
 
+        // Text Coloring
+        //---------------
+
+        if (isSelected)
+            ImGui::PushStyleColor(ImGuiCol_Text, Colors::Theme::backgroundDark);
+
+        const bool missingStaticMesh = entity.HasComponent<StaticMeshComponent>() && (AssetManager::IsAssetHandleValid(entity.GetComponent<StaticMeshComponent>().StaticMeshHandle)
+                                                                          && AssetManager::GetAsset<StaticMesh>(entity.GetComponent<StaticMeshComponent>().StaticMeshHandle) && AssetManager::GetAsset<StaticMesh>(entity.GetComponent<StaticMeshComponent>().StaticMeshHandle)->IsFlagSet(AssetFlag::Missing));
+        const bool missingDynamicMesh = entity.HasComponent<MeshComponent>() && (AssetManager::IsAssetHandleValid(entity.GetComponent<MeshComponent>().MeshHandle)
+                                                                                 && AssetManager::GetAsset<Mesh>(entity.GetComponent<MeshComponent>().MeshHandle) && AssetManager::GetAsset<Mesh>(entity.GetComponent<MeshComponent>().MeshHandle)->IsFlagSet(AssetFlag::Missing));
+        const bool missingMesh = missingDynamicMesh && missingStaticMesh;
+
+        if (missingMesh)
+            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.9f, 0.4f, 0.3f, 1.0f));
+
+        // Tree node
+        //----------
+        // TODO: clean up this mess
+        ImGuiContext& g = *GImGui;
+        auto& style = ImGui::GetStyle();
+        const ImVec2 label_size = ImGui::CalcTextSize(strID.c_str(), nullptr, false);
+        const ImVec2 padding = ((flags & ImGuiTreeNodeFlags_FramePadding)) ? style.FramePadding : ImVec2(style.FramePadding.x, ImMin(window->DC.CurrLineTextBaseOffset, style.FramePadding.y));
+        const float text_offset_x = g.FontSize + padding.x * 2;           // Collapser arrow width + Spacing
+        const float text_offset_y = ImMax(padding.y, window->DC.CurrLineTextBaseOffset);                    // Latch before ItemSize changes it
+        const float text_width = g.FontSize + (label_size.x > 0.0f ? label_size.x + padding.x * 2 : 0.0f);  // Include collapser
+        ImVec2 text_pos(window->DC.CursorPos.x + text_offset_x, window->DC.CursorPos.y + text_offset_y);
+        const float arrow_hit_x1 = (text_pos.x - text_offset_x) - style.TouchExtraPadding.x;
+        const float arrow_hit_x2 = (text_pos.x - text_offset_x) + (g.FontSize + padding.x * 2.0f) + style.TouchExtraPadding.x;
+        const bool is_mouse_x_over_arrow = (g.IO.MousePos.x >= arrow_hit_x1 && g.IO.MousePos.x < arrow_hit_x2);
+
+        bool previousState = ImGui::TreeNodeBehaviorIsOpen(ImGui::GetID(strID.c_str()));
+
+        if (is_mouse_x_over_arrow && isRowClicked)
+            ImGui::SetNextItemOpen(!previousState);
+
+        if (!isSelected && isAnyDescendantSelected(entity, isAnyDescendantSelected))
+            ImGui::SetNextItemOpen(true);
+
+        const bool opened = ImGui::TreeNodeWithIcon(nullptr, ImGui::GetID(strID.c_str()), flags, name, nullptr);
+
+        int32_t rowIndex = ImGui::TableGetRowIndex();
+        if (rowIndex >= m_FirstSelectedRow && rowIndex <= m_LastSelectedRow && !SelectionManager::IsSelected(entity.GetUUID()))
+        {
+            SelectionManager::Select(s_ActiveSelectionContext, entity.GetUUID());
+        }
+
+        const std::string rightClickPopupID = fmt::format("{0}-ContextMenu", strID);
+
         bool entityDeleted = false;
-        if (ImGui::BeginPopupContextItem()) {
-            if (ImGui::MenuItem("Delete Entity")) entityDeleted = true;
+        if (ImGui::BeginPopupContextItem(rightClickPopupID.c_str()))
+        {
+            {
+                UI::ScopedColor colText(ImGuiCol_Text, Colors::Theme::text);
+                UI::ScopedColorStack entitySelection(ImGuiCol_Header, Colors::Theme::groupHeader,
+                                                      ImGuiCol_HeaderHovered, Colors::Theme::groupHeader,
+                                                      ImGuiCol_HeaderActive, Colors::Theme::groupHeader);
+
+                if (!isSelected)
+                {
+                    if (!Input::IsKeyPressed(Key::LeftControl))
+                        SelectionManager::DeselectAll();
+
+                    SelectionManager::Select(s_ActiveSelectionContext, entity.GetUUID());
+                }
+
+                DrawEntityCreateMenu(entity);
+
+                if (ImGui::MenuItem("Delete"))
+                    entityDeleted = true;
+
+                ImGui::Separator();
+
+//                if (ImGui::MenuItem("Reset Transform to Mesh"))
+//                    m_Context->ResetTransformsToMesh(entity, false);
+//
+//                if (ImGui::MenuItem("Reset All Transforms to Mesh"))
+//                    m_Context->ResetTransformsToMesh(entity, true);
+            }
 
             ImGui::EndPopup();
         }
 
-        if (opened) {
-            if (entity.HasComponent<StaticMeshComponent>()) {
-                auto handle = entity.GetComponent<StaticMeshComponent>().StaticMeshHandle;
-                auto mesh = AssetManager::GetAsset<StaticMesh>(handle);
-                for (auto& submesh : mesh->GetMeshSource()->GetSubmeshes()) {
-                    Matrix4 localTransform = submesh.LocalTransform;
-                    Matrix4 transform = entity.GetComponent<TransformComponent>().getMatrix() * submesh.Transform;
-                    if (ImGui::TreeNode(submesh.NodeName.c_str())) {
-                        {
-                            auto [translation, rotation, scale] = GetTransformDecomposition(transform);
-                            ImGui::Text("World Transform");
-                            ImGui::Text("  Translation: %.2f, %.2f, %.2f", translation.x, translation.y, translation.z);
-                            ImGui::Text("  Scale: %.2f, %.2f, %.2f", scale.x, scale.y, scale.z);
-                        }
-                        {
-                            auto [translation, rotation, scale] = GetTransformDecomposition(localTransform);
-                            ImGui::Text("Local Transform");
-                            ImGui::Text("  Translation: %.2f, %.2f, %.2f", translation.x, translation.y, translation.z);
-                            ImGui::Text("  Scale: %.2f, %.2f, %.2f", scale.x, scale.y, scale.z);
-                        }
-                        ImGui::TreePop();
+        // Type column
+        //------------
+        if (isRowClicked)
+        {
+            if (wasRowRightClicked)
+            {
+                ImGui::OpenPopup(rightClickPopupID.c_str());
+            }
+            else
+            {
+                if (!Input::IsKeyPressed(Key::LeftControl) && !Input::IsKeyPressed(Key::LeftShift))
+                {
+                    SelectionManager::DeselectAll();
+                    SelectionManager::Select(s_ActiveSelectionContext, entity.GetUUID());
+                    m_FirstSelectedRow = rowIndex;
+                    m_LastSelectedRow = -1;
+                }
+                else if (Input::IsKeyPressed(Key::LeftShift) && SelectionManager::GetSelectionCount(s_ActiveSelectionContext) > 0)
+                {
+                    if (rowIndex < m_FirstSelectedRow)
+                    {
+                        m_LastSelectedRow = m_FirstSelectedRow;
+                        m_FirstSelectedRow = rowIndex;
+                    }
+                    else
+                    {
+                        m_LastSelectedRow = rowIndex;
                     }
                 }
+                else
+                {
+                    if (isSelected)
+                        SelectionManager::Deselect(s_ActiveSelectionContext, entity.GetUUID());
+                    else
+                        SelectionManager::Select(s_ActiveSelectionContext, entity.GetUUID());
+                }
             }
+
+            ImGui::FocusWindow(ImGui::GetCurrentWindow());
+        }
+
+        if (missingMesh)
+            ImGui::PopStyleColor();
+
+        if (isSelected)
+            ImGui::PopStyleColor();
+
+
+        // Drag & Drop
+        //------------
+        if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
+        {
+            const auto& selectedEntities = SelectionManager::GetSelections(s_ActiveSelectionContext);
+            UUID entityID = entity.GetUUID();
+
+            if (!SelectionManager::IsSelected(s_ActiveSelectionContext, entityID))
+            {
+                const char* name = entity.GetName().c_str();
+                ImGui::TextUnformatted(name);
+                ImGui::SetDragDropPayload("scene_entity_hierarchy", &entityID, 1 * sizeof(UUID));
+            }
+            else
+            {
+                for (const auto& selectedEntity : selectedEntities)
+                {
+                    Entity e = m_Context->GetEntityWithUUID(selectedEntity);
+                    const char* name = e.GetName().c_str();
+                    ImGui::TextUnformatted(name);
+                }
+
+                ImGui::SetDragDropPayload("scene_entity_hierarchy", selectedEntities.data(), selectedEntities.size() * sizeof(UUID));
+            }
+
+            ImGui::EndDragDropSource();
+        }
+
+        ImGui::TableNextColumn();
+
+        // Draw children
+        //--------------
+
+        if (opened)
+        {
+//            for (auto child : entity.Children())
+//                DrawEntityNode(m_Context->GetEntityWithUUID(child), searchFilter);
             ImGui::TreePop();
         }
 
-        if (entityDeleted) {
-            m_Context->DestroyEntity(entity);
-            if (m_SelectionContext == entity) m_SelectionContext = {};
+        // Defer deletion until end of node UI
+        if (entityDeleted)
+        {
+            // NOTE(Peter): Intentional copy since DestroyEntity would call EditorLayer::OnEntityDeleted which deselects the entity
+            auto selectedEntities = SelectionManager::GetSelections(s_ActiveSelectionContext);
+            for (auto entityID : selectedEntities)
+                m_Context->DestroyEntity(m_Context->GetEntityWithUUID(entityID));
         }
     }
 
@@ -461,12 +771,12 @@ namespace Ethereal
 
     template <typename T>
     void SceneHierarchyPanel::DisplayAddComponentEntry(const std::string& entryName) {
-        if (!m_SelectionContext.HasComponent<T>()) {
-            if (ImGui::MenuItem(entryName.c_str())) {
-                m_SelectionContext.AddComponent<T>();
-                ImGui::CloseCurrentPopup();
-            }
-        }
+//        if (!m_SelectionContext.HasComponent<T>()) {
+//            if (ImGui::MenuItem(entryName.c_str())) {
+//                m_SelectionContext.AddComponent<T>();
+//                ImGui::CloseCurrentPopup();
+//            }
+//        }
     }
 
 }  // namespace Ethereal

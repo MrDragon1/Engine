@@ -380,6 +380,15 @@ namespace Ethereal
         return entity;
     }
 
+    Entity Scene::GetEntityWithUUID(UUID uuid){
+        auto view = m_Registry.view<IDComponent>();
+        for (auto entity : view) {
+            const auto& id = view.get<IDComponent>(entity);
+            if (id.ID == uuid) return Entity{entity, this};
+        }
+        return {};
+    }
+
     template <typename T>
     void Scene::OnComponentAdded(Entity entity, T& component) {
         static_assert(sizeof(T) == 0);

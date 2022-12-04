@@ -1,4 +1,5 @@
 #pragma once
+#include <Core/Editor/SelectionManager.h>
 #include "Ethereal.h"
 
 namespace Ethereal
@@ -10,7 +11,11 @@ namespace Ethereal
 
         void SetContext(const Ref<Scene>& scene);
         void OnImGuiRender();
-        Entity GetSelectedEntity() const { return m_SelectionContext; }
+        Entity GetSelectedEntity() {
+            const std::vector<UUID> entities = SelectionManager::GetSelections(s_ActiveSelectionContext);
+            if(!entities.empty()) return m_Context->GetEntityWithUUID(entities[0]);
+            return Entity();
+        }
         void SetSelectedEntity(Entity entity);
 
       private:
@@ -19,9 +24,16 @@ namespace Ethereal
         void DrawMaterialTable(Ref<MaterialTable> materialTable);
         template <typename T>
         void DisplayAddComponentEntry(const std::string& entryName);
+        void DrawEntityCreateMenu(Entity parent = {});
 
       private:
         Ref<Scene> m_Context;
-        Entity m_SelectionContext;
+        SelectionContext m_SelectionContext;
+
+        bool m_IsWindowFocused = false;
+        int32_t m_FirstSelectedRow = -1;
+        int32_t m_LastSelectedRow = -1;
+
+        static SelectionContext s_ActiveSelectionContext;
     };
 }  // namespace Ethereal

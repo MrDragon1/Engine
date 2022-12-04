@@ -26,6 +26,7 @@ namespace Ethereal
         Entity Create3DObject(ETHEREAL_BASIC_3DOBJECT type);
         Entity CreateEntityWithStaticMesh(AssetHandle assetHandle);
         Entity CreateEntityWithMesh(AssetHandle assetHandle);
+        Entity GetEntityWithUUID(UUID uuid);
 
         void OnUpdateRuntime(TimeStamp ts);
         void OnUpdateEditor(TimeStamp ts, RenderSceneData& renderSceneData);
