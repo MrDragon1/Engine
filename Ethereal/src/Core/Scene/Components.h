@@ -100,7 +100,9 @@ namespace Ethereal
         public:
           META(Enable)
           AssetHandle MeshHandle;
+          META(Enable)
           MaterialTableRaw MaterialTableRaw;
+
           Ref<MaterialTable> materialTable {nullptr};
 
           MeshComponent() = default;

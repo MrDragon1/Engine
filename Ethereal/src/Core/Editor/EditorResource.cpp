@@ -1,0 +1,2 @@
+
+#include "EditorResource.h"

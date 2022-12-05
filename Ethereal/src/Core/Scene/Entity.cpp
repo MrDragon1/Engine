@@ -7,7 +7,6 @@ namespace Ethereal
     Entity::Entity(entt::entity handle, Scene* Scene) : m_Entity(handle), m_Scene(Scene) {}
 
     bool Entity::Load(const EntityRaw& raw) {
-        m_Name = raw.Name;
         for(auto component: raw.Components) {
             if(component.getTypeName() == "IDComponent") {
                 auto id = dynamic_cast<IDComponent*>(component.getPtr());
@@ -44,7 +43,6 @@ namespace Ethereal
     }
 
     bool Entity::Save(EntityRaw& raw) {
-        raw.Name = m_Name;
         if(HasComponent<IDComponent>()) {
             auto& c = GetComponent<IDComponent>();
             raw.Components.push_back(Reflection::ReflectionPtr<IDComponent>("IDComponent", &c));

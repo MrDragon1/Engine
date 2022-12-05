@@ -1,11 +1,19 @@
 #pragma once
 #include <imgui_internal.h>
+#include <Core/Renderer/Texture.h>
 #include "imgui.h"
 
 #include "Colors.h"
 
 namespace Ethereal::UI
 {
+    //=========================================================================================
+    /// Window
+
+    bool BeginPopup(const char* str_id, ImGuiWindowFlags flags = 0);
+    void EndPopup();
+
+
     class ScopedStyle {
       public:
         ScopedStyle(const ScopedStyle&) = delete;
@@ -250,5 +258,191 @@ namespace Ethereal::UI
         ImGui::ColorConvertRGBtoHSV(colRow.x, colRow.y, colRow.z, hue, sat, val);
         return ImColor::HSV(std::min(hue * multiplier, 1.0f), sat, val);
     }
-    
+
+    static const char* PatchFormatStringFloatToInt(const char* fmt)
+    {
+        if (fmt[0] == '%' && fmt[1] == '.' && fmt[2] == '0' && fmt[3] == 'f' && fmt[4] == 0) // Fast legacy path for "%.0f" which is expected to be the most common case.
+            return "%d";
+        const char* fmt_start = ImParseFormatFindStart(fmt);    // Find % (if any, and ignore %%)
+        const char* fmt_end = ImParseFormatFindEnd(fmt_start);  // Find end of format specifier, which itself is an exercise of confidence/recklessness (because snprintf is dependent on libc or user).
+        if (fmt_end > fmt_start && fmt_end[-1] == 'f')
+        {
+#ifndef IMGUI_DISABLE_OBSOLETE_FUNCTIONS
+            if (fmt_start == fmt && fmt_end[0] == 0)
+                return "%d";
+            ImGuiContext& g = *GImGui;
+            ImFormatString(g.TempBuffer.Data, IM_ARRAYSIZE(g.TempBuffer.Data), "%.*s%%d%s", (int)(fmt_start - fmt), fmt, fmt_end); // Honor leading and trailing decorations, but lose alignment/precision.
+            return g.TempBuffer.Data;
+#else
+            IM_ASSERT(0 && "DragInt(): Invalid format string!"); // Old versions used a default parameter of "%.0f", please replace with e.g. "%d"
+#endif
+        }
+        return fmt;
+    }
+
+    static int FormatString(char* buf, size_t buf_size, const char* fmt, ...)
+    {
+        va_list args;
+        va_start(args, fmt);
+#ifdef IMGUI_USE_STB_SPRINTF
+        int w = stbsp_vsnprintf(buf, (int)buf_size, fmt, args);
+#else
+        int w = vsnprintf(buf, buf_size, fmt, args);
+#endif
+        va_end(args);
+        if (buf == NULL)
+            return w;
+        if (w == -1 || w >= (int)buf_size)
+            w = (int)buf_size - 1;
+        buf[w] = 0;
+        return w;
+    }
+
+    static bool DragScalar(const char* label, ImGuiDataType data_type, void* p_data, float v_speed, const void* p_min, const void* p_max, const char* format, ImGuiSliderFlags flags)
+    {
+        ImGuiWindow* window = ImGui::GetCurrentWindow();
+        if (window->SkipItems)
+            return false;
+
+        ImGuiContext& g = *GImGui;
+        const ImGuiStyle& style = g.Style;
+        const ImGuiID id = window->GetID(label);
+        const float w = ImGui::CalcItemWidth();
+
+        const ImVec2 label_size = ImGui::CalcTextSize(label, NULL, true);
+        const ImRect frame_bb(window->DC.CursorPos, ImVec2(window->DC.CursorPos.x + w, window->DC.CursorPos.y + (label_size.y + style.FramePadding.y * 2.0f)));
+        const ImRect total_bb(frame_bb.Min, ImVec2(frame_bb.Max.x + (label_size.x > 0.0f ? style.ItemInnerSpacing.x + label_size.x : 0.0f), frame_bb.Max.y));
+
+        const bool temp_input_allowed = (flags & ImGuiSliderFlags_NoInput) == 0;
+        ImGui::ItemSize(total_bb, style.FramePadding.y);
+        if (!ImGui::ItemAdd(total_bb, id, &frame_bb, temp_input_allowed ? ImGuiItemFlags_Inputable : 0))
+            return false;
+
+        // Default format string when passing NULL
+        if (format == NULL)
+            format = ImGui::DataTypeGetInfo(data_type)->PrintFmt;
+        else if (data_type == ImGuiDataType_S32 && strcmp(format, "%d") != 0) // (FIXME-LEGACY: Patch old "%.0f" format string to use "%d", read function more details.)
+            format = PatchFormatStringFloatToInt(format);
+
+        // Tabbing or CTRL-clicking on Drag turns it into an InputText
+        const bool hovered = ImGui::ItemHoverable(frame_bb, id);
+        bool temp_input_is_active = temp_input_allowed && ImGui::TempInputIsActive(id);
+        if (!temp_input_is_active)
+        {
+            const bool input_requested_by_tabbing = temp_input_allowed && (g.LastItemData.StatusFlags & ImGuiItemStatusFlags_FocusedByTabbing) != 0;
+            const bool clicked = (hovered && g.IO.MouseClicked[0]);
+            const bool double_clicked = (hovered && g.IO.MouseClickedCount[0] == 2);
+            if (input_requested_by_tabbing || clicked || double_clicked || g.NavActivateId == id || g.NavActivateInputId == id)
+            {
+                ImGui::SetActiveID(id, window);
+                ImGui::SetFocusID(id, window);
+                ImGui::FocusWindow(window);
+                g.ActiveIdUsingNavDirMask = (1 << ImGuiDir_Left) | (1 << ImGuiDir_Right);
+                if (temp_input_allowed)
+                    if (input_requested_by_tabbing || (clicked && g.IO.KeyCtrl) || double_clicked || g.NavActivateInputId == id)
+                        temp_input_is_active = true;
+            }
+
+            // Experimental: simple click (without moving) turns Drag into an InputText
+            if (g.IO.ConfigDragClickToInputText && temp_input_allowed && !temp_input_is_active)
+                if (g.ActiveId == id && hovered && g.IO.MouseReleased[0] && !ImGui::IsMouseDragPastThreshold(0, g.IO.MouseDragThreshold * 0.5f))
+                {
+                    g.NavActivateId = g.NavActivateInputId = id;
+                    g.NavActivateFlags = ImGuiActivateFlags_PreferInput;
+                    temp_input_is_active = true;
+                }
+        }
+
+        if (temp_input_is_active)
+        {
+            // Only clamp CTRL+Click input when ImGuiSliderFlags_AlwaysClamp is set
+            const bool is_clamp_input = (flags & ImGuiSliderFlags_AlwaysClamp) != 0 && (p_min == NULL || p_max == NULL || ImGui::DataTypeCompare(data_type, p_min, p_max) < 0);
+            return ImGui::TempInputScalar(frame_bb, id, label, data_type, p_data, format, is_clamp_input ? p_min : NULL, is_clamp_input ? p_max : NULL);
+        }
+
+        // Draw frame
+        const ImU32 frame_col = ImGui::GetColorU32(g.ActiveId == id ? ImGuiCol_FrameBgActive : hovered ? ImGuiCol_FrameBgHovered : ImGuiCol_FrameBg);
+        ImGui::RenderNavHighlight(frame_bb, id);
+        ImGui::RenderFrame(frame_bb.Min, frame_bb.Max, frame_col, true, style.FrameRounding);
+
+        // Drag behavior
+        const bool value_changed = ImGui::DragBehavior(id, data_type, p_data, v_speed, p_min, p_max, format, flags);
+        if (value_changed)
+            ImGui::MarkItemEdited(id);
+
+        const bool mixed_value = (g.CurrentItemFlags & ImGuiItemFlags_MixedValue) != 0;
+
+        // Display value using user-provided display format so user can add prefix/suffix/decorations to the value.
+        char value_buf[64];
+        const char* value_buf_end = value_buf + (mixed_value ? FormatString(value_buf, IM_ARRAYSIZE(value_buf), "---") : ImGui::DataTypeFormatString(value_buf, IM_ARRAYSIZE(value_buf), data_type, p_data, format));
+        if (g.LogEnabled)
+            ImGui::LogSetNextTextDecoration("{", "}");
+        ImGui::RenderTextClipped(frame_bb.Min, frame_bb.Max, value_buf, value_buf_end, NULL, ImVec2(0.5f, 0.5f));
+
+        if (label_size.x > 0.0f)
+            ImGui::RenderText(ImVec2(frame_bb.Max.x + style.ItemInnerSpacing.x, frame_bb.Min.y + style.FramePadding.y), label);
+
+        IMGUI_TEST_ENGINE_ITEM_INFO(id, label, g.LastItemData.StatusFlags);
+        return value_changed;
+    }
+
+    static bool DragFloat(const char* label, float* v, float v_speed = 1.0f, float v_min = 0.0f, float v_max = 0.0f, const char* format = "%.3f", ImGuiSliderFlags flags = 0)
+    {
+        return DragScalar(label, ImGuiDataType_Float, v, v_speed, &v_min, &v_max, format, flags);
+    }
+
+    static bool IsItemDisabled()
+    {
+        return ImGui::GetItemFlags() & ImGuiItemFlags_Disabled;
+    }
+
+    //=========================================================================================
+    /// Button Image
+
+    static void DrawButtonImage(const Ref<Texture2D>& imageNormal, const Ref<Texture2D>& imageHovered, const Ref<Texture2D>& imagePressed,
+                                ImU32 tintNormal, ImU32 tintHovered, ImU32 tintPressed,
+                                ImVec2 rectMin, ImVec2 rectMax)
+    {
+        auto* drawList = ImGui::GetWindowDrawList();
+        if (ImGui::IsItemActive())
+            drawList->AddImage(reinterpret_cast<ImTextureID>(imagePressed->GetRendererID()), rectMin, rectMax, ImVec2(0, 0), ImVec2(1, 1), tintPressed);
+        else if (ImGui::IsItemHovered())
+            drawList->AddImage(reinterpret_cast<ImTextureID>(imageHovered->GetRendererID()), rectMin, rectMax, ImVec2(0, 0), ImVec2(1, 1), tintHovered);
+        else
+            drawList->AddImage(reinterpret_cast<ImTextureID>(imageNormal->GetRendererID()), rectMin, rectMax, ImVec2(0, 0), ImVec2(1, 1), tintNormal);
+    };
+
+    static void DrawButtonImage(const Ref<Texture2D>& imageNormal, const Ref<Texture2D>& imageHovered, const Ref<Texture2D>& imagePressed,
+                                ImU32 tintNormal, ImU32 tintHovered, ImU32 tintPressed,
+                                ImRect rectangle)
+    {
+        DrawButtonImage(imageNormal, imageHovered, imagePressed, tintNormal, tintHovered, tintPressed, rectangle.Min, rectangle.Max);
+    };
+
+    static void DrawButtonImage(const Ref<Texture2D>& image,
+                                ImU32 tintNormal, ImU32 tintHovered, ImU32 tintPressed,
+                                ImVec2 rectMin, ImVec2 rectMax)
+    {
+        DrawButtonImage(image, image, image, tintNormal, tintHovered, tintPressed, rectMin, rectMax);
+    };
+
+    static void DrawButtonImage(const Ref<Texture2D>& image,
+                                ImU32 tintNormal, ImU32 tintHovered, ImU32 tintPressed,
+                                ImRect rectangle)
+    {
+        DrawButtonImage(image, image, image, tintNormal, tintHovered, tintPressed, rectangle.Min, rectangle.Max);
+    };
+
+
+    static void DrawButtonImage(const Ref<Texture2D>& imageNormal, const Ref<Texture2D>& imageHovered, const Ref<Texture2D>& imagePressed,
+                                ImU32 tintNormal, ImU32 tintHovered, ImU32 tintPressed)
+    {
+        DrawButtonImage(imageNormal, imageHovered, imagePressed, tintNormal, tintHovered, tintPressed, ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
+    };
+
+    static void DrawButtonImage(const Ref<Texture2D>& image,
+                                ImU32 tintNormal, ImU32 tintHovered, ImU32 tintPressed)
+    {
+        DrawButtonImage(image, image, image, tintNormal, tintHovered, tintPressed, ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
+    };
 }  // namespace Ethereal::UI

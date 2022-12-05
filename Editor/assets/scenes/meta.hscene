@@ -7,20 +7,20 @@ Entities:
       - TypeName: IDComponent
         Context:
           ID:
-            UUID: 6796285318634371379
+            UUID: 13494185301621217084
       - TypeName: TagComponent
         Context:
-          Tag: Cerberus_LP
+          Tag: Plane
       - TypeName: TransformComponent
         Context:
           Position:
-            x: -0.309602588
-            y: 0.0982253551
-            z: -1.47802722
+            x: 0
+            y: -0.837125719
+            z: 0
           Scale:
-            x: 1
-            y: 1
-            z: 1
+            x: 47.4189568
+            y: 47.4189568
+            z: 47.4189568
           Rotation:
             x: 0
             y: 0
@@ -29,10 +29,10 @@ Entities:
       - TypeName: StaticMeshComponent
         Context:
           StaticMeshHandle:
-            UUID: 6488004164323411286
+            UUID: 17546716981100183172
           MaterialTableRaw:
             Materials:
-              - UUID: 3411737668355452368
+              - UUID: 9102962350420186113
   - Name: ""
     Components:
       - TypeName: IDComponent
@@ -69,20 +69,20 @@ Entities:
       - TypeName: IDComponent
         Context:
           ID:
-            UUID: 13494185301621217084
+            UUID: 6796285318634371379
       - TypeName: TagComponent
         Context:
-          Tag: Plane
+          Tag: Gun
       - TypeName: TransformComponent
         Context:
           Position:
-            x: 0
-            y: -0.837125719
-            z: 0
+            x: -0.309602588
+            y: 0.0982253551
+            z: -1.47802722
           Scale:
-            x: 47.4189568
-            y: 47.4189568
-            z: 47.4189568
+            x: 1
+            y: 1
+            z: 1
           Rotation:
             x: 0
             y: 0
@@ -91,7 +91,7 @@ Entities:
       - TypeName: StaticMeshComponent
         Context:
           StaticMeshHandle:
-            UUID: 17546716981100183172
+            UUID: 6488004164323411286
           MaterialTableRaw:
             Materials:
-              - UUID: 9102962350420186113
+              - UUID: 3411737668355452368

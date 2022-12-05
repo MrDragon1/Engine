@@ -48,8 +48,14 @@ namespace Ethereal
         }
 
         UUID GetUUID() { return GetComponent<IDComponent>().ID; };
-        const std::string& GetName() { return m_Name; }
-        void SetName(const std::string& name) { m_Name = name; }
+        const std::string& GetName() {
+            ET_CORE_ASSERT(HasComponent<TagComponent>(), "Entity does not have TagComponent!");
+            return GetComponent<TagComponent>().Tag;
+        }
+        void SetName(const std::string& name) {
+            ET_CORE_ASSERT(HasComponent<TagComponent>(), "Entity does not have TagComponent!");
+            GetComponent<TagComponent>().Tag = name;
+        }
 
         operator bool() const { return m_Entity != entt::null && m_Scene != nullptr; }
         operator uint32_t() const { return (uint32_t)m_Entity; }
@@ -61,6 +67,5 @@ namespace Ethereal
       private:
         entt::entity m_Entity = entt::null;
         Scene* m_Scene = nullptr;
-        std::string m_Name;
     };
 }  // namespace Ethereal
