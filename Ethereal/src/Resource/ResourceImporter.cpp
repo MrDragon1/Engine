@@ -21,12 +21,12 @@ namespace Ethereal
         Ref<MaterialTable> mt = Ref<MaterialTable>::Create();
         meshSource->LoadMaterials(mt);
         for (auto& m : mt->GetMaterials()) {
-            if (m.second->IsValid() && !m.second->IsCreated()) {
+            if (m->IsValid() && !m->IsCreated()) {
                 // TODO: create file in materials subdirectory, but this needs to create directory automatically which has not been implemented.
                 MaterialDesc desc;
-                m.second->Save(desc);
-                AssetManager::CreateAsset_Ref(m.second->GetName(), path.parent_path().string(), desc);
-                m.second->Load(desc);
+                m->Save(desc);
+                AssetManager::CreateAsset_Ref(m->GetName(), path.parent_path().string(), desc);
+                m->Load(desc);
             }
         }
 

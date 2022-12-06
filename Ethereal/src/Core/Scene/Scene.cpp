@@ -134,9 +134,9 @@ namespace Ethereal
         auto& staticMeshComponent = Object.AddComponent<StaticMeshComponent>();
         staticMeshComponent.StaticMeshHandle = mesh->Handle;
         staticMeshComponent.materialTable = Ref<MaterialTable>::Create(mesh->GetMaterials());
-        staticMeshComponent.MaterialTableRaw.Materials.resize(staticMeshComponent.materialTable->GetMaterials().size());
-        for(auto [index, asset]: staticMeshComponent.materialTable->GetMaterials()) {
-            staticMeshComponent.MaterialTableRaw.Materials[index] = asset->Handle;
+        staticMeshComponent.MaterialTableRaw.Materials.clear();
+        for(auto& asset: staticMeshComponent.materialTable->GetMaterials()) {
+            staticMeshComponent.MaterialTableRaw.Materials.push_back(asset->Handle);
         }
 
 

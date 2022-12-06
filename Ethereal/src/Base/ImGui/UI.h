@@ -199,7 +199,7 @@ namespace Ethereal
 
             if (ImGui::BeginDragDropTarget())
             {
-                auto data = ImGui::AcceptDragDropPayload("asset_payload");
+                auto data = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM");
 
                 if (data)
                 {

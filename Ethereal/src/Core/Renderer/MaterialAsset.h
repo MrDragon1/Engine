@@ -112,25 +112,29 @@ namespace Ethereal
         explicit MaterialTable(Ref<MaterialTable> other);
         ~MaterialTable() = default;
 
-        bool HasMaterial(uint32_t materialIndex) const { return m_Materials.find(materialIndex) != m_Materials.end(); }
+        bool HasMaterial(uint32_t materialIndex) const {
+            ET_CORE_ASSERT(materialIndex < GetMaterialCount(), "Material Index Out of Range!");
+            return m_Materials[materialIndex] != nullptr;
+        }
         void SetMaterial(uint32_t index, Ref<MaterialAsset> material);
         void ClearMaterial(uint32_t index);
 
         Ref<MaterialAsset> GetMaterial(uint32_t materialIndex) const {
             ET_CORE_ASSERT(HasMaterial(materialIndex));
-            return m_Materials.at(materialIndex);
+            return m_Materials[materialIndex];
         }
-        std::map<uint32_t, Ref<MaterialAsset>>& GetMaterials() { return m_Materials; }
-        const std::map<uint32_t, Ref<MaterialAsset>>& GetMaterials() const { return m_Materials; }
+        std::vector<Ref<MaterialAsset>>& GetMaterials() { return m_Materials; }
+        const std::vector<Ref<MaterialAsset>>& GetMaterials() const { return m_Materials; }
 
-        uint32_t GetMaterialCount() const { return m_MaterialCount; }
-        void SetMaterialCount(uint32_t materialCount) { m_MaterialCount = materialCount; }
+        uint32_t GetMaterialCount() const { return m_Materials.size(); }
+        void SetMaterialCount(uint32_t materialCount) {
+            m_Materials.resize(materialCount);
+        }
 
         void Clear();
 
       private:
-        std::map<uint32_t, Ref<MaterialAsset>> m_Materials;
-        uint32_t m_MaterialCount;
+        std::vector<Ref<MaterialAsset>> m_Materials;
     };
 
 }  // namespace Ethereal

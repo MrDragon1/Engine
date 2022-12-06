@@ -178,8 +178,8 @@ namespace Ethereal
 
         SetSubmeshes({});
         m_Materials = Ref<MaterialTable>::Create();
-        for (auto& m : materialTable->GetMaterials()) {
-            m_Materials->SetMaterial(m.first, m.second);
+        for (int i = 0;i < materialTable->GetMaterialCount();i++){
+            m_Materials->SetMaterial(i,materialTable->GetMaterial(i));
         }
     }
 
@@ -214,14 +214,10 @@ namespace Ethereal
     void StaticMesh::Save(StaticMeshDesc& desc) {
         desc.Handle = Handle;
         desc.Mesh = m_MeshSource->Handle;
-        // TODO: Rewrite this when support map reflection
-        int len = 0;
+
+        desc.Materials.clear();
         for (auto& m : m_Materials->GetMaterials()) {
-            len = len > m.first ? len : m.first;
-        }
-        desc.Materials.resize(len + 1);
-        for (auto& m : m_Materials->GetMaterials()) {
-            desc.Materials[m.first] = m.second->Handle;
+            desc.Materials.push_back(m->Handle);
         }
     }
 
@@ -242,8 +238,8 @@ namespace Ethereal
 
         SetSubmeshes({});
         m_Materials = Ref<MaterialTable>::Create();
-        for (auto& m : materialTable->GetMaterials()) {
-            m_Materials->SetMaterial(m.first, m.second);
+        for (int i = 0;i < materialTable->GetMaterialCount();i++){
+            m_Materials->SetMaterial(i,materialTable->GetMaterial(i));
         }
     }
 
@@ -279,14 +275,10 @@ namespace Ethereal
     void Mesh::Save(MeshDesc& desc) {
         desc.Handle = Handle;
         desc.Mesh = m_MeshSource->Handle;
-        // TODO: Rewrite this when support map reflection
-        int len = 0;
+
+        desc.Materials.clear();
         for (auto& m : m_Materials->GetMaterials()) {
-            len = len > m.first ? len : m.first;
-        }
-        desc.Materials.resize(len + 1);
-        for (auto& m : m_Materials->GetMaterials()) {
-            desc.Materials[m.first] = m.second->Handle;
+            desc.Materials.push_back(m->Handle);
         }
 
         desc.Animator = m_MeshSource->GetAnimator()->Handle;

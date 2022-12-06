@@ -34,7 +34,7 @@ namespace Ethereal
 
     MaterialAsset::~MaterialAsset() {}
 
-    void MaterialAsset::Load(const MaterialDesc& desc) {
+    void MaterialAsset::Load(const MaterialDesc &desc) {
         Handle = desc.Handle;
         m_Name = desc.Name;
 
@@ -50,7 +50,6 @@ namespace Ethereal
         m_Emisstion = desc.Emisstion;
         m_Transparency = desc.Transparency;
 
-
         b_Albedo = desc.IsAlbedo;
         b_Metallic = desc.IsMetallic;
         b_Roughness = desc.IsRoughness;
@@ -59,7 +58,7 @@ namespace Ethereal
         b_Transparent = desc.IsTransparent;
     }
 
-    void MaterialAsset::Save(MaterialDesc& desc) {
+    void MaterialAsset::Save(MaterialDesc &desc) {
         desc.Handle = Handle;
 
         desc.Name = m_Name;
@@ -199,23 +198,25 @@ namespace Ethereal
 
     void MaterialAsset::SetUseOcclusionMap(bool value) { b_Occlusion = value; }
 
-    MaterialTable::MaterialTable(uint32_t materialCount) : m_MaterialCount(materialCount) {}
+    MaterialTable::MaterialTable(uint32_t materialCount) { SetMaterialCount(materialCount); }
 
-    MaterialTable::MaterialTable(Ref<MaterialTable> other) : m_MaterialCount(other->m_MaterialCount) {
+    MaterialTable::MaterialTable(Ref<MaterialTable> other) {
+        SetMaterialCount(other->GetMaterialCount());
         const auto &meshMaterials = other->GetMaterials();
-        for (auto [index, materialAsset] : meshMaterials) SetMaterial(index, materialAsset);
+        for (int i = 0; i < GetMaterialCount(); i++) {
+            SetMaterial(i, meshMaterials[i]);
+        }
     }
 
     void MaterialTable::SetMaterial(uint32_t index, Ref<MaterialAsset> material) {
         // if (material->Handle == 0) ET_CORE_ERROR("Can not set material with handle 0");
+        if (index >= GetMaterialCount()) m_Materials.resize(index + 1);
         m_Materials[index] = material;
-        if (index >= m_MaterialCount) m_MaterialCount = index + 1;
     }
 
     void MaterialTable::ClearMaterial(uint32_t index) {
         ET_CORE_ASSERT(HasMaterial(index));
-        m_Materials.erase(index);
-        if (index >= m_MaterialCount) m_MaterialCount = index + 1;
+        m_Materials[index] = nullptr;
     }
 
     void MaterialTable::Clear() { m_Materials.clear(); }
