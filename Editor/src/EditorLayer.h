@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Ethereal.h"
+#include "Core/Editor/PanelManager.h"
 #include "Panels/SceneHierarchyPanel.h"
 #include "Panels/ContentBrowserPanel.h"
 #include "Panels/MaterialEditPanel.h"
@@ -13,13 +14,13 @@ namespace Ethereal
     class EditorLayer : public Layer {
       public:
         EditorLayer();
-        virtual ~EditorLayer() = default;
+        ~EditorLayer() override = default;
 
-        virtual void OnAttach() override;
-        virtual void OnDetach() override;
+        void OnAttach() override;
+        void OnDetach() override;
 
         void OnUpdate(TimeStamp ts) override;
-        virtual void OnImGuiRender() override;
+        void OnImGuiRender() override;
         void OnEvent(Event& e) override;
 
       private:
@@ -43,14 +44,14 @@ namespace Ethereal
         void ShowProjectSettingWindow(bool* p_open);
 
       private:
-        OrthographicCameraController m_CameraController;
         EditorCamera m_EditorCamera;
+
+        Scope<PanelManager> m_PanelManager;
 
         Ref<Texture2D> m_IconPlay;
         Ref<Texture2D> m_IconStop;
 
-        Ref<Scene> m_ActiveScene;
-        Ref<Scene> m_EditorScene;
+        Ref<Scene> m_RuntimeScene, m_EditorScene, m_CurrentScene;
 
         std::filesystem::path m_EditorScenePath;
 
@@ -59,10 +60,6 @@ namespace Ethereal
         Vector2 m_ViewportBounds[2];
 
         bool m_ViewportFocused = false, m_ViewportHovered = false;
-
-        SceneHierarchyPanel m_SceneHierarchyPanel;
-        ContentBrowserPanel m_ContentBrowserPanel;
-        MaterialEditPanel m_MaterialEditPanel;
 
         int m_GizmoType = -1;
 
@@ -79,5 +76,6 @@ namespace Ethereal
         Vector3 m_LightPos = Vector3(-20, 40, -10);  // as far as possiable (away from the scene to avoid clamp shadow)
 
         RenderSceneData m_RenderSceneData;
+
     };
 }  // namespace Ethereal

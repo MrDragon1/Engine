@@ -22,8 +22,12 @@ namespace Ethereal
         m_FileIcon = Texture2D::Create("assets/icons/ContentBrowser/FileIcon.png");
     }
 
-    void ContentBrowserPanel::OnImGuiRender() {
-        ImGui::Begin("Content Browser");
+    void ContentBrowserPanel::OnEvent(Event& event){
+
+    }
+
+    void ContentBrowserPanel::OnImGuiRender(bool& isOpen) {
+        ImGui::Begin("Content Browser", &isOpen);
         if (m_CurrentDirectory != Project::GetAssetDirectory()) {
             if (ImGui::Button("<-")) {
                 m_CurrentDirectory = m_CurrentDirectory.parent_path();

@@ -7,25 +7,31 @@
 #include <imgui.h>
 #include <imgui_internal.h>
 #include <filesystem>
-#include <glm/gtc/type_ptr.hpp>
 #include <Base/ImGui/TreeNode.h>
 
 namespace Ethereal
 {
     SelectionContext SceneHierarchyPanel::s_ActiveSelectionContext = SelectionContext::Scene;
 
-    SceneHierarchyPanel::SceneHierarchyPanel(const Ref<Scene>& scene) { SetContext(scene); }
+    SceneHierarchyPanel::SceneHierarchyPanel(const Ref<Scene>& context, SelectionContext selectionContext)
+        : m_Context(context), m_SelectionContext(selectionContext)
+    {
 
-    void SceneHierarchyPanel::SetContext(const Ref<Scene>& scene) {
-        m_Context = scene;
-        m_SelectionContext = {};
     }
 
-    void SceneHierarchyPanel::OnImGuiRender() {
+    void SceneHierarchyPanel::SetSceneContext(const Ref<Scene>& scene) {
+        m_Context = scene;
+    }
+
+    void SceneHierarchyPanel::OnEvent(Event& event) {
+
+    }
+
+    void SceneHierarchyPanel::OnImGuiRender(bool& isOpen) {
 
         {
             UI::ScopedStyle padding(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-            ImGui::Begin("Scene Hierarchy");
+            ImGui::Begin("Scene Hierarchy", &isOpen);
         }
 
         s_ActiveSelectionContext = m_SelectionContext;
@@ -166,11 +172,7 @@ namespace Ethereal
             desc.Name = "M_Default";
             AssetManager::CreateAsset_Ref("M_Default",(Project::GetAssetDirectory() / "materials").string(), desc);
         }
-
-        ImGui::EndPopup();
     }
-
-    void SceneHierarchyPanel::SetSelectedEntity(Entity entity) { SelectionManager::Select(m_SelectionContext,entity.GetUUID()); }
 
     void SceneHierarchyPanel::DrawEntityNode(Entity entity) {
         const char* name = "Unnamed Entity";
@@ -482,16 +484,16 @@ namespace Ethereal
             const ImGuiIO& io = ImGui::GetIO();
             auto boldFont = io.Fonts->Fonts[0];
 
-            auto drawControl = [&](const std::string& label, float& value, const ImVec4& colourN,
-                                   const ImVec4& colourH,
-                                   const ImVec4& colourP, bool renderMultiSelect)
+            auto drawControl = [&](const std::string& label, float& value, const ImVec4& colorN,
+                                   const ImVec4& colorH,
+                                   const ImVec4& colorP, bool renderMultiSelect)
             {
                 {
                     UI::ScopedStyle buttonFrame(ImGuiStyleVar_FramePadding, ImVec2(framePadding, 0.0f));
                     UI::ScopedStyle buttonRounding(ImGuiStyleVar_FrameRounding, 1.0f);
-                    UI::ScopedColorStack buttonColors(ImGuiCol_Button, colourN,
-                                                        ImGuiCol_ButtonHovered, colourH,
-                                                        ImGuiCol_ButtonActive, colourP);
+                    UI::ScopedColorStack buttonColors(ImGuiCol_Button, colorN,
+                                                        ImGuiCol_ButtonHovered, colorH,
+                                                        ImGuiCol_ButtonActive, colorP);
 
                     UI::ScopedFont buttonFont(boldFont);
 
@@ -580,21 +582,26 @@ namespace Ethereal
         ImGui::SetItemAllowOverlap();
         ImGui::PopClipRect();
 
-        auto fillRowWithColour = [](const ImColor& colour)
+        auto fillRowWithColor = [](const ImColor& color)
         {
             for (int column = 0; column < ImGui::TableGetColumnCount(); column++)
-                ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, colour, column);
+                ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, color, column);
         };
 
         if (isRowHovered)
-            fillRowWithColour(Colors::Theme::background);
+            fillRowWithColor(Colors::Theme::background);
 
         UI::ShiftCursor(1.5f, 1.5f);
         UI::Image(icon, { rowHeight - 3.0f, rowHeight - 3.0f });
         UI::ShiftCursor(-1.5f, -1.5f);
         ImGui::TableSetColumnIndex(1);
         ImGui::SetNextItemWidth(-1);
+
         ImGui::TextUnformatted(name.c_str());
+        ImGui::SameLine();
+
+        // Fix: ButtonBehavior() doesn't return true when the button is held unless add this line of code below
+        ImGui::InvisibleButton(name.c_str(), ImVec2(1,1));
 
         if (isRowClicked)
         {
@@ -982,21 +989,7 @@ namespace Ethereal
                                          ImGui::PushItemFlag(ImGuiItemFlags_MixedValue, false);
 
                                          mesh = AssetManager::GetAsset<Mesh>(meshHandle);
-
-                                         for (auto& entityID : entities)
-                                         {
-                                             Entity entity = m_Context->GetEntityWithUUID(entityID);
-                                             auto& mc = entity.GetComponent<MeshComponent>();
-                                             mc.MeshHandle = meshHandle;
-
-                                             if (mesh)
-                                             {
-                                                 // Validate submesh index
-
-                                                 // TODO!: Support submesh index
-                                             }
-                                         }
-
+                                         UI::PropertyAssetReference<StaticMesh>("Mesh", meshHandle);
 
                                          ImGui::PopItemFlag();
 
@@ -1013,6 +1006,7 @@ namespace Ethereal
 
                                                UI::BeginPropertyGrid();
                                                ImGui::PushItemFlag(ImGuiItemFlags_MixedValue, false);
+                                               UI::PropertyAssetReference<StaticMesh>("Static Mesh", meshHandle);
 
                                                ImGui::PopItemFlag();
 
@@ -1021,5 +1015,119 @@ namespace Ethereal
                                                if (mesh && mesh->IsValid())
                                                    DrawMaterialTable<StaticMeshComponent>(this, entities, mesh->GetMaterials(), firstComponent.materialTable);
                                            });
+
+        DrawComponent<CameraComponent>("Camera", [&](CameraComponent& firstComponent, const std::vector<UUID>& entities, const bool isMultiEdit)
+            {
+                UI::BeginPropertyGrid();
+
+                // Projection Type
+                const char* projTypeStrings[] = { "Perspective", "Orthographic" };
+                int currentProj = (int)firstComponent.SceneCamera.GetProjectionType();
+                ImGui::PushItemFlag(ImGuiItemFlags_MixedValue, false);
+                if (UI::PropertyDropdown("Projection", projTypeStrings, 2, &currentProj))
+                {
+                    for (auto& entityID : entities)
+                    {
+                        Entity entity = m_Context->GetEntityWithUUID(entityID);
+                        entity.GetComponent<CameraComponent>().SceneCamera.SetProjectionType((SceneCamera::ProjectionType)currentProj);
+                    }
+                }
+                ImGui::PopItemFlag();
+
+                // Perspective parameters
+                if (firstComponent.SceneCamera.GetProjectionType() == SceneCamera::ProjectionType::Perspective)
+                {
+                    float verticalFOV = firstComponent.SceneCamera.GetPerspectiveVerticalFOV();
+                    ImGui::PushItemFlag(ImGuiItemFlags_MixedValue, false);
+                    if (UI::Property("Vertical FOV", verticalFOV))
+                    {
+                        for (auto& entityID : entities)
+                        {
+                            Entity entity = m_Context->GetEntityWithUUID(entityID);
+                            entity.GetComponent<CameraComponent>().SceneCamera.SetPerspectiveVerticalFOV(verticalFOV);
+                        }
+                    }
+                    ImGui::PopItemFlag();
+
+                    float nearClip = firstComponent.SceneCamera.GetPerspectiveNearClip();
+                    ImGui::PushItemFlag(ImGuiItemFlags_MixedValue, false);
+                    if (UI::Property("Near Clip", nearClip))
+                    {
+                        for (auto& entityID : entities)
+                        {
+                            Entity entity = m_Context->GetEntityWithUUID(entityID);
+                            entity.GetComponent<CameraComponent>().SceneCamera.SetPerspectiveNearClip(nearClip);
+                        }
+                    }
+                    ImGui::PopItemFlag();
+
+                    float farClip = firstComponent.SceneCamera.GetPerspectiveFarClip();
+                    ImGui::PushItemFlag(ImGuiItemFlags_MixedValue, false);
+                    if (UI::Property("Far Clip", farClip))
+                    {
+                        for (auto& entityID : entities)
+                        {
+                            Entity entity = m_Context->GetEntityWithUUID(entityID);
+                            entity.GetComponent<CameraComponent>().SceneCamera.SetPerspectiveFarClip(farClip);
+                        }
+                    }
+                    ImGui::PopItemFlag();
+                }
+
+                // Orthographic parameters
+                else if (firstComponent.SceneCamera.GetProjectionType() == SceneCamera::ProjectionType::Orthographic)
+                {
+                    float orthoSize = firstComponent.SceneCamera.GetOrthographicSize();
+                    ImGui::PushItemFlag(ImGuiItemFlags_MixedValue, false);
+                    if (UI::Property("Size", orthoSize))
+                    {
+                        for (auto& entityID : entities)
+                        {
+                            Entity entity = m_Context->GetEntityWithUUID(entityID);
+                            entity.GetComponent<CameraComponent>().SceneCamera.SetOrthographicSize(orthoSize);
+                        }
+                    }
+                    ImGui::PopItemFlag();
+
+                    float nearClip = firstComponent.SceneCamera.GetOrthographicNearClip();
+                    ImGui::PushItemFlag(ImGuiItemFlags_MixedValue, false);
+                    if (UI::Property("Near Clip", nearClip))
+                    {
+                        for (auto& entityID : entities)
+                        {
+                            Entity entity = m_Context->GetEntityWithUUID(entityID);
+                            entity.GetComponent<CameraComponent>().SceneCamera.SetOrthographicNearClip(nearClip);
+                        }
+                    }
+                    ImGui::PopItemFlag();
+
+                    float farClip = firstComponent.SceneCamera.GetOrthographicFarClip();
+                    ImGui::PushItemFlag(ImGuiItemFlags_MixedValue, false);
+                    if (UI::Property("Far Clip", farClip))
+                    {
+                        for (auto& entityID : entities)
+                        {
+                            Entity entity = m_Context->GetEntityWithUUID(entityID);
+                            entity.GetComponent<CameraComponent>().SceneCamera.SetOrthographicFarClip(farClip);
+                        }
+                    }
+                    ImGui::PopItemFlag();
+                }
+
+                ImGui::PushItemFlag(ImGuiItemFlags_MixedValue, false);
+                if (UI::Property("Main Camera", firstComponent.Primary))
+                {
+                    // Does this even make sense???
+                    for (auto& entityID : entities)
+                    {
+                        Entity entity = m_Context->GetEntityWithUUID(entityID);
+                        entity.GetComponent<CameraComponent>().Primary = firstComponent.Primary;
+                    }
+                }
+                ImGui::PopItemFlag();
+
+                UI::EndPropertyGrid();
+            }, EditorResource::CameraIcon);
+
     }
 }  // namespace Ethereal

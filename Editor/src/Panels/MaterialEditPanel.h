@@ -1,17 +1,19 @@
 #pragma once
-#include "src/Core/Scene/Scene.h"
-#include "src/Core/Scene/Entity.h"
-#include "src/Core/Renderer/MaterialAsset.h"
+#include "Core/Editor/EditorPanel.h"
+#include "Core/Scene/Scene.h"
+#include "Core/Scene/Entity.h"
+#include "Core/Renderer/MaterialAsset.h"
+
 namespace Ethereal
 {
-    class MaterialEditPanel {
+    class MaterialEditPanel : public EditorPanel {
       public:
         MaterialEditPanel();
         ~MaterialEditPanel();
 
         void SetSceneContext(const Ref<Scene>& context);
-        void OnImGuiRender(bool isOpen = true);
-        void SetSelectEntity(Entity entity);
+        void OnImGuiRender(bool& isOpen) override;
+        void OnEvent(Event& event) override;
 
       private:
         void RenderMaterial(size_t materialIndex, Ref<MaterialAsset> materialAsset);
