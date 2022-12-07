@@ -386,11 +386,6 @@ namespace Ethereal::UI
         return value_changed;
     }
 
-    static bool DragFloat(const char* label, float* v, float v_speed = 1.0f, float v_min = 0.0f, float v_max = 0.0f, const char* format = "%.3f", ImGuiSliderFlags flags = 0)
-    {
-        return DragScalar(label, ImGuiDataType_Float, v, v_speed, &v_min, &v_max, format, flags);
-    }
-
     static bool IsItemDisabled()
     {
         return ImGui::GetItemFlags() & ImGuiItemFlags_Disabled;
@@ -445,4 +440,54 @@ namespace Ethereal::UI
     {
         DrawButtonImage(image, image, image, tintNormal, tintHovered, tintPressed, ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
     };
+
+    static bool DragFloat(const char* label, float* v, float v_speed = 1.0f, float v_min = 0.0f, float v_max = 0.0f, const char* format = "%.3f", ImGuiSliderFlags flags = 0)
+    {
+        return DragScalar(label, ImGuiDataType_Float, v, v_speed, &v_min, &v_max, format, flags);
+    }
+
+    static bool DragDouble(const char* label, double* v, float v_speed = 1.0f, double v_min = 0.0, double v_max = 0.0, const char* format = "%.3f", ImGuiSliderFlags flags = 0)
+    {
+        return DragScalar(label, ImGuiDataType_Double, v, v_speed, &v_min, &v_max, format, flags);
+    }
+
+    static bool DragInt8(const char* label, int8_t* v, float v_speed = 1.0f, int8_t v_min = 0, int8_t v_max = 0, const char* format = "%d", ImGuiSliderFlags flags = 0)
+    {
+        return DragScalar(label, ImGuiDataType_S8, v, v_speed, &v_min, &v_max, format, flags);
+    }
+
+    static bool DragInt16(const char* label, int16_t* v, float v_speed = 1.0f, int16_t v_min = 0, int16_t v_max = 0, const char* format = "%d", ImGuiSliderFlags flags = 0)
+    {
+        return DragScalar(label, ImGuiDataType_S16, v, v_speed, &v_min, &v_max, format, flags);
+    }
+
+    static bool DragInt32(const char* label, int32_t* v, float v_speed = 1.0f, int32_t v_min = 0, int32_t v_max = 0, const char* format = "%d", ImGuiSliderFlags flags = 0)
+    {
+        return DragScalar(label, ImGuiDataType_S32, v, v_speed, &v_min, &v_max, format, flags);
+    }
+
+    static bool DragInt64(const char* label, int64_t* v, float v_speed = 1.0f, int64_t v_min = 0, int64_t v_max = 0, const char* format = "%d", ImGuiSliderFlags flags = 0)
+    {
+        return DragScalar(label, ImGuiDataType_S64, v, v_speed, &v_min, &v_max, format, flags);
+    }
+
+    static bool DragUInt8(const char* label, uint8_t* v, float v_speed = 1.0f, uint8_t v_min = 0, uint8_t v_max = 0, const char* format = "%d", ImGuiSliderFlags flags = 0)
+    {
+        return DragScalar(label, ImGuiDataType_U8, v, v_speed, &v_min, &v_max, format, flags);
+    }
+
+    static bool DragUInt16(const char* label, uint16_t* v, float v_speed = 1.0f, uint16_t v_min = 0, uint16_t v_max = 0, const char* format = "%d", ImGuiSliderFlags flags = 0)
+    {
+        return DragScalar(label, ImGuiDataType_U16, v, v_speed, &v_min, &v_max, format, flags);
+    }
+
+    static bool DragUInt32(const char* label, uint32_t* v, float v_speed = 1.0f, uint32_t v_min = 0, uint32_t v_max = 0, const char* format = "%d", ImGuiSliderFlags flags = 0)
+    {
+        return DragScalar(label, ImGuiDataType_U32, v, v_speed, &v_min, &v_max, format, flags);
+    }
+
+    static bool DragUInt64(const char* label, uint64_t* v, float v_speed = 1.0f, uint64_t v_min = 0, uint64_t v_max = 0, const char* format = "%d", ImGuiSliderFlags flags = 0)
+    {
+        return DragScalar(label, ImGuiDataType_U64, v, v_speed, &v_min, &v_max, format, flags);
+    }
 }  // namespace Ethereal::UI

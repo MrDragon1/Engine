@@ -6,10 +6,10 @@
 #include "Base/Meta/Serializer.h"
 #include "Base/Meta/_generated/serializer/all_serializer.h"
 #include "AssetExtensions.h"
+#include "Base/Math/Hash.h"
 
 #include <map>
 #include <unordered_map>
-#include <Utils/Hash.h>
 
 namespace Ethereal
 {

@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace Ethereal
+namespace Ethereal::Math
 {
 
     class Hash {

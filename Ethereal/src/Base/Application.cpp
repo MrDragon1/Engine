@@ -5,7 +5,6 @@
 #include "Base/GlobalContext.h"
 #include "Utils/PlatformUtils.h"
 #include "Core/Project/Project.h"
-#include "Core/Editor/EditorResource.h"
 
 #include "Base/Meta/Serializer.h"
 #include "Base/Meta/ReflectionRegister.h"
@@ -22,7 +21,6 @@ namespace Ethereal
 
         Reflection::TypeMetaRegister::Register();
 
-        EditorResource::Init();
         RenderCommand::Init();
         GlobalContext::Reset();
 
@@ -31,8 +29,11 @@ namespace Ethereal
     }
 
     Application::~Application() {
+        for(auto & layer : m_LayerStack) {
+            if(layer) layer->OnDetach();
+        }
+
         Project::SetActive(nullptr);
-        EditorResource::Shutdown();
     }
 
     void Application::PushLayer(Layer* layer) {

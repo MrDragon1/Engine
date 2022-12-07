@@ -16,10 +16,10 @@ Metallic: 0
 Roughness: 1
 Emisstion: 0
 Transparency: 0
-IsAlbedo: true
-IsMetallic: true
-IsRoughness: true
-IsNormal: true
-IsOcclusion: true
+IsAlbedo: false
+IsMetallic: false
+IsRoughness: false
+IsNormal: false
+IsOcclusion: false
 IsTransparent: false
 Name: M_Default

@@ -6,7 +6,6 @@
 #include "Base/GlobalContext.h"
 #include "Core/Scene/Components.h"
 #include "Core/Scene/SceneSerializer.h"
-#include "Utils/Math.h"
 #include "Utils/PlatformUtils.h"
 #include "imgui.h"
 #include "Base/ImGui/ImGuizmo.h"
@@ -14,27 +13,44 @@
 
 #include "Base/Meta/Serializer.h"
 #include "Base/Meta/_generated/serializer/all_serializer.h"
+#include "Core/Editor/EditorResource.h"
 
 namespace Ethereal
 {
     extern const std::filesystem::path g_AssetPath;
 
+#define SCENE_HIERARCHY_PANEL_ID "SceneHierarchyPanel"
+#define CONTENT_BROWSER_PANEL_ID "ContentBrowserPanel"
+#define MATERIALS_PANEL_ID "MaterialEditPanel"
+
     EditorLayer::EditorLayer() : Layer("EditorLayer"), m_CameraController(1280.0f / 720.0f) {}
 
     void EditorLayer::OnAttach() {
-        m_IconPlay = Texture2D::Create("assets/icons/PlayButton.png");
-        m_IconStop = Texture2D::Create("assets/icons/StopButton.png");
+        EditorResource::Init();
+        m_PanelManager = CreateScope<PanelManager>();
 
-        m_ActiveScene = Ref<Scene>::Create();
+        m_PanelManager->AddPanel<SceneHierarchyPanel>(PanelCategory::View, SCENE_HIERARCHY_PANEL_ID, "Scene Hierarchy", true, m_EditorScene, SelectionContext::Scene);
+        m_PanelManager->AddPanel<ContentBrowserPanel>(PanelCategory::View, CONTENT_BROWSER_PANEL_ID, "Content Browser", true);
+        m_PanelManager->AddPanel<MaterialEditPanel>(PanelCategory::View, MATERIALS_PANEL_ID, "Material", true);
+
+
+        m_IconPlay = EditorResource::PlayIcon;
+        m_IconStop = EditorResource::StopIcon;
+
         m_EditorCamera = EditorCamera(30.0f, 1280.0f / 720.0f, 0.1f, 500.0f);
+
+        //TODO: Remove this when support default project
+        OpenScene("assets/scenes/meta.hscene");
     }
 
-    void EditorLayer::OnDetach() {}
+    void EditorLayer::OnDetach() {
+        EditorResource::Shutdown();
+    }
 
     void EditorLayer::OnUpdate(TimeStamp ts) {
         switch (m_SceneState) {
             case SceneState::Play: {
-                m_ActiveScene->OnUpdateRuntime(ts);
+                m_RuntimeScene->OnUpdateRuntime(ts);
                 break;
             }
             case SceneState::Edit: {
@@ -47,7 +63,7 @@ namespace Ethereal
                 m_RenderSceneData.FarPlane = m_EditorCamera.GetFarPlane();
                 m_RenderSceneData.AspectRatio = m_EditorCamera.GetAspectRatio();
                 m_RenderSceneData.FOV = m_EditorCamera.GetFOV();
-                m_ActiveScene->OnUpdateEditor(ts, m_RenderSceneData);
+                m_EditorScene->OnUpdateEditor(ts, m_RenderSceneData);
 
 //                std::cout << "View " << Serializer::write(m_RenderSceneData.ViewMatrix.toMatrix4_()) << std::endl;
 //                std::cout << "Proj " << Serializer::write(m_RenderSceneData.ProjectionMatrix.toMatrix4_()) << std::endl;
@@ -67,7 +83,7 @@ namespace Ethereal
 
             if (mouseX >= 0 && mouseY >= 0 && mouseX < (int)viewportSize.x && mouseY < (int)viewportSize.y) {
                 int pixelData = GlobalContext::GetRenderSystem().GetMousePicking(mouseX, mouseY);
-                m_HoveredEntity = pixelData == -1 ? Entity() : Entity((entt::entity)pixelData, m_ActiveScene.Raw());
+                m_HoveredEntity = pixelData == -1 ? Entity() : Entity((entt::entity)pixelData, m_CurrentScene.Raw());
             }
         }
     }
@@ -151,9 +167,7 @@ namespace Ethereal
         if (b_ShowSkyboxSettings) ShowSkyboxSettingWindow(&b_ShowSkyboxSettings);
         if (b_ShowProjectSettings) ShowProjectSettingWindow(&b_ShowProjectSettings);
 
-        m_SceneHierarchyPanel.OnImGuiRender();
-        m_ContentBrowserPanel.OnImGuiRender();
-        m_MaterialEditPanel.OnImGuiRender();
+        m_PanelManager->OnImGuiRender();
 
         ImGui::Begin("Stats");
         std::string name = "None";
@@ -196,7 +210,7 @@ namespace Ethereal
                 GlobalContext::GetRenderSystem().OnResize();
                 // m_CameraController.OnResize(GlobalContext::GetViewportSize().x, GlobalContext::GetViewportSize().y);
                 m_EditorCamera.SetViewportSize();
-                m_ActiveScene->OnViewportResize((uint32_t)GlobalContext::GetViewportSize().x, (uint32_t)GlobalContext::GetViewportSize().y);
+                m_CurrentScene->OnViewportResize((uint32_t)GlobalContext::GetViewportSize().x, (uint32_t)GlobalContext::GetViewportSize().y);
             }
             uint64_t textureID = GlobalContext::GetRenderSystem().GetMainImage();
             // ET_CORE_INFO("texture ID {}", textureID);
@@ -229,7 +243,8 @@ namespace Ethereal
             m_ViewportBounds[1] = {maxBound.x, maxBound.y};
 
             // Gizmos
-            Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
+            Entity selectedEntity = Entity();
+            if(SelectionManager::GetSelections(SelectionContext::Scene).size() > 0) selectedEntity = m_CurrentScene->GetEntityWithUUID(SelectionManager::GetSelections(SelectionContext::Scene)[0]);
             if (selectedEntity && m_GizmoType != -1) {
                 ImGuizmo::SetOrthographic(false);
                 ImGuizmo::SetDrawlist();
@@ -336,19 +351,20 @@ namespace Ethereal
     bool EditorLayer::OnMouseButtonPressed(MouseButtonPressedEvent& e) {
         if (e.GetMouseButton() == Mouse::ButtonLeft) {
             if (m_ViewportHovered && !ImGuizmo::IsOver() && !Input::IsKeyPressed(Key::LeftAlt)) {
-                m_SceneHierarchyPanel.SetSelectedEntity(m_HoveredEntity);
-                m_MaterialEditPanel.SetSelectEntity(m_HoveredEntity);
+                SelectionManager::Select(SelectionContext::Scene, m_HoveredEntity.GetUUID());
             }
         }
         return false;
     }
 
     void EditorLayer::NewScene() {
-        m_ActiveScene = Ref<Scene>::Create();
-        m_ActiveScene->OnViewportResize((uint32_t)GlobalContext::GetViewportSize().x, (uint32_t)GlobalContext::GetViewportSize().y);
-        m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+        m_EditorScene = Ref<Scene>::Create();
+        m_EditorScene->OnViewportResize((uint32_t)GlobalContext::GetViewportSize().x, (uint32_t)GlobalContext::GetViewportSize().y);
+        m_PanelManager->SetSceneContext(m_EditorScene);
+
         m_EditorScenePath = std::filesystem::path();
-        m_EditorScene = m_ActiveScene;
+
+        m_CurrentScene = m_EditorScene;
     }
 
     void EditorLayer::OpenScene() {
@@ -372,26 +388,27 @@ namespace Ethereal
         }
         m_EditorScene = Ref<Scene>::Create();
         m_EditorScene->OnViewportResize((uint32_t)GlobalContext::GetViewportSize().x, (uint32_t)GlobalContext::GetViewportSize().y);
-        m_SceneHierarchyPanel.SetContext(m_EditorScene);
+
+        m_PanelManager->SetSceneContext(m_EditorScene);
 
         SceneSerializer serializer(m_EditorScene);
         ET_CORE_ASSERT(serializer.Deserialize(path.string()), "Deserialize Scene {0} failed", path.string());
 
-        m_ActiveScene = m_EditorScene;
+        m_CurrentScene = m_EditorScene;
         m_EditorScenePath = path;
     }
 
     void EditorLayer::SaveSceneAs() {
         std::string filepath = FileDialogs::SaveFile("Scene (*.hscene)\0*.hscene\0");
         if (!filepath.empty()) {
-            SerializeScene(m_ActiveScene, filepath);
+            SerializeScene(m_EditorScene, filepath);
             m_EditorScenePath = filepath;
         }
     }
 
     void EditorLayer::SaveScene() {
         if (!m_EditorScenePath.empty())
-            SerializeScene(m_ActiveScene, m_EditorScenePath);
+            SerializeScene(m_EditorScene, m_EditorScenePath);
         else
             SaveSceneAs();
     }
@@ -399,7 +416,10 @@ namespace Ethereal
     void EditorLayer::DuplicateEntity() {
         if (m_SceneState != SceneState::Edit) return;
 
-        Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
+        Entity selectedEntity;
+        if(SelectionManager::GetSelections(SelectionContext::Scene).size() > 0){
+            selectedEntity = m_EditorScene->GetEntityWithUUID(SelectionManager::GetSelections(SelectionContext::Scene)[0]);
+        }
         if (selectedEntity) m_EditorScene->DuplicateEntity(selectedEntity);
     }
 
@@ -409,18 +429,25 @@ namespace Ethereal
     }
 
     void EditorLayer::OnScenePlay() {
+        SelectionManager::DeselectAll();
+
         // TODO: Save Scene when changed
         m_SceneState = SceneState::Play;
-        m_ActiveScene = Scene::Copy(m_EditorScene);
-        m_ActiveScene->OnRuntimeStart();
-        m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+        m_RuntimeScene = Scene::Copy(m_EditorScene);
+        m_RuntimeScene->OnRuntimeStart();
+
+        m_PanelManager->SetSceneContext(m_RuntimeScene);
+        m_CurrentScene = m_RuntimeScene;
     }
 
     void EditorLayer::OnSceneStop() {
         m_SceneState = SceneState::Edit;
-        m_ActiveScene->OnRuntimeStop();
-        m_ActiveScene = m_EditorScene;
-        m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+        m_RuntimeScene->OnRuntimeStop();
+        m_RuntimeScene = nullptr;
+
+
+        m_PanelManager->SetSceneContext(m_EditorScene);
+        m_CurrentScene = m_EditorScene;
     }
 
     void EditorLayer::UI_Toolbar() {

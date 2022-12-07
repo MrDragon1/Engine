@@ -120,6 +120,9 @@ namespace Ethereal
         public:
           META(Enable)
           CameraRaw Camera;
+          META(Enable)
+          bool Primary = false;
+
           CameraComponent() = default;
           CameraComponent(const CameraComponent& other)
               : Camera(other.Camera) {}

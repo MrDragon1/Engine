@@ -1,27 +1,25 @@
 #pragma once
-#include <Core/Editor/SelectionManager.h>
 #include "Ethereal.h"
+#include "Core/Editor/SelectionManager.h"
+#include "Core/Editor/EditorPanel.h"
 
 namespace Ethereal
 {
 #define COLOR32(R,G,B,A)    (((ImU32)(A)<<24) | ((ImU32)(B)<<16) | ((ImU32)(G)<<8) | ((ImU32)(R)<<0))
 
-    class SceneHierarchyPanel {
+    class SceneHierarchyPanel: public EditorPanel {
       public:
         SceneHierarchyPanel() = default;
-        SceneHierarchyPanel(const Ref<Scene>& scene);
+        SceneHierarchyPanel(const Ref<Scene>& scene, SelectionContext selectionContext);
 
-        void SetContext(const Ref<Scene>& scene);
-        Ref<Scene> GetSceneContext() const { return m_Context; }
         static SelectionContext GetActiveSelectionContext() { return s_ActiveSelectionContext; }
 
-        void OnImGuiRender();
-        Entity GetSelectedEntity() {
-            const std::vector<UUID> entities = SelectionManager::GetSelections(s_ActiveSelectionContext);
-            if (!entities.empty()) return m_Context->GetEntityWithUUID(entities[0]);
-            return Entity();
-        }
-        void SetSelectedEntity(Entity entity);
+        void OnImGuiRender(bool& isOpen) override;
+        void OnEvent(Event& event) override;
+
+        void SetSceneContext(const Ref<Scene>& scene) override;
+        Ref<Scene> GetSceneContext() const { return m_Context; }
+
 
       private:
         void DrawEntityNode(Entity entity);

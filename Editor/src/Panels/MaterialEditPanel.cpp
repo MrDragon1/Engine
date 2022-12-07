@@ -1,7 +1,9 @@
 #include "MaterialEditPanel.h"
 #include "Core/Asset/AssetManager.h"
 #include "Base/GlobalContext.h"
+#include "Core/Editor/SelectionManager.h"
 #include "imgui.h"
+
 namespace Ethereal
 {
     MaterialEditPanel::MaterialEditPanel() {
@@ -12,9 +14,14 @@ namespace Ethereal
 
     void MaterialEditPanel::SetSceneContext(const Ref<Scene>& context) { m_Context = context; }
 
-    void MaterialEditPanel::SetSelectEntity(Entity entity) { m_SelectedEntity = entity; }
+    void MaterialEditPanel::OnEvent(Event& event) { };
 
-    void MaterialEditPanel::OnImGuiRender(bool isOpen) {
+    void MaterialEditPanel::OnImGuiRender(bool& isOpen) {
+        m_SelectedEntity = {};
+        if (SelectionManager::GetSelectionCount(SelectionContext::Scene) > 0) {
+            m_SelectedEntity = m_Context->GetEntityWithUUID(SelectionManager::GetSelections(SelectionContext::Scene).front());
+        }
+
         const bool hasValidEntity = m_SelectedEntity && m_SelectedEntity.HasComponent<StaticMeshComponent>();
         bool Open = isOpen;
         ImGui::SetNextWindowSize(ImVec2(200.0f, 300.0f), ImGuiCond_Appearing);

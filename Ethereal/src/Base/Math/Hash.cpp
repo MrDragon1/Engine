@@ -27,7 +27,7 @@ static constexpr auto crc32_table = gen_crc32_table();
 static_assert(crc32_table.size() == 256 && crc32_table[1] == 0x77073096 && crc32_table[255] == 0x2D02EF8D,
               "gen_crc32_table generated unexpected result.");
 
-namespace Ethereal
+namespace Ethereal::Math
 {
 
     uint32_t Hash::CRC32(const char* str) {
