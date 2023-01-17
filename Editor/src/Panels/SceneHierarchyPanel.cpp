@@ -183,8 +183,6 @@ namespace Ethereal
             ImGui::TableSetupColumn("Type");
             ImGui::TableHeadersRow();
 
-            static int selection_mask = 0;
-
             // Simple storage to output a dummy file-system.
             struct EntityNode
             {
@@ -196,57 +194,20 @@ namespace Ethereal
                 {
                     ImGui::TableNextRow();
                     ImGui::TableNextColumn();
-                    const bool is_selected = (selection_mask & (1 << node->ChildIdx)) != 0;
+                    const bool is_selected = SelectionManager::IsSelected(s_ActiveSelectionContext, node->ChildIdx);
                     const bool is_folder = !node->ChildList.empty();
                     ImGuiTreeNodeFlags  node_flags = ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_OpenOnArrow;
-                    int node_clicked = -1;
                     if (is_selected)
                         node_flags |= ImGuiTreeNodeFlags_Selected;
-                    if (is_folder)
-                    {
-                        bool open = ImGui::TreeNodeEx(node->Name, node_flags);
-                        if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
-                        {
-                            std::cout << "clicked " << node->Name << std::endl;
-                            node_clicked = node->ChildIdx;
-                        }
-                        ImGui::TableNextColumn();
-                        ImGui::TextUnformatted(node->Type);
-                        if (open)
-                        {
-                            for (auto child_idx : node->ChildList)
-                                DisplayNode(&all_nodes[child_idx], all_nodes);
-                            ImGui::TreePop();
-                        }
-                    }
-                    else
-                    {
-                        ImGui::TreeNodeEx(node->Name, ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen | node_flags );
-                        if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
-                        {
-                            std::cout << "clicked " << node->Name << std::endl;
-                            node_clicked = node->ChildIdx;
-                        }
-                        ImGui::TableNextColumn();
-                        ImGui::TextUnformatted(node->Type);
-                    }
 
-                    // TODO: rewrite this and select child recursively
-                    if (node_clicked != -1)
+                    ImGui::TreeNodeEx(node->Name, ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen | node_flags );
+                    if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
                     {
-                        if (ImGui::GetIO().KeyCtrl) {
-                            selection_mask ^= (1 << node_clicked);
-                            for (auto child_idx : node->ChildList)
-                                selection_mask ^= (1 << child_idx);
-                        } else {
-                            if (!(selection_mask & (1 << node_clicked))){
-                                selection_mask = (1 << node_clicked);
-                                for (auto child_idx : node->ChildList)
-                                    selection_mask ^= (1 << child_idx);
-                            }
-                        }
-
+                        SelectionManager::UniqueSelect(s_ActiveSelectionContext, node->ChildIdx);
                     }
+                    ImGui::TableNextColumn();
+                    ImGui::TextUnformatted(node->Type);
+
                 }
             };
             std::vector<EntityNode> all_nodes;

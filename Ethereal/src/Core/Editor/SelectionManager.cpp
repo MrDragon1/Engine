@@ -5,6 +5,15 @@
 #include "Base/Event/SceneEvent.h"
 namespace Ethereal
 {
+    void SelectionManager::UniqueSelect(SelectionContext contextID, UUID selectionID) {
+        SelectionManager::DeselectAll();
+        auto& contextSelections = s_Contexts[contextID];
+        if (std::find(contextSelections.begin(), contextSelections.end(), selectionID) != contextSelections.end()) return;
+
+        contextSelections.push_back(selectionID);
+        Application::Get().DispatchEvent<SelectionChangedEvent>(contextID, selectionID, true);
+    }
+
     void SelectionManager::Select(SelectionContext contextID, UUID selectionID) {
         auto& contextSelections = s_Contexts[contextID];
         if (std::find(contextSelections.begin(), contextSelections.end(), selectionID) != contextSelections.end()) return;

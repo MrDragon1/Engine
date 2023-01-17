@@ -12,6 +12,7 @@ namespace Ethereal
     class SelectionManager
     {
       public:
+        static void UniqueSelect(SelectionContext context, UUID selectionID);
         static void Select(SelectionContext context, UUID selectionID);
         static bool IsSelected(UUID selectionID);
         static bool IsSelected(SelectionContext context, UUID selectionID);

@@ -66,6 +66,8 @@ namespace Ethereal
 
         Vector2 m_InitialMousePosition = {0.0f, 0.0f};
 
+        float m_CameraTranslationSpeed = 5.0f;
+
         float m_Distance = 50.0f;
         float m_Pitch = 0.0f, m_Yaw = 0.0f;
     };
