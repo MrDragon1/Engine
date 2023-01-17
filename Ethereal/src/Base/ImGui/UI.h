@@ -1,5 +1,6 @@
 #pragma once
 #include <Core/Asset/AssetManager.h>
+#include <Core/Editor/EditorResource.h>
 #include "pch.h"
 #include "Colors.h"
 #include "Core/Renderer/Texture.h"
@@ -127,7 +128,7 @@ namespace Ethereal
             ImGui::SetCursorPos(ImVec2(cursor.x + x, cursor.y + y));
         }
 
-        static void PushID() {
+        static void PushID(void* pVoid) {
             ImGui::PushID(s_UIContextID++);
             s_Counter = 0;
         }
@@ -144,7 +145,7 @@ namespace Ethereal
         }
 
         static void BeginPropertyGrid(uint32_t columns = 2) {
-            PushID();
+            PushID(nullptr);
             ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8.0f, 8.0f));
             ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4.0f, 4.0f));
             ImGui::Columns(columns);
@@ -156,6 +157,8 @@ namespace Ethereal
             UI::ShiftCursorY(18.0f);
             PopID();
         }
+
+
 
         // Utils
         static void DrawItemActivityOutline(){
@@ -180,6 +183,47 @@ namespace Ethereal
             UI::DrawItemActivityOutline();
 
             return res;
+        }
+
+        static void ImageButton(ImTextureID user_texture_id, const ImVec2& size, ImU32 tintNormal, ImU32 tintHovered, ImU32 tintPressed){
+            using namespace ImGui;
+            ImGuiContext& g = *GImGui;
+            ImGuiWindow* window = g.CurrentWindow;
+            if (window->SkipItems)
+                return ;
+
+            // Default to using texture ID as ID. User can still push string/integer prefixes.
+            PushID((void*)(intptr_t)user_texture_id);
+            const ImGuiID id = window->GetID("#image");
+            PopID();
+
+            PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2((float)0, (float)0));
+
+            const ImVec2 padding = g.Style.FramePadding;
+            const ImRect bb(window->DC.CursorPos, { window->DC.CursorPos.x + size.x + padding.x * 2, window->DC.CursorPos.y + size.y + padding.y * 2 });
+            ItemSize(bb);
+            if (ItemAdd(bb, id)){
+                bool hovered, held;
+                bool pressed = ButtonBehavior(bb, id, &hovered, &held);
+
+                // Render
+                const ImU32 col = GetColorU32((held && hovered) ? ImGuiCol_ButtonActive : hovered ? ImGuiCol_ButtonHovered : ImGuiCol_Button);
+                RenderNavHighlight(bb, id);
+                RenderFrame(bb.Min, bb.Max, col, true, ImClamp((float)ImMin(padding.x, padding.y), 0.0f, g.Style.FrameRounding));
+
+                ImVec2 rectMin {bb.Min.x + padding.x, bb.Min.y + padding.y};
+                ImVec2 rectMax {bb.Max.x - padding.x, bb.Max.y - padding.y};
+//                window->DrawList->AddRectFilled(rectMin, rectMax, ImU32(IM_COL32(255,0,0,100)));
+//                window->DrawList->AddImage(user_texture_id, rectMin, rectMax, ImVec2(0, 0), ImVec2(1, 1), tintNormal);
+                if (ImGui::IsItemActive())
+                    window->DrawList->AddImage(user_texture_id, rectMin, rectMax, ImVec2(0, 0), ImVec2(1, 1), tintPressed);
+                else if (ImGui::IsItemHovered())
+                    window->DrawList->AddImage(user_texture_id, rectMin, rectMax, ImVec2(0, 0), ImVec2(1, 1), tintHovered);
+                else
+                    window->DrawList->AddImage(user_texture_id, rectMin, rectMax, ImVec2(0, 0), ImVec2(1, 1), tintNormal);
+            }
+
+            PopStyleVar();
         }
 
         static void DrawVec3Slider(const std::string& label, Vector3& values){
@@ -249,14 +293,34 @@ namespace Ethereal
             const ImGuiIO &io = ImGui::GetIO();
             auto boldFont = io.Fonts->Fonts[1];
 
+            Ref<Texture2D> icon = EditorResource::AssetIcon;
             ScopedFont boldFontScope(boldFont);
             ImGui::SameLine();
-            ImGui::Button("A", {20.0f, 20.0f});
+            {
+                ShiftCursorY(2.0f);
+                ScopedColorStack style(ImGuiCol_Border, IM_COL32(0, 0, 0, 0),
+                                       ImGuiCol_Button, IM_COL32(0, 0, 0, 0));
+                //ImGui::ImageButton((ImTextureID)icon->GetRendererID(), ImVec2(16.0f, 16.0f), ImVec2(0, 1), ImVec2(1, 0), 0);
+                UI::ImageButton((ImTextureID)icon->GetRendererID(), ImVec2(16.0f, 16.0f), ImU32(IM_COL32(196, 196, 196, 255)), ImU32(IM_COL32(196, 196, 196, 255)), ImU32(IM_COL32(196, 196, 196, 255)));
+
+                ShiftCursorY(-2.0f);
+            }
             ImGui::SameLine(0.0f, 20.0f);
             ImGui::TextUnformatted(label);
 
+            icon = EditorResource::MenuDotsIcon;
             ImGui::SameLine(ImGui::GetContentRegionAvail().x - 30.0f, 0.0f);
-            ImGui::Button("B", {20.0f, 20.0f});
+            {
+                ShiftCursorY(2.0f);
+                ScopedColorStack style(ImGuiCol_Border, IM_COL32(0, 0, 0, 0),
+                                       ImGuiCol_Button, IM_COL32(0, 0, 0, 0));
+//                if(ImGui::ImageButton((ImTextureID)icon->GetRendererID(), ImVec2(16.0f, 16.0f), ImVec2(0, 1), ImVec2(1, 0), 0)){
+//                    ET_CORE_INFO("Menu dots clicked");
+//                }
+                UI::ImageButton((ImTextureID)icon->GetRendererID(), ImVec2(16.0f, 16.0f), ImU32(IM_COL32(196, 196, 196, 255)), ImU32(IM_COL32(255, 255, 255, 255)), ImU32(IM_COL32(255, 255, 255, 255)));
+
+                ShiftCursorY(-2.0f);
+            }
 
             return open;
         }
