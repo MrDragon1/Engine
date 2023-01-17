@@ -503,7 +503,7 @@ namespace Ethereal
     }
     void EditorLayer::ShowProjectSettingWindow(bool* p_open) {
         if (ImGui::Begin("Project Settings", p_open, ImGuiWindowFlags_NoCollapse)) {
-            if (UI::BeginTreeNode("Bloom")) {
+            if (UI::ComponentHeader("Bloom")) {
                 UI::BeginPropertyGrid();
                 ImGui::Text("Threshold");
                 ImGui::NextColumn();
@@ -520,7 +520,6 @@ namespace Ethereal
                 ImGui::DragFloat("##BloomIntensity", &Project().GetSettings().bloomSetting.intensity, 0.01f, 0.0f);
 
                 UI::EndPropertyGrid();
-                UI::EndTreeNode();
             }
         }
 

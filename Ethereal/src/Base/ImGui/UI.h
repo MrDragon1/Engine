@@ -1,12 +1,12 @@
 #pragma once
 #include <Core/Asset/AssetManager.h>
 #include "pch.h"
-#include "ImGuiUtils.h"
+#include "Colors.h"
 #include "Core/Renderer/Texture.h"
 #include "Utils/StringUtils.h"
 
 #include "imgui.h"
-
+#include "imgui_internal.h"
 namespace Ethereal
 {
     namespace UI
@@ -15,52 +15,116 @@ namespace Ethereal
         static uint32_t s_Counter = 0;
         static char s_IDBuffer[16] = "##";
         static char s_LabelIDBuffer[1024];
-        static char* s_MultilineBuffer = nullptr;
 
-        struct PropertyAssetReferenceSettings
-        {
-            bool AdvanceToNextColumn = true;
-            bool NoItemSpacing = false; // After label
-            float WidthOffset = 0.0f;
-            bool AllowMemoryOnlyAssets = false;
-            ImVec4 ButtonLabelColor = ImGui::ColorConvertU32ToFloat4(Colors::Theme::text);
-            bool ShowFullFilePath = false;
+        class ScopedStyle {
+          public:
+            ScopedStyle(const ScopedStyle&) = delete;
+            ScopedStyle& operator=(const ScopedStyle&) = delete;
+            template <typename T>
+            ScopedStyle(ImGuiStyleVar styleVar, T value) {
+                ImGui::PushStyleVar(styleVar, value);
+            }
+            ~ScopedStyle() { ImGui::PopStyleVar(); }
         };
 
-        void Image(const Ref<Texture2D>& texture, const ImVec2& size, const ImVec2& uv0 = ImVec2(0, 0), const ImVec2& uv1 = ImVec2(1, 1), const ImVec4& tint_col = ImVec4(1, 1, 1, 1), const ImVec4& border_col = ImVec4(0, 0, 0, 0));
+        class ScopedColor {
+          public:
+            ScopedColor(const ScopedColor&) = delete;
+            ScopedColor& operator=(const ScopedColor&) = delete;
+            template <typename T>
+            ScopedColor(ImGuiCol ColorId, T Color) {
+                ImGui::PushStyleColor(ColorId, Color);
+            }
+            ~ScopedColor() { ImGui::PopStyleColor(); }
+        };
 
-        static bool TreeNodeWithIcon(const std::string& label, const Ref<Texture2D>& icon, const ImVec2& size, bool openByDefault = true)
-        {
-            ImGuiTreeNodeFlags treeNodeFlags = ImGuiTreeNodeFlags_Framed
-                                               | ImGuiTreeNodeFlags_SpanAvailWidth
-                                               | ImGuiTreeNodeFlags_AllowItemOverlap
-                                               | ImGuiTreeNodeFlags_FramePadding;
+        class ScopedFont {
+          public:
+            ScopedFont(const ScopedFont&) = delete;
+            ScopedFont& operator=(const ScopedFont&) = delete;
+            ScopedFont(ImFont* font) { ImGui::PushFont(font); }
+            ~ScopedFont() { ImGui::PopFont(); }
+        };
 
-            if (openByDefault)
-                treeNodeFlags |= ImGuiTreeNodeFlags_DefaultOpen;
+        class ScopedID {
+          public:
+            ScopedID(const ScopedID&) = delete;
+            ScopedID& operator=(const ScopedID&) = delete;
+            template <typename T>
+            ScopedID(T id) {
+                ImGui::PushID(id);
+            }
+            ~ScopedID() { ImGui::PopID(); }
+        };
 
-            bool open = false;
-            const float framePaddingX = 6.0f;
-            const float framePaddingY = 6.0f; // affects height of the header
+        class ScopedColorStack {
+          public:
+            ScopedColorStack(const ScopedColorStack&) = delete;
+            ScopedColorStack& operator=(const ScopedColorStack&) = delete;
 
-            UI::ScopedStyle headerRounding(ImGuiStyleVar_FrameRounding, 0.0f);
-            UI::ScopedStyle headerPaddingAndHeight(ImGuiStyleVar_FramePadding, ImVec2{ framePaddingX, framePaddingY });
+            template <typename ColorType, typename... OtherColors>
+            ScopedColorStack(ImGuiCol firstColorID, ColorType firstColor, OtherColors&&... otherColorPairs)
+                : m_Count((sizeof...(otherColorPairs) / 2) + 1) {
+                static_assert((sizeof...(otherColorPairs) & 1u) == 0,
+                              "ScopedColorStack constructor expects a list of pairs of Color IDs and Colors as its arguments");
 
-            ImGui::PushID(label.c_str());
-            ImVec2 contentRegionAvailable = ImGui::GetContentRegionAvail();
-            open = ImGui::TreeNodeEx("##dummy_id", treeNodeFlags, "");
+                PushColor(firstColorID, firstColor, std::forward<OtherColors>(otherColorPairs)...);
+            }
 
-            float lineHeight = ImGui::GetItemRectMax().y - ImGui::GetItemRectMin().y;
-            ImGui::SameLine();
-            UI::ShiftCursorY(size.y / 4.0f);
-            UI::Image(icon, size);
-            UI::ShiftCursorY(-(size.y / 4.0f));
-            ImGui::SameLine();
-            ImGui::TextUnformatted(Utils::ToUpper(label).c_str());
+            ~ScopedColorStack() { ImGui::PopStyleColor(m_Count); }
 
-            ImGui::PopID();
+          private:
+            int m_Count;
 
-            return open;
+            template <typename ColorType, typename... OtherColors>
+            static void PushColor(ImGuiCol ColorID, ColorType Color, OtherColors&&... otherColorPairs) {
+                if constexpr (sizeof...(otherColorPairs) == 0) {
+                    ImGui::PushStyleColor(ColorID, Color);
+                } else {
+                    ImGui::PushStyleColor(ColorID, Color);
+                    PushColor(std::forward<OtherColors>(otherColorPairs)...);
+                }
+            }
+        };
+
+        class ScopedStyleStack {
+          public:
+            ScopedStyleStack(const ScopedStyleStack&) = delete;
+            ScopedStyleStack& operator=(const ScopedStyleStack&) = delete;
+
+            template <typename ValueType, typename... OtherStylePairs>
+            ScopedStyleStack(ImGuiStyleVar firstStyleVar, ValueType firstValue, OtherStylePairs&&... otherStylePairs)
+                : m_Count((sizeof...(otherStylePairs) / 2) + 1) {
+                static_assert((sizeof...(otherStylePairs) & 1u) == 0,
+                              "ScopedStyleStack constructor expects a list of pairs of Color IDs and Colors as its arguments");
+
+                PushStyle(firstStyleVar, firstValue, std::forward<OtherStylePairs>(otherStylePairs)...);
+            }
+
+            ~ScopedStyleStack() { ImGui::PopStyleVar(m_Count); }
+
+          private:
+            int m_Count;
+
+            template <typename ValueType, typename... OtherStylePairs>
+            static void PushStyle(ImGuiStyleVar styleVar, ValueType value, OtherStylePairs&&... otherStylePairs) {
+                if constexpr (sizeof...(otherStylePairs) == 0) {
+                    ImGui::PushStyleVar(styleVar, value);
+                } else {
+                    ImGui::PushStyleVar(styleVar, value);
+                    PushStyle(std::forward<OtherStylePairs>(otherStylePairs)...);
+                }
+            }
+        };
+
+        // Low Level
+        static void ShiftCursorX(float distance) { ImGui::SetCursorPosX(ImGui::GetCursorPosX() + distance); }
+
+        static void ShiftCursorY(float distance) { ImGui::SetCursorPosY(ImGui::GetCursorPosY() + distance); }
+
+        static void ShiftCursor(float x, float y) {
+            const ImVec2 cursor = ImGui::GetCursorPos();
+            ImGui::SetCursorPos(ImVec2(cursor.x + x, cursor.y + y));
         }
 
         static void PushID() {
@@ -73,6 +137,12 @@ namespace Ethereal
             s_UIContextID--;
         }
 
+        static const char* GenerateID()
+        {
+            itoa(s_Counter++, s_IDBuffer + 2, 16);
+            return s_IDBuffer;
+        }
+
         static void BeginPropertyGrid(uint32_t columns = 2) {
             PushID();
             ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8.0f, 8.0f));
@@ -80,665 +150,205 @@ namespace Ethereal
             ImGui::Columns(columns);
         }
 
-        static bool PropertyGridHeader(const std::string& name, bool openByDefault = true) {
-            ImGuiTreeNodeFlags treeNodeFlags =
-                ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_FramePadding;
-
-            if (openByDefault) treeNodeFlags |= ImGuiTreeNodeFlags_DefaultOpen;
-
-            bool open = false;
-            const float framePaddingX = 6.0f;
-            const float framePaddingY = 6.0f;  // affects height of the header
-
-            UI::ScopedStyle headerRounding(ImGuiStyleVar_FrameRounding, 0.0f);
-            UI::ScopedStyle headerPaddingAndHeight(ImGuiStyleVar_FramePadding, ImVec2{framePaddingX, framePaddingY});
-
-            // UI::PushID();
-            ImGui::PushID(name.c_str());
-            open = ImGui::TreeNodeEx("##dummy_id", treeNodeFlags, name.c_str());
-            // UI::PopID();
-            ImGui::PopID();
-
-            return open;
-        }
-
         static void EndPropertyGrid() {
             ImGui::Columns(1);
-            UI::Draw::Underline();
             ImGui::PopStyleVar(2);  // ItemSpacing, FramePadding
             UI::ShiftCursorY(18.0f);
             PopID();
         }
 
-        static bool BeginTreeNode(const char* name, bool defaultOpen = true) {
-            ImGuiTreeNodeFlags treeNodeFlags = ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_FramePadding;
-            if (defaultOpen) treeNodeFlags |= ImGuiTreeNodeFlags_DefaultOpen;
+        // Utils
+        static void DrawItemActivityOutline(){
+            auto *drawList = ImGui::GetWindowDrawList();
+            ImRect rect = ImRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
+            rect.Min.x -= 1.0f;
+            rect.Min.y -= 1.0f;
+            rect.Max.x += 1.0f;
+            rect.Max.y += 1.0f;
 
-            return ImGui::TreeNodeEx(name, treeNodeFlags);
-        }
-
-        static void EndTreeNode() { ImGui::TreePop(); }
-
-        static const char* GenerateLabelID(std::string_view label)
-        {
-            *fmt::format_to_n(s_LabelIDBuffer, std::size(s_LabelIDBuffer), "{}##{}", label, s_Counter++).out = 0;
-            return s_LabelIDBuffer;
-        }
-
-        static void BeginDisabled(bool disabled = true)
-        {
-            if (disabled)
-                ImGui::BeginDisabled(true);
-        }
-
-        static void EndDisabled()
-        {
-            // NOTE(Peter): Cheeky hack to prevent ImGui from asserting (required due to the nature of UI::BeginDisabled)
-            if (GImGui->DisabledStackSize > 0)
-                ImGui::EndDisabled();
-        }
-
-        static const char* GenerateID()
-        {
-            itoa(s_Counter++, s_IDBuffer + 2, 16);
-            return s_IDBuffer;
-        }
-
-        static void HelpMarker(const char* desc)
-        {
-            ImGui::TextDisabled("(?)");
-            if (ImGui::IsItemHovered())
-            {
-                ImGui::BeginTooltip();
-                ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-                ImGui::TextUnformatted(desc);
-                ImGui::PopTextWrapPos();
-                ImGui::EndTooltip();
+            if (ImGui::IsItemHovered() && !ImGui::IsItemActive()) {
+                drawList->AddRect(rect.Min, rect.Max, ImColor(101, 101, 101), 2.0f, 0, 2.0f);
+            }
+            if (ImGui::IsItemActive()) {
+                drawList->AddRect(rect.Min, rect.Max, ImColor(58, 121, 187), 2.0f, 0, 2.0f);
             }
         }
 
-        static void Property(const char* label, const std::string& value)
-        {
-            ShiftCursor(10.0f, 9.0f);
-            ImGui::Text(label);
-            ImGui::NextColumn();
-            ShiftCursorY(4.0f);
-            ImGui::PushItemWidth(-1);
-            BeginDisabled();
-            ImGui::InputText(GenerateID(), (char*)value.c_str(), value.size(), ImGuiInputTextFlags_ReadOnly);
-            EndDisabled();
-            
-            if (!IsItemDisabled())
-                DrawItemActivityOutline(2.0f, true, Colors::Theme::accent);
+        static bool DragFloat(const char* label, float* v, float v_speed = 1.0f, float v_min = 0.0f, float v_max = 0.0f, const char* format = "%.3f",
+                              ImGuiSliderFlags flags = 0){
+            bool res = ImGui::DragFloat(label, v, v_speed, v_min, v_max, format);
+            UI::DrawItemActivityOutline();
 
-            ImGui::PopItemWidth();
-            ImGui::NextColumn();
-            Draw::Underline();
+            return res;
         }
 
-        static void Property(const char* label, const char* value)
-        {
-            ShiftCursor(10.0f, 9.0f);
-            ImGui::Text(label);
-            ImGui::NextColumn();
-            ShiftCursorY(4.0f);
-            ImGui::PushItemWidth(-1);
-            BeginDisabled();
-            ImGui::InputText(GenerateID(), (char*)value, 256, ImGuiInputTextFlags_ReadOnly);
-            EndDisabled();
+        static void DrawVec3Slider(const std::string& label, Vector3& values){
+            ImGui::TableSetColumnIndex(0);
+            ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 17.0f);
+            ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 7.0f);
+            ImGui::Text("%s", label.c_str());
 
-            if (!IsItemDisabled())
-                DrawItemActivityOutline(2.0f, true, Colors::Theme::accent);
+            // Underline
 
-            ImGui::PopItemWidth();
-            ImGui::NextColumn();
-            Draw::Underline();
-        }
+            ImGui::TableSetColumnIndex(1);
+            ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 7.0f);
+            ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 0.0f);
 
-        static bool Property(const char* label, char* value, size_t length)
-        {
-            ShiftCursor(10.0f, 9.0f);
-            ImGui::Text(label);
-            ImGui::NextColumn();
-            ShiftCursorY(4.0f);
-            ImGui::PushItemWidth(-1);
+            const float spacingX = 4.0f;
+            const float spacing = 4.0f;  // spacing between the button and float slider
+            const float lineHeight = ImGui::GetTextLineHeightWithSpacing();
+            const ImVec2 buttonSize = {lineHeight, lineHeight};
+            const float inputItemWidth = (ImGui::GetContentRegionAvail().x - spacingX) / 3.0f - buttonSize.x - spacing * 2.0f;
 
-            bool modified = ImGui::InputText(GenerateID(), value, length);
-
-            if (!IsItemDisabled())
-                DrawItemActivityOutline(2.0f, true, Colors::Theme::accent);
-
-            ImGui::PopItemWidth();
-            ImGui::NextColumn();
-            Draw::Underline();
-
-            return modified;
-        }
-
-        static bool Property(const char* label, bool& value, const char* helpText = "")
-        {
-            bool modified = false;
-
-            ShiftCursor(10.0f, 9.0f);
-            ImGui::Text(label);
-            if (std::strlen(helpText) != 0)
+            ScopedStyleStack style(ImGuiStyleVar_ItemSpacing, ImVec2{spacingX, 0.0f}, ImGuiStyleVar_WindowPadding, ImVec2{0.0f, 2.0f});
             {
+                ScopedColorStack style(ImGuiCol_Border, IM_COL32(0, 0, 0, 0), ImGuiCol_FrameBg, IM_COL32(0, 0, 0, 0));
+                ImGui::BeginChild(ImGui::GetID((label + "fr").c_str()),
+                                  ImVec2(ImGui::GetContentRegionAvail().x - spacingX, ImGui::GetFrameHeightWithSpacing() + 8.0f),
+                                  ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+            }
+            const ImGuiIO &io = ImGui::GetIO();
+            auto boldFont = io.Fonts->Fonts[1];
+
+            auto drawControl = [&](const std::string &label, float &value, const ImVec4 &colorN, const ImVec4 &colorH, const ImVec4 &colorP) {
+                {
+                    ScopedStyle style(ImGuiStyleVar_FrameRounding, 1.0f);
+                    ScopedColorStack colorStack(ImGuiCol_Button, colorN, ImGuiCol_ButtonHovered, colorH, ImGuiCol_ButtonActive, colorP);
+                    ScopedFont boldFontScope(boldFont);
+                    if (ImGui::Button(label.c_str(), buttonSize)) {
+                        value = 0.0f;
+                    }
+                }
+                ImGui::SameLine(0.0f, spacing);
+                ImGui::SetNextItemWidth(inputItemWidth);
+
+                UI::DragFloat(("##" + label).c_str(), &value, 0.1f, 0.0f, 0.0f,"%.2f");
+            };
+
+            ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
+            drawControl("X", values.x, ImVec4{0.8f, 0.1f, 0.15f, 1.0f}, ImVec4{0.9f, 0.2f, 0.2f, 1.0f}, ImVec4{0.8f, 0.1f, 0.15f, 1.0f});
+
+            ImGui::SameLine(0.0f, spacing);
+            drawControl("Y", values.y, ImVec4{0.2f, 0.7f, 0.2f, 1.0f}, ImVec4{0.3f, 0.8f, 0.3f, 1.0f}, ImVec4{0.2f, 0.7f, 0.2f, 1.0f});
+
+            ImGui::SameLine(0.0f, spacing);
+            drawControl("Z", values.z, ImVec4{0.1f, 0.25f, 0.8f, 1.0f}, ImVec4{0.2f, 0.35f, 0.9f, 1.0f}, ImVec4{0.1f, 0.25f, 0.8f, 1.0f});
+
+            ImGui::EndChild();
+        }
+
+        // Widgets
+        static bool ComponentHeader(const char* label, ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_None){
+            bool open;
+            {
+                ScopedStyle style(ImGuiStyleVar_FrameRounding, 0.0f);
+                std::string const &cc = "##dummy_id_" + std::string(label);
+                open = ImGui::CollapsingHeader(cc.c_str(), flags | ImGuiTreeNodeFlags_SpanFullWidth);
+            }
+
+            const ImGuiIO &io = ImGui::GetIO();
+            auto boldFont = io.Fonts->Fonts[1];
+
+            ScopedFont boldFontScope(boldFont);
+            ImGui::SameLine();
+            ImGui::Button("A", {20.0f, 20.0f});
+            ImGui::SameLine(0.0f, 20.0f);
+            ImGui::TextUnformatted(label);
+
+            ImGui::SameLine(ImGui::GetContentRegionAvail().x - 30.0f, 0.0f);
+            ImGui::Button("B", {20.0f, 20.0f});
+
+            return open;
+        }
+
+        static bool DragDropBar(const char* label, const char* payload, float label_shift = 20.0f, float text_shift = 50.0f){
+            UI::ScopedStyle style(ImGuiStyleVar_FrameRounding, 2.0f);
+
+            ImGui::SetCursorPosX(ImGui::GetCursorPosX() + label_shift);
+            ImGui::TextUnformatted(label);
+
+            ImGui::SameLine(0.0f, text_shift);
+            ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - 10.0f);
+            ImGui::InputText("##dragdrop", (char *)payload, 256, ImGuiInputTextFlags_ReadOnly | ImGuiInputTextFlags_NoMarkEdited);
+            if (ImGui::BeginDragDropTarget()) {
+                if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("PAYLOAD")) {
+                    IM_ASSERT(payload->DataSize == sizeof(int));
+                    int payload_n = *(const int *)payload->Data;
+                    std::cout << "Dropped " << payload_n << std::endl;
+                }
+                ImGui::EndDragDropTarget();
+            }
+            DrawItemActivityOutline();
+
+            ImGui::SameLine(0.0f, 0.0f);
+            ImGui::SetCursorPosX(ImGui::GetCursorPosX() - 20.0f);
+
+            {
+                UI::ScopedColor(ImGuiCol_Button, IM_COL32(55, 55, 55, 255));
+                ImGui::Button("B", {20.0f, 20.0f});
+            }
+
+            DrawItemActivityOutline();
+
+            return false;
+        }
+
+        static bool ListHeader(const char* label) {
+            static int value = 2;
+            std::string cc = "##dummy_id_" + std::string(label);
+            bool open;
+
+            {
+                UI::ScopedColorStack(ImGuiCol_Border, IM_COL32(0, 0, 0, 0), ImGuiCol_Header, Colors::Theme::background);
+                open = ImGui::CollapsingHeader(cc.c_str());
+            }
+
+            const ImGuiIO &io = ImGui::GetIO();
+            ImFont *boldFont = io.Fonts->Fonts[1];
+
+            {
+                UI::ScopedFont font(boldFont);
                 ImGui::SameLine();
-                HelpMarker(helpText);
-            }
-            ImGui::NextColumn();
-            ShiftCursorY(4.0f);
-            ImGui::PushItemWidth(-1);
-
-            modified = ImGui::Checkbox(GenerateID(), &value);
-
-            if (!IsItemDisabled())
-                DrawItemActivityOutline(2.0f, true, Colors::Theme::accent);
-
-            ImGui::PopItemWidth();
-            ImGui::NextColumn();
-            Draw::Underline();
-
-            return modified;
-        }
-
-        static bool Property(const char* label, int8_t& value, int8_t min = 0, int8_t max = 0)
-        {
-            ShiftCursor(10.0f, 9.0f);
-            ImGui::Text(label);
-            ImGui::NextColumn();
-            ShiftCursorY(4.0f);
-            ImGui::PushItemWidth(-1);
-
-            bool modified = UI::DragInt8(GenerateID(), &value, 1.0f, min, max);
-
-            if (!IsItemDisabled())
-                DrawItemActivityOutline(2.0f, true, Colors::Theme::accent);
-
-            ImGui::PopItemWidth();
-            ImGui::NextColumn();
-            Draw::Underline();
-
-            return modified;
-        }
-
-        static bool Property(const char* label, int16_t& value, int16_t min = 0, int16_t max = 0)
-        {
-            ShiftCursor(10.0f, 9.0f);
-            ImGui::Text(label);
-            ImGui::NextColumn();
-            ShiftCursorY(4.0f);
-            ImGui::PushItemWidth(-1);
-
-            bool modified = UI::DragInt16(GenerateID(), &value, 1.0f, min, max);
-
-            if (!IsItemDisabled())
-                DrawItemActivityOutline(2.0f, true, Colors::Theme::accent);
-
-            ImGui::PopItemWidth();
-            ImGui::NextColumn();
-            Draw::Underline();
-
-            return modified;
-        }
-
-        static bool Property(const char* label, int32_t& value, int32_t min = 0, int32_t max = 0)
-        {
-            ShiftCursor(10.0f, 9.0f);
-            ImGui::Text(label);
-            ImGui::NextColumn();
-            ShiftCursorY(4.0f);
-            ImGui::PushItemWidth(-1);
-
-            bool modified = UI::DragInt32(GenerateID(), &value, 1.0f, min, max);
-
-            if (!IsItemDisabled())
-                DrawItemActivityOutline(2.0f, true, Colors::Theme::accent);
-
-            ImGui::PopItemWidth();
-            ImGui::NextColumn();
-            Draw::Underline();
-
-            return modified;
-        }
-
-        static bool Property(const char* label, int64_t& value, int64_t min = 0, int64_t max = 0)
-        {
-            ShiftCursor(10.0f, 9.0f);
-            ImGui::Text(label);
-            ImGui::NextColumn();
-            ShiftCursorY(4.0f);
-            ImGui::PushItemWidth(-1);
-
-            bool modified = UI::DragInt64(GenerateID(), &value, 1.0f, min, max);
-
-            if (!IsItemDisabled())
-                DrawItemActivityOutline(2.0f, true, Colors::Theme::accent);
-
-            ImGui::PopItemWidth();
-            ImGui::NextColumn();
-            Draw::Underline();
-
-            return modified;
-        }
-
-        static bool Property(const char* label, uint8_t& value, uint8_t minValue = 0, uint8_t maxValue = 0)
-        {
-            ShiftCursor(10.0f, 9.0f);
-            ImGui::Text(label);
-            ImGui::NextColumn();
-            ShiftCursorY(4.0f);
-            ImGui::PushItemWidth(-1);
-
-            bool modified = UI::DragUInt8(GenerateID(), &value, 1.0f, minValue, maxValue);
-
-            if (!IsItemDisabled())
-                DrawItemActivityOutline(2.0f, true, Colors::Theme::accent);
-
-            ImGui::PopItemWidth();
-            ImGui::NextColumn();
-            Draw::Underline();
-
-            return modified;
-        }
-
-        static bool Property(const char* label, uint16_t& value, uint16_t minValue = 0, uint16_t maxValue = 0)
-        {
-            ShiftCursor(10.0f, 9.0f);
-            ImGui::Text(label);
-            ImGui::NextColumn();
-            ShiftCursorY(4.0f);
-            ImGui::PushItemWidth(-1);
-
-            bool modified = UI::DragUInt16(GenerateID(), &value, 1.0f, minValue, maxValue);
-
-            if (!IsItemDisabled())
-                DrawItemActivityOutline(2.0f, true, Colors::Theme::accent);
-
-            ImGui::PopItemWidth();
-            ImGui::NextColumn();
-            Draw::Underline();
-
-            return modified;
-        }
-
-        static bool Property(const char* label, uint32_t& value, uint32_t minValue = 0, uint32_t maxValue = 0)
-        {
-            ShiftCursor(10.0f, 9.0f);
-            ImGui::Text(label);
-            ImGui::NextColumn();
-            ShiftCursorY(4.0f);
-            ImGui::PushItemWidth(-1);
-
-            bool modified = UI::DragUInt32(GenerateID(), &value, 1.0f, minValue, maxValue);
-
-            if (!IsItemDisabled())
-                DrawItemActivityOutline(2.0f, true, Colors::Theme::accent);
-
-            ImGui::PopItemWidth();
-            ImGui::NextColumn();
-            Draw::Underline();
-
-            return modified;
-        }
-
-        static bool Property(const char* label, uint64_t& value, uint64_t minValue = 0, uint64_t maxValue = 0)
-        {
-            ShiftCursor(10.0f, 9.0f);
-            ImGui::Text(label);
-            ImGui::NextColumn();
-            ShiftCursorY(4.0f);
-            ImGui::PushItemWidth(-1);
-
-            bool modified = UI::DragUInt64(GenerateID(), &value, 1.0f, minValue, maxValue);
-
-            if (!IsItemDisabled())
-                DrawItemActivityOutline(2.0f, true, Colors::Theme::accent);
-
-            ImGui::PopItemWidth();
-            ImGui::NextColumn();
-            Draw::Underline();
-
-            return modified;
-        }
-
-        static bool Property(const char* label, float& value, float delta = 0.1f, float min = 0.0f, float max = 0.0f, const char* helpText = "")
-        {
-            ShiftCursor(10.0f, 9.0f);
-            ImGui::Text(label);
-            if (std::strlen(helpText) != 0)
-            {
-                ImGui::SameLine();
-                HelpMarker(helpText);
-            }
-            ImGui::NextColumn();
-            ShiftCursorY(4.0f);
-            ImGui::PushItemWidth(-1);
-
-            bool modified = UI::DragFloat(GenerateID(), &value, delta, min, max);
-
-            if (!IsItemDisabled())
-                DrawItemActivityOutline(2.0f, true, Colors::Theme::accent);
-
-            ImGui::PopItemWidth();
-            ImGui::NextColumn();
-            Draw::Underline();
-
-            return modified;
-        }
-
-        static bool Property(const char* label, double& value, float delta = 0.1f, double min = 0.0, double max = 0.0)
-        {
-            ShiftCursor(10.0f, 9.0f);
-            ImGui::Text(label);
-            ImGui::NextColumn();
-            ShiftCursorY(4.0f);
-            ImGui::PushItemWidth(-1);
-
-            bool modified = UI::DragDouble(GenerateID(), &value, delta, min, max);
-
-            if (!IsItemDisabled())
-                DrawItemActivityOutline(2.0f, true, Colors::Theme::accent);
-
-            ImGui::PopItemWidth();
-            ImGui::NextColumn();
-            Draw::Underline();
-
-            return modified;
-        }
-
-        static bool Property(const char* label, glm::vec2& value, float delta = 0.1f, float min = 0.0f, float max = 0.0f)
-        {
-            ShiftCursor(10.0f, 9.0f);
-            ImGui::Text(label);
-            ImGui::NextColumn();
-            ShiftCursorY(4.0f);
-            ImGui::PushItemWidth(-1);
-
-            bool modified = ImGui::DragFloat2(GenerateID(), glm::value_ptr(value), delta, min, max);
-
-            if (!IsItemDisabled())
-                DrawItemActivityOutline(2.0f, true, Colors::Theme::accent);
-
-            ImGui::PopItemWidth();
-            ImGui::NextColumn();
-            Draw::Underline();
-
-            return modified;
-        }
-
-        static bool Property(const char* label, glm::vec3& value, float delta = 0.1f, float min = 0.0f, float max = 0.0f, const char* helpText = "")
-        {
-            ShiftCursor(10.0f, 9.0f);
-            ImGui::Text(label);
-
-            if (std::strlen(helpText) != 0)
-            {
-                ImGui::SameLine();
-                HelpMarker(helpText);
+                ImGui::TextUnformatted(label);
             }
 
-            ImGui::NextColumn();
-            ShiftCursorY(4.0f);
-            ImGui::PushItemWidth(-1);
+            if (value <= 1) value = 1;
+            if (open) {
+                float spacing = 30.0f;  // child window left and right spacing
+                float height = 30.0f * value;
+                float width = ImGui::GetWindowContentRegionWidth() - 20.0f - spacing;
 
-            bool modified = ImGui::DragFloat3(GenerateID(), glm::value_ptr(value), delta, min, max);
-
-            if (!IsItemDisabled())
-                DrawItemActivityOutline(2.0f, true, Colors::Theme::accent);
-
-            ImGui::PopItemWidth();
-            ImGui::NextColumn();
-            Draw::Underline();
-
-            return modified;
-        }
-
-        static bool Property(const char* label, glm::vec4& value, float delta = 0.1f, float min = 0.0f, float max = 0.0f)
-        {
-            ShiftCursor(10.0f, 9.0f);
-            ImGui::Text(label);
-            ImGui::NextColumn();
-            ShiftCursorY(4.0f);
-            ImGui::PushItemWidth(-1);
-
-            bool modified = ImGui::DragFloat4(GenerateID(), glm::value_ptr(value), delta, min, max);
-
-            if (!IsItemDisabled())
-                DrawItemActivityOutline(2.0f, true, Colors::Theme::accent);
-
-            ImGui::PopItemWidth();
-            ImGui::NextColumn();
-            Draw::Underline();
-
-            return modified;
-        }
-
-        static bool PropertyDropdown(const char* label, const char** options, int32_t optionCount, int32_t* selected)
-        {
-            const char* current = options[*selected];
-            ShiftCursor(10.0f, 9.0f);
-            ImGui::Text(label);
-            ImGui::NextColumn();
-            ShiftCursorY(4.0f);
-            ImGui::PushItemWidth(-1);
-
-            bool modified = false;
-
-            const std::string id = "##" + std::string(label);
-            if (ImGui::BeginCombo(id.c_str(), current))
-            {
-                for (int i = 0; i < optionCount; i++)
                 {
-                    const bool is_selected = (current == options[i]);
-                    if (ImGui::Selectable(options[i], is_selected))
-                    {
-                        current = options[i];
-                        *selected = i;
-                        modified = true;
+                    UI::ScopedColorStack colorStack(ImGuiCol_Border, IM_COL32(40, 40, 40, 255), ImGuiCol_ChildBg, IM_COL32(65, 65, 65, 255));
+                    UI::ScopedStyleStack styleStack(ImGuiStyleVar_ChildBorderSize, 1.0f, ImGuiStyleVar_ChildRounding, 2.0f);
+
+                    ImGui::SetCursorPosX(ImGui::GetCursorPosX() + spacing);
+                    ImGui::BeginChild(ImGui::GetID((std::string(label) + "child").c_str()), ImVec2(width, height), true);
+
+                    for (int i = 0; i < value; i++) {
+                        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 5.0f);
+                        ImGui::Button("A", {20.0f, 20.0f});
+
+                        ImGui::SameLine();
+                        std::string payload = "E " + std::to_string(i);
+                        std::string elementlabel = "Element " + std::to_string(i);
+                        DragDropBar(elementlabel.c_str(), payload.c_str(), 10.0f, 10.0f);
                     }
-                    if (is_selected)
-                        ImGui::SetItemDefaultFocus();
-                }
-                ImGui::EndCombo();
-            }
-
-            if (!IsItemDisabled())
-                DrawItemActivityOutline(2.0f, true, Colors::Theme::accent);
-
-            ImGui::PopItemWidth();
-            ImGui::NextColumn();
-            Draw::Underline();
-
-            return modified;
-        }
-
-        template<typename T, typename Fn>
-        static bool PropertyAssetReferenceTarget(const char* label, const char* assetName, AssetHandle& outHandle, Fn&& targetFunc, const PropertyAssetReferenceSettings& settings = PropertyAssetReferenceSettings())
-        {
-            bool modified = false;
-
-            ShiftCursor(10.0f, 9.0f);
-            ImGui::Text(label);
-            ImGui::NextColumn();
-            ShiftCursorY(4.0f);
-            ImGui::PushItemWidth(-1);
-            if (settings.NoItemSpacing)
-                ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { 0.0f, 0.0f });
-
-            ImVec2 originalButtonTextAlign = ImGui::GetStyle().ButtonTextAlign;
-            ImGui::GetStyle().ButtonTextAlign = { 0.0f, 0.5f };
-            float width = ImGui::GetContentRegionAvail().x - settings.WidthOffset;
-            UI::PushID();
-
-            float itemHeight = 28.0f;
-
-            std::string buttonText = "Null";
-
-            if (AssetManager::IsAssetHandleValid(outHandle))
-            {
-                auto source = AssetManager::GetAsset<T>(outHandle);
-                if (source && !source->IsFlagSet(AssetFlag::Missing))
-                {
-                    if (assetName)
-                    {
-                        buttonText = assetName;
-                    }
-                    else
-                    {
-                        buttonText = AssetManager::GetMetadata(outHandle).FilePath.stem().string();
-                        assetName = buttonText.c_str();
-                    }
-                }
-                else
-                {
-                    buttonText = "Missing";
-                }
-            }
-
-            if ((GImGui->CurrentItemFlags & ImGuiItemFlags_MixedValue) != 0)
-                buttonText = "---";
-
-            // PropertyAssetReferenceTarget could be called multiple times in same "context"
-            // and so we need a unique id for the asset search popup each time.
-            // notes
-            // - don't use GenerateID(), that's inviting id clashes, which would be super confusing.
-            // - don't store return from GenerateLabelId in a const char* here. Because its pointing to an internal
-            //   buffer which may get overwritten by the time you want to use it later on.
-            std::string assetSearchPopupID = GenerateLabelID("ARTSP");
-
-            if (ImGui::Button(GenerateLabelID(buttonText), { width, itemHeight }))
-            {
-                ImGui::OpenPopup(assetSearchPopupID.c_str());
-            }
-            ImGui::GetStyle().ButtonTextAlign = originalButtonTextAlign;
-
-            bool clear = false;
-//            if (Widgets::AssetSearchPopup(assetSearchPopupID.c_str(), T::GetStaticType(), outHandle, &clear))
-//            {
-//                if (clear)
-//                    outHandle = 0;
-//
-//                targetFunc(AssetManager::GetAsset<T>(outHandle));
-//                modified = true;
-//            }
-
-            UI::PopID();
-
-            if (ImGui::BeginDragDropTarget())
-            {
-                auto data = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM");
-
-                if (data)
-                {
-                    AssetHandle assetHandle = *(AssetHandle*)data->Data;
-                    // s_PropertyAssetReferenceAssetHandle = assetHandle;
-                    Ref<Asset> asset = AssetManager::GetAsset<Asset>(assetHandle);
-                    if (asset && asset->GetAssetType() == T::GetStaticType())
-                    {
-                        targetFunc(asset.As<T>());
-                        modified = true;
-                    }
-                }
-            }
-
-            if (!IsItemDisabled())
-                DrawItemActivityOutline(2.0f, true, Colors::Theme::accent);
-
-            ImGui::PopItemWidth();
-            if (settings.AdvanceToNextColumn)
-            {
-                ImGui::NextColumn();
-                Draw::Underline();
-            }
-            if (settings.NoItemSpacing)
-                ImGui::PopStyleVar();
-            return modified;
-        }
-
-        template<typename T>
-        static bool PropertyAssetReference(const char* label, AssetHandle& outHandle, const PropertyAssetReferenceSettings& settings = PropertyAssetReferenceSettings())
-        {
-            bool modified = false;
-
-            ShiftCursor(10.0f, 9.0f);
-            ImGui::Text(label);
-            ImGui::NextColumn();
-            ShiftCursorY(4.0f);
-            ImGui::PushItemWidth(-1);
-
-            ImVec2 originalButtonTextAlign = ImGui::GetStyle().ButtonTextAlign;
-            {
-                ImGui::GetStyle().ButtonTextAlign = { 0.0f, 0.5f };
-                float width = ImGui::GetContentRegionAvail().x - settings.WidthOffset;
-                float itemHeight = 28.0f;
-
-                std::string buttonText = "Null";
-                if (AssetManager::IsAssetHandleValid(outHandle))
-                {
-                    auto object = AssetManager::GetAsset<T>(outHandle);
-                    if (object && !object->IsFlagSet(AssetFlag::Missing))
-                    {
-                        if (settings.ShowFullFilePath)
-                            buttonText = AssetManager::GetMetadata(outHandle).FilePath.string();
-                        else
-                            buttonText = AssetManager::GetMetadata(outHandle).FilePath.stem().string();
-                    }
-                    else
-                    {
-                        buttonText = "Missing";
-                    }
+                    ImGui::EndChild();
                 }
 
-                if ((GImGui->CurrentItemFlags & ImGuiItemFlags_MixedValue) != 0)
-                    buttonText = "---";
+                UI::ScopedFont font(boldFont);
 
-                // PropertyAssetReference could be called multiple times in same "context"
-                // and so we need a unique id for the asset search popup each time.
-                // notes
-                // - don't use GenerateID(), that's inviting id clashes, which would be super confusing.
-                // - don't store return from GenerateLabelId in a const char* here. Because its pointing to an internal
-                //   buffer which may get overwritten by the time you want to use it later on.
-                std::string assetSearchPopupID = GenerateLabelID("ARSP");
-
-                ImGui::PushStyleColor(ImGuiCol_Text, settings.ButtonLabelColor);
-                if (ImGui::Button(GenerateLabelID(buttonText), {width, itemHeight}))
-                {
-                    ImGui::OpenPopup(assetSearchPopupID.c_str());
-                }
-                ImGui::PopStyleColor();
-                ImGui::GetStyle().ButtonTextAlign = originalButtonTextAlign;
+                ImGui::SetCursorPosX(width - 40.0f);
+                ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 8.0f);
+                if (ImGui::Button("+", {20.0f, 20.0f})) value++;
+                ImGui::SameLine(0.0f, 5.0f);
+                if (ImGui::Button("-", {20.0f, 20.0f})) value--;
             }
 
-            if (ImGui::BeginDragDropTarget())
-            {
-                auto data = ImGui::AcceptDragDropPayload("asset_payload");
-
-                if (data)
-                {
-                    AssetHandle assetHandle = *(AssetHandle*)data->Data;
-                    const auto& metadata = AssetManager::GetMetadata(assetHandle);
-
-                    if (metadata.Type == T::GetStaticType())
-                    {
-                        outHandle = assetHandle;
-                        modified = true;
-                    }
-                }
-            }
-
-            if (!IsItemDisabled())
-                DrawItemActivityOutline(2.0f, true, Colors::Theme::accent);
-
-            ImGui::PopItemWidth();
-            if (settings.AdvanceToNextColumn)
-            {
-                ImGui::NextColumn();
-                Draw::Underline();
-            }
-
-            return modified;
+            return open;
         }
+
 
     };  // namespace UI
 

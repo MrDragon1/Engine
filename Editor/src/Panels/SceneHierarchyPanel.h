@@ -22,18 +22,15 @@ namespace Ethereal
 
 
       private:
+        void ShowInspector();
+        void ShowHierarchy();
         void DrawEntityNode(Entity entity);
-        void DrawComponents(Entity entity);
         void DrawEntityCreateMenu(Entity parent = {});
         template<typename TComponent, typename UIFunction>
         void DrawComponent(const std::string& name, UIFunction uiFunction, Ref<Texture2D> icon = nullptr);
       private:
         Ref<Scene> m_Context;
         SelectionContext m_SelectionContext;
-
-        bool m_IsWindowFocused = false;
-        int32_t m_FirstSelectedRow = -1;
-        int32_t m_LastSelectedRow = -1;
 
         static SelectionContext s_ActiveSelectionContext;
     };

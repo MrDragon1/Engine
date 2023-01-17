@@ -104,6 +104,9 @@ Assets:
   - Handle: 3367218387622807080
     FilePath: meshes\vampire\dancing_vampire.EAnimator
     Type: Animator
+  - Handle: 3385713930601565782
+    FilePath: fonts\arial\arialbd.ttf
+    Type: Font
   - Handle: 3411737668355452368
     FilePath: meshes\gun\08 - Default.EMaterial
     Type: Material
@@ -506,6 +509,9 @@ Assets:
   - Handle: 14400185364690222598
     FilePath: buildin\Editor\Viewport\MoveTool.png
     Type: Texture
+  - Handle: 14413617198302929141
+    FilePath: fonts\arial\arial.ttf
+    Type: Font
   - Handle: 14473103724496630534
     FilePath: textures\gold\metallic.png
     Type: Texture

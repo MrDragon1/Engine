@@ -31,8 +31,8 @@ namespace Ethereal
         io.ConfigViewportsNoAutoMerge = true;
         // io.ConfigViewportsNoTaskBarIcon = true;
 
-        io.Fonts->AddFontFromFileTTF("assets/fonts/opensans/OpenSans-Bold.ttf", 18.0f);
-        io.FontDefault = io.Fonts->AddFontFromFileTTF("assets/fonts/opensans/OpenSans-Regular.ttf", 18.0f);
+        io.Fonts->AddFontFromFileTTF("assets/fonts/arial/arialbd.ttf", 14.0f);
+        io.FontDefault = io.Fonts->AddFontFromFileTTF("assets/fonts/arial/arial.ttf", 14.0f);
 
         // Setup Dear ImGui style
         ImGui::StyleColorsDark();
@@ -102,9 +102,8 @@ namespace Ethereal
     }
 
     void ImGuiLayer::SetDarkThemeColors() {
-        auto& style = ImGui::GetStyle();
-        auto& colors = ImGui::GetStyle().Colors;
-
+        auto &style = ImGui::GetStyle();
+        auto &colors = ImGui::GetStyle().Colors;
         //========================================================
         /// Colors
 
@@ -125,8 +124,8 @@ namespace Ethereal
 
         // Tabs
         colors[ImGuiCol_Tab] = ImGui::ColorConvertU32ToFloat4(Colors::Theme::titlebar);
-        colors[ImGuiCol_TabHovered] = ImColor(255, 225, 135, 30);
-        colors[ImGuiCol_TabActive] = ImColor(255, 225, 135, 60);
+        colors[ImGuiCol_TabHovered] = ImColor(60, 60, 60, 255);
+        colors[ImGuiCol_TabActive] = ImColor(60, 60, 60, 255);
         colors[ImGuiCol_TabUnfocused] = ImGui::ColorConvertU32ToFloat4(Colors::Theme::titlebar);
         colors[ImGuiCol_TabUnfocusedActive] = colors[ImGuiCol_TabHovered];
 
@@ -157,7 +156,7 @@ namespace Ethereal
         colors[ImGuiCol_Text] = ImGui::ColorConvertU32ToFloat4(Colors::Theme::text);
 
         // Checkbox
-        colors[ImGuiCol_CheckMark] = ImGui::ColorConvertU32ToFloat4(Colors::Theme::text);
+        colors[ImGuiCol_CheckMark] = ImColor(141, 200, 164, 255);
 
         // Separator
         colors[ImGuiCol_Separator] = ImGui::ColorConvertU32ToFloat4(Colors::Theme::backgroundDark);
@@ -165,14 +164,21 @@ namespace Ethereal
         colors[ImGuiCol_SeparatorHovered] = ImColor(39, 185, 242, 150);
 
         // Window Background
-        colors[ImGuiCol_WindowBg] = ImGui::ColorConvertU32ToFloat4(Colors::Theme::titlebar);
+        colors[ImGuiCol_WindowBg] = ImGui::ColorConvertU32ToFloat4(Colors::Theme::background);
         colors[ImGuiCol_ChildBg] = ImGui::ColorConvertU32ToFloat4(Colors::Theme::background);
         colors[ImGuiCol_PopupBg] = ImGui::ColorConvertU32ToFloat4(Colors::Theme::backgroundPopup);
-        colors[ImGuiCol_Border] = ImGui::ColorConvertU32ToFloat4(Colors::Theme::backgroundDark);
+        colors[ImGuiCol_Border] = ImGui::ColorConvertU32ToFloat4(Colors::Theme::border);
+        colors[ImGuiCol_FrameBg] = ImGui::ColorConvertU32ToFloat4(Colors::Theme::framebg);
+        colors[ImGuiCol_FrameBgHovered] = ImColor(70, 70, 70, 255);
+        colors[ImGuiCol_FrameBgActive] = ImColor(70, 70, 70, 255);
 
         // Tables
         colors[ImGuiCol_TableHeaderBg] = ImGui::ColorConvertU32ToFloat4(Colors::Theme::groupHeader);
         colors[ImGuiCol_TableBorderLight] = ImGui::ColorConvertU32ToFloat4(Colors::Theme::backgroundDark);
+        colors[ImGuiCol_TableRowBg] = ImVec4{0.0f, 0.0f, 0.0f, 0.0f};
+        colors[ImGuiCol_TableRowBgAlt] = ImVec4{0.0f, 0.0f, 0.0f, 0.0f};
+        colors[ImGuiCol_TableBorderStrong] = ImVec4{0.0f, 0.0f, 0.0f, 0.0f};
+
 
         // Menubar
         colors[ImGuiCol_MenuBarBg] = ImVec4{0.0f, 0.0f, 0.0f, 0.0f};
