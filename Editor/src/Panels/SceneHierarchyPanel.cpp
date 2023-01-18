@@ -174,16 +174,19 @@ namespace Ethereal
                                        | ImGuiTableFlags_Resizable
                                        | ImGuiTableFlags_RowBg
                                        | ImGuiTableFlags_NoBordersInBody
-                                       | ImGuiTableFlags_ScrollX;
+                                       | ImGuiTableFlags_ScrollX
+                                       // | ImGuiTableFlags_SizingFixedFit
+                                       ;
 
         if (ImGui::BeginTable("HierarchyTable", 3, flags))
         {
             // The first column will use the default _WidthStretch when ScrollX is Off and _WidthFixed when ScrollX is On
             ImGui::TableSetupColumn("##Visible");
-            ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_NoHide);
+            ImGui::TableSetupColumn("Name");
             ImGui::TableSetupColumn("Type");
-            ImGui::TableHeadersRow();
 
+
+            ImGui::TableHeadersRow();
 
             struct EntityNode
             {

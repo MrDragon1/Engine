@@ -341,6 +341,9 @@ Assets:
   - Handle: 10827238871968035892
     FilePath: meshes\source\monkey.obj
     Type: MeshSource
+  - Handle: 10936813645864677239
+    FilePath: buildin\Editor\folder.png
+    Type: Texture
   - Handle: 10940417658597523022
     FilePath: meshes\vampire\dancing_vampire.EMesh
     Type: Mesh
@@ -545,6 +548,9 @@ Assets:
   - Handle: 17972891589442320473
     FilePath: meshes\vampire\dancing_vampire.EAnimator
     Type: Animator
+  - Handle: 18009467461989156876
+    FilePath: buildin\Editor\file.png
+    Type: Texture
   - Handle: 18245045781855712380
     FilePath: meshes\gun\Cerberus_LP.fbx
     Type: MeshSource

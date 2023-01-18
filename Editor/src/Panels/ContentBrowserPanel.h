@@ -18,8 +18,5 @@ namespace Ethereal
       private:
         std::filesystem::path m_CurrentDirectory;
         Ref<Scene> m_SceneContext;
-
-        Ref<Texture2D> m_DirectoryIcon;
-        Ref<Texture2D> m_FileIcon;
     };
 }  // namespace Ethereal

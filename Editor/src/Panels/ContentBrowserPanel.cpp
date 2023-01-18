@@ -1,3 +1,5 @@
+#include <Core/Editor/EditorResource.h>
+#include <Base/ImGui/UI.h>
 #include "pch.h"
 #include "ContentBrowserPanel.h"
 #include "Core/Asset/AssetManager.h"
@@ -18,8 +20,7 @@ namespace Ethereal
     }  // namespace Utils
 
     ContentBrowserPanel::ContentBrowserPanel() : m_CurrentDirectory(Project::GetAssetDirectory()) {
-        m_DirectoryIcon = Texture2D::Create("assets/icons/ContentBrowser/DirectoryIcon.png");
-        m_FileIcon = Texture2D::Create("assets/icons/ContentBrowser/FileIcon.png");
+
     }
 
     void ContentBrowserPanel::OnEvent(Event& event){
@@ -50,13 +51,16 @@ namespace Ethereal
 
             ImGui::PushID(filenameString.c_str());
 
-            Ref<Texture2D> icon = directoryEntry.is_directory() ? m_DirectoryIcon : m_FileIcon;
-            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
-            if (Utils::IsImageFormat(path.string())) {
-                Ref<Texture2D> img = AssetManager::GetAsset<Texture>(path.string()).As<Texture2D>();
-                ImGui::ImageButton((ImTextureID)img->GetRendererID(), {thumbnailSize, thumbnailSize}, {0, 1}, {1, 0});
-            } else
-                ImGui::ImageButton((ImTextureID)icon->GetRendererID(), {thumbnailSize, thumbnailSize}, {0, 1}, {1, 0});
+            Ref<Texture2D> icon = directoryEntry.is_directory() ? EditorResource::FolderIcon : EditorResource::FileIcon;
+            {
+                UI::ScopedColorStack style(ImGuiCol_Border, IM_COL32(0, 0, 0, 0),ImGuiCol_Button, IM_COL32(0, 0, 0, 0));
+                if (Utils::IsImageFormat(path.string())) {
+                    Ref<Texture2D> img = AssetManager::GetAsset<Texture>(path.string()).As<Texture2D>();
+                    ImGui::ImageButton((ImTextureID)img->GetRendererID(), {thumbnailSize, thumbnailSize}, {0, 1}, {1, 0});
+                } else
+                    ImGui::ImageButton((ImTextureID)icon->GetRendererID(), {thumbnailSize, thumbnailSize}, {0, 1}, {1, 0});
+
+            }
 
             if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
                 AssetHandle handle = AssetManager::GetAssetHandleFromFilePath(path);
@@ -64,7 +68,7 @@ namespace Ethereal
                 ImGui::EndDragDropSource();
             }
 
-            ImGui::PopStyleColor();
+
             if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
                 if (directoryEntry.is_directory()) m_CurrentDirectory /= path.filename();
             }
