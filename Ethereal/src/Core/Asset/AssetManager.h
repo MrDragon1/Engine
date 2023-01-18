@@ -32,6 +32,8 @@ namespace Ethereal
         static AssetType GetAssetTypeFromExtension(const std::string& extension);
         static AssetType GetAssetTypeFromPath(const std::filesystem::path& path);
 
+        static Ref<Texture2D> GetAssetIconFromExtension(const std::string& extension);
+
         template <typename T>
         static bool LoadAsset_Ref(const std::filesystem::path& filepath, T& asset) {
             YNode data;

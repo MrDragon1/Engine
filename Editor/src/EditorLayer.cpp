@@ -40,7 +40,7 @@ namespace Ethereal
         m_EditorCamera = EditorCamera(30.0f, 1280.0f / 720.0f, 0.1f, 500.0f);
 
         //TODO: Remove this when support default project
-        OpenScene("assets/scenes/meta.hscene");
+        OpenScene("assets/scenes/meta.EScene");
     }
 
     void EditorLayer::OnDetach() {
@@ -383,7 +383,7 @@ namespace Ethereal
 //        m_SceneHierarchyPanel.SetSelectedEntity(m_HoveredEntity);
 //        m_MaterialEditPanel.SetSelectEntity(m_HoveredEntity);
 
-        if (path.extension().string() != ".hscene") {
+        if (AssetManager::GetAssetTypeFromExtension(path.extension().string()) != AssetType::Scene) {
             ET_WARN("Could not load {0} - not a scene file", path.filename().string());
             return;
         }

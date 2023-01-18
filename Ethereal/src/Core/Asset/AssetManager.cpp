@@ -73,6 +73,11 @@ namespace Ethereal
 
     AssetType AssetManager::GetAssetTypeFromPath(const std::filesystem::path& path) { return GetAssetTypeFromExtension(path.extension().string()); }
 
+    Ref<Texture2D> AssetManager::GetAssetIconFromExtension(const std::string& extension){
+        return GetAssetIcon(GetAssetTypeFromExtension(extension));
+    }
+
+
     void AssetManager::LoadAssetRegistry() {
         // TODO:
         //  BUG: Same asset may has many handle in registry file.

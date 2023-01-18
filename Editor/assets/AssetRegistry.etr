@@ -41,6 +41,9 @@ Assets:
   - Handle: 1864105716926570769
     FilePath: textures\gold\albedo.png
     Type: Texture
+  - Handle: 1867656654675769535
+    FilePath: buildin\Editor\ContentBrowser\mesh.png
+    Type: Texture
   - Handle: 1984218531929197878
     FilePath: meshes\default\cylinder.ESMesh
     Type: StaticMesh
@@ -80,9 +83,6 @@ Assets:
   - Handle: 2801276543070836935
     FilePath: fonts\opensans\OpenSans-Medium.ttf
     Type: Font
-  - Handle: 2837452743871074761
-    FilePath: scenes\basic.hscene
-    Type: Scene
   - Handle: 2933247529069613071
     FilePath: meshes\vampire\Vampire_MAT.EMaterial
     Type: Material
@@ -119,8 +119,14 @@ Assets:
   - Handle: 3684156870783348000
     FilePath: textures\rustediron\rustediron2_normal.png
     Type: Texture
+  - Handle: 3693140161581091119
+    FilePath: buildin\Editor\ContentBrowser\file.png
+    Type: Texture
   - Handle: 4055964299062396106
     FilePath: meshes\gun\Textures\Raw\Cerberus_AO.tga
+    Type: Texture
+  - Handle: 4190871982722225356
+    FilePath: buildin\Editor\ContentBrowser\staticmesh.png
     Type: Texture
   - Handle: 4209009144955814373
     FilePath: icons\ContentBrowser\FileIcon.png
@@ -143,9 +149,6 @@ Assets:
   - Handle: 4917057688091319777
     FilePath: meshes\vampire\dancing_vampire.EAnimator
     Type: Animator
-  - Handle: 4980735168443109901
-    FilePath: scenes\PBR.hscene
-    Type: Scene
   - Handle: 5095451425471151322
     FilePath: fonts\opensans\OpenSans-Bold.ttf
     Type: Font
@@ -218,6 +221,9 @@ Assets:
   - Handle: 6498383410360049290
     FilePath: icons\exclamation.png
     Type: Texture
+  - Handle: 6532995690021956827
+    FilePath: buildin\Editor\ContentBrowser\unknown.png
+    Type: Texture
   - Handle: 6560143709909394794
     FilePath: icons\PlayButton.png
     Type: Texture
@@ -227,9 +233,6 @@ Assets:
   - Handle: 6617006667698975918
     FilePath: meshes\vampire\Vampire_MAT.EMaterial
     Type: Material
-  - Handle: 6876456294960671059
-    FilePath: meshes\TestScene.hsmesh
-    Type: StaticMesh
   - Handle: 7012128274853532247
     FilePath: meshes\source\basicCube.obj
     Type: MeshSource
@@ -242,6 +245,9 @@ Assets:
   - Handle: 7567381472881404084
     FilePath: textures\global\brdf_schilk.hdr
     Type: EnvMap
+  - Handle: 7680249308482512132
+    FilePath: scenes\meta.EScene
+    Type: Scene
   - Handle: 7714422435788874728
     FilePath: textures\humanskin\human-skin1_preview.jpg
     Type: Texture
@@ -260,9 +266,9 @@ Assets:
   - Handle: 8329406676989372065
     FilePath: meshes\vampire\dancing_vampire.EMesh
     Type: Mesh
-  - Handle: 8416912332081586442
-    FilePath: scenes\CSM.hscene
-    Type: Scene
+  - Handle: 8348331091088073569
+    FilePath: buildin\Editor\ContentBrowser\folder.png
+    Type: Texture
   - Handle: 8585686005696021021
     FilePath: meshes\vampire\textures\Vampire_emission.png
     Type: Texture
@@ -272,6 +278,9 @@ Assets:
   - Handle: 8912667031878282577
     FilePath: meshes\vampire\dancing_vampire.ESkeleton
     Type: Skeleton
+  - Handle: 8935833706533793615
+    FilePath: buildin\Editor\ContentBrowser\missing.png
+    Type: Texture
   - Handle: 9045733898898178365
     FilePath: meshes\cornell_box\blue.EMaterial
     Type: Material
@@ -335,15 +344,9 @@ Assets:
   - Handle: 10755097151186722102
     FilePath: textures\humanskin\human-skin1_height.png
     Type: Texture
-  - Handle: 10791175485090925081
-    FilePath: buildin\Editor\Icons\Generic.png
-    Type: Texture
   - Handle: 10827238871968035892
     FilePath: meshes\source\monkey.obj
     Type: MeshSource
-  - Handle: 10936813645864677239
-    FilePath: buildin\Editor\folder.png
-    Type: Texture
   - Handle: 10940417658597523022
     FilePath: meshes\vampire\dancing_vampire.EMesh
     Type: Mesh
@@ -383,9 +386,6 @@ Assets:
   - Handle: 11990970196583506654
     FilePath: meshes\gun\Textures\Raw\Cerberus_N.tga
     Type: Texture
-  - Handle: 12057588983460254927
-    FilePath: scenes\meta.hscene
-    Type: Scene
   - Handle: 12187915844800072216
     FilePath: meshes\vampire\dancing_vampire.EAnimator
     Type: Animator
@@ -404,9 +404,6 @@ Assets:
   - Handle: 12585847194337009344
     FilePath: meshes\vampire\Vampire_MAT.EMaterial
     Type: Material
-  - Handle: 12717353975045953519
-    FilePath: scenes\test.hscene
-    Type: Scene
   - Handle: 12727184459995872817
     FilePath: buildin\Editor\eye.png
     Type: Texture
@@ -488,9 +485,9 @@ Assets:
   - Handle: 16483837646385066452
     FilePath: meshes\vampire\dancing_vampire.EAnimator
     Type: Animator
-  - Handle: 16519244461161705494
-    FilePath: scenes\tettt.hscene
-    Type: Scene
+  - Handle: 16500614186955666894
+    FilePath: buildin\Editor\ContentBrowser\scene.png
+    Type: Texture
   - Handle: 16664092874063267941
     FilePath: meshes\vampire\dancing_vampire.ESkeleton
     Type: Skeleton
@@ -548,9 +545,6 @@ Assets:
   - Handle: 17972891589442320473
     FilePath: meshes\vampire\dancing_vampire.EAnimator
     Type: Animator
-  - Handle: 18009467461989156876
-    FilePath: buildin\Editor\file.png
-    Type: Texture
   - Handle: 18245045781855712380
     FilePath: meshes\gun\Cerberus_LP.fbx
     Type: MeshSource

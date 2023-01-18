@@ -19,22 +19,18 @@ namespace Ethereal
         }
     }  // namespace Utils
 
-    ContentBrowserPanel::ContentBrowserPanel() : m_CurrentDirectory(Project::GetAssetDirectory()) {
+    ContentBrowserPanel::ContentBrowserPanel() : m_CurrentDirectory(Project::GetAssetDirectory()) {}
 
-    }
-
-    void ContentBrowserPanel::OnEvent(Event& event){
-
-    }
+    void ContentBrowserPanel::OnEvent(Event& event) {}
 
     void ContentBrowserPanel::OnImGuiRender(bool& isOpen) {
         ImGui::Begin("Content Browser", &isOpen);
         if (m_CurrentDirectory != Project::GetAssetDirectory()) {
             if (ImGui::Button("<-")) {
+                m_SelectedDirectory = m_CurrentDirectory;
                 m_CurrentDirectory = m_CurrentDirectory.parent_path();
             }
         }
-
         static float padding = 32.0f;
         static float thumbnailSize = 80.0f;
         float cellSize = thumbnailSize + padding;
@@ -48,18 +44,26 @@ namespace Ethereal
         for (auto& directoryEntry : std::filesystem::directory_iterator(m_CurrentDirectory)) {
             const auto& path = directoryEntry.path();
             std::string filenameString = path.filename().string();
-
+            bool IsSelect = m_SelectedDirectory == directoryEntry.path();
             ImGui::PushID(filenameString.c_str());
 
-            Ref<Texture2D> icon = directoryEntry.is_directory() ? EditorResource::FolderIcon : EditorResource::FileIcon;
+            Ref<Texture2D> icon =
+                directoryEntry.is_directory() ? EditorResource::FolderIcon : AssetManager::GetAssetIconFromExtension(path.extension().string());
             {
-                UI::ScopedColorStack style(ImGuiCol_Border, IM_COL32(0, 0, 0, 0),ImGuiCol_Button, IM_COL32(0, 0, 0, 0));
+                UI::ScopedColorStack style(ImGuiCol_Border, IM_COL32(0, 0, 0, 0),
+                                           ImGuiCol_Button, IM_COL32(0, 0, 0, 0),
+                                           ImGuiCol_ButtonHovered, IM_COL32(0, 0, 0, 0));
+                bool press = false;
                 if (Utils::IsImageFormat(path.string())) {
                     Ref<Texture2D> img = AssetManager::GetAsset<Texture>(path.string()).As<Texture2D>();
-                    ImGui::ImageButton((ImTextureID)img->GetRendererID(), {thumbnailSize, thumbnailSize}, {0, 1}, {1, 0});
+                    press = ImGui::ImageButton((ImTextureID)img->GetRendererID(), {thumbnailSize, thumbnailSize}, {0, 1}, {1, 0});
                 } else
-                    ImGui::ImageButton((ImTextureID)icon->GetRendererID(), {thumbnailSize, thumbnailSize}, {0, 1}, {1, 0});
+                    press = ImGui::ImageButton((ImTextureID)icon->GetRendererID(), {thumbnailSize, thumbnailSize}, {0, 1}, {1, 0});
 
+                if (press) {
+                    m_SelectedDirectory = directoryEntry.path();
+                    IsSelect = true;
+                }
             }
 
             if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
@@ -68,11 +72,28 @@ namespace Ethereal
                 ImGui::EndDragDropSource();
             }
 
-
             if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
                 if (directoryEntry.is_directory()) m_CurrentDirectory /= path.filename();
             }
-            ImGui::TextWrapped(filenameString.c_str());
+            const float TEXT_BASE_WIDTH = ImGui::CalcTextSize("A").x;
+            const float TEXT_BASE_HEIGHT = ImGui::GetTextLineHeightWithSpacing();
+
+
+            if (IsSelect) {
+                UI::ScopedColorStack color(ImGuiCol_Border, IM_COL32(0, 0, 0, 0),
+                                           ImGuiCol_Button, IM_COL32(44, 93, 135, 255),
+                                           ImGuiCol_ButtonHovered, IM_COL32(44, 93, 135, 255),
+                                           ImGuiCol_Text, IM_COL32(210, 221, 230, 255));
+                UI::ScopedStyle stylepadding(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
+                ImGui::Button(filenameString.c_str(), {thumbnailSize + 8.0f, 0});
+            } else {
+                UI::ScopedColorStack color(ImGuiCol_Border, IM_COL32(0, 0, 0, 0),
+                                           ImGuiCol_Button, IM_COL32(0, 0, 0, 0),
+                                           ImGuiCol_ButtonHovered, IM_COL32(0, 0, 0, 0));
+                UI::ScopedStyle stylepadding(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
+//                ImGui::TextWrapped(filenameString.c_str());
+                ImGui::Button(filenameString.c_str(), {thumbnailSize + 8.0f, 0});
+            }
             ImGui::NextColumn();
 
             ImGui::PopID();

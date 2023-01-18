@@ -20,8 +20,16 @@ namespace Ethereal
         inline static Ref<Texture2D> BurgerMenuIcon = nullptr;
         inline static Ref<Texture2D> EyeIcon = nullptr;
         inline static Ref<Texture2D> EyeCrossIcon = nullptr;
-        inline static Ref<Texture2D> FolderIcon = nullptr;
+
+        //Content Browser Icon
         inline static Ref<Texture2D> FileIcon = nullptr;
+        inline static Ref<Texture2D> FolderIcon = nullptr;
+        inline static Ref<Texture2D> MeshIcon = nullptr;
+        inline static Ref<Texture2D> StaticMeshIcon = nullptr;
+        inline static Ref<Texture2D> SceneIcon = nullptr;
+        inline static Ref<Texture2D> MissingIcon = nullptr;
+        inline static Ref<Texture2D> UnknownIcon = nullptr;
+
 
 
         static void Init() {
@@ -40,8 +48,14 @@ namespace Ethereal
             EyeIcon = LoadTexture("eye.png");
             EyeCrossIcon = LoadTexture("eye-crossed.png");
 
-            FolderIcon = LoadTexture("folder.png");
-            FileIcon = LoadTexture("file.png");
+            //Content Browser Icon
+            FolderIcon = LoadTexture("ContentBrowser/folder.png");
+            MissingIcon = LoadTexture("ContentBrowser/missing.png");
+            UnknownIcon = LoadTexture("ContentBrowser/unknown.png");
+            FileIcon = LoadTexture("ContentBrowser/file.png");
+            MeshIcon = LoadTexture("ContentBrowser/mesh.png");
+            StaticMeshIcon = LoadTexture("ContentBrowser/staticmesh.png");
+            SceneIcon = LoadTexture("ContentBrowser/scene.png");
         }
 
         static void Shutdown() {
@@ -51,8 +65,6 @@ namespace Ethereal
             MenuDotsIcon.Reset();
             ExchangeIcon.Reset();
             AssetIcon.Reset();
-            FolderIcon.Reset();
-            FileIcon.Reset();
 
             PlusIcon.Reset();
             MinusIcon.Reset();
@@ -60,6 +72,15 @@ namespace Ethereal
 
             EyeIcon.Reset();
             EyeCrossIcon.Reset();
+
+            //Content Browser Icon
+            FolderIcon.Reset();
+            FileIcon.Reset();
+            MeshIcon.Reset();
+            StaticMeshIcon.Reset();
+            SceneIcon.Reset();
+            MissingIcon.Reset();
+            UnknownIcon.Reset();
         }
 
       private:

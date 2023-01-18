@@ -1,5 +1,6 @@
 #pragma once
 #include <unordered_map>
+#include <Core/Editor/EditorResource.h>
 
 #include "Core/Asset/AssetTypes.h"
 
@@ -32,6 +33,22 @@ namespace Ethereal
                                                                                     {".ttf", AssetType::Font},
                                                                                     {".ttc", AssetType::Font},
                                                                                     {".otf", AssetType::Font}};
+    inline static Ref<Texture2D> GetAssetIcon(AssetType type) {
+        switch (type) {
+            case AssetType::Scene: return EditorResource::SceneIcon;
+            case AssetType::StaticMesh: return EditorResource::StaticMeshIcon;
+            case AssetType::Material: return EditorResource::FileIcon;
+            case AssetType::Animation: return EditorResource::FileIcon;
+            case AssetType::Animator: return EditorResource::FileIcon;
+            case AssetType::Skeleton: return EditorResource::FileIcon;
+            case AssetType::Mesh: return EditorResource::MeshIcon;
+            default: {
+                //ET_CORE_WARN("Unknown asset type, can not get AssetIcon!");
+                return EditorResource::UnknownIcon;
+            }
+        }
+    }
+
 
     inline static std::string GetAssetSuffix(AssetType type) {
         switch (type) {

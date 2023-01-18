@@ -17,6 +17,7 @@ namespace Ethereal
 
       private:
         std::filesystem::path m_CurrentDirectory;
+        std::filesystem::path m_SelectedDirectory;
         Ref<Scene> m_SceneContext;
     };
 }  // namespace Ethereal
