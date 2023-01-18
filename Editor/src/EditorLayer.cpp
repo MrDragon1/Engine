@@ -369,7 +369,7 @@ namespace Ethereal
     }
 
     void EditorLayer::OpenScene() {
-        std::string filepath = FileDialogs::OpenFile("Scene (*.hscene)\0*.hscene\0");
+        std::string filepath = FileDialogs::OpenFile("Scene (*.EScene)\0*.EScene\0");
         if (!filepath.empty()) {
             OpenScene(std::filesystem::path(filepath));
         }
@@ -400,7 +400,7 @@ namespace Ethereal
     }
 
     void EditorLayer::SaveSceneAs() {
-        std::string filepath = FileDialogs::SaveFile("Scene (*.hscene)\0*.hscene\0");
+        std::string filepath = FileDialogs::SaveFile("Scene (*.EScene)\0*.EScene\0");
         if (!filepath.empty()) {
             SerializeScene(m_EditorScene, filepath);
             m_EditorScenePath = filepath;

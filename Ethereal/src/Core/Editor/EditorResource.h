@@ -29,6 +29,9 @@ namespace Ethereal
         inline static Ref<Texture2D> SceneIcon = nullptr;
         inline static Ref<Texture2D> MissingIcon = nullptr;
         inline static Ref<Texture2D> UnknownIcon = nullptr;
+        inline static Ref<Texture2D> AnimationIcon = nullptr;
+        inline static Ref<Texture2D> AnimatorIcon = nullptr;
+        inline static Ref<Texture2D> SkeletonIcon = nullptr;
 
 
 
@@ -56,6 +59,9 @@ namespace Ethereal
             MeshIcon = LoadTexture("ContentBrowser/mesh.png");
             StaticMeshIcon = LoadTexture("ContentBrowser/staticmesh.png");
             SceneIcon = LoadTexture("ContentBrowser/scene.png");
+            AnimationIcon = LoadTexture("ContentBrowser/animation.png");
+            AnimatorIcon = LoadTexture("ContentBrowser/animator.png");
+            SkeletonIcon = LoadTexture("ContentBrowser/skeleton.png");
         }
 
         static void Shutdown() {
@@ -81,6 +87,9 @@ namespace Ethereal
             SceneIcon.Reset();
             MissingIcon.Reset();
             UnknownIcon.Reset();
+            AnimationIcon.Reset();
+            AnimatorIcon.Reset();
+            SkeletonIcon.Reset();
         }
 
       private:
