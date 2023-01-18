@@ -68,6 +68,9 @@ Assets:
   - Handle: 2326805676567177651
     FilePath: meshes\cornell_box\red.EMaterial
     Type: Material
+  - Handle: 2480701945608833898
+    FilePath: buildin\Editor\minus.png
+    Type: Texture
   - Handle: 2570073233343120292
     FilePath: meshes\default\cube.ESMesh
     Type: StaticMesh
@@ -121,6 +124,9 @@ Assets:
     Type: Texture
   - Handle: 4358083813901327212
     FilePath: meshes\gun\Textures\Raw\Cerberus_UV.tga
+    Type: Texture
+  - Handle: 4374708819784895386
+    FilePath: buildin\Editor\plus.png
     Type: Texture
   - Handle: 4437595807192615377
     FilePath: textures\gold\normal.png
@@ -362,6 +368,9 @@ Assets:
   - Handle: 11764163912919184602
     FilePath: meshes\cornell_box\cornell_box.ESMesh
     Type: StaticMesh
+  - Handle: 11823667023722216794
+    FilePath: buildin\Editor\exchange.png
+    Type: Texture
   - Handle: 11961565015974153655
     FilePath: textures\rustediron\rustediron2_roughness.png
     Type: Texture
@@ -460,6 +469,9 @@ Assets:
     Type: Mesh
   - Handle: 16016150646620525778
     FilePath: textures\humanskin\human-skin1_normal-ogl.png
+    Type: Texture
+  - Handle: 16252450938643611013
+    FilePath: buildin\Editor\burger-menu.png
     Type: Texture
   - Handle: 16333858381330909306
     FilePath: icons\pause.png
