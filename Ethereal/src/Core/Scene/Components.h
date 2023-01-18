@@ -36,17 +36,21 @@ namespace Ethereal
               : ID(other.ID) {}
     };
 
-    REFLECTION_TYPE(TagComponent)
-    CLASS(TagComponent: public Component, WhiteListFields)
+    REFLECTION_TYPE(BasicPropertyComponent)
+    CLASS(BasicPropertyComponent: public Component, WhiteListFields)
     {
-        REFLECTION_BODY(TagComponent);
+        REFLECTION_BODY(BasicPropertyComponent);
         public:
           META(Enable)
           std::string Tag;
-          TagComponent() = default;
-          TagComponent(const std::string& tag)
+
+          META(Enable)
+          bool Visible=true;
+
+          BasicPropertyComponent() = default;
+          BasicPropertyComponent(const std::string& tag)
               : Tag(tag) {}
-          TagComponent(const TagComponent& other)
+          BasicPropertyComponent(const BasicPropertyComponent& other)
               : Tag(other.Tag) {}
     };
 

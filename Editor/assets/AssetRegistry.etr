@@ -104,6 +104,9 @@ Assets:
   - Handle: 3367218387622807080
     FilePath: meshes\vampire\dancing_vampire.EAnimator
     Type: Animator
+  - Handle: 3371023108703777099
+    FilePath: buildin\Editor\eye-crossed.png
+    Type: Texture
   - Handle: 3385713930601565782
     FilePath: fonts\arial\arialbd.ttf
     Type: Font
@@ -401,6 +404,9 @@ Assets:
   - Handle: 12717353975045953519
     FilePath: scenes\test.hscene
     Type: Scene
+  - Handle: 12727184459995872817
+    FilePath: buildin\Editor\eye.png
+    Type: Texture
   - Handle: 12991496061341425589
     FilePath: fonts\opensans\OpenSans-LightItalic.ttf
     Type: Font

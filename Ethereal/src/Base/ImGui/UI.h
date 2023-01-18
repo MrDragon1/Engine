@@ -146,7 +146,7 @@ namespace Ethereal
 
         static const char* GenerateID()
         {
-            itoa(s_Counter++, s_IDBuffer + 2, 16);
+            _itoa_s(s_Counter++, s_IDBuffer + 2, 16, 10);
             return s_IDBuffer;
         }
 
@@ -190,7 +190,7 @@ namespace Ethereal
             return res;
         }
 
-        static bool ImageButton(ImTextureID user_texture_id, const ImVec2& size, ImU32 tintNormal = ImU32(IM_COL32(196, 196, 196, 255)), ImU32 tintHovered = ImU32(IM_COL32(255, 255, 255, 255)), ImU32 tintPressed = ImU32(IM_COL32(255, 255, 255, 255))){
+        static bool ImageButton(const char* label, ImTextureID user_texture_id, const ImVec2& size, ImU32 tintNormal = ImU32(IM_COL32(196, 196, 196, 255)), ImU32 tintHovered = ImU32(IM_COL32(255, 255, 255, 255)), ImU32 tintPressed = ImU32(IM_COL32(255, 255, 255, 255))){
             using namespace ImGui;
             ImGuiContext& g = *GImGui;
             ImGuiWindow* window = g.CurrentWindow;
@@ -199,11 +199,13 @@ namespace Ethereal
 
             // Default to using texture ID as ID. User can still push string/integer prefixes.
 
-            ImGuiID id;
-            {
-                ScopedID scopedID((void*)(intptr_t)user_texture_id);
-                id = window->GetID("#image");
-            }
+            ImGuiID id = window->GetID(label);
+
+//            {
+//                ScopedID scopedID((void*)(intptr_t)user_texture_id);
+//                id = window->GetID("#image");
+//            }
+
 
             PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2((float)0, (float)0));
             bool pressed = false;
@@ -232,6 +234,7 @@ namespace Ethereal
             }
             PopStyleVar();
 
+            if (pressed) ET_CORE_INFO("Pressed {}", label);
             return pressed;
         }
 
@@ -292,10 +295,10 @@ namespace Ethereal
 
         // Widgets
         static bool ComponentHeader(const char* label, ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_None){
+            std::string const &cc = "##dummy_id_" + std::string(label);
             bool open;
             {
                 ScopedStyle style(ImGuiStyleVar_FrameRounding, 0.0f);
-                std::string const &cc = "##dummy_id_" + std::string(label);
                 open = ImGui::CollapsingHeader(cc.c_str(), flags | ImGuiTreeNodeFlags_SpanFullWidth);
                 ImGui::SetItemAllowOverlap();
             }
@@ -310,7 +313,7 @@ namespace Ethereal
                 ShiftCursorY(2.0f);
                 ScopedColorStack style(ImGuiCol_Border, IM_COL32(0, 0, 0, 0),
                                        ImGuiCol_Button, IM_COL32(0, 0, 0, 0));
-                UI::ImageButton((ImTextureID)icon->GetRendererID(), ImVec2(16.0f, 16.0f), ImU32(IM_COL32(196, 196, 196, 255)), ImU32(IM_COL32(196, 196, 196, 255)), ImU32(IM_COL32(196, 196, 196, 255)));
+                UI::ImageButton((cc + "AssetIcon").c_str() , (ImTextureID)icon->GetRendererID(), ImVec2(16.0f, 16.0f), ImU32(IM_COL32(196, 196, 196, 255)), ImU32(IM_COL32(196, 196, 196, 255)), ImU32(IM_COL32(196, 196, 196, 255)));
 
                 ShiftCursorY(-2.0f);
             }
@@ -323,7 +326,7 @@ namespace Ethereal
                 ShiftCursorY(2.0f);
                 ScopedColorStack style(ImGuiCol_Border, IM_COL32(0, 0, 0, 0),
                                        ImGuiCol_Button, IM_COL32(0, 0, 0, 0));
-                if(UI::ImageButton((ImTextureID)icon->GetRendererID(), ImVec2(16.0f, 16.0f)))
+                if(UI::ImageButton((cc + "MenuDotsIcon").c_str() , (ImTextureID)icon->GetRendererID(), ImVec2(16.0f, 16.0f)))
                 {
                     // TODO: Open context menu
                 }
@@ -334,9 +337,10 @@ namespace Ethereal
             return open;
         }
 
-        static bool DragDropBar(const char* label, const char* payload, float label_shift = 20.0f, float text_shift = 50.0f){
+        // idlabel prevent id confilct when use ListHeader's Element 0/1/2...
+        static bool DragDropBar(const char* idlabel, const char* label, const char* payload, float label_shift = 20.0f, float text_shift = 50.0f){
             UI::ScopedStyle style(ImGuiStyleVar_FrameRounding, 2.0f);
-            ScopedID id(label);
+            ScopedID id(idlabel);
 
             ImGui::SetCursorPosX(ImGui::GetCursorPosX() + label_shift);
             ImGui::TextUnformatted(label);
@@ -364,7 +368,7 @@ namespace Ethereal
                 ScopedColorStack style(ImGuiCol_Border, IM_COL32(0, 0, 0, 0),
                                        ImGuiCol_Button, IM_COL32(0, 0, 0, 0),
                                        ImGuiCol_ButtonHovered, IM_COL32(0, 0, 0, 0));
-                if(UI::ImageButton((ImTextureID)icon->GetRendererID(), ImVec2(16.0f, 16.0f))){
+                if(UI::ImageButton(idlabel, (ImTextureID)icon->GetRendererID(), ImVec2(16.0f, 16.0f))){
                     //TODO: Open component select menu
                 }
 
@@ -376,7 +380,7 @@ namespace Ethereal
 
         static bool ListHeader(const char* label) {
             static int value = 2;
-            std::string cc = "##dummy_id_" + std::string(label);
+            std::string cc = "##dummy_id_" + std::string(label) + "_";
             bool open;
 
             {
@@ -415,7 +419,9 @@ namespace Ethereal
                             ShiftCursorY(2.0f);
                             ScopedColorStack style(ImGuiCol_Border, IM_COL32(0, 0, 0, 0),
                                                    ImGuiCol_Button, IM_COL32(0, 0, 0, 0));
-                            UI::ImageButton((ImTextureID)EditorResource::BurgerMenuIcon->GetRendererID(), ImVec2(16.0f, 16.0f), ImU32(IM_COL32(196, 196, 196, 255)),ImU32(IM_COL32(196, 196, 196, 255)),ImU32(IM_COL32(196, 196, 196, 255)));
+                            if(UI::ImageButton((cc + "BurgerMenuIcon" + std::to_string(i)).c_str() , (ImTextureID)EditorResource::BurgerMenuIcon->GetRendererID(), ImVec2(16.0f, 16.0f), ImU32(IM_COL32(196, 196, 196, 255)),ImU32(IM_COL32(196, 196, 196, 255)),ImU32(IM_COL32(196, 196, 196, 255)))){
+                                ET_CORE_INFO("BurgerMenuIcon Pressed");
+                            }
 
 //                            ShiftCursorY(-2.0f);
                         }
@@ -423,7 +429,7 @@ namespace Ethereal
                         ShiftCursorY(3.0f); // Wired bug
                         std::string payload = "E " + std::to_string(i);
                         std::string elementlabel = "Element " + std::to_string(i);
-                        DragDropBar(elementlabel.c_str(), payload.c_str(), 5.0f, 10.0f);
+                        DragDropBar(cc.c_str(), elementlabel.c_str(), payload.c_str(), 5.0f, 10.0f);
                         ImGui::SetCursorPosY(cury + height);
                     }
                     ImGui::EndChild();
@@ -432,10 +438,10 @@ namespace Ethereal
                 ImGui::SetCursorPosX(width - 40.0f);
                 UI::ShiftCursorY(-4.0f);
                 auto icon = EditorResource::PlusIcon;
-                if (UI::ImageButton((ImTextureID)icon->GetRendererID(), ImVec2(16.0f, 16.0f))) value++;
+                if (UI::ImageButton((cc + "PlusIcon").c_str() , (ImTextureID)icon->GetRendererID(), ImVec2(16.0f, 16.0f))) value++;
                 ImGui::SameLine(0.0f, 5.0f);
                 icon = EditorResource::MinusIcon;
-                if (UI::ImageButton((ImTextureID)icon->GetRendererID(), ImVec2(16.0f, 16.0f))) value--;
+                if (UI::ImageButton((cc + "MinusIcon").c_str() , (ImTextureID)icon->GetRendererID(), ImVec2(16.0f, 16.0f))) value--;
             }
 
             return open;

@@ -4,7 +4,7 @@
 namespace Ethereal{
     class Component;
     class IDComponent;
-    class TagComponent;
+    class BasicPropertyComponent;
     class TransformComponent;
     class StaticMeshComponent;
     class MeshComponent;
@@ -91,52 +91,65 @@ namespace TypeFieldReflectionOparator{
             &TypeFieldReflectionOparator::TypeIDComponentOperator::writeByName);
         REGISTER_BASE_CLASS_TO_MAP("IDComponent", f_class_function_tuple_IDComponent);
     }namespace TypeFieldReflectionOparator{
-    class TypeTagComponentOperator{
+    class TypeBasicPropertyComponentOperator{
     public:
-        static const char* getClassName(){ return "TagComponent";}
+        static const char* getClassName(){ return "BasicPropertyComponent";}
         static void* constructorWithYNode(const YNode& yaml_context){
-            TagComponent* ret_instance= new TagComponent;
+            BasicPropertyComponent* ret_instance= new BasicPropertyComponent;
             Serializer::read(yaml_context, *ret_instance);
             return ret_instance;
         }
         static YNode writeByName(void* instance){
-            return Serializer::write(*(TagComponent*)instance);
+            return Serializer::write(*(BasicPropertyComponent*)instance);
         }
         // base class
-        static int getTagComponentBaseClassReflectionInstanceList(ReflectionInstance* &out_list, void* instance){
+        static int getBasicPropertyComponentBaseClassReflectionInstanceList(ReflectionInstance* &out_list, void* instance){
             int count = 1;
             out_list = new ReflectionInstance[count];
             for (int i=0;i<count;++i){
-               out_list[i] = TypeMetaDef(Ethereal::Component,static_cast<TagComponent*>(instance));
+               out_list[i] = TypeMetaDef(Ethereal::Component,static_cast<BasicPropertyComponent*>(instance));
             }
             return count;
         }
         // fields
         static const char* getFieldName_Tag(){ return "Tag";}
         static const char* getFieldTypeName_Tag(){ return "std::string";}
-        static void set_Tag(void* instance, void* field_value){ static_cast<TagComponent*>(instance)->Tag = *static_cast<std::string*>(field_value);}
-        static void* get_Tag(void* instance){ return static_cast<void*>(&(static_cast<TagComponent*>(instance)->Tag));}
+        static void set_Tag(void* instance, void* field_value){ static_cast<BasicPropertyComponent*>(instance)->Tag = *static_cast<std::string*>(field_value);}
+        static void* get_Tag(void* instance){ return static_cast<void*>(&(static_cast<BasicPropertyComponent*>(instance)->Tag));}
         static bool isArray_Tag(){ return false; }
+        static const char* getFieldName_Visible(){ return "Visible";}
+        static const char* getFieldTypeName_Visible(){ return "bool";}
+        static void set_Visible(void* instance, void* field_value){ static_cast<BasicPropertyComponent*>(instance)->Visible = *static_cast<bool*>(field_value);}
+        static void* get_Visible(void* instance){ return static_cast<void*>(&(static_cast<BasicPropertyComponent*>(instance)->Visible));}
+        static bool isArray_Visible(){ return false; }
     };
 }//namespace TypeFieldReflectionOparator
 
 
-    void TypeWrapperRegister_TagComponent(){
+    void TypeWrapperRegister_BasicPropertyComponent(){
         FieldFunctionTuple* f_field_function_tuple_Tag=new FieldFunctionTuple(
-            &TypeFieldReflectionOparator::TypeTagComponentOperator::set_Tag,
-            &TypeFieldReflectionOparator::TypeTagComponentOperator::get_Tag,
-            &TypeFieldReflectionOparator::TypeTagComponentOperator::getClassName,
-            &TypeFieldReflectionOparator::TypeTagComponentOperator::getFieldName_Tag,
-            &TypeFieldReflectionOparator::TypeTagComponentOperator::getFieldTypeName_Tag,
-            &TypeFieldReflectionOparator::TypeTagComponentOperator::isArray_Tag);
-        REGISTER_FIELD_TO_MAP("TagComponent", f_field_function_tuple_Tag);
+            &TypeFieldReflectionOparator::TypeBasicPropertyComponentOperator::set_Tag,
+            &TypeFieldReflectionOparator::TypeBasicPropertyComponentOperator::get_Tag,
+            &TypeFieldReflectionOparator::TypeBasicPropertyComponentOperator::getClassName,
+            &TypeFieldReflectionOparator::TypeBasicPropertyComponentOperator::getFieldName_Tag,
+            &TypeFieldReflectionOparator::TypeBasicPropertyComponentOperator::getFieldTypeName_Tag,
+            &TypeFieldReflectionOparator::TypeBasicPropertyComponentOperator::isArray_Tag);
+        REGISTER_FIELD_TO_MAP("BasicPropertyComponent", f_field_function_tuple_Tag);
+        FieldFunctionTuple* f_field_function_tuple_Visible=new FieldFunctionTuple(
+            &TypeFieldReflectionOparator::TypeBasicPropertyComponentOperator::set_Visible,
+            &TypeFieldReflectionOparator::TypeBasicPropertyComponentOperator::get_Visible,
+            &TypeFieldReflectionOparator::TypeBasicPropertyComponentOperator::getClassName,
+            &TypeFieldReflectionOparator::TypeBasicPropertyComponentOperator::getFieldName_Visible,
+            &TypeFieldReflectionOparator::TypeBasicPropertyComponentOperator::getFieldTypeName_Visible,
+            &TypeFieldReflectionOparator::TypeBasicPropertyComponentOperator::isArray_Visible);
+        REGISTER_FIELD_TO_MAP("BasicPropertyComponent", f_field_function_tuple_Visible);
         
         
-        ClassFunctionTuple* f_class_function_tuple_TagComponent=new ClassFunctionTuple(
-            &TypeFieldReflectionOparator::TypeTagComponentOperator::getTagComponentBaseClassReflectionInstanceList,
-            &TypeFieldReflectionOparator::TypeTagComponentOperator::constructorWithYNode,
-            &TypeFieldReflectionOparator::TypeTagComponentOperator::writeByName);
-        REGISTER_BASE_CLASS_TO_MAP("TagComponent", f_class_function_tuple_TagComponent);
+        ClassFunctionTuple* f_class_function_tuple_BasicPropertyComponent=new ClassFunctionTuple(
+            &TypeFieldReflectionOparator::TypeBasicPropertyComponentOperator::getBasicPropertyComponentBaseClassReflectionInstanceList,
+            &TypeFieldReflectionOparator::TypeBasicPropertyComponentOperator::constructorWithYNode,
+            &TypeFieldReflectionOparator::TypeBasicPropertyComponentOperator::writeByName);
+        REGISTER_BASE_CLASS_TO_MAP("BasicPropertyComponent", f_class_function_tuple_BasicPropertyComponent);
     }namespace TypeFieldReflectionOparator{
     class TypeTransformComponentOperator{
     public:
@@ -297,6 +310,11 @@ namespace TypeFieldReflectionOparator{
         static void set_MeshHandle(void* instance, void* field_value){ static_cast<MeshComponent*>(instance)->MeshHandle = *static_cast<AssetHandle*>(field_value);}
         static void* get_MeshHandle(void* instance){ return static_cast<void*>(&(static_cast<MeshComponent*>(instance)->MeshHandle));}
         static bool isArray_MeshHandle(){ return false; }
+        static const char* getFieldName_MaterialTableRaw(){ return "MaterialTableRaw";}
+        static const char* getFieldTypeName_MaterialTableRaw(){ return "MaterialTableRaw";}
+        static void set_MaterialTableRaw(void* instance, void* field_value){ static_cast<MeshComponent*>(instance)->MaterialTableRaw = *static_cast<MaterialTableRaw*>(field_value);}
+        static void* get_MaterialTableRaw(void* instance){ return static_cast<void*>(&(static_cast<MeshComponent*>(instance)->MaterialTableRaw));}
+        static bool isArray_MaterialTableRaw(){ return false; }
     };
 }//namespace TypeFieldReflectionOparator
 
@@ -310,6 +328,14 @@ namespace TypeFieldReflectionOparator{
             &TypeFieldReflectionOparator::TypeMeshComponentOperator::getFieldTypeName_MeshHandle,
             &TypeFieldReflectionOparator::TypeMeshComponentOperator::isArray_MeshHandle);
         REGISTER_FIELD_TO_MAP("MeshComponent", f_field_function_tuple_MeshHandle);
+        FieldFunctionTuple* f_field_function_tuple_MaterialTableRaw=new FieldFunctionTuple(
+            &TypeFieldReflectionOparator::TypeMeshComponentOperator::set_MaterialTableRaw,
+            &TypeFieldReflectionOparator::TypeMeshComponentOperator::get_MaterialTableRaw,
+            &TypeFieldReflectionOparator::TypeMeshComponentOperator::getClassName,
+            &TypeFieldReflectionOparator::TypeMeshComponentOperator::getFieldName_MaterialTableRaw,
+            &TypeFieldReflectionOparator::TypeMeshComponentOperator::getFieldTypeName_MaterialTableRaw,
+            &TypeFieldReflectionOparator::TypeMeshComponentOperator::isArray_MaterialTableRaw);
+        REGISTER_FIELD_TO_MAP("MeshComponent", f_field_function_tuple_MaterialTableRaw);
         
         
         ClassFunctionTuple* f_class_function_tuple_MeshComponent=new ClassFunctionTuple(
@@ -344,6 +370,11 @@ namespace TypeFieldReflectionOparator{
         static void set_Camera(void* instance, void* field_value){ static_cast<CameraComponent*>(instance)->Camera = *static_cast<CameraRaw*>(field_value);}
         static void* get_Camera(void* instance){ return static_cast<void*>(&(static_cast<CameraComponent*>(instance)->Camera));}
         static bool isArray_Camera(){ return false; }
+        static const char* getFieldName_Primary(){ return "Primary";}
+        static const char* getFieldTypeName_Primary(){ return "bool";}
+        static void set_Primary(void* instance, void* field_value){ static_cast<CameraComponent*>(instance)->Primary = *static_cast<bool*>(field_value);}
+        static void* get_Primary(void* instance){ return static_cast<void*>(&(static_cast<CameraComponent*>(instance)->Primary));}
+        static bool isArray_Primary(){ return false; }
     };
 }//namespace TypeFieldReflectionOparator
 
@@ -357,6 +388,14 @@ namespace TypeFieldReflectionOparator{
             &TypeFieldReflectionOparator::TypeCameraComponentOperator::getFieldTypeName_Camera,
             &TypeFieldReflectionOparator::TypeCameraComponentOperator::isArray_Camera);
         REGISTER_FIELD_TO_MAP("CameraComponent", f_field_function_tuple_Camera);
+        FieldFunctionTuple* f_field_function_tuple_Primary=new FieldFunctionTuple(
+            &TypeFieldReflectionOparator::TypeCameraComponentOperator::set_Primary,
+            &TypeFieldReflectionOparator::TypeCameraComponentOperator::get_Primary,
+            &TypeFieldReflectionOparator::TypeCameraComponentOperator::getClassName,
+            &TypeFieldReflectionOparator::TypeCameraComponentOperator::getFieldName_Primary,
+            &TypeFieldReflectionOparator::TypeCameraComponentOperator::getFieldTypeName_Primary,
+            &TypeFieldReflectionOparator::TypeCameraComponentOperator::isArray_Primary);
+        REGISTER_FIELD_TO_MAP("CameraComponent", f_field_function_tuple_Primary);
         
         
         ClassFunctionTuple* f_class_function_tuple_CameraComponent=new ClassFunctionTuple(
@@ -368,7 +407,7 @@ namespace TypeFieldReflectionOparator{
 namespace TypeWrappersRegister{
         void Component(){ TypeWrapperRegister_Component();}
         void IDComponent(){ TypeWrapperRegister_IDComponent();}
-        void TagComponent(){ TypeWrapperRegister_TagComponent();}
+        void BasicPropertyComponent(){ TypeWrapperRegister_BasicPropertyComponent();}
         void TransformComponent(){ TypeWrapperRegister_TransformComponent();}
         void StaticMeshComponent(){ TypeWrapperRegister_StaticMeshComponent();}
         void MeshComponent(){ TypeWrapperRegister_MeshComponent();}

@@ -8,9 +8,10 @@ Entities:
         Context:
           ID:
             UUID: 13494185301621217084
-      - TypeName: TagComponent
+      - TypeName: BasicPropertyComponent
         Context:
           Tag: Plane
+          Visible: true
       - TypeName: TransformComponent
         Context:
           Position:
@@ -39,9 +40,10 @@ Entities:
         Context:
           ID:
             UUID: 15214892317694007416
-      - TypeName: TagComponent
+      - TypeName: BasicPropertyComponent
         Context:
           Tag: Cube
+          Visible: true
       - TypeName: TransformComponent
         Context:
           Position:
@@ -70,9 +72,10 @@ Entities:
         Context:
           ID:
             UUID: 6796285318634371379
-      - TypeName: TagComponent
+      - TypeName: BasicPropertyComponent
         Context:
           Tag: Gun
+          Visible: true
       - TypeName: TransformComponent
         Context:
           Position:

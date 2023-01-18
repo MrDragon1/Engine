@@ -44,12 +44,12 @@ namespace Ethereal
             TypeWrappersRegister::MeshDesc();
             TypeWrappersRegister::StaticMeshDesc();
             TypeWrappersRegister::CameraRaw();
+            TypeWrappersRegister::BasicPropertyComponent();
             TypeWrappersRegister::CameraComponent();
             TypeWrappersRegister::Component();
             TypeWrappersRegister::IDComponent();
             TypeWrappersRegister::MeshComponent();
             TypeWrappersRegister::StaticMeshComponent();
-            TypeWrappersRegister::TagComponent();
             TypeWrappersRegister::TransformComponent();
             TypeWrappersRegister::EntityRaw();
             TypeWrappersRegister::SceneRaw();

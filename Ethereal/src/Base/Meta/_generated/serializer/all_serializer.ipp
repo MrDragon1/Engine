@@ -739,20 +739,24 @@ namespace Ethereal
         return instance;
     }
     template <>
-    YNode Serializer::write(const TagComponent& instance) {
+    YNode Serializer::write(const BasicPropertyComponent& instance) {
         YNode ret_context;
         auto&& yaml_context_0 = Serializer::write(*(Ethereal::Component*)&instance);
         assert(yaml_context_0.IsDefined());
         ret_context = yaml_context_0;
         ret_context["Tag"] = Serializer::write(instance.Tag);
+        ret_context["Visible"] = Serializer::write(instance.Visible);
         return ret_context;
     }
     template <>
-    TagComponent&Serializer::read(const YNode& yaml_context, TagComponent& instance) {
+    BasicPropertyComponent&Serializer::read(const YNode& yaml_context, BasicPropertyComponent& instance) {
         assert(yaml_context.IsDefined());
         Serializer::read(yaml_context, *(Ethereal::Component*)&instance);
         if (!yaml_context["Tag"].IsNull()) {
             Serializer::read(yaml_context["Tag"], instance.Tag);
+        }
+        if (!yaml_context["Visible"].IsNull()) {
+            Serializer::read(yaml_context["Visible"], instance.Visible);
         }
         return instance;
     }
@@ -811,6 +815,7 @@ namespace Ethereal
         assert(yaml_context_0.IsDefined());
         ret_context = yaml_context_0;
         ret_context["MeshHandle"] = Serializer::write(instance.MeshHandle);
+        ret_context["MaterialTableRaw"] = Serializer::write(instance.MaterialTableRaw);
         return ret_context;
     }
     template <>
@@ -819,6 +824,9 @@ namespace Ethereal
         Serializer::read(yaml_context, *(Ethereal::Component*)&instance);
         if (!yaml_context["MeshHandle"].IsNull()) {
             Serializer::read(yaml_context["MeshHandle"], instance.MeshHandle);
+        }
+        if (!yaml_context["MaterialTableRaw"].IsNull()) {
+            Serializer::read(yaml_context["MaterialTableRaw"], instance.MaterialTableRaw);
         }
         return instance;
     }
@@ -829,6 +837,7 @@ namespace Ethereal
         assert(yaml_context_0.IsDefined());
         ret_context = yaml_context_0;
         ret_context["Camera"] = Serializer::write(instance.Camera);
+        ret_context["Primary"] = Serializer::write(instance.Primary);
         return ret_context;
     }
     template <>
@@ -837,6 +846,9 @@ namespace Ethereal
         Serializer::read(yaml_context, *(Ethereal::Component*)&instance);
         if (!yaml_context["Camera"].IsNull()) {
             Serializer::read(yaml_context["Camera"], instance.Camera);
+        }
+        if (!yaml_context["Primary"].IsNull()) {
+            Serializer::read(yaml_context["Primary"], instance.Primary);
         }
         return instance;
     }

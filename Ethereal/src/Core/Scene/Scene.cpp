@@ -65,7 +65,7 @@ namespace Ethereal
         auto idView = srcSceneRegistry.view<IDComponent>();
         for (auto e : idView) {
             UUID uuid = srcSceneRegistry.get<IDComponent>(e).ID;
-            const auto& name = srcSceneRegistry.get<TagComponent>(e).Tag;
+            const auto& name = srcSceneRegistry.get<BasicPropertyComponent>(e).Tag;
             Entity newEntity = newScene->CreateEntityWithUUID(uuid, name);
             enttMap[uuid] = (entt::entity)newEntity;
         }
@@ -85,7 +85,7 @@ namespace Ethereal
         Entity entity = {m_Registry.create(), this};
         entity.AddComponent<IDComponent>(uuid);
         entity.AddComponent<TransformComponent>();
-        auto& tag = entity.AddComponent<TagComponent>();
+        auto& tag = entity.AddComponent<BasicPropertyComponent>();
         tag.Tag = name.empty() ? "DefaultEntity" : name;
         entity.SetName(tag.Tag);
         return entity;
@@ -406,7 +406,7 @@ namespace Ethereal
         component.SceneCamera.SetViewportSize(m_ViewportWidth, m_ViewportHeight);
     }
     template <>
-    void Scene::OnComponentAdded<TagComponent>(Entity entity, TagComponent& component) {}
+    void Scene::OnComponentAdded<BasicPropertyComponent>(Entity entity, BasicPropertyComponent& component) {}
     template <>
     void Scene::OnComponentAdded<BoxCollider2DComponent>(Entity entity, BoxCollider2DComponent& component) {}
     template <>

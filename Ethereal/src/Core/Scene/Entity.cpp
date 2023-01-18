@@ -13,9 +13,9 @@ namespace Ethereal
                 auto& c = AddComponent<IDComponent>(*id);
                 c.PostLoad();
             }
-            else if(component.getTypeName() == "TagComponent") {
-                auto tag = dynamic_cast<TagComponent*>(component.getPtr());
-                auto& c = AddComponent<TagComponent>(*tag);
+            else if(component.getTypeName() == "BasicPropertyComponent") {
+                auto tag = dynamic_cast<BasicPropertyComponent*>(component.getPtr());
+                auto& c = AddComponent<BasicPropertyComponent>(*tag);
                 c.PostLoad();
             }
             else if(component.getTypeName() == "TransformComponent") {
@@ -47,9 +47,9 @@ namespace Ethereal
             auto& c = GetComponent<IDComponent>();
             raw.Components.push_back(Reflection::ReflectionPtr<IDComponent>("IDComponent", &c));
         }
-        if(HasComponent<TagComponent>()) {
-            auto& c = GetComponent<TagComponent>();
-            raw.Components.push_back(Reflection::ReflectionPtr<TagComponent>("TagComponent", &c));
+        if(HasComponent<BasicPropertyComponent>()) {
+            auto& c = GetComponent<BasicPropertyComponent>();
+            raw.Components.push_back(Reflection::ReflectionPtr<BasicPropertyComponent>("BasicPropertyComponent", &c));
         }
         if(HasComponent<TransformComponent>()) {
             auto& c = GetComponent<TransformComponent>();

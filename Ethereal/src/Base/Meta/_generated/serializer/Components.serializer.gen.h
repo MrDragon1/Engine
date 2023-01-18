@@ -12,9 +12,9 @@ namespace Ethereal
     template <>
         IDComponent& Serializer::read(const YNode& yaml_context, IDComponent & instance);
     template <>
-    YNode Serializer::write(const TagComponent& instance);
+    YNode Serializer::write(const BasicPropertyComponent& instance);
     template <>
-        TagComponent& Serializer::read(const YNode& yaml_context, TagComponent & instance);
+        BasicPropertyComponent& Serializer::read(const YNode& yaml_context, BasicPropertyComponent & instance);
     template <>
     YNode Serializer::write(const TransformComponent& instance);
     template <>

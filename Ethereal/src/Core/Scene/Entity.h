@@ -49,13 +49,23 @@ namespace Ethereal
 
         UUID GetUUID() { return GetComponent<IDComponent>().ID; };
         const std::string& GetName() {
-            ET_CORE_ASSERT(HasComponent<TagComponent>(), "Entity does not have TagComponent!");
-            return GetComponent<TagComponent>().Tag;
+            ET_CORE_ASSERT(HasComponent<BasicPropertyComponent>(), "Entity does not have BasicPropertyComponent!");
+            return GetComponent<BasicPropertyComponent>().Tag;
         }
         void SetName(const std::string& name) {
-            ET_CORE_ASSERT(HasComponent<TagComponent>(), "Entity does not have TagComponent!");
-            GetComponent<TagComponent>().Tag = name;
+            ET_CORE_ASSERT(HasComponent<BasicPropertyComponent>(), "Entity does not have BasicPropertyComponent!");
+            GetComponent<BasicPropertyComponent>().Tag = name;
         }
+
+        bool IsVisible() {
+            ET_CORE_ASSERT(HasComponent<BasicPropertyComponent>(), "Entity does not have BasicPropertyComponent!");
+            return GetComponent<BasicPropertyComponent>().Visible;
+        }
+        void SetVisible(bool Visible) {
+            ET_CORE_ASSERT(HasComponent<BasicPropertyComponent>(), "Entity does not have BasicPropertyComponent!");
+            GetComponent<BasicPropertyComponent>().Visible = Visible;
+        }
+        void ChangeVisible() { SetVisible(!IsVisible()); }
 
         operator bool() const { return m_Entity != entt::null && m_Scene != nullptr; }
         operator uint32_t() const { return (uint32_t)m_Entity; }

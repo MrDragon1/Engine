@@ -141,7 +141,7 @@ namespace Ethereal
 
                 ImGui::Button("A", {1.0f, 1.0f});
                 ImGui::SameLine();
-                UI::DragDropBar("Mesh", "mesh");
+                UI::DragDropBar("##Mesh", "Mesh", "mesh");
 
                 UI::ListHeader("Materials");
             });
@@ -155,7 +155,7 @@ namespace Ethereal
                     //  the text in InputText.
                     ImGui::Button("A", {1.0f, 1.0f});
                     ImGui::SameLine();
-                    UI::DragDropBar("Static Mesh", "static mesh");
+                    UI::DragDropBar("##Static Mesh", "Static Mesh", "static mesh");
 
                     UI::ListHeader("Materials");
                 });
@@ -176,23 +176,41 @@ namespace Ethereal
                                        | ImGuiTableFlags_NoBordersInBody
                                        | ImGuiTableFlags_ScrollX;
 
-        if (ImGui::BeginTable("HierarchyTable", 2, flags))
+        if (ImGui::BeginTable("HierarchyTable", 3, flags))
         {
             // The first column will use the default _WidthStretch when ScrollX is Off and _WidthFixed when ScrollX is On
+            ImGui::TableSetupColumn("##Visible");
             ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_NoHide);
             ImGui::TableSetupColumn("Type");
             ImGui::TableHeadersRow();
 
-            // Simple storage to output a dummy file-system.
+
             struct EntityNode
             {
+                bool Visible;
                 const char*     Name;
                 const char*     Type;
                 uint64_t           ChildIdx;
                 std::vector<uint64_t>  ChildList;
-                static void DisplayNode(const EntityNode* node, const EntityNode* all_nodes)
+
+                static void DisplayNode(const EntityNode* node, const EntityNode* all_nodes, Scene* context )
                 {
                     ImGui::TableNextRow();
+
+                    ImGui::TableNextColumn();
+                    auto icon = node->Visible ? EditorResource::EyeIcon : EditorResource::EyeCrossIcon;
+                    {
+                        UI::ShiftCursorY(2.0f);
+                        UI::ScopedColorStack style(ImGuiCol_Border, IM_COL32(0, 0, 0, 0),
+                                               ImGuiCol_Button, IM_COL32(0, 0, 0, 0));
+                        if(UI::ImageButton(("VisibleIcon" + std::to_string(node->ChildIdx)).c_str(), (ImTextureID)icon->GetRendererID(), ImVec2(14.0f, 14.0f), ImU32(IM_COL32(196, 196, 196, 255)),ImU32(IM_COL32(255, 255, 255, 255)),ImU32(IM_COL32(255, 255, 255, 255)))){
+                            Entity entity = context->GetEntityWithUUID(node->ChildIdx);
+                            entity.ChangeVisible();
+                        }
+                        UI::ShiftCursorY(-2.0f);
+                    }
+
+
                     ImGui::TableNextColumn();
                     const bool is_selected = SelectionManager::IsSelected(s_ActiveSelectionContext, node->ChildIdx);
                     const bool is_folder = !node->ChildList.empty();
@@ -215,13 +233,13 @@ namespace Ethereal
             if(m_Context){
                 m_Context->m_Registry.each([&](auto entityID) {
                     Entity entity{entityID, m_Context.Raw()};
-                    EntityNode node{entity.GetName().c_str(), "Entity", entity.GetUUID(), {}};
+                    EntityNode node{entity.IsVisible(), entity.GetName().c_str(), "Entity", entity.GetUUID(), {}};
                     all_nodes.push_back(node);
                 });
             }
 
             for(auto& node:all_nodes){
-                EntityNode::DisplayNode(&node, all_nodes.data());
+                EntityNode::DisplayNode(&node, all_nodes.data(), m_Context.Raw());
             }
 
             ImGui::EndTable();

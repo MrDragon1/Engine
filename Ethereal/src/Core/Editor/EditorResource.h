@@ -18,6 +18,8 @@ namespace Ethereal
         inline static Ref<Texture2D> PlusIcon = nullptr;
         inline static Ref<Texture2D> MinusIcon = nullptr;
         inline static Ref<Texture2D> BurgerMenuIcon = nullptr;
+        inline static Ref<Texture2D> EyeIcon = nullptr;
+        inline static Ref<Texture2D> EyeCrossIcon = nullptr;
 
 
         static void Init() {
@@ -32,6 +34,9 @@ namespace Ethereal
             BurgerMenuIcon = LoadTexture("burger-menu.png");
 
             AssetIcon = LoadTexture("cube.png");
+
+            EyeIcon = LoadTexture("eye.png");
+            EyeCrossIcon = LoadTexture("eye-crossed.png");
         }
 
         static void Shutdown() {
@@ -45,6 +50,9 @@ namespace Ethereal
             PlusIcon.Reset();
             MinusIcon.Reset();
             BurgerMenuIcon.Reset();
+
+            EyeIcon.Reset();
+            EyeCrossIcon.Reset();
         }
 
       private:
