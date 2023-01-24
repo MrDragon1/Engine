@@ -7,6 +7,7 @@
 #include "Base/Event/MouseEvent.h"
 
 #include <glm/glm.hpp>
+#include <Base/Event/KeyEvent.h>
 
 namespace Ethereal
 {
@@ -18,9 +19,6 @@ namespace Ethereal
 
         void OnUpdate(TimeStamp ts);
         void OnEvent(Event& e);
-
-        inline float GetDistance() const { return m_Distance; }
-        inline void SetDistance(float distance) { m_Distance = distance; }
 
         inline void SetViewportSize() { UpdateProjection(); }
 
@@ -46,30 +44,28 @@ namespace Ethereal
         void UpdateView();
 
         bool OnMouseScroll(MouseScrolledEvent& e);
+        bool OnMouseButtonPressed(MouseButtonPressedEvent& e);
+        bool OnMouseButtonReleased(MouseButtonReleasedEvent& e);
 
-        void MousePan(const Vector2& delta);
         void MouseRotate(const Vector2& delta);
         void MouseZoom(float delta);
 
-        Vector3 CalculatePosition() const;
-
-        std::pair<float, float> PanSpeed() const;
         float RotationSpeed() const;
         float ZoomSpeed() const;
+        Vector3 MouseSpeed() const;
 
       private:
         float m_FOV = 45.0f, m_AspectRatio = 1.778f, m_NearClip = 0.1f, m_FarClip = 1000.0f;
 
         Matrix4 m_ViewMatrix;
         Vector3 m_Position = {0.0f, 0.0f, 3.0f};
-        Vector3 m_FocalPoint = {0.0f, 0.0f, 0.0f};
 
         Vector2 m_InitialMousePosition = {0.0f, 0.0f};
 
-        float m_CameraTranslationSpeed = 5.0f;
-
-        float m_Distance = 50.0f;
         float m_Pitch = 0.0f, m_Yaw = 0.0f;
+
+
+        bool m_Modifying = false;
     };
 
 }  // namespace Ethereal

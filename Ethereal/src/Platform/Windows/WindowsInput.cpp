@@ -33,4 +33,18 @@ namespace Ethereal
         auto [x, y] = GetMousePositionImpl();
         return y;
     }
+
+    void WindowsInput::SetMousePosImpl(const Vector2& pos) {
+        auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
+        glfwSetCursorPos(window, pos.x, pos.y);
+    }
+
+    void WindowsInput::SetMouseVisibleImpl() {
+        auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    }
+    void WindowsInput::SetMouseInvisibleImpl() {
+        auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    }
 }  // namespace Ethereal

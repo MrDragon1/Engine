@@ -11,5 +11,10 @@ namespace Ethereal
         virtual std::pair<float, float> GetMousePositionImpl() override;
         virtual float GetMouseXImpl() override;
         virtual float GetMouseYImpl() override;
+
+        virtual void SetMousePosImpl(const Vector2& pos) override;
+
+        virtual void SetMouseVisibleImpl() override;
+        virtual void SetMouseInvisibleImpl() override;
     };
 }  // namespace Ethereal

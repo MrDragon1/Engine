@@ -195,7 +195,7 @@ namespace Ethereal
         {
             UI::ScopedColorStack style(ImGuiCol_TextDisabled, IM_COL32(66, 129, 42, 255));
             ImGui::TextDisabled("TODO:");
-            ImGui::TextDisabled("\tRewrite editor camera");
+            ImGui::TextDisabled("\tAdd Setting Config Support");
             ImGui::TextDisabled("\tCheck shadow pass");
             ImGui::TextDisabled("\tDrag drop files & popup selection");
             ImGui::TextDisabled("\tAdd debug panel (eg. shadow map)");
@@ -305,7 +305,7 @@ namespace Ethereal
     }
 
     void EditorLayer::OnEvent(Event& e) {
-        if (m_SceneState == SceneState::Edit) {
+        if (m_SceneState == SceneState::Edit && m_ViewportHovered && m_ViewportFocused) {
             m_EditorCamera.OnEvent(e);
         }
         EventDispatcher dispatcher(e);

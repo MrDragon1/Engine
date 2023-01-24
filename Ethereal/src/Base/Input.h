@@ -16,13 +16,20 @@ namespace Ethereal
         inline static float GetMouseX() { return s_Instance->GetMouseXImpl(); }
         inline static float GetMouseY() { return s_Instance->GetMouseYImpl(); }
 
+        inline static void SetMousePos(const Vector2& pos) { s_Instance->SetMousePosImpl(pos); }
+        inline static void SetMouseVisible() { s_Instance->SetMouseVisibleImpl(); }
+        inline static void SetMouseInvisible() { s_Instance->SetMouseInvisibleImpl(); }
+
       protected:
         virtual bool IsKeyPressedImpl(KeyCode keycode) = 0;
         virtual bool IsMouseButtonPressedImpl(MouseCode button) = 0;
         virtual std::pair<float, float> GetMousePositionImpl() = 0;
         virtual float GetMouseXImpl() = 0;
         virtual float GetMouseYImpl() = 0;
+        virtual void SetMousePosImpl(const Vector2& pos) = 0;
 
+        virtual void SetMouseVisibleImpl() = 0;
+        virtual void SetMouseInvisibleImpl() = 0;
       private:
         static Input* s_Instance;
     };
