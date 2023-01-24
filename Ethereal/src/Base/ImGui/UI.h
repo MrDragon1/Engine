@@ -238,7 +238,7 @@ namespace Ethereal
             return pressed;
         }
 
-        static void DrawVec3Slider(const std::string& label, Vector3& values){
+        static void DrawVec3Slider(const std::string& label, Vector3& values, Vector3 resetValues = Vector3(0.0f)){
             ImGui::TableSetColumnIndex(0);
             ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 17.0f);
             ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 7.0f);
@@ -266,13 +266,13 @@ namespace Ethereal
             const ImGuiIO &io = ImGui::GetIO();
             auto boldFont = io.Fonts->Fonts[1];
 
-            auto drawControl = [&](const std::string &label, float &value, const ImVec4 &colorN, const ImVec4 &colorH, const ImVec4 &colorP) {
+            auto drawControl = [&](const std::string &label, float &value,float resetValue, const ImVec4 &colorN, const ImVec4 &colorH, const ImVec4 &colorP) {
                 {
                     ScopedStyle style(ImGuiStyleVar_FrameRounding, 1.0f);
                     ScopedColorStack colorStack(ImGuiCol_Button, colorN, ImGuiCol_ButtonHovered, colorH, ImGuiCol_ButtonActive, colorP);
                     ScopedFont boldFontScope(boldFont);
                     if (ImGui::Button(label.c_str(), buttonSize)) {
-                        value = 0.0f;
+                        value = resetValue;
                     }
                 }
                 ImGui::SameLine(0.0f, spacing);
@@ -282,13 +282,13 @@ namespace Ethereal
             };
 
             ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
-            drawControl("X", values.x, ImVec4{0.8f, 0.1f, 0.15f, 1.0f}, ImVec4{0.9f, 0.2f, 0.2f, 1.0f}, ImVec4{0.8f, 0.1f, 0.15f, 1.0f});
+            drawControl("X", values.x, resetValues.x, ImVec4{0.8f, 0.1f, 0.15f, 1.0f}, ImVec4{0.9f, 0.2f, 0.2f, 1.0f}, ImVec4{0.8f, 0.1f, 0.15f, 1.0f});
 
             ImGui::SameLine(0.0f, spacing);
-            drawControl("Y", values.y, ImVec4{0.2f, 0.7f, 0.2f, 1.0f}, ImVec4{0.3f, 0.8f, 0.3f, 1.0f}, ImVec4{0.2f, 0.7f, 0.2f, 1.0f});
+            drawControl("Y", values.y, resetValues.y, ImVec4{0.2f, 0.7f, 0.2f, 1.0f}, ImVec4{0.3f, 0.8f, 0.3f, 1.0f}, ImVec4{0.2f, 0.7f, 0.2f, 1.0f});
 
             ImGui::SameLine(0.0f, spacing);
-            drawControl("Z", values.z, ImVec4{0.1f, 0.25f, 0.8f, 1.0f}, ImVec4{0.2f, 0.35f, 0.9f, 1.0f}, ImVec4{0.1f, 0.25f, 0.8f, 1.0f});
+            drawControl("Z", values.z, resetValues.z, ImVec4{0.1f, 0.25f, 0.8f, 1.0f}, ImVec4{0.2f, 0.35f, 0.9f, 1.0f}, ImVec4{0.1f, 0.25f, 0.8f, 1.0f});
 
             ImGui::EndChild();
         }
@@ -419,8 +419,8 @@ namespace Ethereal
                             ShiftCursorY(2.0f);
                             ScopedColorStack style(ImGuiCol_Border, IM_COL32(0, 0, 0, 0),
                                                    ImGuiCol_Button, IM_COL32(0, 0, 0, 0));
-                            if(UI::ImageButton((cc + "BurgerMenuIcon" + std::to_string(i)).c_str() , (ImTextureID)EditorResource::BurgerMenuIcon->GetRendererID(), ImVec2(16.0f, 16.0f), ImU32(IM_COL32(196, 196, 196, 255)),ImU32(IM_COL32(196, 196, 196, 255)),ImU32(IM_COL32(196, 196, 196, 255)))){
-                                ET_CORE_INFO("BurgerMenuIcon Pressed");
+                            if(UI::ImageButton((cc + "BurgerMenuIcon " + std::to_string(i)).c_str() , (ImTextureID)EditorResource::BurgerMenuIcon->GetRendererID(), ImVec2(16.0f, 16.0f), ImU32(IM_COL32(196, 196, 196, 255)),ImU32(IM_COL32(196, 196, 196, 255)),ImU32(IM_COL32(196, 196, 196, 255)))){
+//                                ET_CORE_INFO("BurgerMenuIcon Pressed");
                             }
 
 //                            ShiftCursorY(-2.0f);
@@ -429,7 +429,7 @@ namespace Ethereal
                         ShiftCursorY(3.0f); // Wired bug
                         std::string payload = "E " + std::to_string(i);
                         std::string elementlabel = "Element " + std::to_string(i);
-                        DragDropBar(cc.c_str(), elementlabel.c_str(), payload.c_str(), 5.0f, 10.0f);
+                        DragDropBar((cc + elementlabel).c_str(), elementlabel.c_str(), payload.c_str(), 5.0f, 10.0f);
                         ImGui::SetCursorPosY(cury + height);
                     }
                     ImGui::EndChild();

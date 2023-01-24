@@ -129,7 +129,7 @@ namespace Ethereal
                     component.Rotation = Math::Radians(rotation);
 
                     ImGui::TableNextRow();
-                    UI::DrawVec3Slider("Scale", component.Scale);
+                    UI::DrawVec3Slider("Scale", component.Scale, Vector3(1.0f)); // TODO: load default scale as resetvalue
 
                     ImGui::EndTable();
                 });

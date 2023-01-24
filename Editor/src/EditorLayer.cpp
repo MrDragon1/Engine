@@ -190,6 +190,17 @@ namespace Ethereal
         }
 
         ImGui::DragFloat3("Directional Light Dir", Math::Ptr(m_RenderSceneData.DirectionalLightDir), 0.1);
+
+        // TODOLIST
+        {
+            UI::ScopedColorStack style(ImGuiCol_TextDisabled, IM_COL32(66, 129, 42, 255));
+            ImGui::TextDisabled("TODO:");
+            ImGui::TextDisabled("\tRewrite editor camera");
+            ImGui::TextDisabled("\tCheck shadow pass");
+            ImGui::TextDisabled("\tDrag drop files & popup selection");
+            ImGui::TextDisabled("\tAdd debug panel (eg. shadow map)");
+        }
+
         ImGui::End();
 
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});

@@ -31,7 +31,7 @@ namespace Ethereal
                 m_CurrentDirectory = m_CurrentDirectory.parent_path();
             }
         }
-        static float padding = 32.0f;
+        static float padding = 4.0f;
         static float thumbnailSize = 80.0f;
         float cellSize = thumbnailSize + padding;
 
@@ -79,20 +79,21 @@ namespace Ethereal
             const float TEXT_BASE_HEIGHT = ImGui::GetTextLineHeightWithSpacing();
 
 
+            std::string filename = path.stem().string();
             if (IsSelect) {
                 UI::ScopedColorStack color(ImGuiCol_Border, IM_COL32(0, 0, 0, 0),
                                            ImGuiCol_Button, IM_COL32(44, 93, 135, 255),
                                            ImGuiCol_ButtonHovered, IM_COL32(44, 93, 135, 255),
                                            ImGuiCol_Text, IM_COL32(210, 221, 230, 255));
                 UI::ScopedStyle stylepadding(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
-                ImGui::Button(filenameString.c_str(), {thumbnailSize + 8.0f, 0});
+                ImGui::Button(filename.c_str(), {thumbnailSize + 8.0f, 0});
             } else {
                 UI::ScopedColorStack color(ImGuiCol_Border, IM_COL32(0, 0, 0, 0),
                                            ImGuiCol_Button, IM_COL32(0, 0, 0, 0),
                                            ImGuiCol_ButtonHovered, IM_COL32(0, 0, 0, 0));
                 UI::ScopedStyle stylepadding(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
 //                ImGui::TextWrapped(filenameString.c_str());
-                ImGui::Button(filenameString.c_str(), {thumbnailSize + 8.0f, 0});
+                ImGui::Button(filename.c_str(), {thumbnailSize + 8.0f, 0});
             }
             ImGui::NextColumn();
 
@@ -100,8 +101,8 @@ namespace Ethereal
         }
         ImGui::Columns(1);
 
-        //        ImGui::SliderFloat("Thumbnail Size", &thumbnailSize, 16, 512);
-        //        ImGui::SliderFloat("Padding", &padding, 0, 32);
+//                ImGui::SliderFloat("Thumbnail Size", &thumbnailSize, 16, 512);
+//                ImGui::SliderFloat("Padding", &padding, 0, 32);
 
         // TODO: status bar
         ImGui::End();

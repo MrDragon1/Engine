@@ -3,6 +3,8 @@
 build/
 note/
 .cache/*
+parser_header.h
+ clangLog.txt
 
 *.pdb
 *.bak

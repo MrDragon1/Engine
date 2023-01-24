@@ -452,9 +452,6 @@ Assets:
   - Handle: 14258822285678245173
     FilePath: meshes\default\cone.ESMesh
     Type: StaticMesh
-  - Handle: 14307297345116643917
-    FilePath: buildin\Editor\ContentBrowser\animator-assets\animator.png
-    Type: Texture
   - Handle: 14413617198302929141
     FilePath: fonts\arial\arial.ttf
     Type: Font
