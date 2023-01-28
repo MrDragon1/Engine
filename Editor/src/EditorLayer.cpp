@@ -343,16 +343,17 @@ namespace Ethereal
                 break;
             }
             // Gizmos
-            case Key::Q:
+            // TODO: Find a more human friendly way bind keys
+            case Key::C:
                 m_GizmoType = -1;
                 break;
-            case Key::W:
+            case Key::R:
                 m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
                 break;
-            case Key::E:
+            case Key::F:
                 m_GizmoType = ImGuizmo::OPERATION::ROTATE;
                 break;
-            case Key::R:
+            case Key::V:
                 m_GizmoType = ImGuizmo::OPERATION::SCALE;
                 break;
         }
@@ -361,9 +362,9 @@ namespace Ethereal
 
     bool EditorLayer::OnMouseButtonPressed(MouseButtonPressedEvent& e) {
         if (e.GetMouseButton() == Mouse::ButtonLeft) {
-            if (m_ViewportHovered && !ImGuizmo::IsOver() && !Input::IsKeyPressed(Key::LeftAlt)) {
+            if (m_ViewportHovered && !ImGuizmo::IsOver()) {
                 SelectionManager::DeselectAll();
-                SelectionManager::Select(SelectionContext::Scene, m_HoveredEntity.GetUUID());
+                if(m_HoveredEntity) SelectionManager::Select(SelectionContext::Scene, m_HoveredEntity.GetUUID());
             }
         }
         return false;
