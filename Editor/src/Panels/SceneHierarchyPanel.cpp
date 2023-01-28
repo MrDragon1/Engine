@@ -166,15 +166,13 @@ namespace Ethereal
 
     void SceneHierarchyPanel::ShowHierarchy() {
         ImGui::Begin("Hierarchy");
-        const float TEXT_BASE_WIDTH = ImGui::CalcTextSize("A").x;
-        const float TEXT_BASE_HEIGHT = ImGui::GetTextLineHeightWithSpacing();
 
         static ImGuiTableFlags flags = ImGuiTableFlags_BordersV
                                        | ImGuiTableFlags_BordersOuterH
                                        | ImGuiTableFlags_Resizable
                                        | ImGuiTableFlags_RowBg
                                        | ImGuiTableFlags_NoBordersInBody
-                                       | ImGuiTableFlags_ScrollX
+//                                       | ImGuiTableFlags_ScrollX // this will create child window which will cause the empty area not able to be clicked
                                        // | ImGuiTableFlags_SizingFixedFit
                                        ;
 
@@ -198,19 +196,21 @@ namespace Ethereal
 
                 static void DisplayNode(const EntityNode* node, const EntityNode* all_nodes, Scene* context )
                 {
-                    ImGui::TableNextRow();
+                    const float text_width = ImGui::CalcTextSize("A").x;
+                    const float text_height = ImGui::GetTextLineHeight();
 
+                    ImGui::TableNextRow();
                     ImGui::TableNextColumn();
                     auto icon = node->Visible ? EditorResource::EyeIcon : EditorResource::EyeCrossIcon;
                     {
-                        UI::ShiftCursorY(2.0f);
+//                        UI::ShiftCursorY(2.0f);
                         UI::ScopedColorStack style(ImGuiCol_Border, IM_COL32(0, 0, 0, 0),
                                                ImGuiCol_Button, IM_COL32(0, 0, 0, 0));
-                        if(UI::ImageButton(("VisibleIcon" + std::to_string(node->ChildIdx)).c_str(), (ImTextureID)icon->GetRendererID(), ImVec2(14.0f, 14.0f), ImU32(IM_COL32(196, 196, 196, 255)),ImU32(IM_COL32(255, 255, 255, 255)),ImU32(IM_COL32(255, 255, 255, 255)))){
+                        if(UI::ImageButton(("VisibleIcon" + std::to_string(node->ChildIdx)).c_str(), (ImTextureID)icon->GetRendererID(), ImVec2(text_height, text_height), ImU32(IM_COL32(196, 196, 196, 255)),ImU32(IM_COL32(255, 255, 255, 255)),ImU32(IM_COL32(255, 255, 255, 255)))){
                             Entity entity = context->GetEntityWithUUID(node->ChildIdx);
                             entity.ChangeVisible();
                         }
-                        UI::ShiftCursorY(-2.0f);
+//                        UI::ShiftCursorY(-2.0f);
                     }
 
 
@@ -246,6 +246,12 @@ namespace Ethereal
             }
 
             ImGui::EndTable();
+        }
+
+        if(ImGui::BeginPopupContextWindow("HierarchyPopup", ImGuiMouseButton_Right, false))
+        {
+            DrawEntityCreateMenu();
+            ImGui::EndPopup();
         }
 
         ImGui::End();
