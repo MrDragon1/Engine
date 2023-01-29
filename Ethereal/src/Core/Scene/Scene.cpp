@@ -123,6 +123,10 @@ namespace Ethereal
                 filePath = "default/monkey.ESMesh";
                 name = "Monkey";
                 break;
+            case ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_QUAD:
+                filePath = "default/quad.ESMesh";
+                name = "Quad";
+                break;
             default:
                 ET_CORE_ASSERT(false, "Unknown 3D object type");
                 break;

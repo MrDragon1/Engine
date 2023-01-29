@@ -22,6 +22,14 @@ namespace Ethereal
         static const AssetMetaData& GetMetadata(const std::filesystem::path& filepath);
         static const AssetMetaData& GetMetadata(const Ref<Asset>& asset) { return GetMetadata(asset->Handle); }
 
+        static const std::string GetDisplayTypeName(AssetHandle handle) {
+            return Utils::AssetTypeToString(GetMetadata(handle).Type);
+        }
+
+        static const std::string GetAssetName(AssetHandle handle) {
+            return AssetManager::GetMetadata(handle).FilePath.stem().string();
+        }
+
         static std::filesystem::path GetFileSystemPath(const AssetMetaData& metadata) { return Project::GetAssetDirectory() / metadata.FilePath; }
         static std::string GetFileSystemPathString(const AssetMetaData& metadata) { return GetFileSystemPath(metadata).string(); }
         static std::filesystem::path GetRelativePath(const std::filesystem::path& filepath);

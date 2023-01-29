@@ -96,7 +96,7 @@ namespace Ethereal
             Entity entity = m_Context->GetEntityWithUUID(entities[0]);
             TComponent& firstComponent = entity.GetComponent<TComponent>();
             const bool isMultiEdit = entities.size() > 1;
-            uiFunction(firstComponent, entities, isMultiEdit);
+            uiFunction(firstComponent, entities, isMultiEdit, name);
         }
         ImGui::PopID();
     }
@@ -109,7 +109,7 @@ namespace Ethereal
         if (!entities.empty()) {
             auto entity = m_Context->GetEntityWithUUID(entities[0]);
 
-            DrawComponent<TransformComponent>("Transform", [&](TransformComponent& firstComponent, const std::vector<UUID>& entities, const bool isMultiEdit) {
+            DrawComponent<TransformComponent>("Transform", [&](TransformComponent& firstComponent, const std::vector<UUID>& entities, const bool isMultiEdit, const std::string& type_name) {
                     // Not support multi edit for now
                     Entity entity = m_Context->GetEntityWithUUID(entities[0]);
                     auto& component = entity.GetComponent<TransformComponent>();
@@ -134,19 +134,19 @@ namespace Ethereal
                     ImGui::EndTable();
                 });
 
-            DrawComponent<MeshComponent>("Mesh", [&](MeshComponent& firstComponent, const std::vector<UUID>& entities, const bool isMultiEdit) {
+            DrawComponent<MeshComponent>("Mesh", [&](MeshComponent& firstComponent, const std::vector<UUID>& entities, const bool isMultiEdit, const std::string& type_name) {
                 static float spacing = 10.0f;
                 UI::ScopedStyleStack style(ImGuiStyleVar_ItemSpacing, ImVec2(8.0f, spacing), ImGuiStyleVar_CellPadding, ImVec2(4.0f, spacing));
                 ImGui::SetCursorPosY(ImGui::GetCursorPosY() + spacing / 2.0f);
 
                 ImGui::Button("A", {1.0f, 1.0f});
                 ImGui::SameLine();
-                UI::DragDropBar("##Mesh", "Mesh", "mesh");
+                UI::DragDropBar(("##" + type_name).c_str(), type_name.c_str(), firstComponent.MeshHandle);
 
                 UI::ListHeader("Materials");
             });
 
-            DrawComponent<StaticMeshComponent>("Static Mesh", [&](StaticMeshComponent& firstComponent, const std::vector<UUID>& entities, const bool isMultiEdit) {
+            DrawComponent<StaticMeshComponent>("Static Mesh", [&](StaticMeshComponent& firstComponent, const std::vector<UUID>& entities, const bool isMultiEdit, const std::string& type_name) {
                     static float spacing = 10.0f;
                     UI::ScopedStyleStack style(ImGuiStyleVar_ItemSpacing, ImVec2(8.0f, spacing), ImGuiStyleVar_CellPadding, ImVec2(4.0f, spacing));
                     ImGui::SetCursorPosY(ImGui::GetCursorPosY() + spacing / 2.0f);
@@ -155,7 +155,7 @@ namespace Ethereal
                     //  the text in InputText.
                     ImGui::Button("A", {1.0f, 1.0f});
                     ImGui::SameLine();
-                    UI::DragDropBar("##Static Mesh", "Static Mesh", "static mesh");
+                    UI::DragDropBar(("##" + type_name).c_str(), type_name.c_str(), firstComponent.StaticMeshHandle);
 
                     UI::ListHeader("Materials");
                 });

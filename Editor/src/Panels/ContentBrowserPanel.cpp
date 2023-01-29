@@ -69,7 +69,7 @@ namespace Ethereal
 
             if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
                 AssetHandle handle = AssetManager::GetAssetHandleFromFilePath(path);
-                ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", &handle, sizeof(AssetHandle));
+                ImGui::SetDragDropPayload(AssetManager::GetDisplayTypeName(handle).c_str(), &handle, sizeof(AssetHandle));
                 ImGui::EndDragDropSource();
             }
 

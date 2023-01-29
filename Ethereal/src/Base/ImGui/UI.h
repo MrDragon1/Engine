@@ -337,23 +337,35 @@ namespace Ethereal
             return open;
         }
 
-        // idlabel prevent id confilct when use ListHeader's Element 0/1/2...
-        static bool DragDropBar(const char* idlabel, const char* label, const char* payload, float label_shift = 20.0f, float text_shift = 50.0f){
+        /*!
+         *
+         * @param id_label prevent id conflict when use ListHeader's Element 0/1/2...
+         * @param type_label identifier for drag drop system, usually the type of the payload can be used
+         * @param payload the payload in this drag drop bar & the payload will be changed if the drag drop operation is successful
+         * @param label_shift
+         * @param text_shift
+         * @return
+         */
+        static bool DragDropBar(const char* id_label, const char* type_label, AssetHandle& payload, float label_shift = 20.0f, float text_shift = 50.0f){
             UI::ScopedStyle style(ImGuiStyleVar_FrameRounding, 2.0f);
-            ScopedID id(idlabel);
+            ScopedID id(id_label);
 
             ImGui::SetCursorPosX(ImGui::GetCursorPosX() + label_shift);
-            ImGui::TextUnformatted(label);
+            ImGui::TextUnformatted(type_label);
 
             ImGui::SameLine(0.0f, text_shift);
             ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - 10.0f);
-            ImGui::InputText("##dragdrop", (char *)payload, 256, ImGuiInputTextFlags_ReadOnly | ImGuiInputTextFlags_NoMarkEdited);
+            std::string payload_name = AssetManager::GetMetadata(payload).FilePath.stem().string();
+            //TODO: Replace the input text with text (disable maybe?) for better
+            ImGui::InputText("##dragdrop", (char *)payload_name.c_str(), 256, ImGuiInputTextFlags_ReadOnly | ImGuiInputTextFlags_NoMarkEdited);
             ImGui::SetItemAllowOverlap();
             if (ImGui::BeginDragDropTarget()) {
-                if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("PAYLOAD")) {
-                    IM_ASSERT(payload->DataSize == sizeof(int));
-                    int payload_n = *(const int *)payload->Data;
-                    std::cout << "Dropped " << payload_n << std::endl;
+                if (const ImGuiPayload *accept_payload = ImGui::AcceptDragDropPayload(AssetManager::GetDisplayTypeName(payload).c_str())) {
+                    IM_ASSERT(accept_payload->DataSize == sizeof(AssetHandle));
+                    payload = *(const AssetHandle *)accept_payload->Data;
+
+                    std::cout << "Dropped " << payload << std::endl;
+
                 }
                 ImGui::EndDragDropTarget();
             }
@@ -368,7 +380,7 @@ namespace Ethereal
                 ScopedColorStack style(ImGuiCol_Border, IM_COL32(0, 0, 0, 0),
                                        ImGuiCol_Button, IM_COL32(0, 0, 0, 0),
                                        ImGuiCol_ButtonHovered, IM_COL32(0, 0, 0, 0));
-                if(UI::ImageButton(idlabel, (ImTextureID)icon->GetRendererID(), ImVec2(16.0f, 16.0f))){
+                if(UI::ImageButton(id_label, (ImTextureID)icon->GetRendererID(), ImVec2(16.0f, 16.0f))){
                     //TODO: Open component select menu
                 }
 
@@ -401,7 +413,7 @@ namespace Ethereal
             if (open) {
                 float spacing = 30.0f;  // child window left and right spacing
                 float height = 30.0f;
-                float tocal_height = height * value;
+                float tocal_height = height * value + 2.0f;
                 float width = ImGui::GetWindowContentRegionWidth() - 20.0f - spacing;
 
                 if(value > 0)
@@ -427,9 +439,11 @@ namespace Ethereal
                         }
                         ImGui::SameLine();
                         ShiftCursorY(3.0f); // Wired bug
-                        std::string payload = "E " + std::to_string(i);
                         std::string elementlabel = "Element " + std::to_string(i);
-                        DragDropBar((cc + elementlabel).c_str(), elementlabel.c_str(), payload.c_str(), 5.0f, 10.0f);
+                        //TODO: Use the correct asset handle
+                        AssetHandle payload = AssetHandle(9102962350420186113);
+
+                        DragDropBar((cc + elementlabel).c_str(), elementlabel.c_str(), payload, 5.0f, 10.0f);
                         ImGui::SetCursorPosY(cury + height);
                     }
                     ImGui::EndChild();
