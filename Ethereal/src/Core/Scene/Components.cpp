@@ -7,6 +7,8 @@ namespace Ethereal {
 
     void StaticMeshComponent::PostLoad() {
         materialTable = Ref<MaterialTable>::Create();
+        if(!AssetManager::IsAssetHandleValid(StaticMeshHandle)) return;
+
         auto mesh = AssetManager::GetAsset<StaticMesh>(StaticMeshHandle);
         if (mesh->GetMaterials()->GetMaterialCount() > MaterialTableRaw.Materials.size()) {
             materialTable->SetMaterialCount(mesh->GetMaterials()->GetMaterialCount());
@@ -33,6 +35,8 @@ namespace Ethereal {
 
     void MeshComponent::PostLoad() {
         materialTable = Ref<MaterialTable>::Create();
+        if(!AssetManager::IsAssetHandleValid(MeshHandle)) return;
+
         auto mesh = AssetManager::GetAsset<Mesh>(MeshHandle);
         if (mesh->GetMaterials()->GetMaterialCount() > MaterialTableRaw.Materials.size()) {
             materialTable->SetMaterialCount(mesh->GetMaterials()->GetMaterialCount());

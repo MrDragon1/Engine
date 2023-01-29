@@ -234,7 +234,6 @@ namespace Ethereal
             }
             PopStyleVar();
 
-            if (pressed) ET_CORE_INFO("Pressed {}", label);
             return pressed;
         }
 
@@ -342,11 +341,12 @@ namespace Ethereal
          * @param id_label prevent id conflict when use ListHeader's Element 0/1/2...
          * @param type_label identifier for drag drop system, usually the type of the payload can be used
          * @param payload the payload in this drag drop bar & the payload will be changed if the drag drop operation is successful
+         * @param assetType the payload type of this drag drop bar
          * @param label_shift
          * @param text_shift
          * @return
          */
-        static bool DragDropBar(const char* id_label, const char* type_label, AssetHandle& payload, float label_shift = 20.0f, float text_shift = 50.0f){
+        static bool DragDropBar(const char* id_label, const char* type_label, AssetHandle& payload, AssetType assetType, float label_shift = 20.0f, float text_shift = 50.0f){
             UI::ScopedStyle style(ImGuiStyleVar_FrameRounding, 2.0f);
             ScopedID id(id_label);
 
@@ -355,12 +355,12 @@ namespace Ethereal
 
             ImGui::SameLine(0.0f, text_shift);
             ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - 10.0f);
-            std::string payload_name = AssetManager::GetMetadata(payload).FilePath.stem().string();
+            std::string payload_name = AssetManager::IsAssetHandleValid(payload) ? AssetManager::GetMetadata(payload).FilePath.stem().string() : "None";
             //TODO: Replace the input text with text (disable maybe?) for better
             ImGui::InputText("##dragdrop", (char *)payload_name.c_str(), 256, ImGuiInputTextFlags_ReadOnly | ImGuiInputTextFlags_NoMarkEdited);
             ImGui::SetItemAllowOverlap();
             if (ImGui::BeginDragDropTarget()) {
-                if (const ImGuiPayload *accept_payload = ImGui::AcceptDragDropPayload(AssetManager::GetDisplayTypeName(payload).c_str())) {
+                if (const ImGuiPayload *accept_payload = ImGui::AcceptDragDropPayload(Utils::AssetTypeToString(assetType))) {
                     IM_ASSERT(accept_payload->DataSize == sizeof(AssetHandle));
                     payload = *(const AssetHandle *)accept_payload->Data;
                 }
@@ -393,7 +393,7 @@ namespace Ethereal
          * @param payloads
          * @return
          */
-        static bool ListHeader(const char* label, std::vector<AssetHandle>& payloads) {
+        static bool ListHeader(const char* label, std::vector<AssetHandle>& payloads, AssetType assetType){
             int value = payloads.size();
             std::string cc = "##dummy_id_" + std::string(label) + "_";
             bool open;
@@ -444,7 +444,7 @@ namespace Ethereal
                         ShiftCursorY(3.0f); // Wired bug
                         std::string elementlabel = "Element " + std::to_string(i);
 
-                        DragDropBar((cc + elementlabel).c_str(), elementlabel.c_str(), payloads[i], 5.0f, 10.0f);
+                        DragDropBar((cc + elementlabel).c_str(), elementlabel.c_str(), payloads[i], assetType, 5.0f, 10.0f);
                         ImGui::SetCursorPosY(cury + height);
                     }
                     ImGui::EndChild();

@@ -9,7 +9,7 @@ namespace Ethereal
     CLASS(MaterialTableRaw, Fields) {
         REFLECTION_BODY(MaterialTableRaw);
       public:
-        std::vector<UUID> Materials;
+        std::vector<UUID> Materials = {-1};
     };
 
     REFLECTION_TYPE(MaterialDesc)

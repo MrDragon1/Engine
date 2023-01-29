@@ -109,6 +109,23 @@ namespace Ethereal
         if (!entities.empty()) {
             auto entity = m_Context->GetEntityWithUUID(entities[0]);
 
+            UI::ShiftCursorX(10.0f);
+            ImGui::SetNextItemWidth(ImGui::GetWindowWidth() / 3.0f);
+            ImGui::InputText("##InspectorTag", (char *)entity.GetComponent<BasicPropertyComponent>().Tag.c_str(), ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll);
+            ImGui::SameLine(ImGui::GetWindowWidth() - 30.0f);
+            auto icon = EditorResource::PlusIcon;
+            if (UI::ImageButton("InspectorPlusIcon", (ImTextureID)icon->GetRendererID(), ImVec2(20.0f, 20.0f))) {
+                ImGui::OpenPopup("InspectorADDComponent");
+            }
+
+            if (ImGui::BeginPopup("InspectorADDComponent"))
+            {
+                if(!entity.HasComponent<MeshComponent>() && ImGui::MenuItem("Mesh")) entity.AddComponent<MeshComponent>();
+                if(!entity.HasComponent<StaticMeshComponent>() && ImGui::MenuItem("StaticMesh")) entity.AddComponent<StaticMeshComponent>();
+
+                ImGui::EndPopup();
+            }
+
             DrawComponent<TransformComponent>("Transform", [&](TransformComponent& firstComponent, const std::vector<UUID>& entities, const bool isMultiEdit, const std::string& type_name) {
                     // Not support multi edit for now
                     Entity entity = m_Context->GetEntityWithUUID(entities[0]);
@@ -141,9 +158,9 @@ namespace Ethereal
 
                 ImGui::Button("A", {1.0f, 1.0f});
                 ImGui::SameLine();
-                UI::DragDropBar(("##" + type_name).c_str(), type_name.c_str(), firstComponent.MeshHandle);
+                UI::DragDropBar(("##" + type_name).c_str(), type_name.c_str(), firstComponent.MeshHandle, AssetType::Mesh);
 
-                UI::ListHeader("Materials", firstComponent.MaterialTableRaw.Materials);
+                UI::ListHeader("Materials", firstComponent.MaterialTableRaw.Materials, AssetType::Material);
                 firstComponent.PostLoad();
             });
 
@@ -156,9 +173,9 @@ namespace Ethereal
                     //  the text in InputText.
                     ImGui::Button("A", {1.0f, 1.0f});
                     ImGui::SameLine();
-                    UI::DragDropBar(("##" + type_name).c_str(), type_name.c_str(), firstComponent.StaticMeshHandle);
+                    UI::DragDropBar(("##" + type_name).c_str(), type_name.c_str(), firstComponent.StaticMeshHandle, AssetType::StaticMesh);
 
-                    UI::ListHeader("Materials", firstComponent.MaterialTableRaw.Materials);
+                    UI::ListHeader("Materials", firstComponent.MaterialTableRaw.Materials, AssetType::Material);
                     firstComponent.PostLoad();
                 });
         }
