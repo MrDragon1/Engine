@@ -363,9 +363,6 @@ namespace Ethereal
                 if (const ImGuiPayload *accept_payload = ImGui::AcceptDragDropPayload(AssetManager::GetDisplayTypeName(payload).c_str())) {
                     IM_ASSERT(accept_payload->DataSize == sizeof(AssetHandle));
                     payload = *(const AssetHandle *)accept_payload->Data;
-
-                    std::cout << "Dropped " << payload << std::endl;
-
                 }
                 ImGui::EndDragDropTarget();
             }
@@ -390,8 +387,14 @@ namespace Ethereal
             return false;
         }
 
-        static bool ListHeader(const char* label) {
-            static int value = 2;
+        /*!
+         *
+         * @param label
+         * @param payloads
+         * @return
+         */
+        static bool ListHeader(const char* label, std::vector<AssetHandle>& payloads) {
+            int value = payloads.size();
             std::string cc = "##dummy_id_" + std::string(label) + "_";
             bool open;
 
@@ -409,7 +412,7 @@ namespace Ethereal
                 ImGui::TextUnformatted(label);
             }
 
-            if (value <= 0) value = 0;
+            if (value <= 1) value = 1;
             if (open) {
                 float spacing = 30.0f;  // child window left and right spacing
                 float height = 30.0f;
@@ -440,10 +443,8 @@ namespace Ethereal
                         ImGui::SameLine();
                         ShiftCursorY(3.0f); // Wired bug
                         std::string elementlabel = "Element " + std::to_string(i);
-                        //TODO: Use the correct asset handle
-                        AssetHandle payload = AssetHandle(9102962350420186113);
 
-                        DragDropBar((cc + elementlabel).c_str(), elementlabel.c_str(), payload, 5.0f, 10.0f);
+                        DragDropBar((cc + elementlabel).c_str(), elementlabel.c_str(), payloads[i], 5.0f, 10.0f);
                         ImGui::SetCursorPosY(cury + height);
                     }
                     ImGui::EndChild();
@@ -452,10 +453,15 @@ namespace Ethereal
                 ImGui::SetCursorPosX(width - 40.0f);
                 UI::ShiftCursorY(-4.0f);
                 auto icon = EditorResource::PlusIcon;
-                if (UI::ImageButton((cc + "PlusIcon").c_str() , (ImTextureID)icon->GetRendererID(), ImVec2(16.0f, 16.0f))) value++;
+                if (UI::ImageButton((cc + "PlusIcon").c_str() , (ImTextureID)icon->GetRendererID(), ImVec2(16.0f, 16.0f))) {
+                    // TODO:: Add global default material
+                    payloads.push_back(AssetHandle(9102962350420186113));
+                }
                 ImGui::SameLine(0.0f, 5.0f);
                 icon = EditorResource::MinusIcon;
-                if (UI::ImageButton((cc + "MinusIcon").c_str() , (ImTextureID)icon->GetRendererID(), ImVec2(16.0f, 16.0f))) value--;
+                if (UI::ImageButton((cc + "MinusIcon").c_str() , (ImTextureID)icon->GetRendererID(), ImVec2(16.0f, 16.0f))) {
+                    payloads.pop_back();
+                }
             }
 
             return open;

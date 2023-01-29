@@ -143,7 +143,8 @@ namespace Ethereal
                 ImGui::SameLine();
                 UI::DragDropBar(("##" + type_name).c_str(), type_name.c_str(), firstComponent.MeshHandle);
 
-                UI::ListHeader("Materials");
+                UI::ListHeader("Materials", firstComponent.MaterialTableRaw.Materials);
+                firstComponent.PostLoad();
             });
 
             DrawComponent<StaticMeshComponent>("Static Mesh", [&](StaticMeshComponent& firstComponent, const std::vector<UUID>& entities, const bool isMultiEdit, const std::string& type_name) {
@@ -157,7 +158,8 @@ namespace Ethereal
                     ImGui::SameLine();
                     UI::DragDropBar(("##" + type_name).c_str(), type_name.c_str(), firstComponent.StaticMeshHandle);
 
-                    UI::ListHeader("Materials");
+                    UI::ListHeader("Materials", firstComponent.MaterialTableRaw.Materials);
+                    firstComponent.PostLoad();
                 });
         }
 
