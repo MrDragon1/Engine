@@ -82,7 +82,7 @@ namespace Ethereal
         void SetDefaults();
 
       private:
-        Ref<Texture> m_AlbedoMap;
+        Ref<Texture > m_AlbedoMap;
         Ref<Texture> m_NormalMap;
         Ref<Texture> m_MetallicMap;
         Ref<Texture> m_RoughnessMap;

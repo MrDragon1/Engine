@@ -15,14 +15,21 @@ public:
     inline static Ref<Texture> WhiteTexture;
     inline static Ref<Texture> BlackTexture;
     inline static Ref<Texture> BRDFLutTexture;
+    inline static Ref<Texture> CheckerBoardTexture;
+
     inline static Ref<StaticMesh> Cube;
     inline static Ref<StaticMesh> Quad;
+
+    inline static MaterialDesc DefaultMaterialDesc;
+
+
 //    inline static Ref<Environment> Environment;
 
     static void Init() {
         WhiteTexture = AssetManager::GetAsset<Texture>("buildin/textures/white.png");
         BlackTexture = AssetManager::GetAsset<Texture>("buildin/textures/black.png");
         BRDFLutTexture = AssetManager::GetAsset<Texture>("buildin/textures/BRDF_LUT.tga");
+        CheckerBoardTexture = AssetManager::GetAsset<Texture>("buildin/textures/Checkerboard.tga");
 
         StaticMeshDesc desc;
         AssetManager::LoadAsset_Ref("assets/meshes/default/basicCube.ESMesh", desc);
@@ -33,7 +40,17 @@ public:
         Quad = Ref<StaticMesh>::Create();
         Quad->Load(desc);
 
-//        Environment = AssetManager::GetAsset<Environment>("skyboxs/Newport_Loft_Ref.hdr");
+
+        {
+            DefaultMaterialDesc.Name = "DefaultMaterial";
+            DefaultMaterialDesc.AlbedoMap = CheckerBoardTexture->Handle;
+            DefaultMaterialDesc.NormalMap = CheckerBoardTexture->Handle;
+            DefaultMaterialDesc.MetallicMap = CheckerBoardTexture->Handle;
+            DefaultMaterialDesc.RoughnessMap = CheckerBoardTexture->Handle;
+            DefaultMaterialDesc.OcclusionMap = CheckerBoardTexture->Handle;
+        }
+
+
     }
 
     static void Shutdown() {
@@ -41,6 +58,8 @@ public:
         WhiteTexture.Reset();
         BlackTexture.Reset();
         BRDFLutTexture.Reset();
+        CheckerBoardTexture.Reset();
+
         Cube.Reset();
         Quad.Reset();
     }

@@ -3,6 +3,7 @@
 #include "Core/Asset/AssetManager.h"
 #include "Base/ImGui/UI.h"
 #include "Core/Editor/EditorResource.h"
+#include "Core/Renderer/RenderResource.h"
 
 #include <imgui.h>
 #include <imgui_internal.h>
@@ -49,8 +50,7 @@ namespace Ethereal
         }
 
         if (ImGui::MenuItem("Material")) {
-            MaterialDesc desc;
-            desc.Name = "M_Unnamed";
+            MaterialDesc desc(RenderResource::DefaultMaterialDesc);
             AssetManager::CreateAsset_Ref("M_Unnamed", (Project::GetAssetDirectory() / "materials").string(), desc);
         }
     }

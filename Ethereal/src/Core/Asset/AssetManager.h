@@ -90,7 +90,12 @@ namespace Ethereal
                 metadata.FilePath = filename + suffix;
             else
                 metadata.FilePath = AssetManager::GetRelativePath(directoryPath + "/" + filename + suffix);
-            metadata.IsDataLoaded = true;
+
+            //TODO: actually the metadata is not loaded,
+            // only the descriptor is stored in the s_LoadedAssets.
+            // Need to store the actual asset data (not descriptor data).
+            // For now, just set the IsDataLoaded to false
+            metadata.IsDataLoaded = false;
 
             s_AssetRegistry[metadata.Handle] = metadata;
 

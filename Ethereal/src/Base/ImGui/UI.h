@@ -443,7 +443,7 @@ namespace Ethereal
                         ImGui::SameLine();
                         ShiftCursorY(3.0f); // Wired bug
                         std::string elementlabel = "Element " + std::to_string(i);
-
+                        auto tmp = payloads[i];
                         DragDropBar((cc + elementlabel).c_str(), elementlabel.c_str(), payloads[i], assetType, 5.0f, 10.0f);
                         ImGui::SetCursorPosY(cury + height);
                     }
