@@ -139,10 +139,9 @@ namespace Ethereal
         staticMeshComponent.StaticMeshHandle = mesh->Handle;
         staticMeshComponent.materialTable = Ref<MaterialTable>::Create(mesh->GetMaterials());
         staticMeshComponent.MaterialTableRaw.Materials.clear();
-        for(auto& asset: staticMeshComponent.materialTable->GetMaterials()) {
+        for (auto& asset : staticMeshComponent.materialTable->GetMaterials()) {
             staticMeshComponent.MaterialTableRaw.Materials.push_back(asset->Handle);
         }
-
 
         return Object;
     }
@@ -205,6 +204,7 @@ namespace Ethereal
         auto view = m_Registry.view<MeshComponent>();
         for (auto& entity : view) {
             const auto meshComponent = view.get<MeshComponent>(entity);
+            if (!AssetManager::IsAssetHandleValid(meshComponent.MeshHandle)) continue;
             auto mesh = AssetManager::GetAsset<Mesh>(meshComponent.MeshHandle);
             mesh->GetAnimator()->UpdateAnimation(ts);
         }
@@ -317,14 +317,12 @@ namespace Ethereal
         }
         m_SceneName = data.Name;
         m_Environment = AssetManager::GetAsset<Environment>(data.Environment);
-        for (const EntityRaw entityraw: data.Entities){
+        for (const EntityRaw entityraw : data.Entities) {
             Entity entity = {m_Registry.create(), this};
             bool is_loaded = entity.Load(entityraw);
-            if (!is_loaded)
-            {
+            if (!is_loaded) {
                 ET_CORE_ERROR("loading object " + entityraw.Name + " failed");
             }
-
         }
     }
 
@@ -342,7 +340,6 @@ namespace Ethereal
         }
         AssetManager::SaveAsset_Ref(m_ScenePath, data);
     }
-
 
     Entity Scene::CreateEntityWithStaticMesh(AssetHandle assetHandle) {
         if (!AssetManager::IsAssetHandleValid(assetHandle)) {
@@ -384,7 +381,7 @@ namespace Ethereal
         return entity;
     }
 
-    Entity Scene::GetEntityWithUUID(UUID uuid){
+    Entity Scene::GetEntityWithUUID(UUID uuid) {
         auto view = m_Registry.view<IDComponent>();
         for (auto entity : view) {
             const auto& id = view.get<IDComponent>(entity);

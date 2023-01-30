@@ -6,7 +6,6 @@
 #include "Base/Log.h"
 #include "Base/Layer/Layer.h"
 #include "Base/Input.h"
-#include "Base/OrthographicCameraController.h"
 #include "Base/TimeStamp.h"
 
 #include "Base/GlobalContext.h"
@@ -19,7 +18,6 @@
 #include "Core/Renderer/Buffer.h"
 #include "Core/Renderer/VertexArray.h"
 #include "Core/Renderer/Shader.h"
-#include "Core/Renderer/OrthographicCamera.h"
 #include "Core/Renderer/Texture.h"
 #include "Core/Renderer/SubTexture.h"
 #include "Core/Renderer/Framebuffer.h"
