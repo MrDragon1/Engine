@@ -11,7 +11,7 @@ macro(RUNTIME_ADD_SOURCE)
     set(RuntimeSourceFiles ${RuntimeSourceFiles} ${SOURCE_FILES} PARENT_SCOPE)
 endmacro(RUNTIME_ADD_SOURCE)
 
-set(RuntimeSourceFiles "")
+set(RuntimeSourceFiles "" src/Core/Renderer/RenderResource.cpp src/Core/Renderer/RenderResource.h)
 add_subdirectory(src)
 add_subdirectory(vendor)
 

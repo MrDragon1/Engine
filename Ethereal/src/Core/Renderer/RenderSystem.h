@@ -30,12 +30,8 @@ namespace Ethereal
         Vector3 DirectionalLightDir = Math::Normalize(Vector3(20.0f, 50, 20.0f));
     };
 
+    // TODO: Move this to RenderResource
     struct BuildinData {
-        Ref<Texture> WhiteTexture;
-        Ref<Texture> BlackTexture;
-        Ref<Texture> BRDFLutTexture;
-        Ref<StaticMesh> Cube;
-        Ref<StaticMesh> Quad;
         Ref<Environment> Environment;
     };
 
@@ -53,11 +49,6 @@ namespace Ethereal
         void OnResize();
         void LoadProjectSettings();
 
-        Ref<StaticMesh> GetCubeStaticMesh() { return m_BuildinData->Cube; }
-        Ref<StaticMesh> GetQuadStaticMesh() { return m_BuildinData->Quad; }
-        Ref<Texture> GetWhiteTexture() { return m_BuildinData->WhiteTexture; }
-        Ref<Texture> GetBlackTexture() { return m_BuildinData->BlackTexture; }
-        Ref<Texture> GetBRDFLutTexture() { return m_BuildinData->BRDFLutTexture; }
         Ref<Environment> GetDefaultEnvironment() { return m_BuildinData->Environment; }
 
         uint32_t GetMainImageHeight() { return m_Height; };

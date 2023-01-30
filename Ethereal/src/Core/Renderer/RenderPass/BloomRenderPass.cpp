@@ -1,10 +1,11 @@
 #include <Ethereal/src/Base/GlobalContext.h>
 #include "BloomRenderPass.h"
+#include "Core/Renderer/RenderResource.h"
 
 namespace Ethereal
 {
     void BloomRenderPass::Init(uint32_t width, uint32_t height) {
-        m_Quad = GlobalContext::GetRenderSystem().GetQuadStaticMesh();
+        m_Quad = RenderResource::Quad;
 
         TextureSpecification spec, depthSpec;
         spec.Format = ETHEREAL_PIXEL_FORMAT::PLACEHOLDER;

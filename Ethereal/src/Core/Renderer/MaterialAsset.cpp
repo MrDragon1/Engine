@@ -2,7 +2,7 @@
 
 #include <Ethereal/src/Base/GlobalContext.h>
 #include <Core/Asset/AssetManager.h>
-
+#include "Core/Renderer/RenderResource.h"
 namespace Ethereal
 {
     MaterialAsset::MaterialAsset(const std::string &name, bool transparent) : b_Transparent(transparent) {
@@ -107,8 +107,7 @@ namespace Ethereal
     }
 
     void MaterialAsset::ClearAlbedoMap() {
-        Ref<Texture> whiteTexture = GlobalContext::GetRenderSystem().GetWhiteTexture();
-        SetAlbedoMap(whiteTexture);
+        SetAlbedoMap(RenderResource::WhiteTexture);
         SetUseAlbedoMap(false);
     }
 
@@ -124,8 +123,7 @@ namespace Ethereal
     void MaterialAsset::SetUseNormalMap(bool value) { b_Normal = value; }
 
     void MaterialAsset::ClearNormalMap() {
-        Ref<Texture> whiteTexture = GlobalContext::GetRenderSystem().GetWhiteTexture();
-        SetNormalMap(whiteTexture);
+        SetNormalMap(RenderResource::WhiteTexture);
         SetUseNormalMap(false);
     }
     Ref<Texture> MaterialAsset::GetMetalnessMap() { return m_MetallicMap; }
@@ -136,8 +134,7 @@ namespace Ethereal
     }
 
     void MaterialAsset::ClearMetalnessMap() {
-        Ref<Texture> whiteTexture = GlobalContext::GetRenderSystem().GetWhiteTexture();
-        SetMetalnessMap(whiteTexture);
+        SetMetalnessMap(RenderResource::WhiteTexture);
         SetUseMetalnessMap(false);
     }
     Ref<Texture> MaterialAsset::GetRoughnessMap() { return m_RoughnessMap; }
@@ -148,8 +145,7 @@ namespace Ethereal
     }
 
     void MaterialAsset::ClearRoughnessMap() {
-        Ref<Texture> whiteTexture = GlobalContext::GetRenderSystem().GetWhiteTexture();
-        SetRoughnessMap(whiteTexture);
+        SetRoughnessMap(RenderResource::WhiteTexture);
         SetUseRoughnessMap(false);
     }
     float &MaterialAsset::GetTransparency() { return m_Transparency; }
@@ -157,7 +153,6 @@ namespace Ethereal
     void MaterialAsset::SetTransparency(float transparency) { m_Transparency = transparency; }
 
     void MaterialAsset::SetDefaults() {
-        Ref<Texture> whiteTexture = GlobalContext::GetRenderSystem().GetWhiteTexture();
         // Set defaults
         SetAlbedoColor(Vector3(0.8f));
         SetEmission(0.0f);
@@ -165,11 +160,11 @@ namespace Ethereal
         SetRoughness(1.0f);
 
         // Maps
-        SetAlbedoMap(whiteTexture);
-        SetNormalMap(whiteTexture);
-        SetMetalnessMap(whiteTexture);
-        SetRoughnessMap(whiteTexture);
-        SetOcclusionMap(whiteTexture);
+        SetAlbedoMap(RenderResource::WhiteTexture);
+        SetNormalMap(RenderResource::WhiteTexture);
+        SetMetalnessMap(RenderResource::WhiteTexture);
+        SetRoughnessMap(RenderResource::WhiteTexture);
+        SetOcclusionMap(RenderResource::WhiteTexture);
 
         SetUseNormalMap(false);
         SetUseMetalnessMap(false);
@@ -185,8 +180,7 @@ namespace Ethereal
     }
 
     void MaterialAsset::ClearOcclusionMap() {
-        Ref<Texture> whiteTexture = GlobalContext::GetRenderSystem().GetWhiteTexture();
-        SetOcclusionMap(whiteTexture);
+        SetOcclusionMap(RenderResource::WhiteTexture);
         SetUseOcclusionMap(false);
     }
 

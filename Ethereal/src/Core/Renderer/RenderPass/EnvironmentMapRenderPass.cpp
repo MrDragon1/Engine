@@ -1,5 +1,6 @@
 #include "EnvironmentMapRenderPass.h"
 #include "Ethereal/src/Base/GlobalContext.h"
+#include "Ethereal/src/Core/Renderer/RenderResource.h"
 namespace Ethereal
 {
     void EnvironmentMapRenderPass::Init(uint32_t width, uint32_t height) {
@@ -15,7 +16,7 @@ namespace Ethereal
         fbSpec.Width = width;
         fbSpec.Height = height;
 
-        m_Cube = GlobalContext::GetRenderSystem().GetCubeStaticMesh();
+        m_Cube =RenderResource::Cube;
 
         m_Framebuffer = Framebuffer::Create(fbSpec);
 

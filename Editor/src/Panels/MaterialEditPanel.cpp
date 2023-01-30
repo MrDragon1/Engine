@@ -1,3 +1,4 @@
+#include <Core/Renderer/RenderResource.h>
 #include "MaterialEditPanel.h"
 #include "Core/Asset/AssetManager.h"
 #include "Base/GlobalContext.h"
@@ -95,7 +96,7 @@ namespace Ethereal
 
                 auto& albedoColor = material->GetAlbedoColor();
                 Ref<Texture2D> albedoMap = material->GetAlbedoMap();
-                bool hasAlbedoMap = albedoMap && !albedoMap.EqualsObject(GlobalContext::GetRenderSystem().GetWhiteTexture());
+                bool hasAlbedoMap = albedoMap && !albedoMap.EqualsObject(RenderResource::WhiteTexture);
                 Ref<Texture2D> albedoUITexture = hasAlbedoMap ? albedoMap : m_CheckerBoardTexture;
 
                 ImVec2 textureCursorPos = ImGui::GetCursorPos();
@@ -166,7 +167,7 @@ namespace Ethereal
                     bool useNormalMap = material->IsUseNormalMap();
                     Ref<Texture2D> normalMap = material->GetNormalMap();
 
-                    bool hasNormalMap = normalMap && !normalMap.EqualsObject(GlobalContext::GetRenderSystem().GetWhiteTexture());
+                    bool hasNormalMap = normalMap && !normalMap.EqualsObject(RenderResource::WhiteTexture);
                     Ref<Texture2D> normalUITexture = hasNormalMap ? normalMap : m_CheckerBoardTexture;
 
                     ImVec2 textureCursorPos = ImGui::GetCursorPos();
@@ -233,7 +234,7 @@ namespace Ethereal
                     float& metalnessValue = material->GetMetalness();
                     Ref<Texture2D> metalnessMap = material->GetMetalnessMap();
 
-                    bool hasMetalnessMap = metalnessMap && !metalnessMap.EqualsObject(GlobalContext::GetRenderSystem().GetWhiteTexture());
+                    bool hasMetalnessMap = metalnessMap && !metalnessMap.EqualsObject(RenderResource::WhiteTexture);
                     Ref<Texture2D> metalnessUITexture = hasMetalnessMap ? metalnessMap : m_CheckerBoardTexture;
 
                     ImVec2 textureCursorPos = ImGui::GetCursorPos();
@@ -301,7 +302,7 @@ namespace Ethereal
                     float& metalnessValue = material->GetRoughness();
                     Ref<Texture2D> metalnessMap = material->GetRoughnessMap();
 
-                    bool hasRoughnessMap = metalnessMap && !metalnessMap.EqualsObject(GlobalContext::GetRenderSystem().GetWhiteTexture());
+                    bool hasRoughnessMap = metalnessMap && !metalnessMap.EqualsObject(RenderResource::WhiteTexture);
                     Ref<Texture2D> metalnessUITexture = hasRoughnessMap ? metalnessMap : m_CheckerBoardTexture;
 
                     ImVec2 textureCursorPos = ImGui::GetCursorPos();
@@ -367,7 +368,7 @@ namespace Ethereal
 
                     Ref<Texture2D> occlusionMap = material->GetOcclusionMap();
 
-                    bool hasRoughnessMap = occlusionMap && !occlusionMap.EqualsObject(GlobalContext::GetRenderSystem().GetWhiteTexture());
+                    bool hasRoughnessMap = occlusionMap && !occlusionMap.EqualsObject(RenderResource::WhiteTexture);
                     Ref<Texture2D> occlusionUITexture = hasRoughnessMap ? occlusionMap : m_CheckerBoardTexture;
 
                     ImVec2 textureCursorPos = ImGui::GetCursorPos();

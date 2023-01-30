@@ -50,8 +50,8 @@ namespace Ethereal
 
         if (ImGui::MenuItem("Material")) {
             MaterialDesc desc;
-            desc.Name = "M_Default";
-            AssetManager::CreateAsset_Ref("M_Default", (Project::GetAssetDirectory() / "materials").string(), desc);
+            desc.Name = "M_Unnamed";
+            AssetManager::CreateAsset_Ref("M_Unnamed", (Project::GetAssetDirectory() / "materials").string(), desc);
         }
     }
 

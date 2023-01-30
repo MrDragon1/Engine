@@ -6,6 +6,7 @@
 #include "Ethereal/src/Core/Scene/ScriptableEntity.h"
 #include "Ethereal/src/Base/GlobalContext.h"
 #include "Core/Asset/AssetManager.h"
+#include "Core/Renderer/RenderResource.h"
 // Temporary
 #include "Utils/AssetLoader.h"
 #include "Resource/ResourceLoader.h"
@@ -25,37 +26,6 @@ namespace Ethereal
         m_DrawLists = &RenderPass::m_DrawLists;
 
         m_BuildinData = new BuildinData();
-        m_BuildinData->WhiteTexture = AssetManager::GetAsset<Texture>("buildin/textures/white.png");
-        m_BuildinData->BlackTexture = AssetManager::GetAsset<Texture>("buildin/textures/black.png");
-        m_BuildinData->BRDFLutTexture = AssetManager::GetAsset<Texture>("buildin/textures/BRDF_LUT.tga");
-
-//        Ref<MaterialAsset> material = Ref<MaterialAsset>::Create("DefaultMaterial");
-//        material->SetAlbedoMap(m_BuildinData->WhiteTexture);
-//        material->SetMetalnessMap(m_BuildinData->WhiteTexture);
-//        material->SetRoughnessMap(m_BuildinData->WhiteTexture);
-//        material->SetNormalMap(m_BuildinData->WhiteTexture);
-//        material->SetOcclusionMap(m_BuildinData->WhiteTexture);
-//        MaterialDesc mdesc;
-//        material->Save(mdesc);
-//        AssetManager::SaveAsset_Ref(R"(E:\Code\Engine\Editor\assets\meshes\source\DefaultMaterial.EMaterial)", mdesc);
-//
-//
-//        Ref<MeshSource> ms = ResourceLoader::LoadMeshSource(R"(E:\Code\Engine\Editor\assets\meshes\source\\basicCube.obj)");
-//        Ref<MaterialTable> mt = Ref<MaterialTable>::Create();
-//        ms->LoadMaterials(mt);
-//        Ref<StaticMesh> mesh = Ref<StaticMesh>::Create(ms,mt);
-//        StaticMeshDesc desc;
-//        mesh->Save(desc);
-//        AssetManager::SaveAsset_Ref(R"(E:\Code\Engine\Editor\assets\meshes\default\basicCube.ESMesh)", desc);
-
-        StaticMeshDesc desc;
-        AssetManager::LoadAsset_Ref("assets/meshes/default/basicCube.ESMesh", desc);
-        m_BuildinData->Cube = Ref<StaticMesh>::Create();
-        m_BuildinData->Cube->Load(desc);
-
-        AssetManager::LoadAsset_Ref("assets/meshes/default/quad.ESMesh", desc);
-        m_BuildinData->Quad = Ref<StaticMesh>::Create();
-        m_BuildinData->Quad->Load(desc);
 
         m_EnvironmentMapRenderPass = Ref<EnvironmentMapRenderPass>::Create();
         m_EnvironmentMapRenderPass->Init(m_Width, m_Height);
@@ -88,7 +58,7 @@ namespace Ethereal
         m_MainCameraRenderPass->SetCSMData(m_CSMRenderPass->GetData());
         m_Environment->RadianceMap->Bind(6);
         m_Environment->IrradianceMap->Bind(7);
-        GlobalContext::GetRenderSystem().GetBRDFLutTexture()->Bind(8);
+        RenderResource::BRDFLutTexture->Bind(8);
         m_MainCameraRenderPass->Draw();
 
         // TODO : make skybox render pass a subpass of main camera render pass
