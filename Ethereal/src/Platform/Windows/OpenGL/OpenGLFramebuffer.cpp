@@ -90,8 +90,8 @@ namespace Ethereal
             // Only depth-pass
             glDrawBuffer(GL_NONE);
         }
-
-        ET_CORE_ASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Framebuffer is incomplete!");
+        auto fboStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+        ET_CORE_ASSERT(fboStatus == GL_FRAMEBUFFER_COMPLETE, "Framebuffer is incomplete!");
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }

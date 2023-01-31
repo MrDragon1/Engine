@@ -54,6 +54,7 @@ namespace Ethereal
         virtual void BindToFramebuffer(uint32_t attachmentid, uint32_t face, uint32_t miplevel = 0) const override;
         virtual void GenerateMipmaps() const override;
 
+        uint32_t GetSubTexture(uint32_t layer) const override;
       private:
         void LoadTextureData(const Ref<TextureData>& data);
         uint32_t m_RendererID;
@@ -80,6 +81,7 @@ namespace Ethereal
         virtual void BindToFramebufferDepth(uint32_t attachmentid) const override;
         virtual void GenerateMipmaps() const override { ET_CORE_WARN("Texture 3D does not support GenerateMipmaps"); };
 
+        uint32_t GetSubTexture(uint32_t layer) const override;
       private:
         uint32_t m_RendererID;
         uint32_t m_Width, m_Height, m_Depth;

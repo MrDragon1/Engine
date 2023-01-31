@@ -11,7 +11,7 @@ macro(EDITOR_ADD_SOURCE)
     set(EditorSourceFiles ${EditorSourceFiles} ${SOURCE_FILES} PARENT_SCOPE)
 endmacro(EDITOR_ADD_SOURCE)
 
-set(EditorSourceFiles "")
+set(EditorSourceFiles "" src/Panels/DebugPanel.cpp src/Panels/DebugPanel.h)
 add_subdirectory(src)
 
 source_group(TREE ${EngineEditorDir} FILES ${EditorSourceFiles})

@@ -48,7 +48,7 @@ namespace Ethereal
         void SetLightDir(const Vector3& dir) { m_Data.LightDir = Math::Normalize(dir); }
 
         CSMRenderPassData GetData() { return m_Data; }
-
+        void BindFramebuffer() { m_Framebuffer->Bind(); }
       private:
         std::vector<Vector4> GetFrustumCornersWorldSpace(const Matrix4& projview);
         std::vector<Vector4> GetFrustumCornersWorldSpace(const Matrix4& proj, const Matrix4& view);

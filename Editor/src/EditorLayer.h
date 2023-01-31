@@ -2,9 +2,6 @@
 
 #include "Ethereal.h"
 #include "Core/Editor/PanelManager.h"
-#include "Panels/SceneHierarchyPanel.h"
-#include "Panels/ContentBrowserPanel.h"
-#include "Panels/MaterialEditPanel.h"
 
 #include "Core/Renderer/EditorCamera.h"
 #include "Base/Ref.h"

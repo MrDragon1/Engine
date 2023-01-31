@@ -15,11 +15,17 @@
 #include "Base/Meta/_generated/serializer/all_serializer.h"
 #include "Core/Editor/EditorResource.h"
 
+#include "Panels/SceneHierarchyPanel.h"
+#include "Panels/ContentBrowserPanel.h"
+#include "Panels/MaterialEditPanel.h"
+#include "Panels/DebugPanel.h"
+
 namespace Ethereal
 {
 #define SCENE_HIERARCHY_PANEL_ID "SceneHierarchyPanel"
 #define CONTENT_BROWSER_PANEL_ID "ContentBrowserPanel"
 #define MATERIALS_PANEL_ID "MaterialEditPanel"
+#define DEBUG_PANEL_ID "DebugPanel"
 
     EditorLayer::EditorLayer() : Layer("EditorLayer") {}
 
@@ -30,6 +36,7 @@ namespace Ethereal
         m_PanelManager->AddPanel<SceneHierarchyPanel>(PanelCategory::View, SCENE_HIERARCHY_PANEL_ID, "Scene Hierarchy", true, m_EditorScene, SelectionContext::Scene);
         m_PanelManager->AddPanel<ContentBrowserPanel>(PanelCategory::View, CONTENT_BROWSER_PANEL_ID, "Content Browser", true);
         m_PanelManager->AddPanel<MaterialEditPanel>(PanelCategory::View, MATERIALS_PANEL_ID, "Material", true);
+        m_PanelManager->AddPanel<DebugPanel>(PanelCategory::View, DEBUG_PANEL_ID, "Debug", true);
 
 
         m_IconPlay = EditorResource::PlayIcon;

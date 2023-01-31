@@ -63,11 +63,13 @@ namespace Ethereal
         virtual void BindToFramebuffer(uint32_t attachmentid, uint32_t face = 0, uint32_t miplevel = 0) const = 0;
         static Ref<TextureCube> Create(std::vector<std::string>& paths);
         static Ref<TextureCube> Create(const Ref<TextureData>& data);
+        virtual uint32_t GetSubTexture(uint32_t layer) const = 0;
     };
 
     class Texture3D : public Texture {
       public:
         virtual void BindToFramebufferDepth(uint32_t attachmentid) const = 0;
         static Ref<Texture3D> Create(const Ref<TextureData>& data);
+        virtual uint32_t GetSubTexture(uint32_t layer) const = 0;
     };
 }  // namespace Ethereal

@@ -57,6 +57,9 @@ namespace Ethereal
         uint64_t GetSkyboxImage() { return m_EnvironmentMapRenderPass->m_Texture->GetRendererID(); };
         int GetMousePicking(int x, int y);
 
+
+        Ref<CSMRenderPass> GetCSMRenderPass() { return m_CSMRenderPass; }
+        Ref<Environment>  GetEnv() { return m_Environment; }
       private:
         Ref<MainCameraRenderPass> m_MainCameraRenderPass;
         Ref<ShadowMapRenderPass> m_ShadowMapRenderPass;  // Don't use it for now.
