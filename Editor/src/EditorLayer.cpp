@@ -17,8 +17,6 @@
 
 namespace Ethereal
 {
-    extern const std::filesystem::path g_AssetPath;
-
 #define SCENE_HIERARCHY_PANEL_ID "SceneHierarchyPanel"
 #define CONTENT_BROWSER_PANEL_ID "ContentBrowserPanel"
 #define MATERIALS_PANEL_ID "MaterialEditPanel"

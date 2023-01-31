@@ -102,7 +102,7 @@ namespace Ethereal
             WriteRegistryToFile();
 
             asset.Handle = metadata.Handle;
-            s_LoadedAssets[asset.Handle] = &asset;
+//            s_LoadedAssets[asset.Handle] = &asset;
 
             YNode&& node = Serializer::write(asset);
             YAML::Emitter out;

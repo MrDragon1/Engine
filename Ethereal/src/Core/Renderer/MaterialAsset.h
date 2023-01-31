@@ -50,7 +50,6 @@ namespace Ethereal
 
         Ref<Texture> GetNormalMap();
         void SetNormalMap(Ref<Texture> texture);
-        bool IsUsingNormalMap();
         void SetUseNormalMap(bool value);
         void ClearNormalMap();
 

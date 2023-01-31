@@ -43,11 +43,11 @@ public:
 
         {
             DefaultMaterialDesc.Name = "DefaultMaterial";
-            DefaultMaterialDesc.AlbedoMap = CheckerBoardTexture->Handle;
-            DefaultMaterialDesc.NormalMap = CheckerBoardTexture->Handle;
-            DefaultMaterialDesc.MetallicMap = CheckerBoardTexture->Handle;
-            DefaultMaterialDesc.RoughnessMap = CheckerBoardTexture->Handle;
-            DefaultMaterialDesc.OcclusionMap = CheckerBoardTexture->Handle;
+            DefaultMaterialDesc.AlbedoMap = WhiteTexture->Handle;
+            DefaultMaterialDesc.NormalMap = WhiteTexture->Handle;
+            DefaultMaterialDesc.MetallicMap = WhiteTexture->Handle;
+            DefaultMaterialDesc.RoughnessMap = WhiteTexture->Handle;
+            DefaultMaterialDesc.OcclusionMap = WhiteTexture->Handle;
         }
 
 

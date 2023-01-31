@@ -95,10 +95,9 @@ namespace Ethereal
                 auto& albedoColor = material->GetAlbedoColor();
                 Ref<Texture2D> albedoMap = material->GetAlbedoMap();
                 bool hasAlbedoMap = albedoMap && !albedoMap.EqualsObject(RenderResource::WhiteTexture);
-                Ref<Texture2D> albedoUITexture = hasAlbedoMap ? albedoMap : RenderResource::CheckerBoardTexture.As<Texture2D>();
 
                 ImVec2 textureCursorPos = ImGui::GetCursorPos();
-                ImGui::Image((ImTextureID)albedoUITexture->GetRendererID(), ImVec2(64, 64));
+                ImGui::Image((ImTextureID)albedoMap->GetRendererID(), ImVec2(64, 64));
 
                 if (ImGui::BeginDragDropTarget()) {
                     if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
@@ -119,7 +118,7 @@ namespace Ethereal
                         ImGui::BeginTooltip();
                         ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
                         ImGui::PopTextWrapPos();
-                        ImGui::Image((ImTextureID)albedoUITexture->GetRendererID(), ImVec2(384, 384));
+                        ImGui::Image((ImTextureID)albedoMap->GetRendererID(), ImVec2(384, 384));
                         ImGui::EndTooltip();
                     }
 
@@ -166,11 +165,10 @@ namespace Ethereal
                     Ref<Texture2D> normalMap = material->GetNormalMap();
 
                     bool hasNormalMap = normalMap && !normalMap.EqualsObject(RenderResource::WhiteTexture);
-                    Ref<Texture2D> normalUITexture = hasNormalMap ? normalMap : RenderResource::CheckerBoardTexture.As<Texture2D>();;
 
                     ImVec2 textureCursorPos = ImGui::GetCursorPos();
 
-                    ImGui::Image((ImTextureID)normalUITexture->GetRendererID(), ImVec2(64, 64));
+                    ImGui::Image((ImTextureID)normalMap->GetRendererID(), ImVec2(64, 64));
 
                     if (ImGui::BeginDragDropTarget()) {
                         auto payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM");
@@ -194,7 +192,7 @@ namespace Ethereal
                             ImGui::BeginTooltip();
                             ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
                             ImGui::PopTextWrapPos();
-                            ImGui::Image((ImTextureID)normalUITexture->GetRendererID(), ImVec2(384, 384));
+                            ImGui::Image((ImTextureID)normalMap->GetRendererID(), ImVec2(384, 384));
                             ImGui::EndTooltip();
                         }
 
@@ -233,11 +231,10 @@ namespace Ethereal
                     Ref<Texture2D> metalnessMap = material->GetMetalnessMap();
 
                     bool hasMetalnessMap = metalnessMap && !metalnessMap.EqualsObject(RenderResource::WhiteTexture);
-                    Ref<Texture2D> metalnessUITexture = hasMetalnessMap ? metalnessMap : RenderResource::CheckerBoardTexture.As<Texture2D>();
 
                     ImVec2 textureCursorPos = ImGui::GetCursorPos();
 
-                    ImGui::Image((ImTextureID)metalnessUITexture->GetRendererID(), ImVec2(64, 64));
+                    ImGui::Image((ImTextureID)metalnessMap->GetRendererID(), ImVec2(64, 64));
 
                     if (ImGui::BeginDragDropTarget()) {
                         auto payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM");
@@ -260,7 +257,7 @@ namespace Ethereal
                             ImGui::BeginTooltip();
                             ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
                             ImGui::PopTextWrapPos();
-                            ImGui::Image((ImTextureID)metalnessUITexture->GetRendererID(), ImVec2(384, 384));
+                            ImGui::Image((ImTextureID)metalnessMap->GetRendererID(), ImVec2(384, 384));
                             ImGui::EndTooltip();
                         }
 
@@ -301,11 +298,10 @@ namespace Ethereal
                     Ref<Texture2D> metalnessMap = material->GetRoughnessMap();
 
                     bool hasRoughnessMap = metalnessMap && !metalnessMap.EqualsObject(RenderResource::WhiteTexture);
-                    Ref<Texture2D> metalnessUITexture = hasRoughnessMap ? metalnessMap : RenderResource::CheckerBoardTexture.As<Texture2D>();
 
                     ImVec2 textureCursorPos = ImGui::GetCursorPos();
 
-                    ImGui::Image((ImTextureID)metalnessUITexture->GetRendererID(), ImVec2(64, 64));
+                    ImGui::Image((ImTextureID)metalnessMap->GetRendererID(), ImVec2(64, 64));
 
                     if (ImGui::BeginDragDropTarget()) {
                         auto payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM");
@@ -328,7 +324,7 @@ namespace Ethereal
                             ImGui::BeginTooltip();
                             ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
                             ImGui::PopTextWrapPos();
-                            ImGui::Image((ImTextureID)metalnessUITexture->GetRendererID(), ImVec2(384, 384));
+                            ImGui::Image((ImTextureID)metalnessMap->GetRendererID(), ImVec2(384, 384));
                             ImGui::EndTooltip();
                         }
 
@@ -366,12 +362,11 @@ namespace Ethereal
 
                     Ref<Texture2D> occlusionMap = material->GetOcclusionMap();
 
-                    bool hasRoughnessMap = occlusionMap && !occlusionMap.EqualsObject(RenderResource::WhiteTexture);
-                    Ref<Texture2D> occlusionUITexture = hasRoughnessMap ? occlusionMap : RenderResource::CheckerBoardTexture.As<Texture2D>();
+                    bool hasOcclusionMap = occlusionMap && !occlusionMap.EqualsObject(RenderResource::WhiteTexture);
 
                     ImVec2 textureCursorPos = ImGui::GetCursorPos();
 
-                    ImGui::Image((ImTextureID)occlusionUITexture->GetRendererID(), ImVec2(64, 64));
+                    ImGui::Image((ImTextureID)occlusionMap->GetRendererID(), ImVec2(64, 64));
 
                     if (ImGui::BeginDragDropTarget()) {
                         auto payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM");
@@ -390,11 +385,11 @@ namespace Ethereal
                     ImGui::PopStyleVar();
 
                     if (ImGui::IsItemHovered()) {
-                        if (hasRoughnessMap) {
+                        if (hasOcclusionMap) {
                             ImGui::BeginTooltip();
                             ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
                             ImGui::PopTextWrapPos();
-                            ImGui::Image((ImTextureID)occlusionUITexture->GetRendererID(), ImVec2(384, 384));
+                            ImGui::Image((ImTextureID)occlusionMap->GetRendererID(), ImVec2(384, 384));
                             ImGui::EndTooltip();
                         }
 
@@ -412,8 +407,8 @@ namespace Ethereal
                     ImVec2 properCursorPos = ImGui::GetCursorPos();
                     ImGui::SetCursorPos(textureCursorPos);
                     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
-                    if (hasRoughnessMap && ImGui::Button("X", ImVec2(18, 18))) {
-                        materialAsset->ClearRoughnessMap();
+                    if (hasOcclusionMap && ImGui::Button("X", ImVec2(18, 18))) {
+                        materialAsset->ClearOcclusionMap();
                     }
                     ImGui::PopStyleVar();
                     ImGui::SetCursorPos(properCursorPos);

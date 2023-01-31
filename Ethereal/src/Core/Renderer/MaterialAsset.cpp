@@ -118,8 +118,6 @@ namespace Ethereal
         SetUseNormalMap(true);
     }
 
-    bool MaterialAsset::IsUsingNormalMap() { return b_Normal; }
-
     void MaterialAsset::SetUseNormalMap(bool value) { b_Normal = value; }
 
     void MaterialAsset::ClearNormalMap() {

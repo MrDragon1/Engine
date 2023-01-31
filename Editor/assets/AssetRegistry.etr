@@ -20,6 +20,9 @@ Assets:
   - Handle: 751545592448281237
     FilePath: meshes\vampire\Vampire_MAT.EMaterial
     Type: Material
+  - Handle: 943401789930680787
+    FilePath: materials\M_Unnamed.EMaterial
+    Type: Material
   - Handle: 1086117519441487515
     FilePath: meshes\vampire\dancing_vampire.EAnimator
     Type: Animator
