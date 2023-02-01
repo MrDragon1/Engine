@@ -42,6 +42,12 @@ namespace Ethereal
         glCullFace(cullface);
     }
 
+    void OpenGLRendererAPI::EnableCullFace(bool enable)
+    {
+        if (enable) glEnable(GL_CULL_FACE);
+        else glDisable(GL_CULL_FACE);
+    }
+
     void OpenGLRendererAPI::SetDrawMode(ETHEREAL_DRAW_MODE mode) {
         m_DrawMode = mode;
         switch (mode) {

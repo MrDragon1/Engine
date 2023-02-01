@@ -74,6 +74,7 @@ namespace Ethereal
 
         m_MainImage = m_BloomRenderPass->GetBloomImage();
 
+
         m_DrawLists->MeshTransformMap.clear();
         m_DrawLists->StaticMeshDrawList.clear();
     }

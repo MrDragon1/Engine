@@ -38,7 +38,7 @@ void main()
 
     // tone mapping
     vec3 result = vec3(1.0) - exp(-hdrColor);
-    // also gamma correct while we're at it       
+    // also gamma correct while we're at it
     result = pow(result, vec3(1.0 / gamma));
     color = vec4(result, 1.0);
 } 

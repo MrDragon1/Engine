@@ -27,7 +27,7 @@ namespace Ethereal
         Ref<Environment> Environment;
 
         // TODO: Lights
-        Vector3 DirectionalLightDir = Math::Normalize(Vector3(20.0f, 50, 20.0f));
+        Vector3 DirectionalLightDir = Math::Normalize(Vector3(-0.352,0.270,-0.452));
     };
 
     // TODO: Move this to RenderResource

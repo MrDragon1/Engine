@@ -27,9 +27,8 @@ namespace Ethereal {
                 ImGui::EndCombo();
             }
             Ref<Texture3D> shadowmap = GlobalContext::GetRenderSystem().GetCSMRenderPass()->GetData().ShadowMap.As<Texture3D>();
-//            GlobalContext::GetRenderSystem().GetCSMRenderPass()->BindFramebuffer();
 //            Ref<TextureCube> shadowmap = GlobalContext::GetRenderSystem().GetEnv()->IrradianceMap.As<TextureCube>();
-            ImGui::Image((void*)shadowmap->GetSubTexture(CSMSelectLayer), ImVec2(256, 256));
+            ImGui::Image((void*)shadowmap->GetSubTexture(CSMSelectLayer), ImVec2(256, 256), ImVec2(0, 1), ImVec2(1, 0));
         }
         ImGui::End();
     }

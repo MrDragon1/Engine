@@ -213,9 +213,11 @@ namespace Ethereal
         {
             auto viewportOffset = ImGui::GetCursorPos();  // Includes tab bar
 
+
             m_ViewportFocused = ImGui::IsWindowFocused();
             m_ViewportHovered = ImGui::IsWindowHovered();
-            Application::Get().GetImGuiLayer()->BlockEvents(!m_ViewportFocused || !m_ViewportHovered);
+            // Not support for now
+//            Application::Get().GetImGuiLayer()->BlockEvents(!(m_ViewportHovered && Input::IsMouseButtonPressed(Mouse::ButtonRight)));
 
             ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
             GlobalContext::SetViewportSize({viewportPanelSize.x, viewportPanelSize.y});
@@ -310,7 +312,7 @@ namespace Ethereal
     }
 
     void EditorLayer::OnEvent(Event& e) {
-        if (m_SceneState == SceneState::Edit && m_ViewportHovered && m_ViewportFocused) {
+        if (m_SceneState == SceneState::Edit && m_ViewportHovered) {
             m_EditorCamera.OnEvent(e);
         }
         EventDispatcher dispatcher(e);

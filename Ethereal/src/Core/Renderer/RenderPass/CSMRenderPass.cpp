@@ -25,7 +25,7 @@ namespace Ethereal
         m_Framebuffer->Bind();
         RenderCommand::SetClearColor({0, 0, 0, 0});
         RenderCommand::Clear();
-        RenderCommand::SetCullFace(ETHEREAL_CULLFACE_TYPE::FRONT);
+
         // Draw Shadow Map
         const auto& staticMeshDrawList = m_DrawLists.StaticMeshDrawList;
         const auto& meshTransformMap = m_DrawLists.MeshTransformMap;
@@ -51,7 +51,6 @@ namespace Ethereal
             }
         }
 
-        RenderCommand::SetCullFace(ETHEREAL_CULLFACE_TYPE::BACK);
         m_Framebuffer->Unbind();
     }
 

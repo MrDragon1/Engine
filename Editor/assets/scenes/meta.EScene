@@ -7,17 +7,17 @@ Entities:
       - TypeName: IDComponent
         Context:
           ID:
-            UUID: 6796285318634371379
+            UUID: 15611091900140037282
       - TypeName: BasicPropertyComponent
         Context:
-          Tag: Gun
+          Tag: Light
           Visible: true
       - TypeName: TransformComponent
         Context:
           Position:
-            x: -0.309602588
-            y: 0.0982253551
-            z: -1.47802722
+            x: 2.75372505
+            y: 5.42517805
+            z: 2.76329303
           Scale:
             x: 1
             y: 1
@@ -30,10 +30,42 @@ Entities:
       - TypeName: StaticMeshComponent
         Context:
           StaticMeshHandle:
-            UUID: 6488004164323411286
+            UUID: 17546716981100183172
           MaterialTableRaw:
             Materials:
-              - UUID: 3411737668355452368
+              - UUID: 943401789930680787
+  - Name: ""
+    Components:
+      - TypeName: IDComponent
+        Context:
+          ID:
+            UUID: 13494185301621217084
+      - TypeName: BasicPropertyComponent
+        Context:
+          Tag: Plane
+          Visible: true
+      - TypeName: TransformComponent
+        Context:
+          Position:
+            x: 0
+            y: -0.837125719
+            z: 0
+          Scale:
+            x: 47.4189568
+            y: 47.4189568
+            z: 47.4189568
+          Rotation:
+            x: 0
+            y: 0
+            z: 0
+            w: 1
+      - TypeName: StaticMeshComponent
+        Context:
+          StaticMeshHandle:
+            UUID: 17546716981100183172
+          MaterialTableRaw:
+            Materials:
+              - UUID: 505821991061973240
   - Name: ""
     Components:
       - TypeName: IDComponent
@@ -71,21 +103,21 @@ Entities:
       - TypeName: IDComponent
         Context:
           ID:
-            UUID: 13494185301621217084
+            UUID: 6796285318634371379
       - TypeName: BasicPropertyComponent
         Context:
-          Tag: Plane
+          Tag: Gun
           Visible: true
       - TypeName: TransformComponent
         Context:
           Position:
-            x: 0
-            y: -0.837125719
-            z: 0
+            x: -0.309602588
+            y: 0.0982253551
+            z: -1.47802722
           Scale:
-            x: 47.4189568
-            y: 47.4189568
-            z: 47.4189568
+            x: 1
+            y: 1
+            z: 1
           Rotation:
             x: 0
             y: 0
@@ -94,7 +126,7 @@ Entities:
       - TypeName: StaticMeshComponent
         Context:
           StaticMeshHandle:
-            UUID: 17546716981100183172
+            UUID: 6488004164323411286
           MaterialTableRaw:
             Materials:
-              - UUID: 943401789930680787
+              - UUID: 3411737668355452368

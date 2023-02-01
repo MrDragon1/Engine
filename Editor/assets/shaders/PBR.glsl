@@ -186,48 +186,52 @@ float ShadowCalculation(vec3 fragPosWorldSpace)
     {
         layer = u_CascadeCount;
     }
-//    return float(layer) / u_CascadeCount;
+
+
     vec4 fragPosLightSpace = u_LightSpaceMatrices[layer] * vec4(fragPosWorldSpace, 1.0);
     // perform perspective divide
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
-    // transform to [0,1] range
-    projCoords = projCoords * 0.5 + 0.5;
 
-    // get depth of current fragment from light's perspective
-    float currentDepth = projCoords.z;
+    float bias = max(0.001 * (1.0 - dot(m_Params.Normal, u_LightDir)), 0.000);
+    float shadowMapDepth = texture(u_ShadowMap, vec3(projCoords.xy * 0.5 + 0.5, layer)).r;
 
-    // keep the shadow at 0.0 when outside the far_plane region of the light's frustum.
-    if (currentDepth > 1.0)
-    {
-        return 0.0;
-    }
-    // calculate bias (based on depth map resolution and slope)
-    vec3 normal = u_UseNormalMap ? getNormalFromMap() : normalize(v_Normal);
-    float bias = max(0.05 * (1.0 - dot(normal, u_LightDir)), 0.005);
-    const float biasModifier = 0.5f;
-    if (layer == u_CascadeCount)
-    {
-        bias *= 1 / (u_FarPlane * biasModifier);
-    }
-    else
-    {
-        bias *= 1 / (u_CascadePlaneDistances[layer] * biasModifier);
-    }
+    return step(projCoords.z * 0.5 + 0.5, shadowMapDepth + bias);
 
-    // PCF
-    float shadow = 0.0;
-    vec2 texelSize = 1.0 / vec2(textureSize(u_ShadowMap, 0));
-    for (int x = -1; x <= 1; ++x)
-    {
-        for (int y = -1; y <= 1; ++y)
-        {
-            float pcfDepth = texture(u_ShadowMap, vec3(projCoords.xy + vec2(x, y) * texelSize, layer)).r;
-            shadow += (currentDepth - bias) > pcfDepth ? 1.0 : 0.0;
-        }
-    }
-    shadow /= 9.0;
-
-    return shadow;
+//    // get depth of current fragment from light's perspective
+//    float currentDepth = projCoords.z;
+//
+//    // keep the shadow at 0.0 when outside the far_plane region of the light's frustum.
+//    if (currentDepth > 1.0)
+//    {
+//        return 0.0;
+//    }
+//    // calculate bias (based on depth map resolution and slope)
+//    vec3 normal = u_UseNormalMap ? getNormalFromMap() : normalize(v_Normal);
+//    float bias = max(0.05 * (1.0 - dot(normal, u_LightDir)), 0.005);
+//    const float biasModifier = 0.5f;
+//    if (layer == u_CascadeCount)
+//    {
+//        bias *= 1 / (u_FarPlane * biasModifier);
+//    }
+//    else
+//    {
+//        bias *= 1 / (u_CascadePlaneDistances[layer] * biasModifier);
+//    }
+//
+//    // PCF
+//    float shadow = 0.0;
+//    vec2 texelSize = 1.0 / vec2(textureSize(u_ShadowMap, 0));
+//    for (int x = -1; x <= 1; ++x)
+//    {
+//        for (int y = -1; y <= 1; ++y)
+//        {
+//            float pcfDepth = texture(u_ShadowMap, vec3(projCoords.xy + vec2(x, y) * texelSize, layer)).r;
+//            shadow += (currentDepth - bias) > pcfDepth ? 1.0 : 0.0;
+//        }
+//    }
+//    shadow /= 9.0;
+//
+//    return shadow;
 }
 
 vec3 IBL(vec3 F0, vec3 Lr)
@@ -299,10 +303,10 @@ void main()
     vec3 F0 = mix(vec3(0.04), m_Params.Albedo, m_Params.Metalness);
 
     float shadowScale = ShadowCalculation(v_WorldPos);
-    shadowScale = clamp(1.0f - shadowScale, 0.0f, 1.0f);
+    shadowScale = 1.0 - clamp(1.0f - shadowScale, 0.0f, 1.0f);
 
     vec3 lightContribution = CalculateDirLights(F0) * shadowScale;
-
+    lightContribution += m_Params.Albedo * u_Emisstion;
     vec3 iblContribution = IBL(F0, Lr) * 1.0f;
 
 //    vec3 color = (ambient) * (1 - shadow) + Lo + albedo * u_Emisstion;
