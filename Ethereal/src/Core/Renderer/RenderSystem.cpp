@@ -69,10 +69,13 @@ namespace Ethereal
 
         // For postprocessing
         auto mainImg = m_MainCameraRenderPass->m_Framebuffer->GetColorAttachment(0);
-        m_BloomRenderPass->SetMainImage(mainImg);
-        m_BloomRenderPass->Draw();
+        m_MainImage = mainImg;
+        if(m_BloomRenderPass->GetEnabled()) {
+            m_BloomRenderPass->SetMainImage(mainImg);
+            m_BloomRenderPass->Draw();
 
-        m_MainImage = m_BloomRenderPass->GetBloomImage();
+            m_MainImage = m_BloomRenderPass->GetBloomImage();
+        }
 
 
         m_DrawLists->MeshTransformMap.clear();
@@ -172,6 +175,7 @@ namespace Ethereal
 
     void RenderSystem::LoadProjectSettings() {
         // Bloom Settings
+        m_BloomRenderPass->GetEnabled() = Project().GetSettings().bloomSetting.enabled;
         m_BloomRenderPass->GetIntensity() = Project().GetSettings().bloomSetting.intensity;
         m_BloomRenderPass->GetThreshold() = Project().GetSettings().bloomSetting.threshold;
         m_BloomRenderPass->GetKnee() = Project().GetSettings().bloomSetting.knee;

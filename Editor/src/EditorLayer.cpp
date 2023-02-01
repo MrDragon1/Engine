@@ -524,19 +524,24 @@ namespace Ethereal
         if (ImGui::Begin("Project Settings", p_open, ImGuiWindowFlags_NoCollapse)) {
             if (UI::ComponentHeader("Bloom")) {
                 UI::BeginPropertyGrid();
+                ImGui::Text("Enabled");
+                ImGui::NextColumn();
+                ImGui::Checkbox("##BloomEnable", &Project::GetSettings().bloomSetting.enabled);
+                ImGui::NextColumn();
+
                 ImGui::Text("Threshold");
                 ImGui::NextColumn();
-                ImGui::DragFloat("##BloomThreshold", &Project().GetSettings().bloomSetting.threshold, 0.05f, 0.0f);
+                ImGui::DragFloat("##BloomThreshold", &Project::GetSettings().bloomSetting.threshold, 0.05f);
                 ImGui::NextColumn();
 
                 ImGui::Text("Knee");
                 ImGui::NextColumn();
-                ImGui::DragFloat("##BloomKnee", &Project().GetSettings().bloomSetting.knee, 0.05f, 0.0f);
+                ImGui::DragFloat("##BloomKnee", &Project().GetSettings().bloomSetting.knee, 0.05f);
                 ImGui::NextColumn();
 
                 ImGui::Text("Intensity");
                 ImGui::NextColumn();
-                ImGui::DragFloat("##BloomIntensity", &Project().GetSettings().bloomSetting.intensity, 0.01f, 0.0f);
+                ImGui::DragFloat("##BloomIntensity", &Project().GetSettings().bloomSetting.intensity, 0.01f);
 
                 UI::EndPropertyGrid();
             }

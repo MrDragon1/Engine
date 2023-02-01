@@ -309,13 +309,7 @@ void main()
     lightContribution += m_Params.Albedo * u_Emisstion;
     vec3 iblContribution = IBL(F0, Lr) * 1.0f;
 
-//    vec3 color = (ambient) * (1 - shadow) + Lo + albedo * u_Emisstion;
     vec4 color = vec4(iblContribution + lightContribution , 1.0);
-
-////     HDR tonemapping
-//     color = color / (color + vec4(1.0));
-////     gamma correct
-//     color = pow(color, vec4(1.0/2.2));
 
     FragColor = color;
 

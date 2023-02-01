@@ -14,7 +14,7 @@ namespace Ethereal
         float& GetThreshold() { return m_Threshold; }
         float& GetKnee() { return m_Knee; }
         float& GetIntensity() { return m_Intensity; }
-
+        bool& GetEnabled() { return m_Enabled; }
       private:
         Ref<Shader> m_Shader_Bright;
         Ref<Shader> m_Shader_Blur;
@@ -35,7 +35,7 @@ namespace Ethereal
         uint32_t m_Height, m_Width;
 
         float m_Threshold = 1.0f, m_Knee = 0.1f, m_Intensity = 1.0f;
-
+        bool m_Enabled;
       private:
         void Invalidate(uint32_t width, uint32_t height);
     };
