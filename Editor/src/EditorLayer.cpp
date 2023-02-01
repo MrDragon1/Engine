@@ -60,23 +60,22 @@ namespace Ethereal
             }
             case SceneState::Edit: {
                 m_EditorCamera.OnUpdate(ts);
-                m_ShaderCommonData.CameraData.ViewProjectionMatrix = m_EditorCamera.GetViewProjection();
-                m_ShaderCommonData.CameraData.ViewMatrix = m_EditorCamera.GetViewMatrix();
-                m_ShaderCommonData.CameraData.ProjectionMatrix = m_EditorCamera.GetProjection();
-                m_ShaderCommonData.CameraData.InverseViewProjectionMatrix = Math::Inverse(m_EditorCamera.GetViewProjection());
-                m_ShaderCommonData.CameraData.InverseViewMatrix = Math::Inverse(m_EditorCamera.GetViewMatrix());
-                m_ShaderCommonData.CameraData.InverseProjectionMatrix = Math::Inverse(m_EditorCamera.GetProjection());
 
+                auto& scd = GlobalContext::GetRenderSystem().GetShaderCommonData();
+                scd.CameraData.ViewProjectionMatrix = m_EditorCamera.GetViewProjection();
+                scd.CameraData.ViewMatrix = m_EditorCamera.GetViewMatrix();
+                scd.CameraData.ProjectionMatrix = m_EditorCamera.GetProjection();
+                scd.CameraData.InverseViewProjectionMatrix = Math::Inverse(m_EditorCamera.GetViewProjection());
+                scd.CameraData.InverseViewMatrix = Math::Inverse(m_EditorCamera.GetViewMatrix());
+                scd.CameraData.InverseProjectionMatrix = Math::Inverse(m_EditorCamera.GetProjection());
+                scd.CameraData.NearPlane = m_EditorCamera.GetNearPlane();
+                scd.CameraData.FarPlane = m_EditorCamera.GetFarPlane();
 
-                m_ShaderCommonData.RenderSceneData.CameraPosition = m_EditorCamera.GetPosition();
-                m_ShaderCommonData.RenderSceneData.NearPlane = m_EditorCamera.GetNearPlane();
-                m_ShaderCommonData.RenderSceneData.FarPlane = m_EditorCamera.GetFarPlane();
-                m_ShaderCommonData.RenderSceneData.AspectRatio = m_EditorCamera.GetAspectRatio();
-                m_ShaderCommonData.RenderSceneData.FOV = m_EditorCamera.GetFOV();
-                m_EditorScene->OnUpdateEditor(ts, m_ShaderCommonData);
+                scd.SceneData.CameraPosition = m_EditorCamera.GetPosition();
 
-//                std::cout << "View " << Serializer::write(m_RenderSceneData.ViewMatrix.toMatrix4_()) << std::endl;
-//                std::cout << "Proj " << Serializer::write(m_RenderSceneData.ProjectionMatrix.toMatrix4_()) << std::endl;
+                scd.RenderSceneData.AspectRatio = m_EditorCamera.GetAspectRatio();
+                scd.RenderSceneData.FOV = m_EditorCamera.GetFOV();
+                m_EditorScene->OnUpdateEditor(ts);
                 break;
             }
         }
@@ -199,16 +198,16 @@ namespace Ethereal
             ImGui::EndCombo();
         }
 
-        ImGui::DragFloat3("Directional Light Dir", Math::Ptr(m_ShaderCommonData.RenderSceneData.DirectionalLightDir), 0.1);
+        ImGui::DragFloat3("Directional Light Dir", Math::Ptr(GlobalContext::GetRenderSystem().GetShaderCommonData().RenderSceneData.DirectionalLightDir), 0.1);
 
         // TODOLIST
         {
             UI::ScopedColorStack style(ImGuiCol_TextDisabled, IM_COL32(66, 129, 42, 255));
             ImGui::TextDisabled("TODO:");
-            ImGui::TextDisabled("\tAdd Setting Config Support");
-            ImGui::TextDisabled("\tCheck shadow pass");
-            ImGui::TextDisabled("\tDrag drop files & popup selection");
-            ImGui::TextDisabled("\tAdd debug panel (eg. shadow map)");
+            ImGui::TextDisabled("\tManage data to render system");
+            ImGui::TextDisabled("\tSupport header file in glsl");
+            ImGui::TextDisabled("\tSave Material at runtime");
+            ImGui::TextDisabled("\tPopup selection");
         }
 
         ImGui::End();

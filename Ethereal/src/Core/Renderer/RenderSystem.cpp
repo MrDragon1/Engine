@@ -155,24 +155,19 @@ namespace Ethereal
         }
     }
 
-    void RenderSystem::SubmitRenderSceneData(const ShaderCommonData& data) {
+    void RenderSystem::SubmitRenderSceneData() {
+        m_CSMRenderPass->SetNearFarPlane(m_ShaderCommonData.CameraData.NearPlane, m_ShaderCommonData.CameraData.FarPlane);
+        m_CSMRenderPass->SetFOV(m_ShaderCommonData.RenderSceneData.FOV);
+        m_CSMRenderPass->SetAspectRatio(m_ShaderCommonData.RenderSceneData.AspectRatio);
+        m_CSMRenderPass->SetLightDir(m_ShaderCommonData.RenderSceneData.DirectionalLightDir);
+
+        m_Environment = m_ShaderCommonData.RenderSceneData.Environment;
+
         //从editor传过来的数据在此写入UBO
-        m_UniformBufferSet->Get(0, 0)->SetData(&data.CameraData, sizeof(CameraData));
-        m_UniformBufferSet->Get(0, 1)->SetData(&data.ShadowData, sizeof(ShadowData));
-        m_UniformBufferSet->Get(0, 2)->SetData(&data.SceneData, sizeof(SceneData));
-        m_UniformBufferSet->Get(0, 3)->SetData(&data.RendererData, sizeof(RendererData));
-
-        m_MainCameraRenderPass->SetCameraPosition(data.RenderSceneData.CameraPosition);
-
-        m_CSMRenderPass->SetViewMatrix(data.CameraData.ViewMatrix);
-        m_CSMRenderPass->SetNearFarPlane(data.RenderSceneData.NearPlane, data.RenderSceneData.FarPlane);
-        m_CSMRenderPass->SetFOV(data.RenderSceneData.FOV);
-        m_CSMRenderPass->SetAspectRatio(data.RenderSceneData.AspectRatio);
-        m_CSMRenderPass->SetLightDir(data.RenderSceneData.DirectionalLightDir);
-
-        m_Environment = data.RenderSceneData.Environment;
-
-        m_MainCameraRenderPass->SetViewProjectionMatrix(data.CameraData.ViewProjectionMatrix);
+        m_UniformBufferSet->Get(0, 0)->SetData(&m_ShaderCommonData.CameraData, sizeof(CameraData));
+        m_UniformBufferSet->Get(0, 1)->SetData(&m_ShaderCommonData.ShadowData, sizeof(ShadowData));
+        m_UniformBufferSet->Get(0, 2)->SetData(&m_ShaderCommonData.SceneData, sizeof(SceneData));
+        m_UniformBufferSet->Get(0, 3)->SetData(&m_ShaderCommonData.RendererData, sizeof(RendererData));
     }
 
     std::pair<Ref<TextureCube>, Ref<TextureCube>> RenderSystem::CreateEnvironmentMap(const std::string& path) {

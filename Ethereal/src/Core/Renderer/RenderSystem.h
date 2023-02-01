@@ -23,14 +23,19 @@ namespace Ethereal
         Matrix4 InverseProjectionMatrix;
         Matrix4 ViewMatrix;
         Matrix4 InverseViewMatrix;
-        Vector2 NDCToViewMul;
-        Vector2 NDCToViewAdd;
-        Vector2 DepthUnpackConsts;
-        Vector2 CameraTanHalfFOV;
+        float FarPlane;
+        float NearPlane;
+        float padding[2];
     };
 
+    // std140 layout
     struct ShadowData {
-        Matrix4 DirLightMatrices[4];
+        uint32_t CascadeCount = 4;
+        float padding1,padding2,padding3;
+        // TODO: A little waste of memory, but it's ok for now.
+        // Only need 16 float values, we use the first value of Vector4 for now.
+        Vector4 CascadeSplits[16];
+        Matrix4 DirLightMatrices[16];
     };
 
     struct DirectionalLight {
@@ -61,9 +66,6 @@ namespace Ethereal
 
     // TODO: Remove this
     struct RenderSceneData {
-        Vector3 CameraPosition;
-        float NearPlane;
-        float FarPlane;
         float AspectRatio;
         float FOV;
         Ref<Environment> Environment;
@@ -97,7 +99,7 @@ namespace Ethereal
         void SubmitStaticMesh(Ref<StaticMesh> staticMesh, Ref<MaterialTable> materialTabel, uint32_t EntityID,
                               const Matrix4& transform = Matrix4::IDENTITY);
         void SubmitMesh(Ref<Mesh> mesh, Ref<MaterialTable> materialTabel, uint32_t EntityID, const Matrix4& transform = Matrix4::IDENTITY);
-        void SubmitRenderSceneData(const ShaderCommonData& data);
+        void SubmitRenderSceneData();
         void OnResize();
         void LoadProjectSettings();
 
@@ -112,6 +114,7 @@ namespace Ethereal
 
         Ref<CSMRenderPass> GetCSMRenderPass() { return m_CSMRenderPass; }
         Ref<Environment>  GetEnv() { return m_Environment; }
+        ShaderCommonData& GetShaderCommonData() { return m_ShaderCommonData; }
       private:
         Ref<MainCameraRenderPass> m_MainCameraRenderPass;
         Ref<ShadowMapRenderPass> m_ShadowMapRenderPass;  // Don't use it for now.
@@ -126,6 +129,7 @@ namespace Ethereal
 
         Ref<UniformBufferSet> m_UniformBufferSet;
 
+        ShaderCommonData m_ShaderCommonData;
 
         DrawLists* m_DrawLists;
         BuildinData* m_BuildinData;

@@ -196,9 +196,9 @@ namespace Ethereal
         }
     }
 
-    void Scene::OnUpdateEditor(TimeStamp ts, ShaderCommonData& shaderCommonData) {
+    void Scene::OnUpdateEditor(TimeStamp ts) {
         if (!m_Environment) m_Environment = GlobalContext::GetRenderSystem().GetDefaultEnvironment();
-        shaderCommonData.RenderSceneData.Environment = m_Environment;
+        GlobalContext::GetRenderSystem().GetShaderCommonData().RenderSceneData.Environment = m_Environment;
 
         // TODO: Should update animation OnUpdateRuntime
         auto view = m_Registry.view<MeshComponent>();
@@ -209,11 +209,11 @@ namespace Ethereal
             mesh->GetAnimator()->UpdateAnimation(ts);
         }
 
-        SubmitRenderScene(shaderCommonData);
+        SubmitRenderScene();
     }
 
-    void Scene::SubmitRenderScene(ShaderCommonData& shaderCommonData) {
-        GlobalContext::GetRenderSystem().SubmitRenderSceneData(shaderCommonData);
+    void Scene::SubmitRenderScene() {
+        GlobalContext::GetRenderSystem().SubmitRenderSceneData();
 
         auto staticMeshView = m_Registry.view<TransformComponent, StaticMeshComponent>();
         for (auto entity : staticMeshView) {

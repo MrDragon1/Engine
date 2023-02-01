@@ -29,8 +29,8 @@ namespace Ethereal
         Entity GetEntityWithUUID(UUID uuid);
 
         void OnUpdateRuntime(TimeStamp ts);
-        void OnUpdateEditor(TimeStamp ts, ShaderCommonData& shaderCommonData);
-        void SubmitRenderScene(ShaderCommonData& shaderCommonData);
+        void OnUpdateEditor(TimeStamp ts);
+        void SubmitRenderScene();
 
         void DestroyEntity(Entity entity);
         void DuplicateEntity(Entity entity);

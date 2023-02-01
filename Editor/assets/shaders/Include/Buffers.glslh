@@ -8,16 +8,16 @@ layout(std140, binding = 0) uniform Camera
     mat4 InverseProjectionMatrix;
     mat4 ViewMatrix;
     mat4 InverseViewMatrix;
-    vec2 NDCToViewMul;
-    vec2 NDCToViewAdd;
-    vec2 DepthUnpackConsts;
-    vec2 CameraTanHalfFOV;
+    float FarPlane;
+    float NearPlane;
 } u_Camera;
 
 layout (std140, binding = 1) uniform ShadowData
 {
-    mat4 DirLightMatrices[4];
-} u_DirShadow;
+    int CascadeCount;
+    float CascadeSplits[16];
+    mat4 DirLightMatrices[16];
+} u_CascadeShadowData;
 
 struct DirectionalLight
 {

@@ -3,13 +3,25 @@
 #type vertex
 #version 460 core
 
+layout(std140, binding = 0) uniform Camera
+{
+    mat4 ViewProjectionMatrix;
+    mat4 InverseViewProjectionMatrix;
+    mat4 ProjectionMatrix;
+    mat4 InverseProjectionMatrix;
+    mat4 ViewMatrix;
+    mat4 InverseViewMatrix;
+    float FarPlane;
+    float NearPlane;
+
+} u_Camera;
+
 layout(location = 0) in vec3 a_Position;
 layout(location = 1) in vec3 a_Normal;
 layout(location = 2) in vec3 a_Tangent;
 layout(location = 3) in vec3 a_Binormal;
 layout(location = 4) in vec2 a_TexCoord;
 
-uniform mat4 u_ViewProjection;
 uniform mat4 u_Model;
 
 out vec3 v_WorldPos;
@@ -21,11 +33,45 @@ void main()
     v_TexCoord = a_TexCoord;
     v_WorldPos = vec3(u_Model * vec4(a_Position, 1.0));;
     v_Normal = mat3(u_Model) * a_Normal;
-    gl_Position = u_ViewProjection * vec4(v_WorldPos, 1.0);
+    gl_Position = u_Camera.ViewProjectionMatrix * vec4(v_WorldPos, 1.0);
 }
 
 #type fragment
 #version 460 core
+
+layout(std140, binding = 0) uniform Camera
+{
+    mat4 ViewProjectionMatrix;
+    mat4 InverseViewProjectionMatrix;
+    mat4 ProjectionMatrix;
+    mat4 InverseProjectionMatrix;
+    mat4 ViewMatrix;
+    mat4 InverseViewMatrix;
+    float FarPlane;
+    float NearPlane;
+} u_Camera;
+
+layout (std140, binding = 1) uniform ShadowData
+{
+    int CascadeCount;
+    float CascadeSplits[16];
+    mat4 DirLightMatrices[16];
+} u_CascadeShadowData;
+
+struct DirectionalLight
+{
+    vec3 Direction;
+    float ShadowAmount;
+    vec3 Radiance;
+    float Multiplier;
+};
+
+layout(std140, binding = 2) uniform SceneData
+{
+    DirectionalLight DirectionalLights;
+    vec3 CameraPosition; // Offset = 32
+    float EnvironmentMapIntensity;
+} u_Scene;
 
 layout(location = 0) out vec4 FragColor;
 layout(location = 1) out int EntityID;
@@ -64,14 +110,8 @@ uniform vec3 lightColors[4];
 
 // Cascaded Shadow Map
 uniform sampler2DArray u_ShadowMap;
-uniform mat4 u_LightSpaceMatrices[16];
-uniform float u_CascadePlaneDistances[16];
-uniform int u_CascadeCount;
 uniform vec3 u_LightDir;
-uniform float u_FarPlane;
-uniform mat4 u_View;
 
-uniform vec3 camPos;
 uniform int u_EntityID;
 const float PI = 3.14159265359;
 
@@ -170,13 +210,13 @@ vec3 FresnelSchlickRoughness(vec3 F0, float cosTheta, float roughness)
 float ShadowCalculation(vec3 fragPosWorldSpace)
 {
     // select cascade layer
-    vec4 fragPosViewSpace = u_View * vec4(fragPosWorldSpace, 1.0);
+    vec4 fragPosViewSpace = u_Camera.ViewMatrix * vec4(fragPosWorldSpace, 1.0);
     float depthValue = abs(fragPosViewSpace.z);
 
     int layer = -1;
-    for (int i = 0; i < u_CascadeCount; ++i)
+    for (int i = 0; i < u_CascadeShadowData.CascadeCount; ++i)
     {
-        if (depthValue < u_CascadePlaneDistances[i])
+        if (depthValue < u_CascadeShadowData.CascadeSplits[i])
         {
             layer = i;
             break;
@@ -184,11 +224,11 @@ float ShadowCalculation(vec3 fragPosWorldSpace)
     }
     if (layer == -1)
     {
-        layer = u_CascadeCount;
+        layer = u_CascadeShadowData.CascadeCount;
     }
 
 
-    vec4 fragPosLightSpace = u_LightSpaceMatrices[layer] * vec4(fragPosWorldSpace, 1.0);
+    vec4 fragPosLightSpace = u_CascadeShadowData.DirLightMatrices[layer] * vec4(fragPosWorldSpace, 1.0);
     // perform perspective divide
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
 
@@ -209,13 +249,13 @@ float ShadowCalculation(vec3 fragPosWorldSpace)
 //    vec3 normal = u_UseNormalMap ? getNormalFromMap() : normalize(v_Normal);
 //    float bias = max(0.05 * (1.0 - dot(normal, u_LightDir)), 0.005);
 //    const float biasModifier = 0.5f;
-//    if (layer == u_CascadeCount)
+//    if (layer == u_CascadeShadowData.CascadeCount)
 //    {
-//        bias *= 1 / (u_FarPlane * biasModifier);
+//        bias *= 1 / (u_Camera.FarPlane * biasModifier);
 //    }
 //    else
 //    {
-//        bias *= 1 / (u_CascadePlaneDistances[layer] * biasModifier);
+//        bias *= 1 / ( u_CascadeShadowData.CascadeSplits[layer] * biasModifier);
 //    }
 //
 //    // PCF
@@ -292,7 +332,7 @@ void main()
     float ao        = u_UseOcclusionMap ? texture(u_OcclusionMap, v_TexCoord).r : u_Occlusion;
 
     m_Params.Normal = u_UseNormalMap ? getNormalFromMap() : normalize(v_Normal);
-    m_Params.View = normalize(camPos - v_WorldPos);
+    m_Params.View = normalize(u_Scene.CameraPosition - v_WorldPos);
     vec3 R = reflect(-m_Params.View, m_Params.Normal);
     m_Params.NdotV = max(dot(m_Params.Normal, m_Params.View), 0.0);
     // calculate reflectance at normal incidence; if dia-electric (like plastic) use F0 

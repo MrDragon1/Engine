@@ -13,13 +13,19 @@ void main()
 layout(triangles, invocations = 5) in;
 layout(triangle_strip, max_vertices = 3) out;
 
-uniform mat4 u_LightSpaceMatrices[16];
+
+layout (std140, binding = 1) uniform ShadowData
+{
+    int CascadeCount;
+    float CascadeSplits[16];
+    mat4 DirLightMatrices[16];
+} u_CascadeShadowData;
 
 void main()
 {
     for (int i = 0; i < 3; ++i)
     {
-        gl_Position = u_LightSpaceMatrices[gl_InvocationID] * gl_in[i].gl_Position;
+        gl_Position = u_CascadeShadowData.DirLightMatrices[gl_InvocationID] * gl_in[i].gl_Position;
         gl_Layer = gl_InvocationID;
         EmitVertex();
     }

@@ -3,8 +3,6 @@
 namespace Ethereal
 {
     void MainCameraRenderPass::Init(uint32_t width, uint32_t height) {
-        m_ViewProjectionMatrix = Matrix4::IDENTITY;
-
         TextureSpecification hdrSpec, r32Spec, depthSpec;
         hdrSpec.Format = ETHEREAL_PIXEL_FORMAT::R16G16B16A16_HDR;
         r32Spec.Format = ETHEREAL_PIXEL_FORMAT::R32_INTEGER;
@@ -84,8 +82,6 @@ namespace Ethereal
         // Draw StaticMesh
         {
             m_StaticMeshShader->Bind();
-            m_StaticMeshShader->SetMat4("u_ViewProjection", m_ViewProjectionMatrix);
-            m_StaticMeshShader->SetFloat3("camPos", m_CameraPosition);
 
             for (int i = 0; i < 4; i++) {
                 m_StaticMeshShader->SetFloat3("lightPositions[" + std::to_string(i) + "]", lightPositions[i]);
@@ -94,16 +90,7 @@ namespace Ethereal
 
             // CSM
             m_CSMData.ShadowMap->Bind(9);
-            m_StaticMeshShader->SetMat4("u_View", m_CSMData.View);
-            m_StaticMeshShader->SetFloat("u_FarPlane", m_CSMData.FarPlane);
             m_StaticMeshShader->SetFloat3("u_LightDir", m_CSMData.LightDir);
-            m_StaticMeshShader->SetInt("u_CascadeCount", m_CSMData.Cascaded);
-            for (int i = 0; i < m_CSMData.LightMatrices.size(); i++) {
-                m_StaticMeshShader->SetMat4("u_LightSpaceMatrices[" + std::to_string(i) + "]", m_CSMData.LightMatrices[i]);
-            }
-            for (int i = 0; i < m_CSMData.Distance.size(); i++) {
-                m_StaticMeshShader->SetFloat("u_CascadePlaneDistances[" + std::to_string(i) + "]", m_CSMData.Distance[i]);
-            }
 
             // Draw Static Mesh
             if (!staticMeshDrawList.empty()) {
@@ -147,8 +134,6 @@ namespace Ethereal
         // Draw Mesh
         {
             m_MeshShader->Bind();
-            m_MeshShader->SetMat4("u_ViewProjection", m_ViewProjectionMatrix);
-            m_MeshShader->SetFloat3("camPos", m_CameraPosition);
 
             for (int i = 0; i < 4; i++) {
                 m_MeshShader->SetFloat3("lightPositions[" + std::to_string(i) + "]", lightPositions[i]);
@@ -157,16 +142,7 @@ namespace Ethereal
 
             // CSM
             m_CSMData.ShadowMap->Bind(9);
-            m_MeshShader->SetMat4("u_View", m_CSMData.View);
-            m_MeshShader->SetFloat("u_FarPlane", m_CSMData.FarPlane);
             m_MeshShader->SetFloat3("u_LightDir", m_CSMData.LightDir);
-            m_MeshShader->SetInt("u_CascadeCount", m_CSMData.Cascaded);
-            for (int i = 0; i < m_CSMData.LightMatrices.size(); i++) {
-                m_MeshShader->SetMat4("u_LightSpaceMatrices[" + std::to_string(i) + "]", m_CSMData.LightMatrices[i]);
-            }
-            for (int i = 0; i < m_CSMData.Distance.size(); i++) {
-                m_MeshShader->SetFloat("u_CascadePlaneDistances[" + std::to_string(i) + "]", m_CSMData.Distance[i]);
-            }
 
             // Draw
             if (!meshDrawList.empty()) {

@@ -1,11 +1,12 @@
 #include "CSMRenderPass.h"
+#include <Base/GlobalContext.h>
 
 namespace Ethereal
 {
     void CSMRenderPass::Init(uint32_t width, uint32_t height) {
         // Generate ShadowMaps
         TextureSpecification spec;
-        spec.Depth = m_Data.Cascaded + 1;
+        spec.Depth = GlobalContext::GetRenderSystem().GetShaderCommonData().ShadowData.CascadeCount + 1;
         spec.Type = ETHEREAL_IMAGE_TYPE::ETHEREAL_IMAGE_TYPE_2D_ARRAY;
         spec.Format = ETHEREAL_PIXEL_FORMAT::DEPTH;
 
@@ -30,11 +31,13 @@ namespace Ethereal
         const auto& staticMeshDrawList = m_DrawLists.StaticMeshDrawList;
         const auto& meshTransformMap = m_DrawLists.MeshTransformMap;
 
-        m_Data.Distance = m_Distance;
-        m_Data.LightMatrices = GetLightSpaceMatrices();
-        for (int i = 0; i < m_Data.LightMatrices.size(); i++) {
-            m_Shader->SetMat4("u_LightSpaceMatrices[" + std::to_string(i) + "]", m_Data.LightMatrices[i]);
+
+        auto count = GlobalContext::GetRenderSystem().GetShaderCommonData().ShadowData.CascadeCount;
+        auto& splits = GlobalContext::GetRenderSystem().GetShaderCommonData().ShadowData.CascadeSplits;
+        for(int i = 0; i < count; i++) {
+            splits[i].x = m_Distance[i]; // Refer to the comment in RenderSystem.h of ShadowData
         }
+        CalculateLightSpaceMatrices();
 
         // Draw Static Mesh
         if (!staticMeshDrawList.empty()) {
@@ -78,7 +81,7 @@ namespace Ethereal
 
     Matrix4 CSMRenderPass::GetLightSpaceMatrix(float nearPlane, float farPlane) {
         const auto proj = Math::Perspective(Math::Radians(m_Data.FOV), m_Data.AspectRatio, nearPlane, farPlane);
-        const auto corners = GetFrustumCornersWorldSpace(proj, m_Data.View);
+        const auto corners = GetFrustumCornersWorldSpace(proj, GlobalContext::GetRenderSystem().GetShaderCommonData().CameraData.ViewMatrix);
 
         Vector3 center = Vector3(0, 0, 0);
         for (const auto& v : corners) {
@@ -122,17 +125,30 @@ namespace Ethereal
         return lightProjection * lightView;
     }
 
-    std::vector<Matrix4> CSMRenderPass::GetLightSpaceMatrices() {
+    void CSMRenderPass::CalculateLightSpaceMatrices() {
         std::vector<Matrix4> ret;
-        for (size_t i = 0; i < m_Distance.size() + 1; ++i) {
+        auto count = GlobalContext::GetRenderSystem().GetShaderCommonData().ShadowData.CascadeCount;
+        auto& matrices = GlobalContext::GetRenderSystem().GetShaderCommonData().ShadowData.DirLightMatrices;
+
+        for (size_t i = 0; i < count + 1; ++i) {
             if (i == 0) {
-                ret.push_back(GetLightSpaceMatrix(m_Data.NearPlane, m_Distance[i]));
+                matrices[i] = GetLightSpaceMatrix(GlobalContext::GetRenderSystem().GetShaderCommonData().CameraData.NearPlane, m_Distance[i]);
             } else if (i < m_Distance.size()) {
-                ret.push_back(GetLightSpaceMatrix(m_Distance[i - 1], m_Distance[i]));
+                matrices[i] = GetLightSpaceMatrix(m_Distance[i - 1], m_Distance[i]);
             } else {
-                ret.push_back(GetLightSpaceMatrix(m_Distance[i - 1], m_Data.FarPlane));
+                matrices[i] = GetLightSpaceMatrix(m_Distance[i - 1], GlobalContext::GetRenderSystem().GetShaderCommonData().CameraData.FarPlane);
             }
         }
-        return ret;
+    }
+
+    void CSMRenderPass::SetNearFarPlane(float nearPlane, float farPlane)  {
+        GlobalContext::GetRenderSystem().GetShaderCommonData().CameraData.NearPlane = nearPlane;
+        GlobalContext::GetRenderSystem().GetShaderCommonData().CameraData.FarPlane = farPlane;
+        // TODO: automatically generate distance according to m_Cascaded
+        m_Distance.clear();
+        m_Distance.push_back(farPlane / 50.0f);
+        m_Distance.push_back(farPlane / 25.0f);
+        m_Distance.push_back(farPlane / 10.0f);
+        m_Distance.push_back(farPlane / 2.0f);
     }
 }  // namespace Ethereal

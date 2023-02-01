@@ -2,6 +2,7 @@
 
 #type vertex
 #version 460 core
+
 layout(std140, binding = 0) uniform Camera
 {
     mat4 ViewProjectionMatrix;
@@ -10,11 +11,10 @@ layout(std140, binding = 0) uniform Camera
     mat4 InverseProjectionMatrix;
     mat4 ViewMatrix;
     mat4 InverseViewMatrix;
-    vec2 NDCToViewMul;
-    vec2 NDCToViewAdd;
-    vec2 DepthUnpackConsts;
-    vec2 CameraTanHalfFOV;
+    float FarPlane;
+    float NearPlane;
 } u_Camera;
+
 layout(location = 0) in vec3 a_Position;
 
 out vec3 v_LocalPos;
