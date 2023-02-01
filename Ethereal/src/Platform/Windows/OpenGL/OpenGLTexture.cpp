@@ -218,6 +218,18 @@ namespace Ethereal
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+
+        glGenTextures(1, &m_SubTextureID);
+        glBindTexture(GL_TEXTURE_2D, m_SubTextureID);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, m_Width, m_Height, 0, GL_RGB, GL_FLOAT, nullptr);
+
     }
 
     OpenGLTextureCube::~OpenGLTextureCube() { glDeleteTextures(1, &m_RendererID); }
@@ -240,27 +252,12 @@ namespace Ethereal
     }
 
     uint32_t OpenGLTextureCube::GetSubTexture(uint32_t layer) const {
-        // 实现了从texture array中读取其中的一个slice
-        // 但是必须是rgb格式（https://docs.gl/gl4/glCopyImageSubData支持的格式）的texture
-        // 单通道的深度图暂时没有实现 (不知道为啥又可以了)
-        // TODO: 优化这个函数，不要每次都重新生成一个texture
-
-        uint32_t id;
-        glGenTextures(1, &id);
-        glBindTexture(GL_TEXTURE_2D, id);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, m_Width, m_Height, 0, GL_RGB, GL_FLOAT, nullptr);
-
+        // 实现了texture array中读取其中的一个slice
         glCopyImageSubData(m_RendererID, GL_TEXTURE_CUBE_MAP, 0, 0, 0, layer,
-                            id, GL_TEXTURE_2D, 0, 0, 0, 0,
+                m_SubTextureID, GL_TEXTURE_2D, 0, 0, 0, 0,
                             m_Width, m_Height, 1);
 
-        return id;
+        return m_SubTextureID;
     }
 
     OpenGLTexture3D::OpenGLTexture3D(const Ref<TextureData>& data) {
@@ -284,6 +281,18 @@ namespace Ethereal
         glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, m_WarpFormat);
 
         glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, m_InternalFormat, m_Width, m_Height, m_Depth, 0, m_DataFormat, m_DataType, nullptr);
+
+
+        glGenTextures(1, &m_SubTextureID);
+        glBindTexture(GL_TEXTURE_2D, m_SubTextureID);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+        glTexImage2D(GL_TEXTURE_2D, 0, m_InternalFormat, m_Width, m_Height, 0, m_DataFormat, m_DataType, nullptr);
+
     }
 
     OpenGLTexture3D::~OpenGLTexture3D() { glDeleteTextures(1, &m_RendererID); }
@@ -295,56 +304,12 @@ namespace Ethereal
     }
 
     uint32_t OpenGLTexture3D::GetSubTexture(uint32_t layer) const {
-        uint32_t id;
-        glGenTextures(1, &id);
-        glBindTexture(GL_TEXTURE_2D, id);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-
-        glTexImage2D(GL_TEXTURE_2D, 0, m_InternalFormat, m_Width, m_Height, 0, m_DataFormat, m_DataType, nullptr);
 
         glCopyImageSubData(m_RendererID, GL_TEXTURE_2D_ARRAY, 0, 0, 0, layer,
-                id, GL_TEXTURE_2D, 0, 0, 0, 0,
+                m_SubTextureID, GL_TEXTURE_2D, 0, 0, 0, 0,
                 m_Width, m_Height, 1);
 
-//        glCopyImageSubData(textureid, GL_TEXTURE_CUBE_MAP, 0, 0, 0, layer, id, GL_TEXTURE_2D, 0, 0, 0, 0, 32, 32, 1);
-
-//        GLuint fbos[2] = {0, 0};
-//        glGenFramebuffers(2, fbos);
-//        glBindFramebuffer(GL_READ_FRAMEBUFFER, fbos[0]);
-////        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbos[1]);
-//
-////        GLint drawFboId = 0, readFboId = 0;
-////        glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &drawFboId);
-////        glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &readFboId);
-////        ET_CORE_INFO("Draw FBO: {0}, Read FBO: {1}", drawFboId, readFboId );
-//
-//        glFramebufferTextureLayer(GL_READ_FRAMEBUFFER,
-//                GL_DEPTH_ATTACHMENT, m_RendererID, 0, layer);
-////        glFramebufferTexture(GL_DRAW_FRAMEBUFFER,
-////                GL_DEPTH_ATTACHMENT, id, 0);
-//
-////        const GLenum err = glGetError();
-////        if (GL_NO_ERROR == err) {
-////            ET_CORE_INFO("No error");
-////        } else {
-////            ET_CORE_INFO("Error: {0}", err);
-////        }
-//
-//        auto fboStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-//        if (fboStatus != GL_FRAMEBUFFER_COMPLETE)
-//            std::cout << "Framebuffer not complete: " << fboStatus << std::endl;
-//
-////        glBlitFramebuffer(
-////                0, 0, m_Width, m_Height, 0, 0, m_Width, m_Height,
-////                GL_DEPTH_BUFFER_BIT , GL_NEAREST);
-//
-//        glDeleteFramebuffers(2, fbos);
-
-        return id;
+        return m_SubTextureID;
     }
 
 }  // namespace Ethereal

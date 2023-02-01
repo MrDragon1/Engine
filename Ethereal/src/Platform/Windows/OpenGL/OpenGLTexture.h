@@ -61,6 +61,8 @@ namespace Ethereal
         uint32_t m_Width, m_Height;
 
         bool m_IsLoaded = false;
+
+        uint32_t m_SubTextureID;
     };
 
     class OpenGLTexture3D : public Texture3D {
@@ -90,5 +92,7 @@ namespace Ethereal
         GLenum m_DataType;
         GLenum m_WarpFormat, m_FilterFormat;
         bool m_IsLoaded = false;
+
+        uint32_t m_SubTextureID;
     };
 }  // namespace Ethereal
