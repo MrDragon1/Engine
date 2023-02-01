@@ -43,4 +43,28 @@ namespace Ethereal
         ET_CORE_ASSERT(false, "Unknown RendererAPI!");
         return nullptr;
     }
+
+    Ref<UniformBuffer> UniformBuffer::Create(uint32_t size, uint32_t binding) {
+        switch (RendererAPI::GetAPI()) {
+            case RendererAPI::API::None:
+            ET_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
+                return nullptr;
+            case RendererAPI::API::OpenGL:
+                return Ref<OpenGLUniformBuffer>::Create(size, binding);
+        }
+        ET_CORE_ASSERT(false, "Unknown RendererAPI!");
+        return nullptr;
+    }
+
+    Ref<UniformBufferSet> UniformBufferSet::Create(uint32_t frames) {
+        switch (RendererAPI::GetAPI()) {
+            case RendererAPI::API::None:
+            ET_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
+                return nullptr;
+            case RendererAPI::API::OpenGL:
+                return Ref<OpenGLUniformBufferSet>::Create(frames);
+        }
+        ET_CORE_ASSERT(false, "Unknown RendererAPI!");
+        return nullptr;
+    }
 }  // namespace Ethereal

@@ -1,0 +1,22 @@
+#pragma once
+
+#if defined(__FRAGMENT_STAGE__) || defined(__COMPUTE_STAGE__)
+#include <Buffers.glslh>
+
+const float MINIMUM_SHADOW_BIAS = 0.002;
+
+float GetDirShadowBias()
+{
+	float bias = max(MINIMUM_SHADOW_BIAS * (1.0 - dot(m_Params.Normal, u_Scene.DirectionalLights.Direction)), MINIMUM_SHADOW_BIAS);
+	return bias;
+}
+
+float HardShadows_DirectionalLight(sampler2DArray shadowMap, uint cascade, vec3 shadowCoords)
+{
+	float bias = GetDirShadowBias();
+	float shadowMapDepth = texture(shadowMap, vec3(shadowCoords.xy * 0.5 + 0.5, cascade)).r;
+	return step(shadowCoords.z, shadowMapDepth + bias) * ShadowFade;
+}
+
+
+#endif

@@ -156,14 +156,25 @@ namespace Ethereal
         static Ref<IndexBuffer> Create(void* indices, uint32_t size);
     };
 
-    // TODO: Implement this
+
     class UniformBuffer : public RefCounted {
-      public:
-        virtual ~UniformBuffer() = default;
+    public:
+        virtual ~UniformBuffer() {}
+        virtual void SetData(const void* data, uint32_t size, uint32_t offset = 0) = 0;
 
-        virtual void Bind() const = 0;
-        virtual void Unbind() const = 0;
+        virtual uint32_t GetBinding() const = 0;
 
-        static Ref<IndexBuffer> Create();
+        static Ref<UniformBuffer> Create(uint32_t size, uint32_t binding);
     };
+
+    class UniformBufferSet : public RefCounted {
+    public:
+        virtual ~UniformBufferSet() {}
+
+        virtual Ref<UniformBuffer> Get(uint32_t frame, uint32_t binding) = 0;
+        virtual void Set(Ref<UniformBuffer> uniformBuffer, uint32_t frames = 0) = 0;
+
+        static Ref<UniformBufferSet> Create(uint32_t frames);
+    };
+
 }  // namespace Ethereal

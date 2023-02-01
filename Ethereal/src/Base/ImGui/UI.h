@@ -152,7 +152,7 @@ namespace Ethereal
 
         static void BeginPropertyGrid(uint32_t columns = 2) {
             PushID();
-            ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8.0f, 8.0f));
+            ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(20.0f, 8.0f));
             ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4.0f, 4.0f));
             ImGui::Columns(columns);
         }

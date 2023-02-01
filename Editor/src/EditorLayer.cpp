@@ -531,12 +531,12 @@ namespace Ethereal
 
                 ImGui::Text("Threshold");
                 ImGui::NextColumn();
-                ImGui::DragFloat("##BloomThreshold", &Project::GetSettings().bloomSetting.threshold, 0.05f);
+                ImGui::DragFloat("##BloomThreshold", &Project::GetSettings().bloomSetting.threshold, 0.01f);
                 ImGui::NextColumn();
 
                 ImGui::Text("Knee");
                 ImGui::NextColumn();
-                ImGui::DragFloat("##BloomKnee", &Project().GetSettings().bloomSetting.knee, 0.05f);
+                ImGui::DragFloat("##BloomKnee", &Project().GetSettings().bloomSetting.knee, 0.01f);
                 ImGui::NextColumn();
 
                 ImGui::Text("Intensity");
