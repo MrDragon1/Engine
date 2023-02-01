@@ -44,6 +44,12 @@ namespace Ethereal
         m_BuildinData->Environment = AssetManager::GetAsset<Environment>("skyboxs/Newport_Loft_Ref.hdr");
 
         m_MainImage = m_MainCameraRenderPass->m_Framebuffer->GetColorAttachment(0);
+
+        m_UniformBufferSet = UniformBufferSet::Create(1);
+        m_UniformBufferSet->Set(UniformBuffer::Create(sizeof(CameraData), 0), 0);
+        m_UniformBufferSet->Set(UniformBuffer::Create(sizeof(ShadowData), 1), 0);
+        m_UniformBufferSet->Set(UniformBuffer::Create(sizeof(SceneData), 2), 0);
+        m_UniformBufferSet->Set(UniformBuffer::Create(sizeof(RendererData), 3), 0);
     }
 
     void RenderSystem::Draw(TimeStamp ts) {
@@ -149,21 +155,24 @@ namespace Ethereal
         }
     }
 
-    void RenderSystem::SubmitRenderSceneData(const RenderSceneData& data) {
-        m_MainCameraRenderPass->SetCameraPosition(data.CameraPosition);
-        m_SkyboxRenderPass->SetSkyboxProjection(data.ProjectionMatrix);
-        m_SkyboxRenderPass->SetSkyboxView(data.ViewMatrix);
+    void RenderSystem::SubmitRenderSceneData(const ShaderCommonData& data) {
+        //从editor传过来的数据在此写入UBO
+        m_UniformBufferSet->Get(0, 0)->SetData(&data.CameraData, sizeof(CameraData));
+        m_UniformBufferSet->Get(0, 1)->SetData(&data.ShadowData, sizeof(ShadowData));
+        m_UniformBufferSet->Get(0, 2)->SetData(&data.SceneData, sizeof(SceneData));
+        m_UniformBufferSet->Get(0, 3)->SetData(&data.RendererData, sizeof(RendererData));
 
-        m_CSMRenderPass->SetNearFarPlane(data.NearPlane, data.FarPlane);
-        m_CSMRenderPass->SetViewMatrix(data.ViewMatrix);
-        m_CSMRenderPass->SetProjMatrix(data.ProjectionMatrix);
-        m_CSMRenderPass->SetFOV(data.FOV);
-        m_CSMRenderPass->SetAspectRatio(data.AspectRatio);
-        m_CSMRenderPass->SetLightDir(data.DirectionalLightDir);
+        m_MainCameraRenderPass->SetCameraPosition(data.RenderSceneData.CameraPosition);
 
-        m_Environment = data.Environment;
+        m_CSMRenderPass->SetViewMatrix(data.CameraData.ViewMatrix);
+        m_CSMRenderPass->SetNearFarPlane(data.RenderSceneData.NearPlane, data.RenderSceneData.FarPlane);
+        m_CSMRenderPass->SetFOV(data.RenderSceneData.FOV);
+        m_CSMRenderPass->SetAspectRatio(data.RenderSceneData.AspectRatio);
+        m_CSMRenderPass->SetLightDir(data.RenderSceneData.DirectionalLightDir);
 
-        m_MainCameraRenderPass->SetViewProjectionMatrix(data.ViewProjectionMatrix);
+        m_Environment = data.RenderSceneData.Environment;
+
+        m_MainCameraRenderPass->SetViewProjectionMatrix(data.CameraData.ViewProjectionMatrix);
     }
 
     std::pair<Ref<TextureCube>, Ref<TextureCube>> RenderSystem::CreateEnvironmentMap(const std::string& path) {

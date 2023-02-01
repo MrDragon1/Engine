@@ -8,7 +8,6 @@ namespace Ethereal
         int ShadowMapSize = 4096;
 
         Matrix4 View;
-        Matrix4 Proj;
         float FOV;
         float AspectRatio;
         float NearPlane;
@@ -41,7 +40,6 @@ namespace Ethereal
             m_Distance.push_back(m_Data.FarPlane / 2.0f);
         }
         void SetViewMatrix(const Matrix4& view) { m_Data.View = view; }
-        void SetProjMatrix(const Matrix4& proj) { m_Data.Proj = proj; }
         void SetFOV(const float fov) { m_Data.FOV = fov; }
         void SetAspectRatio(const float ratio) { m_Data.AspectRatio = ratio; }
 

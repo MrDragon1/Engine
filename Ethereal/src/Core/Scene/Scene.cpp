@@ -185,20 +185,20 @@ namespace Ethereal
         }
 
         if (mainCamera) {
-            RenderSceneData renderSceneData;
-            renderSceneData.ViewProjectionMatrix = mainCamera->GetProjection() * Math::Inverse(cameraTransform);
-            renderSceneData.ViewMatrix = Math::Inverse(cameraTransform);
-            renderSceneData.ProjectionMatrix = mainCamera->GetProjection();
-            renderSceneData.CameraPosition = cameraPosition;
-            if (!m_Environment) m_Environment = GlobalContext::GetRenderSystem().GetDefaultEnvironment();
-            renderSceneData.Environment = m_Environment;
-            SubmitRenderScene(renderSceneData);
+//            RenderSceneData renderSceneData;
+//            renderSceneData.ViewProjectionMatrix = mainCamera->GetProjection() * Math::Inverse(cameraTransform);
+//            renderSceneData.ViewMatrix = Math::Inverse(cameraTransform);
+//            renderSceneData.ProjectionMatrix = mainCamera->GetProjection();
+//            renderSceneData.CameraPosition = cameraPosition;
+//            if (!m_Environment) m_Environment = GlobalContext::GetRenderSystem().GetDefaultEnvironment();
+//            renderSceneData.Environment = m_Environment;
+//            SubmitRenderScene(renderSceneData);
         }
     }
 
-    void Scene::OnUpdateEditor(TimeStamp ts, RenderSceneData& renderSceneData) {
+    void Scene::OnUpdateEditor(TimeStamp ts, ShaderCommonData& shaderCommonData) {
         if (!m_Environment) m_Environment = GlobalContext::GetRenderSystem().GetDefaultEnvironment();
-        renderSceneData.Environment = m_Environment;
+        shaderCommonData.RenderSceneData.Environment = m_Environment;
 
         // TODO: Should update animation OnUpdateRuntime
         auto view = m_Registry.view<MeshComponent>();
@@ -209,11 +209,11 @@ namespace Ethereal
             mesh->GetAnimator()->UpdateAnimation(ts);
         }
 
-        SubmitRenderScene(renderSceneData);
+        SubmitRenderScene(shaderCommonData);
     }
 
-    void Scene::SubmitRenderScene(RenderSceneData& renderSceneData) {
-        GlobalContext::GetRenderSystem().SubmitRenderSceneData(renderSceneData);
+    void Scene::SubmitRenderScene(ShaderCommonData& shaderCommonData) {
+        GlobalContext::GetRenderSystem().SubmitRenderSceneData(shaderCommonData);
 
         auto staticMeshView = m_Registry.view<TransformComponent, StaticMeshComponent>();
         for (auto entity : staticMeshView) {

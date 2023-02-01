@@ -60,15 +60,20 @@ namespace Ethereal
             }
             case SceneState::Edit: {
                 m_EditorCamera.OnUpdate(ts);
-                m_RenderSceneData.ViewProjectionMatrix = m_EditorCamera.GetViewProjection();
-                m_RenderSceneData.ViewMatrix = m_EditorCamera.GetViewMatrix();
-                m_RenderSceneData.ProjectionMatrix = m_EditorCamera.GetProjection();
-                m_RenderSceneData.CameraPosition = m_EditorCamera.GetPosition();
-                m_RenderSceneData.NearPlane = m_EditorCamera.GetNearPlane();
-                m_RenderSceneData.FarPlane = m_EditorCamera.GetFarPlane();
-                m_RenderSceneData.AspectRatio = m_EditorCamera.GetAspectRatio();
-                m_RenderSceneData.FOV = m_EditorCamera.GetFOV();
-                m_EditorScene->OnUpdateEditor(ts, m_RenderSceneData);
+                m_ShaderCommonData.CameraData.ViewProjectionMatrix = m_EditorCamera.GetViewProjection();
+                m_ShaderCommonData.CameraData.ViewMatrix = m_EditorCamera.GetViewMatrix();
+                m_ShaderCommonData.CameraData.ProjectionMatrix = m_EditorCamera.GetProjection();
+                m_ShaderCommonData.CameraData.InverseViewProjectionMatrix = Math::Inverse(m_EditorCamera.GetViewProjection());
+                m_ShaderCommonData.CameraData.InverseViewMatrix = Math::Inverse(m_EditorCamera.GetViewMatrix());
+                m_ShaderCommonData.CameraData.InverseProjectionMatrix = Math::Inverse(m_EditorCamera.GetProjection());
+
+
+                m_ShaderCommonData.RenderSceneData.CameraPosition = m_EditorCamera.GetPosition();
+                m_ShaderCommonData.RenderSceneData.NearPlane = m_EditorCamera.GetNearPlane();
+                m_ShaderCommonData.RenderSceneData.FarPlane = m_EditorCamera.GetFarPlane();
+                m_ShaderCommonData.RenderSceneData.AspectRatio = m_EditorCamera.GetAspectRatio();
+                m_ShaderCommonData.RenderSceneData.FOV = m_EditorCamera.GetFOV();
+                m_EditorScene->OnUpdateEditor(ts, m_ShaderCommonData);
 
 //                std::cout << "View " << Serializer::write(m_RenderSceneData.ViewMatrix.toMatrix4_()) << std::endl;
 //                std::cout << "Proj " << Serializer::write(m_RenderSceneData.ProjectionMatrix.toMatrix4_()) << std::endl;
@@ -194,7 +199,7 @@ namespace Ethereal
             ImGui::EndCombo();
         }
 
-        ImGui::DragFloat3("Directional Light Dir", Math::Ptr(m_RenderSceneData.DirectionalLightDir), 0.1);
+        ImGui::DragFloat3("Directional Light Dir", Math::Ptr(m_ShaderCommonData.RenderSceneData.DirectionalLightDir), 0.1);
 
         // TODOLIST
         {

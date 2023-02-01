@@ -15,10 +15,52 @@
 
 namespace Ethereal
 {
-    struct RenderSceneData {
+    // Structs used in Buffers.glslh
+    struct CameraData {
         Matrix4 ViewProjectionMatrix;
-        Matrix4 ViewMatrix;
+        Matrix4 InverseViewProjectionMatrix;
         Matrix4 ProjectionMatrix;
+        Matrix4 InverseProjectionMatrix;
+        Matrix4 ViewMatrix;
+        Matrix4 InverseViewMatrix;
+        Vector2 NDCToViewMul;
+        Vector2 NDCToViewAdd;
+        Vector2 DepthUnpackConsts;
+        Vector2 CameraTanHalfFOV;
+    };
+
+    struct ShadowData {
+        Matrix4 DirLightMatrices[4];
+    };
+
+    struct DirectionalLight {
+        Vector3 Direction;
+        float ShadowAmount;
+        Vector3 Radiance;
+        float Multiplier;
+    };
+
+    struct SceneData {
+        DirectionalLight DirectionalLight;
+        Vector3 CameraPosition;
+        float EnvironmentMapIntensity;
+    };
+
+    struct RendererData {
+        Vector4 CascadeSplits;
+        int TilesCountX;
+        bool ShowCascades;
+        bool SoftShadows;
+        float LightSize;
+        float MaxShadowDistance;
+        float ShadowFade;
+        bool CascadeFading;
+        float CascadeTransitionFade;
+        bool ShowLightComplexity;
+    };
+
+    // TODO: Remove this
+    struct RenderSceneData {
         Vector3 CameraPosition;
         float NearPlane;
         float FarPlane;
@@ -29,6 +71,16 @@ namespace Ethereal
         // TODO: Lights
         Vector3 DirectionalLightDir = Math::Normalize(Vector3(-0.352,0.270,-0.452));
     };
+
+    struct ShaderCommonData{
+        CameraData CameraData;
+        ShadowData ShadowData;
+        SceneData SceneData;
+        RendererData RendererData;
+
+        RenderSceneData RenderSceneData;
+    };
+
 
     // TODO: Move this to RenderResource
     struct BuildinData {
@@ -45,7 +97,7 @@ namespace Ethereal
         void SubmitStaticMesh(Ref<StaticMesh> staticMesh, Ref<MaterialTable> materialTabel, uint32_t EntityID,
                               const Matrix4& transform = Matrix4::IDENTITY);
         void SubmitMesh(Ref<Mesh> mesh, Ref<MaterialTable> materialTabel, uint32_t EntityID, const Matrix4& transform = Matrix4::IDENTITY);
-        void SubmitRenderSceneData(const RenderSceneData& data);
+        void SubmitRenderSceneData(const ShaderCommonData& data);
         void OnResize();
         void LoadProjectSettings();
 
@@ -71,6 +123,9 @@ namespace Ethereal
         Ref<Environment> m_Environment;
         Ref<Texture> m_MainImage;
         uint32_t m_Height, m_Width;
+
+        Ref<UniformBufferSet> m_UniformBufferSet;
+
 
         DrawLists* m_DrawLists;
         BuildinData* m_BuildinData;

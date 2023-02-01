@@ -2,11 +2,20 @@
 
 #type vertex
 #version 460 core
-
+layout(std140, binding = 0) uniform Camera
+{
+    mat4 ViewProjectionMatrix;
+    mat4 InverseViewProjectionMatrix;
+    mat4 ProjectionMatrix;
+    mat4 InverseProjectionMatrix;
+    mat4 ViewMatrix;
+    mat4 InverseViewMatrix;
+    vec2 NDCToViewMul;
+    vec2 NDCToViewAdd;
+    vec2 DepthUnpackConsts;
+    vec2 CameraTanHalfFOV;
+} u_Camera;
 layout(location = 0) in vec3 a_Position;
-
-uniform mat4 u_Projection;
-uniform mat4 u_View;
 
 out vec3 v_LocalPos;
 
@@ -14,13 +23,14 @@ void main()
 {
     v_LocalPos = a_Position;
 
-    mat4 rotView = mat4(mat3(u_View)); // remove translation from the view matrix
-    vec4 clipPos = u_Projection * rotView * vec4(v_LocalPos, 1.0);
+    mat4 rotView = mat4(mat3(u_Camera.ViewMatrix)); // remove translation from the view matrix
+    vec4 clipPos = u_Camera.ProjectionMatrix * rotView * vec4(v_LocalPos, 1.0);
     gl_Position = clipPos.xyww;
 }
 
 #type fragment
 #version 460 core
+
 layout(location = 0) out vec4 FragColor;
 layout(location = 1) out int EntityID;
 

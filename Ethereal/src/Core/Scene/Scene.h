@@ -13,7 +13,7 @@ namespace Ethereal
 {
     class RenderSystem;
     class Entity;
-    struct RenderSceneData;
+    struct ShaderCommonData;
     class Scene : public Asset {
       public:
         Scene();
@@ -29,8 +29,8 @@ namespace Ethereal
         Entity GetEntityWithUUID(UUID uuid);
 
         void OnUpdateRuntime(TimeStamp ts);
-        void OnUpdateEditor(TimeStamp ts, RenderSceneData& renderSceneData);
-        void SubmitRenderScene(RenderSceneData& renderSceneData);
+        void OnUpdateEditor(TimeStamp ts, ShaderCommonData& shaderCommonData);
+        void SubmitRenderScene(ShaderCommonData& shaderCommonData);
 
         void DestroyEntity(Entity entity);
         void DuplicateEntity(Entity entity);

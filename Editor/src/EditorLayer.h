@@ -72,7 +72,6 @@ namespace Ethereal
         bool b_ShowProjectSettings = true;
         Vector3 m_LightPos = Vector3(-20, 40, -10);  // as far as possiable (away from the scene to avoid clamp shadow)
 
-        RenderSceneData m_RenderSceneData;
-
+        ShaderCommonData m_ShaderCommonData;
     };
 }  // namespace Ethereal
