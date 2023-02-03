@@ -2,8 +2,9 @@
 
 #include <string>
 #include "Base/Utils.h"
-
 #include <glm/glm.hpp>
+#include <Utils/Macro.h>
+
 namespace Ethereal
 {
     class Shader : public RefCounted {
@@ -22,8 +23,7 @@ namespace Ethereal
 
         virtual const std::string& GetName() const = 0;
 
-        static Ref<Shader> Create(const std::string& filepath);
-        static Ref<Shader> Create(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc);
+        static Ref<Shader> Create(const std::string& name, const std::unordered_map<ETHEREAL_SHADER_TYPE, std::vector<unsigned char>&>& shaderCode);
     };
 
     class ShaderLibrary {

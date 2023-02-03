@@ -10,8 +10,7 @@ namespace Ethereal
 {
     class OpenGLShader : public Shader {
       public:
-        OpenGLShader(const std::string& filepath);
-        OpenGLShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc, const std::string& geometrySrc = "");
+        OpenGLShader(const std::string& name, const std::unordered_map<ETHEREAL_SHADER_TYPE, std::vector<unsigned char>&>& shaderCode);
         virtual ~OpenGLShader();
 
         virtual void Bind() const override;
@@ -38,9 +37,7 @@ namespace Ethereal
         virtual const std::string& GetName() const override { return m_Name; };
 
       private:
-        std::string ReadFile(const std::string& filepath);
-        std::unordered_map<GLenum, std::string> PreProcess(const std::string& source);
-        void Compile(const std::unordered_map<GLenum, std::string>& shaderSources);
+        void Compile(const std::unordered_map<ETHEREAL_SHADER_TYPE, std::vector<unsigned char>&>& shaderCode);
 
       private:
         uint32_t m_RendererID;

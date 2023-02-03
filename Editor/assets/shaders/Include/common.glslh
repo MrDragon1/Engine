@@ -1,0 +1,33 @@
+layout(std140, binding = 0) uniform Camera
+{
+    mat4 ViewProjectionMatrix;
+    mat4 InverseViewProjectionMatrix;
+    mat4 ProjectionMatrix;
+    mat4 InverseProjectionMatrix;
+    mat4 ViewMatrix;
+    mat4 InverseViewMatrix;
+    float FarPlane;
+    float NearPlane;
+} u_Camera;
+
+layout (std140, binding = 1) uniform ShadowData
+{
+    int CascadeCount;
+    float CascadeSplits[16];
+    mat4 DirLightMatrices[16];
+} u_CascadeShadowData;
+
+struct DirectionalLight
+{
+    vec3 Direction;
+    float ShadowAmount;
+    vec3 Radiance;
+    float Multiplier;
+};
+
+layout(std140, binding = 2) uniform SceneData
+{
+    DirectionalLight DirectionalLights;
+    vec3 CameraPosition; // Offset = 32
+    float EnvironmentMapIntensity;
+} u_Scene;

@@ -3,40 +3,27 @@
 
 #include <fstream>
 #include <glad/glad.h>
+#include <gl/glcorearb.h>
 #include <glm/gtc/type_ptr.hpp>
 
 namespace Ethereal
 {
-    static GLenum ShaderTypeFromString(const std::string& type) {
-        if (type == "vertex") return GL_VERTEX_SHADER;
-        if (type == "fragment" || type == "pixel") return GL_FRAGMENT_SHADER;
-        if (type == "geometry") return GL_GEOMETRY_SHADER;
+    static GLenum ToGLShaderType(const ETHEREAL_SHADER_TYPE& type) {
+        if (type == ETHEREAL_SHADER_TYPE::VERTEX) return GL_VERTEX_SHADER;
+        if (type == ETHEREAL_SHADER_TYPE::FRAGMENT) return GL_FRAGMENT_SHADER;
+        if (type == ETHEREAL_SHADER_TYPE::GEOMETRY) return GL_GEOMETRY_SHADER;
 
         ET_CORE_ASSERT(false, "Unknown shader type!");
         return 0;
     }
 
-    OpenGLShader::OpenGLShader(const std::string& filepath) {
-        std::string source = ReadFile(filepath);
-        auto shaderSources = PreProcess(source);
-        Compile(shaderSources);
+    OpenGLShader::OpenGLShader(const std::string& name, const std::unordered_map<ETHEREAL_SHADER_TYPE, std::vector<unsigned char>&>& shaderCode) {
 
-        // Extract name from filepath
-        auto lastSlash = filepath.find_last_of("/\\");
-        lastSlash = lastSlash == std::string::npos ? 0 : lastSlash + 1;
-        auto lastDot = filepath.rfind('.');
-        auto count = lastDot == std::string::npos ? filepath.size() - lastSlash : lastDot - lastSlash;
-        m_Name = filepath.substr(lastSlash, count);
+        Compile(shaderCode);
+
+        m_Name = name;
     }
 
-    OpenGLShader::OpenGLShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc, const std::string& geometrySrc)
-        : m_Name(name) {
-        std::unordered_map<GLenum, std::string> sources;
-        sources[GL_VERTEX_SHADER] = vertexSrc;
-        sources[GL_FRAGMENT_SHADER] = fragmentSrc;
-        if (!geometrySrc.empty()) sources[GL_GEOMETRY_SHADER] = geometrySrc;
-        Compile(sources);
-    }
 
     OpenGLShader::~OpenGLShader() { glDeleteProgram(m_RendererID); }
 
@@ -97,56 +84,17 @@ namespace Ethereal
         glUniformMatrix4fv(location, 1, GL_FALSE, Math::Ptr(matrix));
     }
 
-    std::string OpenGLShader::ReadFile(const std::string& filepath) {
-        std::string result;
-        std::ifstream in(filepath, std::ios::in | std::ios::binary);
-        if (in) {
-            in.seekg(0, std::ios::end);
-            result.resize(in.tellg());
-            in.seekg(0, std::ios::beg);
-            in.read(&result[0], result.size());
-            in.close();
-        } else {
-            ET_CORE_ERROR("Could not open file '{0}'", filepath);
-        }
-
-        return result;
-    }
-    std::unordered_map<GLenum, std::string> OpenGLShader::PreProcess(const std::string& source) {
-        std::unordered_map<GLenum, std::string> shaderSources;
-
-        const char* typeToken = "#type";
-        size_t typeTokenLength = strlen(typeToken);
-        size_t pos = source.find(typeToken, 0);
-        while (pos != std::string::npos) {
-            size_t eol = source.find_first_of("\r\n", pos);
-            ET_CORE_ASSERT(eol != std::string::npos, "Syntax error");
-            size_t begin = pos + typeTokenLength + 1;
-            std::string type = source.substr(begin, eol - begin);
-            ET_CORE_ASSERT(ShaderTypeFromString(type), "Invalid shader type specified");
-
-            size_t nextLinePos = source.find_first_not_of("\r\n", eol);
-            pos = source.find(typeToken, nextLinePos);
-            shaderSources[ShaderTypeFromString(type)] =
-                source.substr(nextLinePos, pos - (nextLinePos == std::string::npos ? source.size() - 1 : nextLinePos));
-        }
-
-        return shaderSources;
-    }
-
-    void OpenGLShader::Compile(const std::unordered_map<GLenum, std::string>& shaderSources) {
+    void OpenGLShader::Compile(const std::unordered_map<ETHEREAL_SHADER_TYPE, std::vector<unsigned char>&>& shaderCode) {
         GLuint program = glCreateProgram();
         std::vector<GLenum> glShaderIDs;
-        for (auto& kv : shaderSources) {
-            GLenum type = kv.first;
-            const std::string& source = kv.second;
+        for (auto& kv : shaderCode) {
+            GLenum type = ToGLShaderType(kv.first);
+            const std::vector<unsigned char>& source = kv.second;
 
             GLuint shader = glCreateShader(type);
 
-            const GLchar* sourceCStr = source.c_str();
-            glShaderSource(shader, 1, &sourceCStr, 0);
-
-            glCompileShader(shader);
+            glShaderBinary(1, &shader, GL_SHADER_BINARY_FORMAT_SPIR_V_ARB, source.data(), source.size());
+            glSpecializeShader(shader, "main", 0, nullptr, nullptr);
 
             GLint isCompiled = 0;
             glGetShaderiv(shader, GL_COMPILE_STATUS, &isCompiled);

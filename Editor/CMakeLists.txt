@@ -11,11 +11,11 @@ macro(EDITOR_ADD_SOURCE)
     set(EditorSourceFiles ${EditorSourceFiles} ${SOURCE_FILES} PARENT_SCOPE)
 endmacro(EDITOR_ADD_SOURCE)
 
-set(EditorSourceFiles "" src/Panels/DebugPanel.cpp src/Panels/DebugPanel.h)
+set(EditorSourceFiles "")
 add_subdirectory(src)
 
 source_group(TREE ${EngineEditorDir} FILES ${EditorSourceFiles})
-message("Editor File " ${EditorSourceFiles})
+
 add_executable(EtherealEditor ${EditorSourceFiles})
 
 add_compile_definitions("ENGINE_ROOT_DIR=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")

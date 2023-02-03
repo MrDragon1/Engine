@@ -5,26 +5,13 @@
 #include "Platform/Windows/OpenGL/OpenGLShader.h"
 namespace Ethereal
 {
-    Ref<Shader> Shader::Create(const std::string& filepath) {
+    Ref<Shader> Shader::Create(const std::string& name, const std::vector<unsigned char>& shaderCode) {
         switch (RendererAPI::GetAPI()) {
             case RendererAPI::API::None:
                 ET_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
                 return nullptr;
             case RendererAPI::API::OpenGL:
-                return Ref<OpenGLShader>::Create(filepath);
-        }
-
-        ET_CORE_ASSERT(false, "Unknown RendererAPI!");
-        return nullptr;
-    }
-
-    Ref<Shader> Shader::Create(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc) {
-        switch (RendererAPI::GetAPI()) {
-            case RendererAPI::API::None:
-                ET_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
-                return nullptr;
-            case RendererAPI::API::OpenGL:
-                return Ref<OpenGLShader>::Create(name, vertexSrc, fragmentSrc);
+                return Ref<OpenGLShader>::Create(name, shaderCode);
         }
 
         ET_CORE_ASSERT(false, "Unknown RendererAPI!");

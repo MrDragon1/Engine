@@ -12,7 +12,6 @@
 #include "Core/Renderer/RenderPass/ShadowMapRenderPass.h"
 #include "Core/Renderer/RenderPass/CSMRenderPass.h"
 #include "Core/Renderer/RenderPass/BloomRenderPass.h"
-
 namespace Ethereal
 {
     // Structs used in Buffers.glslh

@@ -14,10 +14,11 @@ set(EngineEditorDir "${EngineRootDir}/Editor")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
-message("EngineRootDir " ${EngineRootDir})
-message("EngineRuntimeDir " ${EngineRuntimeDir})
-message("EngineEditorDir " ${EngineEditorDir})
-
+#message("EngineRootDir " ${EngineRootDir})
+#message("EngineRuntimeDir " ${EngineRuntimeDir})
+#message("EngineEditorDir " ${EngineEditorDir})
+set(SHADER_COMPILE_TARGET ShaderCompile)
 
 add_subdirectory(Ethereal)
 add_subdirectory(Editor)
+

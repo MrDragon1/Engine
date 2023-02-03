@@ -3,6 +3,13 @@
 
 namespace Ethereal
 {
+    enum class ETHEREAL_SHADER_TYPE : uint8_t
+    {
+        VERTEX = 0,
+        FRAGMENT,
+        GEOMETRY,
+    };
+
     enum class ETHEREAL_PIXEL_FORMAT : uint8_t
     {
         UNKNOWN = 0,
