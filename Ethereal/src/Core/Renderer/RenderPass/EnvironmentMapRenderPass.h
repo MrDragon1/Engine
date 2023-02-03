@@ -15,11 +15,8 @@ namespace Ethereal
         Ref<Framebuffer> m_Framebuffer;
 
         Ref<Shader> m_EquirectangularToCubeMapShader;
-        std::string m_EquirectangularToCubeMapShaderPath = "assets/shaders/EquirectangularToCubeMap.glsl";
         Ref<Shader> m_PrefilterShader;
-        std::string m_PrefilterShaderPath = "assets/shaders/Prefilter.glsl";
         Ref<Shader> m_ConvolutionShader;
-        std::string m_ConvolutionShaderPath = "assets/shaders/IrradianceConvolution.glsl";
 
         Ref<TextureCube> m_EnvironmentCubeMap;
         Ref<TextureCube> m_ReflectionCubeMap;

@@ -13,7 +13,6 @@ namespace Ethereal
 
       private:
         Ref<Shader> m_SkyboxShader;
-        std::string m_SkyboxShaderPath = "assets/shaders/Skybox.glsl";
         Ref<StaticMesh> m_Cube;
 
         friend class RenderSystem;

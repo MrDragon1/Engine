@@ -18,10 +18,11 @@ namespace Ethereal
         s_Instance = this;
         m_Window = Window::Create(WindowProps(name));
         m_Window->SetEventCallback(ET_BIND_EVENT_FN(Application::OnEvent));
-
         Reflection::TypeMetaRegister::Register();
 
+        GlobalContext::Init();
         RenderCommand::Init();
+
         GlobalContext::Reset();
 
         m_ImGuiLayer = new ImGuiLayer();

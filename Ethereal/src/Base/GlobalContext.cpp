@@ -3,8 +3,14 @@
 namespace Ethereal
 {
     RenderSystem GlobalContext::m_RenderSystem;
+    ShaderLibrary GlobalContext::m_ShaderLibrary;
+
     Vector2 GlobalContext::m_ViewportSize = {1280.0f, 720.0f};
-    GlobalContext::GlobalContext() {
+
+    GlobalContext::GlobalContext() { }
+
+    void GlobalContext::Init() {
+        m_ShaderLibrary.Init();
     }
 
     void GlobalContext::Reset() {

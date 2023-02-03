@@ -1,3 +1,4 @@
+#include <Base/GlobalContext.h>
 #include "ShadowMapRenderPass.h"
 
 namespace Ethereal
@@ -15,7 +16,7 @@ namespace Ethereal
         m_LightPos = Vector3(-2.0f, 4.0f, -1.0f);
         CalculateViewProjectionMatrix();
 
-        m_Shader = Shader::Create(m_ShaderPath);
+        m_Shader = GlobalContext::GetShaderLibrary().Get("SHADOWMAP");
         m_Shader->Bind();
     }
 

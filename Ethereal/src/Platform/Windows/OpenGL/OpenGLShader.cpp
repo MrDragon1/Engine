@@ -17,7 +17,7 @@ namespace Ethereal
         return 0;
     }
 
-    OpenGLShader::OpenGLShader(const std::string& name, const std::unordered_map<ETHEREAL_SHADER_TYPE, std::vector<unsigned char>&>& shaderCode) {
+    OpenGLShader::OpenGLShader(const std::string& name, const ETHEREAL_SHADER_PACK& shaderCode) {
 
         Compile(shaderCode);
 
@@ -84,7 +84,7 @@ namespace Ethereal
         glUniformMatrix4fv(location, 1, GL_FALSE, Math::Ptr(matrix));
     }
 
-    void OpenGLShader::Compile(const std::unordered_map<ETHEREAL_SHADER_TYPE, std::vector<unsigned char>&>& shaderCode) {
+    void OpenGLShader::Compile(const ETHEREAL_SHADER_PACK& shaderCode) {
         GLuint program = glCreateProgram();
         std::vector<GLenum> glShaderIDs;
         for (auto& kv : shaderCode) {

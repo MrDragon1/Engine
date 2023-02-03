@@ -51,16 +51,18 @@ namespace Ethereal
     };
 
     struct RendererData {
-        Vector4 CascadeSplits;
-        int TilesCountX;
-        bool ShowCascades;
-        bool SoftShadows;
-        float LightSize;
-        float MaxShadowDistance;
-        float ShadowFade;
-        bool CascadeFading;
-        float CascadeTransitionFade;
-        bool ShowLightComplexity;
+        int EntityID;
+        float padding[3];
+    };
+
+    //TODO: Move to other place
+    struct MaterialData {
+        Vector4 u_Albedo;
+        float u_Metallic;
+        float u_Roughness;
+        float u_Occlusion;
+        float u_Emisstion;
+        int u_UseMap; // 1<<1: Albedo 1<<2: Normal 1<<3: Metallic 1<<4: Roughness 1<<5: Occlusion
     };
 
     // TODO: Remove this
@@ -78,6 +80,7 @@ namespace Ethereal
         ShadowData ShadowData;
         SceneData SceneData;
         RendererData RendererData;
+        MaterialData MaterialData;
 
         RenderSceneData RenderSceneData;
     };
@@ -101,7 +104,7 @@ namespace Ethereal
         void SubmitRenderSceneData();
         void OnResize();
         void LoadProjectSettings();
-
+        void UpdateUniformData();
         Ref<Environment> GetDefaultEnvironment() { return m_BuildinData->Environment; }
 
         uint32_t GetMainImageHeight() { return m_Height; };
@@ -114,6 +117,7 @@ namespace Ethereal
         Ref<CSMRenderPass> GetCSMRenderPass() { return m_CSMRenderPass; }
         Ref<Environment>  GetEnv() { return m_Environment; }
         ShaderCommonData& GetShaderCommonData() { return m_ShaderCommonData; }
+
       private:
         Ref<MainCameraRenderPass> m_MainCameraRenderPass;
         Ref<ShadowMapRenderPass> m_ShadowMapRenderPass;  // Don't use it for now.

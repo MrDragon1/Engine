@@ -21,7 +21,6 @@ namespace Ethereal
 
         Vector3 m_LightPos;
         Ref<Shader> m_Shader;
-        std::string m_ShaderPath = "assets/shaders/ShadowMap.glsl";
         Ref<Framebuffer> m_Framebuffer;
         const int m_ShadowMapSize = 1024;
 

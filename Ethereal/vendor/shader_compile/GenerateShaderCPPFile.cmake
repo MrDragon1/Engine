@@ -40,7 +40,7 @@ function(embed_resource resource_file_name source_file_name variable_name)
 
 endfunction()
 
-message("${PATH}     ${HEADER}     ${GLOBAL}")
+#message("${PATH}     ${HEADER}     ${GLOBAL}")
 # let's use it as a script
 if(EXISTS "${PATH}")
     embed_resource("${PATH}" "${HEADER}" "${GLOBAL}")

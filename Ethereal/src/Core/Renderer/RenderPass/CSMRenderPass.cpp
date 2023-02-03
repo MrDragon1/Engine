@@ -18,7 +18,7 @@ namespace Ethereal
         m_Framebuffer = Framebuffer::Create(fbSpec);
         m_Data.ShadowMap = m_Framebuffer->GetDepthAttachment();
 
-        m_Shader = Shader::Create(m_ShaderPath);
+        m_Shader = GlobalContext::GetShaderLibrary().Get("CSM");
     }
 
     void CSMRenderPass::Draw() {

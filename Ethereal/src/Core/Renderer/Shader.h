@@ -4,9 +4,11 @@
 #include "Base/Utils.h"
 #include <glm/glm.hpp>
 #include <Utils/Macro.h>
+#include "Resource/generated/cpp/ShaderBinaryData.h"
 
 namespace Ethereal
 {
+    using ETHEREAL_SHADER_PACK = std::unordered_map<ETHEREAL_SHADER_TYPE, const std::vector<unsigned char>&>;
     class Shader : public RefCounted {
       public:
         virtual ~Shader() = default;
@@ -23,20 +25,19 @@ namespace Ethereal
 
         virtual const std::string& GetName() const = 0;
 
-        static Ref<Shader> Create(const std::string& name, const std::unordered_map<ETHEREAL_SHADER_TYPE, std::vector<unsigned char>&>& shaderCode);
+        static Ref<Shader> Create(const std::string& name, const ETHEREAL_SHADER_PACK& shaderCode);
     };
 
     class ShaderLibrary {
       public:
-        void Add(const Ref<Shader>& shader);
         void Add(const std::string& name, const Ref<Shader>& shader);
-        Ref<Shader> Load(const std::string& filepath);
-        Ref<Shader> Load(const std::string& name, const std::string& filepath);
+        Ref<Shader> Load(const std::string& name, const ETHEREAL_SHADER_PACK& shaderCode);
 
         Ref<Shader> Get(const std::string& name);
 
         bool Exists(const std::string& name) const;
 
+        void Init();
       private:
         std::unordered_map<std::string, Ref<Shader>> m_Shaders;
     };

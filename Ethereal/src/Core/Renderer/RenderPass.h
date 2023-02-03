@@ -3,7 +3,6 @@
 #include "Core/Renderer/Framebuffer.h"
 #include "Core/Renderer/RenderCommand.h"
 #include "Core/Renderer/Mesh.h"
-#include "Resource/generated/cpp/ShaderBinaryData.h"
 #include "Base/Ref.h"
 
 namespace Ethereal

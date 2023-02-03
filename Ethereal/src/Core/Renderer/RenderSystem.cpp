@@ -50,6 +50,7 @@ namespace Ethereal
         m_UniformBufferSet->Set(UniformBuffer::Create(sizeof(ShadowData), 1), 0);
         m_UniformBufferSet->Set(UniformBuffer::Create(sizeof(SceneData), 2), 0);
         m_UniformBufferSet->Set(UniformBuffer::Create(sizeof(RendererData), 3), 0);
+        m_UniformBufferSet->Set(UniformBuffer::Create(sizeof(MaterialData), 4), 0);
     }
 
     void RenderSystem::Draw(TimeStamp ts) {
@@ -62,9 +63,10 @@ namespace Ethereal
         // m_ShadowMapRenderPass->m_Framebuffer->GetDepthAttachment()->Bind(5);
 
         m_MainCameraRenderPass->SetCSMData(m_CSMRenderPass->GetData());
-        m_Environment->RadianceMap->Bind(6);
-        m_Environment->IrradianceMap->Bind(7);
-        RenderResource::BRDFLutTexture->Bind(8);
+        // TODO: Radiance and Irradiance may used as reversed wrongly in shader!!!
+        m_Environment->RadianceMap->Bind(17);
+        m_Environment->IrradianceMap->Bind(16);
+        RenderResource::BRDFLutTexture->Bind(15);
         m_MainCameraRenderPass->Draw();
 
         // TODO : make skybox render pass a subpass of main camera render pass
@@ -163,11 +165,7 @@ namespace Ethereal
 
         m_Environment = m_ShaderCommonData.RenderSceneData.Environment;
 
-        //从editor传过来的数据在此写入UBO
-        m_UniformBufferSet->Get(0, 0)->SetData(&m_ShaderCommonData.CameraData, sizeof(CameraData));
-        m_UniformBufferSet->Get(0, 1)->SetData(&m_ShaderCommonData.ShadowData, sizeof(ShadowData));
-        m_UniformBufferSet->Get(0, 2)->SetData(&m_ShaderCommonData.SceneData, sizeof(SceneData));
-        m_UniformBufferSet->Get(0, 3)->SetData(&m_ShaderCommonData.RendererData, sizeof(RendererData));
+        UpdateUniformData();
     }
 
     std::pair<Ref<TextureCube>, Ref<TextureCube>> RenderSystem::CreateEnvironmentMap(const std::string& path) {
@@ -184,4 +182,14 @@ namespace Ethereal
         m_BloomRenderPass->GetThreshold() = Project().GetSettings().bloomSetting.threshold;
         m_BloomRenderPass->GetKnee() = Project().GetSettings().bloomSetting.knee;
     }
+
+    void RenderSystem::UpdateUniformData() {
+        //从editor传过来的数据在此写入UBO
+        m_UniformBufferSet->Get(0, 0)->SetData(&m_ShaderCommonData.CameraData, sizeof(CameraData));
+        m_UniformBufferSet->Get(0, 1)->SetData(&m_ShaderCommonData.ShadowData, sizeof(ShadowData));
+        m_UniformBufferSet->Get(0, 2)->SetData(&m_ShaderCommonData.SceneData, sizeof(SceneData));
+        m_UniformBufferSet->Get(0, 3)->SetData(&m_ShaderCommonData.RendererData, sizeof(RendererData));
+        m_UniformBufferSet->Get(0, 4)->SetData(&m_ShaderCommonData.MaterialData, sizeof(MaterialData));
+    }
+
 }  // namespace Ethereal

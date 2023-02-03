@@ -19,11 +19,13 @@ namespace Ethereal
         fbSpec.Height = height;
         m_Framebuffer = Framebuffer::Create(fbSpec);
 
-        m_Shader_Bright = Shader::Create("assets/shaders/bloom/bright.glsl");
+        m_Shader_Bright = GlobalContext::GetShaderLibrary().Get("BRIGHT");
         m_Shader_Bright->Bind();
-        m_Shader_Blur = Shader::Create("assets/shaders/bloom/blur.glsl");
+
+        m_Shader_Blur = GlobalContext::GetShaderLibrary().Get("BLUR");
         m_Shader_Blur->Bind();
-        m_Shader_Merge = Shader::Create("assets/shaders/bloom/merge.glsl");
+
+        m_Shader_Merge = GlobalContext::GetShaderLibrary().Get("MERGE");
         m_Shader_Merge->Bind();
 
         Invalidate(width, height);
@@ -39,7 +41,7 @@ namespace Ethereal
 
         // Draw BrightArea Image
         m_Shader_Bright->Bind();
-        m_Shader_Bright->SetInt("u_MainImage", 0);
+//        m_Shader_Bright->SetInt("u_MainImage", 0);
         m_Shader_Bright->SetFloat("u_Threshold", 0.0f);  // 0.0 for blooming entire image
         m_MainImage->Bind(0);
         m_BrightAreaImage->BindToFramebuffer(0);
@@ -56,9 +58,9 @@ namespace Ethereal
         m_Shader_Blur->SetFloat("u_Knee", m_Knee);
 
         m_Shader_Blur->SetInt("u_DownSample", true);
-        m_Shader_Blur->SetInt("o_image", 0);
-        m_Shader_Blur->SetInt("i_image", 1);
-        m_Shader_Blur->SetInt("i_DownSamplerImage", 2);
+//        m_Shader_Blur->SetInt("o_image", 0);
+//        m_Shader_Blur->SetInt("i_image", 1);
+//        m_Shader_Blur->SetInt("i_DownSamplerImage", 2);
 
         m_DownSampledImage->BindImage(0, 0);
         m_BrightAreaImage->BindImage(1);
@@ -118,9 +120,9 @@ namespace Ethereal
         m_Shader_Merge->Bind();
         m_Shader_Merge->SetFloat("u_Intensity", m_Intensity);
 
-        m_Shader_Merge->SetInt("u_MainImage", 0);
+//        m_Shader_Merge->SetInt("u_MainImage", 0);
         m_MainImage->Bind(0);
-        m_Shader_Merge->SetInt("u_BlurImage", 1);
+//        m_Shader_Merge->SetInt("u_BlurImage", 1);
         m_UpSampledImage->Bind(1);
         m_BloomImage->BindToFramebuffer(0);
         RenderCommand::Clear();

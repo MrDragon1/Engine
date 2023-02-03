@@ -6,9 +6,12 @@ namespace Ethereal
     void SkyboxRenderPass::Init(uint32_t width, uint32_t height) {
         m_Cube = RenderResource::Cube;
 
-        m_SkyboxShader = Shader::Create(m_SkyboxShaderPath);
+        ETHEREAL_SHADER_PACK SkyboxShaderPack = {
+            {ETHEREAL_SHADER_TYPE::VERTEX, SKYBOX_VERT},
+            {ETHEREAL_SHADER_TYPE::FRAGMENT, SKYBOX_FRAG},
+        };
+        m_SkyboxShader = GlobalContext::GetShaderLibrary().Get("SKYBOX");
         m_SkyboxShader->Bind();
-        m_SkyboxShader->SetInt("u_SkyboxTexture", 0);
     }
 
     void SkyboxRenderPass::Draw() {

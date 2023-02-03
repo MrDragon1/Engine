@@ -20,11 +20,13 @@ namespace Ethereal
 
         m_Framebuffer = Framebuffer::Create(fbSpec);
 
-        m_EquirectangularToCubeMapShader = Shader::Create(m_EquirectangularToCubeMapShaderPath);
+        m_EquirectangularToCubeMapShader = GlobalContext::GetShaderLibrary().Get("EQUIRECTANGULARTOCUBEMAP");
         m_EquirectangularToCubeMapShader->Bind();
-        m_PrefilterShader = Shader::Create(m_PrefilterShaderPath);
+
+        m_PrefilterShader = GlobalContext::GetShaderLibrary().Get("PREFILTER");
         m_PrefilterShader->Bind();
-        m_ConvolutionShader = Shader::Create(m_ConvolutionShaderPath);
+
+        m_ConvolutionShader = GlobalContext::GetShaderLibrary().Get("IRRADIANCECONVOLUTION");
         m_ConvolutionShader->Bind();
 
         Ref<TextureData> data32 = Ref<TextureData>::Create();
@@ -71,7 +73,7 @@ namespace Ethereal
 
         // Convolution
         m_ConvolutionShader->Bind();
-        m_ConvolutionShader->SetInt("u_EnvironmentMap", 0);
+//        m_ConvolutionShader->SetInt("u_EnvironmentMap", 0);
         m_ConvolutionShader->SetMat4("u_Projection", captureProjection);
 
         m_Framebuffer->Resize(32, 32);
@@ -85,7 +87,7 @@ namespace Ethereal
         }
 
         m_EquirectangularToCubeMapShader->Bind();
-        m_EquirectangularToCubeMapShader->SetInt("u_EquirectangularMap0", 0);
+//        m_EquirectangularToCubeMapShader->SetInt("u_EquirectangularMap0", 0);
         m_EquirectangularToCubeMapShader->SetMat4("u_Projection", captureProjection);
 
         // Generate Reflection CubeMap
@@ -93,7 +95,7 @@ namespace Ethereal
 
         // Generate Prefilter CubeMap
         m_PrefilterShader->Bind();
-        m_PrefilterShader->SetInt("u_EnvironmentMap", 0);
+//        m_PrefilterShader->SetInt("u_EnvironmentMap", 0);
         m_PrefilterShader->SetMat4("u_Projection", captureProjection);
 
         m_Framebuffer->Resize(512, 512);

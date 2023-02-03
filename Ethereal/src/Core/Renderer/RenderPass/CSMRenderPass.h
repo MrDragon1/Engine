@@ -39,7 +39,7 @@ namespace Ethereal
 
       private:
         Ref<Shader> m_Shader;
-        const std::string m_ShaderPath = "assets/shaders/CSM/CSM.glsl";
+
         Ref<Framebuffer> m_Framebuffer;
 
         std::vector<float> m_Distance;

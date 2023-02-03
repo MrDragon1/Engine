@@ -1,7 +1,5 @@
-#pragma once
-
-#if defined(__FRAGMENT_STAGE__) || defined(__COMPUTE_STAGE__)
-#include <Buffers.glslh>
+#extension GL_GOOGLE_include_directive : enable
+#include "Common.glslh"
 
 const float MINIMUM_SHADOW_BIAS = 0.002;
 
@@ -17,6 +15,3 @@ float HardShadows_DirectionalLight(sampler2DArray shadowMap, uint cascade, vec3 
 	float shadowMapDepth = texture(shadowMap, vec3(shadowCoords.xy * 0.5 + 0.5, cascade)).r;
 	return step(shadowCoords.z, shadowMapDepth + bias) * ShadowFade;
 }
-
-
-#endif

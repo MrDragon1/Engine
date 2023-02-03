@@ -37,7 +37,7 @@ function(compile_shader SHADERS TARGET_NAME SHADER_INCLUDE_FOLDER GENERATED_DIR 
 
         list(APPEND ALL_GENERATED_SPV_FILES ${SPV_FILE})
         execute_process(COMMAND cmake -DPATH=${SPV_FILE} -DHEADER=${CPP_FILE}
-                -DGLOBAL="${GLOBAL_SHADER_VAR}" -P "${CMAKE_CURRENT_SOURCE_DIR}/GenerateShaderCPPFile.cmake"
+                -DGLOBAL=${GLOBAL_SHADER_VAR} -P "${CMAKE_CURRENT_SOURCE_DIR}/GenerateShaderCPPFile.cmake"
                 WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
                 TIMEOUT 3
                 RESULT_VARIABLE result_var

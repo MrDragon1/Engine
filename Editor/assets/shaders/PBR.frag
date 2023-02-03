@@ -1,6 +1,6 @@
 #version 460 core
 #extension GL_GOOGLE_include_directive : enable
-#include "common.glslh"
+#include "Common.glslh"
 
 layout(location = 0) out vec4 FragColor;
 layout(location = 1) out int EntityID;
@@ -9,44 +9,19 @@ layout(location = 0) in vec3 v_WorldPos;
 layout(location = 1) in vec3 v_Normal;
 layout(location = 2) in vec2 v_TexCoord;
 
-uniform sampler2D u_AlbedoMap;
-uniform sampler2D u_NormalMap;
-uniform sampler2D u_MetallicMap;
-uniform sampler2D u_RoughnessMap;
-uniform sampler2D u_OcclusionMap;   
-
-// material parameters
-layout(binding = 3) uniform material{
-    vec3 u_Albedo;
-    float u_Metallic;
-    float u_Roughness;
-    float u_Occlusion;
-    float u_Emisstion;  
-    bool u_UseAlbedoMap;
-    bool u_UseNormalMap;
-    bool u_UseMetallicMap;
-    bool u_UseRoughnessMap;
-    bool u_UseOcclusionMap;
-}u_Material;
+layout(binding = 10) uniform sampler2D u_AlbedoMap;
+layout(binding = 11) uniform sampler2D u_NormalMap;
+layout(binding = 12) uniform sampler2D u_MetallicMap;
+layout(binding = 13) uniform sampler2D u_RoughnessMap;
+layout(binding = 14) uniform sampler2D u_OcclusionMap;
 
 // IBL
-uniform samplerCube u_IrradianceMap;
-uniform samplerCube u_PrefilterMap;
-uniform sampler2D u_BRDFLUT;
+layout(binding = 15) uniform sampler2D u_BRDFLUT;
+layout(binding = 17) uniform samplerCube u_IrradianceMap;
+layout(binding = 16) uniform samplerCube u_PrefilterMap;
 
-uniform sampler2DArray u_ShadowMap;
+layout(binding = 18) uniform sampler2DArray u_ShadowMap;
 
-layout(binding = 4) uniform Shadow {
-    // lights
-     vec3 lightPositions[4];
-     vec3 lightColors[4];
-
-    // Cascaded Shadow Map
-     
-     vec3 u_LightDir;
-
-     int u_EntityID;
-}u_Shadow;
 
 const float PI = 3.14159265359;
 
@@ -167,7 +142,7 @@ float ShadowCalculation(vec3 fragPosWorldSpace)
     // perform perspective divide
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
 
-    float bias = max(0.001 * (1.0 - dot(m_Params.Normal, u_Shadow.u_LightDir)), 0.000);
+    float bias = max(0.001 * (1.0 - dot(m_Params.Normal, u_Scene.DirectionalLights.Direction)), 0.000);
     float shadowMapDepth = texture(u_ShadowMap, vec3(projCoords.xy * 0.5 + 0.5, layer)).r;
 
     return step(projCoords.z * 0.5 + 0.5, shadowMapDepth + bias);
@@ -182,7 +157,7 @@ float ShadowCalculation(vec3 fragPosWorldSpace)
 //    }
 //    // calculate bias (based on depth map resolution and slope)
 //    vec3 normal = u_UseNormalMap ? getNormalFromMap() : normalize(v_Normal);
-//    float bias = max(0.05 * (1.0 - dot(normal, u_Shadow.u_LightDir)), 0.005);
+//    float bias = max(0.05 * (1.0 - dot(normal, u_Scene.DirectionalLights.Direction)), 0.005);
 //    const float biasModifier = 0.5f;
 //    if (layer == u_CascadeShadowData.CascadeCount)
 //    {
@@ -234,7 +209,7 @@ vec3 CalculateDirLights(vec3 F0)
     vec3 result = vec3(0.0);
     for (int i = 0; i < 1; i++) //Only one light for now
     {
-        vec3 Li = u_Shadow.u_LightDir;
+        vec3 Li = u_Scene.DirectionalLights.Direction;
 //        vec3 Lradiance = u_Scene.DirectionalLights.Radiance * u_Scene.DirectionalLights.Multiplier;
         vec3 Lradiance = vec3(1.0f);
         vec3 Lh = normalize(Li + m_Params.View);
@@ -261,12 +236,11 @@ vec3 CalculateDirLights(vec3 F0)
 // ----------------------------------------------------------------------------
 void main()
 {
-    m_Params.Albedo     = u_Material.u_UseAlbedoMap ? pow(texture(u_AlbedoMap, v_TexCoord).rgb, vec3(2.2)) : u_Material.u_Albedo;
-    m_Params.Metalness  = u_Material.u_UseMetallicMap ? texture(u_MetallicMap, v_TexCoord).r : u_Material.u_Metallic;
-    m_Params.Roughness = u_Material.u_UseRoughnessMap ? texture(u_RoughnessMap, v_TexCoord).r : u_Material.u_Roughness;
-    float ao        = u_Material.u_UseOcclusionMap ? texture(u_OcclusionMap, v_TexCoord).r : u_Material.u_Occlusion;
+    m_Params.Albedo     = (u_Material.u_UseMap & 1<<1) != 0 ? pow(texture(u_AlbedoMap, v_TexCoord).rgb, vec3(2.2)) : u_Material.u_Albedo.rgb;
+    m_Params.Metalness  = (u_Material.u_UseMap & 1<<3) != 0 ? texture(u_MetallicMap, v_TexCoord).r : u_Material.u_Metallic;
+    m_Params.Roughness = (u_Material.u_UseMap & 1<<4) != 0 ? texture(u_RoughnessMap, v_TexCoord).r : u_Material.u_Roughness;
 
-    m_Params.Normal = u_Material.u_UseNormalMap ? getNormalFromMap() : normalize(v_Normal);
+    m_Params.Normal = (u_Material.u_UseMap & 1<<2) != 0 ? getNormalFromMap() : normalize(v_Normal);
     m_Params.View = normalize(u_Scene.CameraPosition - v_WorldPos);
     vec3 R = reflect(-m_Params.View, m_Params.Normal);
     m_Params.NdotV = max(dot(m_Params.Normal, m_Params.View), 0.0);
@@ -288,5 +262,5 @@ void main()
 
     FragColor = color;
 
-    EntityID = u_Shadow.u_EntityID;
+    EntityID = u_RendererData.EntityID;
 }
