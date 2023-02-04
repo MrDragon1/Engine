@@ -1,6 +1,7 @@
 #version 460 core
 #extension GL_GOOGLE_include_directive : enable
 #include "Common.glslh"
+#include "PBR.glslh"
 
 layout(location = 0) out vec4 FragColor;
 layout(location = 1) out int EntityID;
@@ -23,8 +24,6 @@ layout(binding = 16) uniform samplerCube u_PrefilterMap;
 layout(binding = 18) uniform sampler2DArray u_ShadowMap;
 
 
-const float PI = 3.14159265359;
-
 // Used in PBR shader
 struct PBRParameters
 {
@@ -34,7 +33,6 @@ struct PBRParameters
 
     vec3 Normal;
     vec3 View;
-    float NdotV;
 } m_Params;
 
 // ----------------------------------------------------------------------------
@@ -57,62 +55,6 @@ vec3 getNormalFromMap()
     mat3 TBN = mat3(T, B, N);
 
     return normalize(TBN * tangentNormal);
-}
-// GGX/Towbridge-Reitz normal distribution function.
-// Uses Disney's reparametrization of alpha = roughness^2
-float NdfGGX(float cosLh, float roughness)
-{
-    float alpha = roughness * roughness;
-    float alphaSq = alpha * alpha;
-
-    float denom = (cosLh * cosLh) * (alphaSq - 1.0) + 1.0;
-    return alphaSq / (PI * denom * denom);
-}
-
-// Single term for separable Schlick-GGX below.
-float GaSchlickG1(float cosTheta, float k)
-{
-    return cosTheta / (cosTheta * (1.0 - k) + k);
-}
-
-// Schlick-GGX approximation of geometric attenuation function using Smith's method.
-float GaSchlickGGX(float cosLi, float NdotV, float roughness)
-{
-    float r = roughness + 1.0;
-    float k = (r * r) / 8.0; // Epic suggests using this roughness remapping for analytic lights.
-    return GaSchlickG1(cosLi, k) * GaSchlickG1(NdotV, k);
-}
-
-float GeometrySchlickGGX(float NdotV, float roughness)
-{
-    float r = (roughness + 1.0);
-    float k = (r * r) / 8.0;
-
-    float nom = NdotV;
-    float denom = NdotV * (1.0 - k) + k;
-
-    return nom / denom;
-}
-
-float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness)
-{
-    float NdotV = max(dot(N, V), 0.0);
-    float NdotL = max(dot(N, L), 0.0);
-    float ggx2 = GeometrySchlickGGX(NdotV, roughness);
-    float ggx1 = GeometrySchlickGGX(NdotL, roughness);
-
-    return ggx1 * ggx2;
-}
-
-// Shlick's approximation of the Fresnel factor.
-vec3 FresnelSchlick(vec3 F0, float cosTheta)
-{
-    return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);
-}
-
-vec3 FresnelSchlickRoughness(vec3 F0, float cosTheta, float roughness)
-{
-    return F0 + (max(vec3(1.0 - roughness), F0) - F0) * pow(1.0 - cosTheta, 5.0);
 }
 
 // ----------------------------------------------------------------------------
@@ -184,54 +126,124 @@ float ShadowCalculation(vec3 fragPosWorldSpace)
 //    return shadow;
 }
 
-vec3 IBL(vec3 F0, vec3 Lr)
-{
+
+vec3 isotropicLobe(const vec3 h,
+float NoV, float NoL, float NoH, float LoH) {
+    vec3 F0 = mix(vec3(0.04), m_Params.Albedo, m_Params.Metalness);// TDOO: for temp
+
+    float D = distribution(m_Params.Roughness, NoH, h);
+    float V = visibility(m_Params.Roughness, NoV, NoL);
+    vec3  F = fresnel(F0, LoH);
+
+    return (D * V) * F;
+}
+
+vec3 specularLobe(const vec3 h, float NoV, float NoL, float NoH, float LoH) {
+    return isotropicLobe(h, NoV, NoL, NoH, LoH);
+}
+
+vec3 diffuseLobe(float NoV, float NoL, float LoH) {
+    return m_Params.Albedo * diffuse(m_Params.Roughness, NoV, NoL, LoH);
+}
+
+vec3 surfaceShading(float occlusion) {
+    vec3 h = normalize(m_Params.View + u_Scene.DirectionalLights.Direction);
+
+    float NoV = max(dot(m_Params.Normal, m_Params.View),1e-4);
+    float NoL = saturate(dot(m_Params.Normal, u_Scene.DirectionalLights.Direction));
+    float NoH = saturate(dot(m_Params.Normal, h));
+    float LoH = saturate(dot(u_Scene.DirectionalLights.Direction, h));
+
+    vec3 Fr = specularLobe(h, NoV, NoL, NoH, LoH);
+    vec3 Fd = diffuseLobe(NoV, NoL, LoH);
+
+    // The energy compensation term is used to counteract the darkening effect
+    // at high roughness
+    vec3 color = Fd + Fr; // * pixel.energyCompensation
+
+    return (color * u_Scene.DirectionalLights.Radiance) * (NoL * occlusion);
+}
+//Rewrite the pbr shader for better visual effect
+void evaluateDirectionalLight(inout vec3 color) {
+    float visibility = 1.0;
+    float shadowScale = ShadowCalculation(v_WorldPos);
+    shadowScale = 1.0 - clamp(1.0f - shadowScale, 0.0f, 1.0f);
+//    #if defined(VARIANT_HAS_SHADOWING)
+//    if (light.NoL > 0.0) {
+//        float ssContactShadowOcclusion = 0.0;
+//
+//        uint cascade = getShadowCascade();
+//        bool cascadeHasVisibleShadows = bool(frameUniforms.cascades & ((1u << cascade) << 8u));
+//        bool hasDirectionalShadows = bool(frameUniforms.directionalShadows & 1u);
+//        if (hasDirectionalShadows && cascadeHasVisibleShadows) {
+//            highp vec4 shadowPosition = getShadowPosition(cascade);
+//            visibility = shadow(true, light_shadowMap, cascade, shadowPosition, 0.0f);
+//        }
+//        if ((frameUniforms.directionalShadows & 0x2u) != 0u && visibility > 0.0) {
+//            if ((object_uniforms.flagsChannels & FILAMENT_OBJECT_CONTACT_SHADOWS_BIT) != 0u) {
+//                ssContactShadowOcclusion = screenSpaceContactShadow(light.l);
+//            }
+//        }
+//
+//        visibility *= 1.0 - ssContactShadowOcclusion;
+//
+//        if (visibility <= 0.0) {
+//            return;
+//        }
+//    }
+//    #endif
+
+    color.rgb += surfaceShading(shadowScale);
+}
+
+void evaluateIBL(inout vec3 color) {
+    float NoV = dot(m_Params.Normal, m_Params.View);
+
+    vec3 Lr = 2.0 * NoV * m_Params.Normal - m_Params.View;
+    vec3 F0 = mix(vec3(0.04), m_Params.Albedo, m_Params.Metalness);
+
     vec3 irradiance = texture(u_IrradianceMap, m_Params.Normal).rgb;
-    vec3 F = FresnelSchlickRoughness(F0, m_Params.NdotV, m_Params.Roughness);
+    vec3 F = F_Schlick(F0, m_Params.Roughness, NoV);
     vec3 kd = (1.0 - F) * (1.0 - m_Params.Metalness);
     vec3 diffuseIBL = m_Params.Albedo * irradiance;
 
     int envRadianceTexLevels = textureQueryLevels(u_IrradianceMap);
-    float NoV = clamp(m_Params.NdotV, 0.0, 1.0);
+    NoV = clamp(NoV, 0.0, 1.0);
     vec3 R = 2.0 * dot(m_Params.View, m_Params.Normal) * m_Params.Normal - m_Params.View;
     vec3 specularIrradiance = textureLod(u_PrefilterMap, R, (m_Params.Roughness) * envRadianceTexLevels).rgb;
     //specularIrradiance = vec3(Convert_sRGB_FromLinear(specularIrradiance.r), Convert_sRGB_FromLinear(specularIrradiance.g), Convert_sRGB_FromLinear(specularIrradiance.b));
 
     // Sample BRDF Lut, 1.0 - roughness for y-coord because texture was generated (in Sparky) for gloss model
-    vec2 specularBRDF = texture(u_BRDFLUT, vec2(m_Params.NdotV, 1.0 - m_Params.Roughness)).rg;
+    vec2 specularBRDF = texture(u_BRDFLUT, vec2(NoV, 1.0 - m_Params.Roughness)).rg;
     vec3 specularIBL = specularIrradiance * (F0 * specularBRDF.x + specularBRDF.y);
 
-    return kd * diffuseIBL + specularIBL;
+    color += kd * diffuseIBL + specularIBL;
 }
 
-vec3 CalculateDirLights(vec3 F0)
-{
-    vec3 result = vec3(0.0);
-    for (int i = 0; i < 1; i++) //Only one light for now
-    {
-        vec3 Li = u_Scene.DirectionalLights.Direction;
-//        vec3 Lradiance = u_Scene.DirectionalLights.Radiance * u_Scene.DirectionalLights.Multiplier;
-        vec3 Lradiance = vec3(1.0f);
-        vec3 Lh = normalize(Li + m_Params.View);
+vec4 evaluateLights() {
+    // Ideally we would keep the diffuse and specular components separate
+    // until the very end but it costs more ALUs on mobile. The gains are
+    // currently not worth the extra operations
+    vec3 color = vec3(0.0);
 
-        // Calculate angles between surface normal and various light vectors.
-        float cosLi = max(0.0, dot(m_Params.Normal, Li));
-        float cosLh = max(0.0, dot(m_Params.Normal, Lh));
+    // We always evaluate the IBL as not having one is going to be uncommon,
+    // it also saves 1 shader variant
+    evaluateIBL(color);
 
-        vec3 F = FresnelSchlickRoughness(F0, max(0.0, dot(Lh, m_Params.View)), m_Params.Roughness);
-        float D = NdfGGX(cosLh, m_Params.Roughness);
-        float G = GaSchlickGGX(cosLi, m_Params.NdotV, m_Params.Roughness);
+    evaluateDirectionalLight(color);
 
-        vec3 kd = (1.0 - F) * (1.0 - m_Params.Metalness);
-        vec3 diffuseBRDF = kd * m_Params.Albedo;
+    // In fade mode we un-premultiply baseColor early on, so we need to
+    // premultiply again at the end (affects diffuse and specular lighting)
+//    color *= u_Params.Albedo.a;
 
-        // Cook-Torrance
-        vec3 specularBRDF = (F * D * G) / max(0.00001, 4.0 * cosLi * m_Params.NdotV);
-        specularBRDF = clamp(specularBRDF, vec3(0.0f), vec3(10.0f));
-        result += (diffuseBRDF + specularBRDF) * Lradiance * cosLi;
-    }
-    return result;
+    return vec4(color, 1.0); // computeDiffuseAlpha(u_Params.Albedo.a)
 }
+
+vec4 evaluateMaterial() {
+    vec4 color = evaluateLights();
+    return color;
+}
+
 
 // ----------------------------------------------------------------------------
 void main()
@@ -241,26 +253,10 @@ void main()
     m_Params.Roughness = (u_Material.u_UseMap & 1<<4) != 0 ? texture(u_RoughnessMap, v_TexCoord).r : u_Material.u_Roughness;
 
     m_Params.Normal = (u_Material.u_UseMap & 1<<2) != 0 ? getNormalFromMap() : normalize(v_Normal);
+    m_Params.Normal = gl_FrontFacing ? m_Params.Normal : -m_Params.Normal; // for two-sided materials
     m_Params.View = normalize(u_Scene.CameraPosition - v_WorldPos);
-    vec3 R = reflect(-m_Params.View, m_Params.Normal);
-    m_Params.NdotV = max(dot(m_Params.Normal, m_Params.View), 0.0);
-    // calculate reflectance at normal incidence; if dia-electric (like plastic) use F0 
-    // of 0.04 and if it's a metal, use the albedo color as F0 (metallic workflow)    
-    // Specular reflection vector
-    vec3 Lr = 2.0 * m_Params.NdotV * m_Params.Normal - m_Params.View;
-    // Fresnel reflectance, metals use albedo
-    vec3 F0 = mix(vec3(0.04), m_Params.Albedo, m_Params.Metalness);
 
-    float shadowScale = ShadowCalculation(v_WorldPos);
-    shadowScale = 1.0 - clamp(1.0f - shadowScale, 0.0f, 1.0f);
-
-    vec3 lightContribution = CalculateDirLights(F0) * shadowScale;
-    lightContribution += m_Params.Albedo * u_Material.u_Emisstion;
-    vec3 iblContribution = IBL(F0, Lr) * 1.0f;
-
-    vec4 color = vec4(iblContribution + lightContribution , 1.0);
-
-    FragColor = color;
+    FragColor = evaluateMaterial();
 
     EntityID = u_RendererData.EntityID;
 }

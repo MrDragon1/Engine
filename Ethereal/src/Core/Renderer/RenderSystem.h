@@ -40,7 +40,7 @@ namespace Ethereal
     struct DirectionalLight {
         Vector3 Direction = Math::Normalize(Vector3(-0.352,0.270,-0.452));
         float ShadowAmount;
-        Vector3 Radiance;
+        Vector3 Radiance = Vector3(1.0,1.0,1.0);
         float Multiplier;
     };
 
