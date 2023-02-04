@@ -46,7 +46,6 @@ namespace Ethereal
 
             // CSM
             m_CSMData.ShadowMap->Bind(18);
-            shaderCommonData.SceneData.DirectionalLight.Direction = m_CSMData.LightDir;
 
             // Draw Static Mesh
             if (!staticMeshDrawList.empty()) {
@@ -61,7 +60,7 @@ namespace Ethereal
                         mt->HasMaterial(materialIndex) ? mt->GetMaterial(materialIndex) : meshMaterialTable->GetMaterial(materialIndex);
 
                     ms->GetVertexArray()->Bind();
-                    m_StaticMeshShader->SetMat4("u_Model", meshTransformMap.at(mk).Transforms[0].Transform);
+                    m_StaticMeshShader->SetMat4("u_Model", meshTransformMap.at(mk).Transforms[0].Transform);;
                     shaderCommonData.RendererData.EntityID = mk.EntityID;
 
                     material->GetAlbedoMap()->Bind(10);
@@ -80,10 +79,10 @@ namespace Ethereal
                     shaderCommonData.MaterialData.u_UseMap |= material->IsUseNormalMap() ? 1 << 2 : 0;
                     shaderCommonData.MaterialData.u_UseMap |= material->IsUseMetallicMap() ? 1 << 3 : 0;
                     shaderCommonData.MaterialData.u_UseMap |= material->IsUseRoughnessMap() ? 1 << 4 : 0;
-                    shaderCommonData.MaterialData.u_UseMap |= material->IsUseOcclusionMap() ? 1 << 5 : 0;
 
-                    //TODO:
-                    GlobalContext::GetRenderSystem().UpdateUniformData();
+                    //TODO: Update All Uniform Buffer will cause performance issue
+                    GlobalContext::GetRenderSystem().GetUniformBufferSet()->Get(0, 3)->SetData(&shaderCommonData.RendererData, sizeof(RendererData));
+                    GlobalContext::GetRenderSystem().GetUniformBufferSet()->Get(0, 4)->SetData(&shaderCommonData.MaterialData, sizeof(MaterialData));
 
                     RenderCommand::DrawIndexed(ms->GetVertexArray(), submesh.IndexCount,
                                                reinterpret_cast<void*>(submesh.BaseIndex * sizeof(uint32_t)), submesh.BaseVertex);

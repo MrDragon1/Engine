@@ -198,7 +198,7 @@ namespace Ethereal
             ImGui::EndCombo();
         }
 
-        ImGui::DragFloat3("Directional Light Dir", Math::Ptr(GlobalContext::GetRenderSystem().GetShaderCommonData().RenderSceneData.DirectionalLightDir), 0.1);
+        ImGui::DragFloat3("Directional Light Dir", Math::Ptr(GlobalContext::GetRenderSystem().GetShaderCommonData().SceneData.DirectionalLight.Direction), 0.1);
 
         // TODOLIST
         {

@@ -161,7 +161,7 @@ namespace Ethereal
         m_CSMRenderPass->SetNearFarPlane(m_ShaderCommonData.CameraData.NearPlane, m_ShaderCommonData.CameraData.FarPlane);
         m_CSMRenderPass->SetFOV(m_ShaderCommonData.RenderSceneData.FOV);
         m_CSMRenderPass->SetAspectRatio(m_ShaderCommonData.RenderSceneData.AspectRatio);
-        m_CSMRenderPass->SetLightDir(m_ShaderCommonData.RenderSceneData.DirectionalLightDir);
+        m_CSMRenderPass->SetLightDir(m_ShaderCommonData.SceneData.DirectionalLight.Direction);
 
         m_Environment = m_ShaderCommonData.RenderSceneData.Environment;
 

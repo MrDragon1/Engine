@@ -38,7 +38,7 @@ namespace Ethereal
     };
 
     struct DirectionalLight {
-        Vector3 Direction;
+        Vector3 Direction = Math::Normalize(Vector3(-0.352,0.270,-0.452));
         float ShadowAmount;
         Vector3 Radiance;
         float Multiplier;
@@ -70,9 +70,6 @@ namespace Ethereal
         float AspectRatio;
         float FOV;
         Ref<Environment> Environment;
-
-        // TODO: Lights
-        Vector3 DirectionalLightDir = Math::Normalize(Vector3(-0.352,0.270,-0.452));
     };
 
     struct ShaderCommonData{
@@ -117,7 +114,7 @@ namespace Ethereal
         Ref<CSMRenderPass> GetCSMRenderPass() { return m_CSMRenderPass; }
         Ref<Environment>  GetEnv() { return m_Environment; }
         ShaderCommonData& GetShaderCommonData() { return m_ShaderCommonData; }
-
+        Ref<UniformBufferSet> GetUniformBufferSet() { return m_UniformBufferSet; }
       private:
         Ref<MainCameraRenderPass> m_MainCameraRenderPass;
         Ref<ShadowMapRenderPass> m_ShadowMapRenderPass;  // Don't use it for now.
