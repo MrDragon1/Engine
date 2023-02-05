@@ -48,6 +48,7 @@ namespace Ethereal
         DirectionalLight DirectionalLight;
         Vector3 CameraPosition;
         float EnvironmentMapIntensity;
+        Vector4 ScissorNormalized;
     };
 
     struct RendererData {

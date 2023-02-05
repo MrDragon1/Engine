@@ -30,6 +30,7 @@ layout(std140, binding = 2) uniform SceneData
     DirectionalLight DirectionalLights;
     vec3 CameraPosition; // Offset = 32
     float EnvironmentMapIntensity;
+    vec4 ScissorNormalized;
 } u_Scene;
 
 layout(std140, binding = 3) uniform RendererData

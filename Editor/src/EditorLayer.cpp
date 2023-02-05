@@ -73,6 +73,8 @@ namespace Ethereal
 
                 scd.SceneData.CameraPosition = m_EditorCamera.GetPosition();
 
+                scd.SceneData.ScissorNormalized = Vector4(1, 1, 4096-2, 4096-2) / 4096 ; // the size of shadow map
+
                 scd.RenderSceneData.AspectRatio = m_EditorCamera.GetAspectRatio();
                 scd.RenderSceneData.FOV = m_EditorCamera.GetFOV();
                 m_EditorScene->OnUpdateEditor(ts);

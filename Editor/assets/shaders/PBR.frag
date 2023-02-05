@@ -2,6 +2,7 @@
 #extension GL_GOOGLE_include_directive : enable
 #include "Common.glslh"
 #include "PBR.glslh"
+#include "ShadowMapping.glslh"
 
 layout(location = 0) out vec4 FragColor;
 layout(location = 1) out int EntityID;
@@ -57,16 +58,16 @@ vec3 getNormalFromMap()
     return normalize(TBN * tangentNormal);
 }
 
-// ----------------------------------------------------------------------------
-// Cascaded Shadow Map
-float ShadowCalculation(vec3 fragPosWorldSpace)
-{
+/**
+ * Returns the cascade index for this fragment (between 0 and CONFIG_MAX_SHADOW_CASCADES - 1).
+ */
+uint getShadowCascade() {
     // select cascade layer
-    vec4 fragPosViewSpace = u_Camera.ViewMatrix * vec4(fragPosWorldSpace, 1.0);
+    vec4 fragPosViewSpace = u_Camera.ViewMatrix * vec4(v_WorldPos, 1.0);
     float depthValue = abs(fragPosViewSpace.z);
 
-    int layer = -1;
-    for (int i = 0; i < u_CascadeShadowData.CascadeCount; ++i)
+    uint layer = -1;
+    for (uint i = 0; i < u_CascadeShadowData.CascadeCount; ++i)
     {
         if (depthValue < u_CascadeShadowData.CascadeSplits[i])
         {
@@ -79,8 +80,28 @@ float ShadowCalculation(vec3 fragPosWorldSpace)
         layer = u_CascadeShadowData.CascadeCount;
     }
 
+    return layer;
+}
 
-    vec4 fragPosLightSpace = u_CascadeShadowData.DirLightMatrices[layer] * vec4(fragPosWorldSpace, 1.0);
+highp vec4 getCascadeLightSpacePosition(uint cascade) {
+
+    highp vec3 p = v_WorldPos;
+    highp float cosTheta = saturate(dot(m_Params.Normal, u_Scene.DirectionalLights.Direction));
+    highp float sinTheta = sqrt(1.0 - cosTheta * cosTheta);
+    p += m_Params.Normal * (sinTheta * 0.02);
+
+    vec4 fragPosLightSpace = u_CascadeShadowData.DirLightMatrices[cascade] * vec4(p, 1.0);
+    // perform perspective divide
+    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+
+    return fragPosLightSpace;
+}
+
+float ShadowCalculation()
+{
+    uint layer = getShadowCascade();
+
+    vec4 fragPosLightSpace = getCascadeLightSpacePosition(layer);
     // perform perspective divide
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
 
@@ -89,43 +110,54 @@ float ShadowCalculation(vec3 fragPosWorldSpace)
 
     return step(projCoords.z * 0.5 + 0.5, shadowMapDepth + bias);
 
-//    // get depth of current fragment from light's perspective
-//    float currentDepth = projCoords.z;
-//
-//    // keep the shadow at 0.0 when outside the far_plane region of the light's frustum.
-//    if (currentDepth > 1.0)
-//    {
-//        return 0.0;
-//    }
-//    // calculate bias (based on depth map resolution and slope)
-//    vec3 normal = u_UseNormalMap ? getNormalFromMap() : normalize(v_Normal);
-//    float bias = max(0.05 * (1.0 - dot(normal, u_Scene.DirectionalLights.Direction)), 0.005);
-//    const float biasModifier = 0.5f;
-//    if (layer == u_CascadeShadowData.CascadeCount)
-//    {
-//        bias *= 1 / (u_Camera.FarPlane * biasModifier);
-//    }
-//    else
-//    {
-//        bias *= 1 / ( u_CascadeShadowData.CascadeSplits[layer] * biasModifier);
-//    }
-//
-//    // PCF
-//    float shadow = 0.0;
-//    vec2 texelSize = 1.0 / vec2(textureSize(u_ShadowMap, 0));
-//    for (int x = -1; x <= 1; ++x)
-//    {
-//        for (int y = -1; y <= 1; ++y)
-//        {
-//            float pcfDepth = texture(u_ShadowMap, vec3(projCoords.xy + vec2(x, y) * texelSize, layer)).r;
-//            shadow += (currentDepth - bias) > pcfDepth ? 1.0 : 0.0;
-//        }
-//    }
-//    shadow /= 9.0;
-//
-//    return shadow;
+    //    // get depth of current fragment from light's perspective
+    //    float currentDepth = projCoords.z;
+    //
+    //    // keep the shadow at 0.0 when outside the far_plane region of the light's frustum.
+    //    if (currentDepth > 1.0)
+    //    {
+    //        return 0.0;
+    //    }
+    //    // calculate bias (based on depth map resolution and slope)
+    //    vec3 normal = u_UseNormalMap ? getNormalFromMap() : normalize(v_Normal);
+    //    float bias = max(0.05 * (1.0 - dot(normal, u_Scene.DirectionalLights.Direction)), 0.005);
+    //    const float biasModifier = 0.5f;
+    //    if (layer == u_CascadeShadowData.CascadeCount)
+    //    {
+    //        bias *= 1 / (u_Camera.FarPlane * biasModifier);
+    //    }
+    //    else
+    //    {
+    //        bias *= 1 / ( u_CascadeShadowData.CascadeSplits[layer] * biasModifier);
+    //    }
+    //
+    //    // PCF
+    //    float shadow = 0.0;
+    //    vec2 texelSize = 1.0 / vec2(textureSize(u_ShadowMap, 0));
+    //    for (int x = -1; x <= 1; ++x)
+    //    {
+    //        for (int y = -1; y <= 1; ++y)
+    //        {
+    //            float pcfDepth = texture(u_ShadowMap, vec3(projCoords.xy + vec2(x, y) * texelSize, layer)).r;
+    //            shadow += (currentDepth - bias) > pcfDepth ? 1.0 : 0.0;
+    //        }
+    //    }
+    //    shadow /= 9.0;
+    //
+    //    return shadow;
 }
 
+// Shadow requiring a sampler2D sampler (VSM, DPCF and PCSS)
+float shadow(const bool DIRECTIONAL,
+const mediump sampler2DArray shadowMap,
+const uint index, highp vec4 shadowPosition, highp float zLight) {
+    highp vec4 scissorNormalized = u_Scene.ScissorNormalized;
+    uint layer = index;
+
+    return ShadowSample_PCSS(DIRECTIONAL, shadowMap, scissorNormalized, layer, index,
+        shadowPosition, zLight);
+
+}
 
 vec3 isotropicLobe(const vec3 h,
 float NoV, float NoL, float NoH, float LoH) {
@@ -163,37 +195,18 @@ vec3 surfaceShading(float occlusion) {
 
     return (color * u_Scene.DirectionalLights.Radiance) * (NoL * occlusion);
 }
-//Rewrite the pbr shader for better visual effect
+
 void evaluateDirectionalLight(inout vec3 color) {
     float visibility = 1.0;
-    float shadowScale = ShadowCalculation(v_WorldPos);
-    shadowScale = 1.0 - clamp(1.0f - shadowScale, 0.0f, 1.0f);
-//    #if defined(VARIANT_HAS_SHADOWING)
-//    if (light.NoL > 0.0) {
-//        float ssContactShadowOcclusion = 0.0;
-//
-//        uint cascade = getShadowCascade();
-//        bool cascadeHasVisibleShadows = bool(frameUniforms.cascades & ((1u << cascade) << 8u));
-//        bool hasDirectionalShadows = bool(frameUniforms.directionalShadows & 1u);
-//        if (hasDirectionalShadows && cascadeHasVisibleShadows) {
-//            highp vec4 shadowPosition = getShadowPosition(cascade);
-//            visibility = shadow(true, light_shadowMap, cascade, shadowPosition, 0.0f);
-//        }
-//        if ((frameUniforms.directionalShadows & 0x2u) != 0u && visibility > 0.0) {
-//            if ((object_uniforms.flagsChannels & FILAMENT_OBJECT_CONTACT_SHADOWS_BIT) != 0u) {
-//                ssContactShadowOcclusion = screenSpaceContactShadow(light.l);
-//            }
-//        }
-//
-//        visibility *= 1.0 - ssContactShadowOcclusion;
-//
-//        if (visibility <= 0.0) {
-//            return;
-//        }
-//    }
-//    #endif
+    uint cascade = getShadowCascade();
+    highp vec4 shadowPosition = getCascadeLightSpacePosition(cascade);
+    visibility = 1.0 - shadow(true, u_ShadowMap, cascade, shadowPosition, 0.0f);
 
-    color.rgb += surfaceShading(shadowScale);
+    if (visibility <= 0.0) {
+        return;
+    }
+    //Wierd bug, if I don't do this, the shadow is not correct
+    color.rgb += surfaceShading(visibility);
 }
 
 void evaluateIBL(inout vec3 color) {
