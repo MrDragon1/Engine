@@ -59,7 +59,13 @@ namespace Ethereal
                 Assimp::DefaultLogger::get()->attachStream(new LogStream, Assimp::Logger::Err | Assimp::Logger::Warn);
             }
         }
-        virtual void write(const char* message) override { ET_CORE_ERROR("Assimp error: {0}", message); }
+        virtual void write(const char* message) override {
+            std::string msg = message;
+            // remove the end /n
+            if(msg.ends_with('\n'))
+                msg.pop_back();
+            ET_CORE_ERROR("Assimp error: {0}", msg.c_str());
+        }
     };
 
     Ref<Texture> ResourceLoader::LoadTexture(const std::string& path) {

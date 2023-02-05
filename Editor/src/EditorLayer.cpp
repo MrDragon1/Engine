@@ -492,7 +492,7 @@ namespace Ethereal
         Ref<Texture2D> icon = m_SceneState == SceneState::Edit ? m_IconPlay : m_IconStop;
         ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size * 0.5f));
 
-        if (ImGui::ImageButton((ImTextureID)icon->GetRendererID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0)) {
+        if (ImGui::ImageButton((ImTextureID)(intptr_t)(icon->GetRendererID()), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0)) {
             if (m_SceneState == SceneState::Edit) {
                 OnScenePlay();
             } else {

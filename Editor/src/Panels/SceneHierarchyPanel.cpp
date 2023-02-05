@@ -114,7 +114,7 @@ namespace Ethereal
             ImGui::InputText("##InspectorTag", (char *)entity.GetComponent<BasicPropertyComponent>().Tag.c_str(), ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll);
             ImGui::SameLine(ImGui::GetWindowWidth() - 30.0f);
             auto icon = EditorResource::PlusIcon;
-            if (UI::ImageButton("InspectorPlusIcon", (ImTextureID)icon->GetRendererID(), ImVec2(20.0f, 20.0f))) {
+            if (UI::ImageButton("InspectorPlusIcon", (ImTextureID)(intptr_t)(icon->GetRendererID()), ImVec2(20.0f, 20.0f))) {
                 ImGui::OpenPopup("InspectorADDComponent");
             }
 
@@ -225,7 +225,7 @@ namespace Ethereal
 //                        UI::ShiftCursorY(2.0f);
                         UI::ScopedColorStack style(ImGuiCol_Border, IM_COL32(0, 0, 0, 0),
                                                ImGuiCol_Button, IM_COL32(0, 0, 0, 0));
-                        if(UI::ImageButton(("VisibleIcon" + std::to_string(node->ChildIdx)).c_str(), (ImTextureID)icon->GetRendererID(), ImVec2(text_height, text_height), ImU32(IM_COL32(196, 196, 196, 255)),ImU32(IM_COL32(255, 255, 255, 255)),ImU32(IM_COL32(255, 255, 255, 255)))){
+                        if(UI::ImageButton(("VisibleIcon" + std::to_string(node->ChildIdx)).c_str(), (ImTextureID)(intptr_t)(icon->GetRendererID()), ImVec2(text_height, text_height), ImU32(IM_COL32(196, 196, 196, 255)),ImU32(IM_COL32(255, 255, 255, 255)),ImU32(IM_COL32(255, 255, 255, 255)))){
                             Entity entity = context->GetEntityWithUUID(node->ChildIdx);
                             entity.ChangeVisible();
                         }

@@ -47,3 +47,6 @@ inline OStream& operator<<(OStream& os, glm::qua<T, Q> quaternio) {
 #define ET_WARN(...) ::Ethereal::Log::GetClientLogger()->warn(__VA_ARGS__)
 #define ET_ERROR(...) ::Ethereal::Log::GetClientLogger()->error(__VA_ARGS__)
 #define ET_FATAL(...) ::Ethereal::Log::GetClientLogger()->fatal(__VA_ARGS__)
+
+#define SPDLOG_LOGGER_INFO(logger, ...) SPDLOG_LOGGER_CALL(logger, spdlog::level::info, __VA_ARGS__)
+#define ET_TEST_INFO(...) SPDLOG_LOGGER_INFO(::Ethereal::Log::GetCoreLogger(), __VA_ARGS__)

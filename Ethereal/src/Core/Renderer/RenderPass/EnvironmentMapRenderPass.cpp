@@ -44,7 +44,6 @@ namespace Ethereal
     }
 
     void EnvironmentMapRenderPass::Draw() {
-        ET_CORE_INFO("EnvironmentMapRenderPass::Draw()");
         m_Texture = Texture2D::Create(m_Path);
 
         Matrix4 captureProjection = Math::Perspective(Math::Radians(90.0f), 1.0f, 0.1f, 10.0f);

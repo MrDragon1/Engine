@@ -6,7 +6,7 @@ extern Ethereal::Application* Ethereal::CreateApplication();
 
 int main(int argc, char** argv) {
     Ethereal::Log::Init();
-    ET_CORE_INFO("Log Initialized!\n");
+    ET_CORE_INFO("Log Initialized!");
     auto app = Ethereal::CreateApplication();
     app->Run();
     delete app;
