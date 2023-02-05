@@ -57,9 +57,9 @@ namespace Ethereal
                 bool press = false;
                 if (Utils::IsImageFormat(path.string())) {
                     Ref<Texture2D> img = AssetManager::GetAsset<Texture>(path.string()).As<Texture2D>();
-                    press = ImGui::ImageButton((ImTextureID)img->GetRendererID(), {thumbnailSize, thumbnailSize}, {0, 1}, {1, 0});
+                    press = ImGui::ImageButton((ImTextureID)(intptr_t)img->GetRendererID(), {thumbnailSize, thumbnailSize}, {0, 1}, {1, 0});
                 } else
-                    press = ImGui::ImageButton((ImTextureID)icon->GetRendererID(), {thumbnailSize, thumbnailSize}, {0, 1}, {1, 0});
+                    press = ImGui::ImageButton((ImTextureID)(intptr_t)(icon->GetRendererID()), {thumbnailSize, thumbnailSize}, {0, 1}, {1, 0});
 
                 if (press) {
                     m_SelectedDirectory = directoryEntry.path();

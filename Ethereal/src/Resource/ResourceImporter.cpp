@@ -10,6 +10,7 @@ namespace Ethereal
             return false;
         }
         if (metaData.Type == AssetType::MeshSource) return ImportModel(handle, metaData);
+        return false;
     }
 
     bool ResourceImporter::ImportModel(AssetHandle& handle, AssetMetaData& metaData) {
@@ -61,6 +62,7 @@ namespace Ethereal
             AssetManager::CreateAsset_Ref(metaData.FilePath.stem().string(), path.parent_path().string(), desc);
             mesh->Load(desc);
         }
+        return true;
     }
 
 }  // namespace Ethereal

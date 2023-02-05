@@ -260,7 +260,7 @@ namespace Ethereal
                 ScopedColorStack style(ImGuiCol_Border, IM_COL32(0, 0, 0, 0), ImGuiCol_FrameBg, IM_COL32(0, 0, 0, 0));
                 ImGui::BeginChild(ImGui::GetID((label + "fr").c_str()),
                                   ImVec2(ImGui::GetContentRegionAvail().x - spacingX, ImGui::GetFrameHeightWithSpacing() + 8.0f),
-                                  ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+                                  false, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
             }
             const ImGuiIO &io = ImGui::GetIO();
             auto boldFont = io.Fonts->Fonts[1];
@@ -312,7 +312,7 @@ namespace Ethereal
                 ShiftCursorY(2.0f);
                 ScopedColorStack style(ImGuiCol_Border, IM_COL32(0, 0, 0, 0),
                                        ImGuiCol_Button, IM_COL32(0, 0, 0, 0));
-                UI::ImageButton((cc + "AssetIcon").c_str() , (ImTextureID)icon->GetRendererID(), ImVec2(16.0f, 16.0f), ImU32(IM_COL32(196, 196, 196, 255)), ImU32(IM_COL32(196, 196, 196, 255)), ImU32(IM_COL32(196, 196, 196, 255)));
+                UI::ImageButton((cc + "AssetIcon").c_str() , (ImTextureID)(intptr_t)icon->GetRendererID(), ImVec2(16.0f, 16.0f), ImU32(IM_COL32(196, 196, 196, 255)), ImU32(IM_COL32(196, 196, 196, 255)), ImU32(IM_COL32(196, 196, 196, 255)));
 
                 ShiftCursorY(-2.0f);
             }
@@ -325,7 +325,7 @@ namespace Ethereal
                 ShiftCursorY(2.0f);
                 ScopedColorStack style(ImGuiCol_Border, IM_COL32(0, 0, 0, 0),
                                        ImGuiCol_Button, IM_COL32(0, 0, 0, 0));
-                if(UI::ImageButton((cc + "MenuDotsIcon").c_str() , (ImTextureID)icon->GetRendererID(), ImVec2(16.0f, 16.0f)))
+                if(UI::ImageButton((cc + "MenuDotsIcon").c_str() , (ImTextureID)(intptr_t)(icon->GetRendererID()), ImVec2(16.0f, 16.0f)))
                 {
                     // TODO: Open context menu
                 }
@@ -377,7 +377,7 @@ namespace Ethereal
                 ScopedColorStack style(ImGuiCol_Border, IM_COL32(0, 0, 0, 0),
                                        ImGuiCol_Button, IM_COL32(0, 0, 0, 0),
                                        ImGuiCol_ButtonHovered, IM_COL32(0, 0, 0, 0));
-                if(UI::ImageButton(id_label, (ImTextureID)icon->GetRendererID(), ImVec2(16.0f, 16.0f))){
+                if(UI::ImageButton(id_label, (ImTextureID)(intptr_t)(icon->GetRendererID()), ImVec2(16.0f, 16.0f))){
                     //TODO: Open component select menu
                 }
 
@@ -434,7 +434,7 @@ namespace Ethereal
                             ShiftCursorY(2.0f);
                             ScopedColorStack style(ImGuiCol_Border, IM_COL32(0, 0, 0, 0),
                                                    ImGuiCol_Button, IM_COL32(0, 0, 0, 0));
-                            if(UI::ImageButton((cc + "BurgerMenuIcon " + std::to_string(i)).c_str() , (ImTextureID)EditorResource::BurgerMenuIcon->GetRendererID(), ImVec2(16.0f, 16.0f), ImU32(IM_COL32(196, 196, 196, 255)),ImU32(IM_COL32(196, 196, 196, 255)),ImU32(IM_COL32(196, 196, 196, 255)))){
+                            if(UI::ImageButton((cc + "BurgerMenuIcon " + std::to_string(i)).c_str() , (ImTextureID)(intptr_t)EditorResource::BurgerMenuIcon->GetRendererID(), ImVec2(16.0f, 16.0f), ImU32(IM_COL32(196, 196, 196, 255)),ImU32(IM_COL32(196, 196, 196, 255)),ImU32(IM_COL32(196, 196, 196, 255)))){
 //                                ET_CORE_INFO("BurgerMenuIcon Pressed");
                             }
 
@@ -453,13 +453,13 @@ namespace Ethereal
                 ImGui::SetCursorPosX(width - 40.0f);
                 UI::ShiftCursorY(-4.0f);
                 auto icon = EditorResource::PlusIcon;
-                if (UI::ImageButton((cc + "PlusIcon").c_str() , (ImTextureID)icon->GetRendererID(), ImVec2(16.0f, 16.0f))) {
+                if (UI::ImageButton((cc + "PlusIcon").c_str() , (ImTextureID)(intptr_t)(icon->GetRendererID()), ImVec2(16.0f, 16.0f))) {
                     // TODO:: Add global default material
                     payloads.push_back(AssetHandle(9102962350420186113));
                 }
                 ImGui::SameLine(0.0f, 5.0f);
                 icon = EditorResource::MinusIcon;
-                if (UI::ImageButton((cc + "MinusIcon").c_str() , (ImTextureID)icon->GetRendererID(), ImVec2(16.0f, 16.0f))) {
+                if (UI::ImageButton((cc + "MinusIcon").c_str() , (ImTextureID)(intptr_t)(icon->GetRendererID()), ImVec2(16.0f, 16.0f))) {
                     payloads.pop_back();
                 }
             }
