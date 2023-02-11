@@ -66,6 +66,19 @@ namespace Ethereal
         int u_UseMap; // 1<<1: Albedo 1<<2: Normal 1<<3: Metallic 1<<4: Roughness 1<<5: Occlusion
     };
 
+    struct FogData {
+        Vector4 Color;
+        float Start;
+        float Density;
+        float Height;
+        float HeightFalloff;
+        float ScatteringStart;
+        float ScatteringSize;
+        bool Enable = false;
+        bool FromIBL = false;
+    };
+
+
     // TODO: Remove this
     struct RenderSceneData {
         float AspectRatio;
@@ -79,6 +92,7 @@ namespace Ethereal
         SceneData SceneData;
         RendererData RendererData;
         MaterialData MaterialData;
+        FogData FogData;
 
         RenderSceneData RenderSceneData;
     };

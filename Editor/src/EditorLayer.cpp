@@ -207,7 +207,6 @@ namespace Ethereal
             UI::ScopedColorStack style(ImGuiCol_TextDisabled, IM_COL32(66, 129, 42, 255));
             ImGui::TextDisabled("TODO:");
             ImGui::TextDisabled("\tManage data to render system");
-            ImGui::TextDisabled("\tSupport header file in glsl");
             ImGui::TextDisabled("\tSave Material at runtime");
             ImGui::TextDisabled("\tPopup selection");
         }
@@ -527,9 +526,12 @@ namespace Ethereal
         ImGui::End();
     }
     void EditorLayer::ShowProjectSettingWindow(bool* p_open) {
+        auto& scd = GlobalContext::GetRenderSystem().GetShaderCommonData();
         if (ImGui::Begin("Project Settings", p_open, ImGuiWindowFlags_NoCollapse)) {
             if (UI::ComponentHeader("Bloom")) {
+                UI::ShiftCursorY(4.0f);
                 UI::BeginPropertyGrid();
+
                 ImGui::Text("Enabled");
                 ImGui::NextColumn();
                 ImGui::Checkbox("##BloomEnable", &Project::GetSettings().bloomSetting.enabled);
@@ -548,6 +550,39 @@ namespace Ethereal
                 ImGui::Text("Intensity");
                 ImGui::NextColumn();
                 ImGui::DragFloat("##BloomIntensity", &Project().GetSettings().bloomSetting.intensity, 0.01f);
+
+                UI::EndPropertyGrid();
+            }
+
+            if (UI::ComponentHeader("Fog")) {
+                UI::ShiftCursorY(4.0f);
+                UI::BeginPropertyGrid();
+                ImGui::Text("Enable Fog");ImGui::NextColumn();
+                ImGui::Checkbox("##FogEnable", &scd.FogData.Enable);ImGui::NextColumn();
+
+                ImGui::Text("Start");ImGui::NextColumn();
+                ImGui::DragFloat("##FogStart", &scd.FogData.Start, 0.1f, 0.0f, 100.0f);ImGui::NextColumn();
+
+                ImGui::Text("Density");ImGui::NextColumn();
+                ImGui::DragFloat("##FogDensity", &scd.FogData.Density, 0.01f, 0.0f, 1.0f);ImGui::NextColumn();
+
+                ImGui::Text("Height");ImGui::NextColumn();
+                ImGui::DragFloat("##FogHeight", &scd.FogData.Height, 0.1f, 0.0f, 100.0f);ImGui::NextColumn();
+
+                ImGui::Text("Height falloff");ImGui::NextColumn();
+                ImGui::DragFloat("##FogHeightFalloff", &scd.FogData.HeightFalloff, 0.001f, 0.0f, 10.0f);ImGui::NextColumn();
+
+                ImGui::Text("Scattering start");ImGui::NextColumn();
+                ImGui::DragFloat("##FogScatteringStart", &scd.FogData.ScatteringStart, 0.1f, 0.0f, 100.0f);ImGui::NextColumn();
+
+                ImGui::Text("Scattering size");ImGui::NextColumn();
+                ImGui::DragFloat("##FogScatteringSize", &scd.FogData.ScatteringSize, 0.1f, 0.1f, 100.0f);ImGui::NextColumn();
+
+                ImGui::Text("Color from IBL");ImGui::NextColumn();
+                ImGui::Checkbox("##FogColorFromIBL", &scd.FogData.FromIBL);ImGui::NextColumn();
+
+                ImGui::Text("Color");ImGui::NextColumn();
+                ImGui::ColorEdit4("##FogColor", Math::Ptr(scd.FogData.Color));ImGui::NextColumn();
 
                 UI::EndPropertyGrid();
             }

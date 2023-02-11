@@ -51,6 +51,7 @@ namespace Ethereal
         m_UniformBufferSet->Set(UniformBuffer::Create(sizeof(SceneData), 2), 0);
         m_UniformBufferSet->Set(UniformBuffer::Create(sizeof(RendererData), 3), 0);
         m_UniformBufferSet->Set(UniformBuffer::Create(sizeof(MaterialData), 4), 0);
+        m_UniformBufferSet->Set(UniformBuffer::Create(sizeof(FogData), 5), 0);
     }
 
     void RenderSystem::Draw(TimeStamp ts) {
@@ -190,6 +191,7 @@ namespace Ethereal
         m_UniformBufferSet->Get(0, 2)->SetData(&m_ShaderCommonData.SceneData, sizeof(SceneData));
         m_UniformBufferSet->Get(0, 3)->SetData(&m_ShaderCommonData.RendererData, sizeof(RendererData));
         m_UniformBufferSet->Get(0, 4)->SetData(&m_ShaderCommonData.MaterialData, sizeof(MaterialData));
+        m_UniformBufferSet->Get(0, 5)->SetData(&m_ShaderCommonData.FogData, sizeof(FogData));
     }
 
 }  // namespace Ethereal

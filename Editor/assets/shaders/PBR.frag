@@ -4,6 +4,7 @@
 #include "PBR.glslh"
 #include "ShadowMapping.glslh"
 
+
 layout(location = 0) out vec4 FragColor;
 layout(location = 1) out int EntityID;
 
@@ -57,6 +58,54 @@ vec3 getNormalFromMap()
 
     return normalize(TBN * tangentNormal);
 }
+
+
+vec4 fog(vec4 color, vec3 view) {
+    if (u_Fog.Density > 0.0) {
+        float A = u_Fog.Density;
+        float B = u_Fog.HeightFalloff;
+
+        float d = length(view);
+
+        float h = max(0.001, view.y);
+        // The function below is continuous at h=0, so to avoid a divide-by-zero, we just clamp h
+        float fogIntegralFunctionOfDistance = A * ((1.0 - exp(-B * h)) / h);
+        float fogIntegral = fogIntegralFunctionOfDistance * max(d - u_Fog.Start, 0.0);
+        float fogOpacity = max(1.0 - exp2(-fogIntegral), 0.0);
+
+        // don't go above requested max opacity
+        fogOpacity = min(fogOpacity, 100.0f); //frameUniforms.fogMaxOpacity
+
+        // compute fog color
+        vec3 fogColor = u_Fog.Color.rgb;
+
+//        if (u_Fog.FromIBL > 0.0) {
+//            // get fog color from envmap
+//            float lod = 1.0f;
+//            fogColor *= textureLod(light_iblSpecular, view, lod).rgb * 1.0f;
+//        }
+
+        fogColor *= fogOpacity;
+        if (u_Fog.ScatteringSize > 0.0) {
+            // compute a new line-integral for a different start distance
+            float inscatteringIntegral = fogIntegralFunctionOfDistance *
+            max(d - u_Fog.ScatteringStart, 0.0);
+            float inscatteringOpacity = max(1.0 - exp2(-inscatteringIntegral), 0.0);
+
+            // Add sun colored fog when looking towards the sun
+            vec3 sunColor = vec3(203.0f, 119.0f, 49.0f)/255.0f; //frameUniforms.lightColorIntensity.rgb * frameUniforms.lightColorIntensity.w;
+            float sunAmount = max(dot(view, u_Scene.DirectionalLights.Direction) / d, 0.0); // between 0 and 1
+            float sunInscattering = pow(sunAmount, u_Fog.ScatteringSize);
+
+            fogColor += sunColor * (sunInscattering * inscatteringOpacity);
+        }
+
+        color.rgb = color.rgb * (1.0 - fogOpacity) + fogColor;
+    }
+    return color;
+}
+
+
 
 /**
  * Returns the cascade index for this fragment (between 0 and CONFIG_MAX_SHADOW_CASCADES - 1).
@@ -270,6 +319,8 @@ void main()
     m_Params.View = normalize(u_Scene.CameraPosition - v_WorldPos);
 
     FragColor = evaluateMaterial();
+
+    if(u_Fog.Enable) FragColor = fog(FragColor, v_WorldPos - u_Scene.CameraPosition);
 
     EntityID = u_RendererData.EntityID;
 }
