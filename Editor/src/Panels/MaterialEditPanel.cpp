@@ -78,6 +78,14 @@ namespace Ethereal
         ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.0f);
         ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2{framePaddingX, framePaddingY});
 
+        if(ImGui::Button("Save Material")){
+            // TODO: Simplify this
+            MaterialDesc desc;
+            materialAsset->Save(desc);
+            AssetManager::SaveAsset_Ref(AssetManager::GetFileSystemPathString(AssetManager::GetMetadata(materialAsset->Handle)), desc);
+        }
+
+
         ImGui::PushID(name.c_str());
         open = ImGui::TreeNodeEx("##dummy_id", treeNodeFlags, name.c_str());
         ImGui::PopID();
