@@ -6,14 +6,15 @@
 
 #include "Ethereal/src/Base/Utils.h"
 
-namespace Ethereal {
-OpenGLContext::OpenGLContext(GLFWwindow *windowHandle) : m_WindowHandle(windowHandle) { ET_CORE_ASSERT(windowHandle, "Window handle is null!"); }
+namespace Ethereal
+{
+    OpenGLContext::OpenGLContext(GLFWwindow *windowHandle) : m_WindowHandle(windowHandle) { ET_CORE_ASSERT(windowHandle, "Window handle is null!"); }
 
-void OpenGLContext::Init() {
-    glfwMakeContextCurrent(m_WindowHandle);
-    int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-    ET_CORE_ASSERT(status, "Failed to initialize Glad!");
-}
+    void OpenGLContext::Init() {
+        glfwMakeContextCurrent(m_WindowHandle);
+        int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+        ET_CORE_ASSERT(status, "Failed to initialize Glad!");
+    }
 
-void OpenGLContext::SwapBuffers() { glfwSwapBuffers(m_WindowHandle); }
+    void OpenGLContext::SwapBuffers() { glfwSwapBuffers(m_WindowHandle); }
 }  // namespace Ethereal

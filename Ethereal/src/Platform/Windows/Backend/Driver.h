@@ -4,20 +4,18 @@
 
 namespace Ethereal {
 namespace Backend {
-
 /*
  * Driver is the abstract class that aggregates all the operations in DriverApi, is between
- * hardware layer  and application layer, which means rendersystem can access Driver directly not
+ * hardware layer and application layer, which means RenderSystem can access Driver directly not
  * DriverApi.
  * */
-
 class Driver {
-public:
+   public:
+    Driver(BackendType type) { mDriverApi = DriverApi::CreateApi(type); }
+    Ref<DriverApi> GetApi() { return mDriverApi; }
 
-private:
-    DriverApi* mDriverApi;
-
+   private:
+    Ref<DriverApi> mDriverApi;
 };
-
-} // Ethereal
-} // Backend
+}  // namespace Backend
+}  // namespace Ethereal

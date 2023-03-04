@@ -1,0 +1,89 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="E:\Code\Engine\CMakeFiles\67adb49e91409448e0d0fae4bd8b92a1\ShaderCompile.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="E:\Code\Engine\Ethereal\vendor\shader_compile\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="E:\Code\Engine\Editor\assets\shaders\Bloom\Blur.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="E:\Code\Engine\Editor\assets\shaders\Bloom\Blur.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="E:\Code\Engine\Editor\assets\shaders\Bloom\Bright.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="E:\Code\Engine\Editor\assets\shaders\Bloom\Bright.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="E:\Code\Engine\Editor\assets\shaders\Bloom\Merge.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="E:\Code\Engine\Editor\assets\shaders\Bloom\Merge.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="E:\Code\Engine\Editor\assets\shaders\CSM\CSM.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="E:\Code\Engine\Editor\assets\shaders\CSM\CSM.geom">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="E:\Code\Engine\Editor\assets\shaders\CSM\CSM.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="E:\Code\Engine\Editor\assets\shaders\IBL\EquirectangularToCubeMap.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="E:\Code\Engine\Editor\assets\shaders\IBL\EquirectangularToCubeMap.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="E:\Code\Engine\Editor\assets\shaders\IBL\IrradianceConvolution.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="E:\Code\Engine\Editor\assets\shaders\IBL\IrradianceConvolution.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="E:\Code\Engine\Editor\assets\shaders\IBL\Prefilter.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="E:\Code\Engine\Editor\assets\shaders\IBL\Prefilter.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="E:\Code\Engine\Editor\assets\shaders\PBR.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="E:\Code\Engine\Editor\assets\shaders\PBR.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="E:\Code\Engine\Editor\assets\shaders\PBRAnim.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="E:\Code\Engine\Editor\assets\shaders\PBRAnim.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="E:\Code\Engine\Editor\assets\shaders\ShadowMap.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="E:\Code\Engine\Editor\assets\shaders\ShadowMap.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="E:\Code\Engine\Editor\assets\shaders\Skybox.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="E:\Code\Engine\Editor\assets\shaders\Skybox.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="E:\Code\Engine\Ethereal\vendor\shader_compile\CMakeFiles\ShaderCompile" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{5F7C5923-B0CF-3AEC-AEA3-CC4AF98E47FF}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="shaders">
+      <UniqueIdentifier>{6F4D0790-17C5-3E3D-992B-1A5DAAEDC452}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

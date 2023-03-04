@@ -23,3 +23,5 @@
 #include "E:/Code/Engine/Ethereal/src/Resource/generated/cpp/ShadowMap_vert.h"
 #include "E:/Code/Engine/Ethereal/src/Resource/generated/cpp/Skybox_frag.h"
 #include "E:/Code/Engine/Ethereal/src/Resource/generated/cpp/Skybox_vert.h"
+#include "E:/Code/Engine/Ethereal/src/Resource/generated/cpp/Test_frag.h"
+#include "E:/Code/Engine/Ethereal/src/Resource/generated/cpp/Test_vert.h"

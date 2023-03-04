@@ -1,0 +1,277 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|x64">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|x64">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{4897EB20-5CF7-3200-B334-A951C5291ADC}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0.22000.0</WindowsTargetPlatformVersion>
+    <Platform>x64</Platform>
+    <ProjectName>ShaderCompile</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="E:\Code\Engine\CMakeFiles\67adb49e91409448e0d0fae4bd8b92a1\ShaderCompile.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'"></Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">E:\Code\Engine\Ethereal\src\Resource\generated\spv\Blur.frag.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\Blur.vert.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\Bright.frag.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\Bright.vert.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\Merge.frag.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\Merge.vert.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\CSM.frag.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\CSM.geom.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\CSM.vert.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\EquirectangularToCubeMap.frag.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\EquirectangularToCubeMap.vert.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\IrradianceConvolution.frag.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\IrradianceConvolution.vert.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\Prefilter.frag.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\Prefilter.vert.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\PBR.frag.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\PBR.vert.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\PBRAnim.frag.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\PBRAnim.vert.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\ShadowMap.frag.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\ShadowMap.vert.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\skybox.frag.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\skybox.vert.spv;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\Blur_frag.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\Blur_vert.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\Bright_frag.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\Bright_vert.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\Merge_frag.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\Merge_vert.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\CSM_frag.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\CSM_geom.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\CSM_vert.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\EquirectangularToCubeMap_frag.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\EquirectangularToCubeMap_vert.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\IrradianceConvolution_frag.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\IrradianceConvolution_vert.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\Prefilter_frag.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\Prefilter_vert.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\PBR_frag.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\PBR_vert.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\PBRAnim_frag.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\PBRAnim_vert.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\ShadowMap_frag.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\ShadowMap_vert.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\skybox_frag.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\skybox_vert.h;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">E:\Code\Engine\Ethereal\vendor\shader_compile\CMakeFiles\ShaderCompile</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <VerifyInputsAndOutputsExist Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</VerifyInputsAndOutputsExist>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'"></Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">E:\Code\Engine\Ethereal\src\Resource\generated\spv\Blur.frag.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\Blur.vert.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\Bright.frag.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\Bright.vert.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\Merge.frag.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\Merge.vert.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\CSM.frag.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\CSM.geom.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\CSM.vert.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\EquirectangularToCubeMap.frag.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\EquirectangularToCubeMap.vert.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\IrradianceConvolution.frag.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\IrradianceConvolution.vert.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\Prefilter.frag.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\Prefilter.vert.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\PBR.frag.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\PBR.vert.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\PBRAnim.frag.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\PBRAnim.vert.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\ShadowMap.frag.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\ShadowMap.vert.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\skybox.frag.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\skybox.vert.spv;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\Blur_frag.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\Blur_vert.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\Bright_frag.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\Bright_vert.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\Merge_frag.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\Merge_vert.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\CSM_frag.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\CSM_geom.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\CSM_vert.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\EquirectangularToCubeMap_frag.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\EquirectangularToCubeMap_vert.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\IrradianceConvolution_frag.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\IrradianceConvolution_vert.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\Prefilter_frag.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\Prefilter_vert.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\PBR_frag.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\PBR_vert.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\PBRAnim_frag.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\PBRAnim_vert.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\ShadowMap_frag.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\ShadowMap_vert.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\skybox_frag.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\skybox_vert.h;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">E:\Code\Engine\Ethereal\vendor\shader_compile\CMakeFiles\ShaderCompile</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <VerifyInputsAndOutputsExist Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</VerifyInputsAndOutputsExist>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'"></Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">E:\Code\Engine\Ethereal\src\Resource\generated\spv\Blur.frag.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\Blur.vert.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\Bright.frag.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\Bright.vert.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\Merge.frag.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\Merge.vert.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\CSM.frag.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\CSM.geom.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\CSM.vert.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\EquirectangularToCubeMap.frag.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\EquirectangularToCubeMap.vert.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\IrradianceConvolution.frag.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\IrradianceConvolution.vert.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\Prefilter.frag.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\Prefilter.vert.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\PBR.frag.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\PBR.vert.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\PBRAnim.frag.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\PBRAnim.vert.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\ShadowMap.frag.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\ShadowMap.vert.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\skybox.frag.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\skybox.vert.spv;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\Blur_frag.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\Blur_vert.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\Bright_frag.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\Bright_vert.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\Merge_frag.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\Merge_vert.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\CSM_frag.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\CSM_geom.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\CSM_vert.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\EquirectangularToCubeMap_frag.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\EquirectangularToCubeMap_vert.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\IrradianceConvolution_frag.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\IrradianceConvolution_vert.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\Prefilter_frag.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\Prefilter_vert.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\PBR_frag.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\PBR_vert.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\PBRAnim_frag.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\PBRAnim_vert.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\ShadowMap_frag.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\ShadowMap_vert.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\skybox_frag.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\skybox_vert.h;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">E:\Code\Engine\Ethereal\vendor\shader_compile\CMakeFiles\ShaderCompile</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
+      <VerifyInputsAndOutputsExist Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</VerifyInputsAndOutputsExist>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'"></Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">E:\Code\Engine\Ethereal\src\Resource\generated\spv\Blur.frag.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\Blur.vert.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\Bright.frag.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\Bright.vert.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\Merge.frag.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\Merge.vert.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\CSM.frag.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\CSM.geom.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\CSM.vert.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\EquirectangularToCubeMap.frag.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\EquirectangularToCubeMap.vert.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\IrradianceConvolution.frag.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\IrradianceConvolution.vert.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\Prefilter.frag.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\Prefilter.vert.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\PBR.frag.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\PBR.vert.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\PBRAnim.frag.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\PBRAnim.vert.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\ShadowMap.frag.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\ShadowMap.vert.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\skybox.frag.spv;E:\Code\Engine\Ethereal\src\Resource\generated\spv\skybox.vert.spv;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\Blur_frag.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\Blur_vert.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\Bright_frag.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\Bright_vert.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\Merge_frag.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\Merge_vert.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\CSM_frag.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\CSM_geom.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\CSM_vert.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\EquirectangularToCubeMap_frag.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\EquirectangularToCubeMap_vert.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\IrradianceConvolution_frag.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\IrradianceConvolution_vert.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\Prefilter_frag.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\Prefilter_vert.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\PBR_frag.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\PBR_vert.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\PBRAnim_frag.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\PBRAnim_vert.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\ShadowMap_frag.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\ShadowMap_vert.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\skybox_frag.h;E:\Code\Engine\Ethereal\src\Resource\generated\cpp\skybox_vert.h;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">E:\Code\Engine\Ethereal\vendor\shader_compile\CMakeFiles\ShaderCompile</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
+      <VerifyInputsAndOutputsExist Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</VerifyInputsAndOutputsExist>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="E:\Code\Engine\Ethereal\vendor\shader_compile\CMakeLists.txt">
+      <UseUtf8Encoding>Always</UseUtf8Encoding>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule E:/Code/Engine/Ethereal/vendor/shader_compile/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+D:\CMake\bin\cmake.exe -SE:/Code/Engine -BE:/Code/Engine --check-stamp-file E:/Code/Engine/Ethereal/vendor/shader_compile/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">E:\Code\Engine\CMakeFiles\cmake.verify_globs;E:\Code\Engine\Ethereal\vendor\shader_compile\ShaderCompile.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">E:\Code\Engine\Ethereal\vendor\shader_compile\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule E:/Code/Engine/Ethereal/vendor/shader_compile/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+D:\CMake\bin\cmake.exe -SE:/Code/Engine -BE:/Code/Engine --check-stamp-file E:/Code/Engine/Ethereal/vendor/shader_compile/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">E:\Code\Engine\CMakeFiles\cmake.verify_globs;E:\Code\Engine\Ethereal\vendor\shader_compile\ShaderCompile.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">E:\Code\Engine\Ethereal\vendor\shader_compile\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule E:/Code/Engine/Ethereal/vendor/shader_compile/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+D:\CMake\bin\cmake.exe -SE:/Code/Engine -BE:/Code/Engine --check-stamp-file E:/Code/Engine/Ethereal/vendor/shader_compile/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">E:\Code\Engine\CMakeFiles\cmake.verify_globs;E:\Code\Engine\Ethereal\vendor\shader_compile\ShaderCompile.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">E:\Code\Engine\Ethereal\vendor\shader_compile\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule E:/Code/Engine/Ethereal/vendor/shader_compile/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+D:\CMake\bin\cmake.exe -SE:/Code/Engine -BE:/Code/Engine --check-stamp-file E:/Code/Engine/Ethereal/vendor/shader_compile/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">E:\Code\Engine\CMakeFiles\cmake.verify_globs;E:\Code\Engine\Ethereal\vendor\shader_compile\ShaderCompile.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">E:\Code\Engine\Ethereal\vendor\shader_compile\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="E:\Code\Engine\Editor\assets\shaders\Bloom\Blur.frag">
+    </None>
+    <None Include="E:\Code\Engine\Editor\assets\shaders\Bloom\Blur.vert">
+    </None>
+    <None Include="E:\Code\Engine\Editor\assets\shaders\Bloom\Bright.frag">
+    </None>
+    <None Include="E:\Code\Engine\Editor\assets\shaders\Bloom\Bright.vert">
+    </None>
+    <None Include="E:\Code\Engine\Editor\assets\shaders\Bloom\Merge.frag">
+    </None>
+    <None Include="E:\Code\Engine\Editor\assets\shaders\Bloom\Merge.vert">
+    </None>
+    <None Include="E:\Code\Engine\Editor\assets\shaders\CSM\CSM.frag">
+    </None>
+    <None Include="E:\Code\Engine\Editor\assets\shaders\CSM\CSM.geom">
+    </None>
+    <None Include="E:\Code\Engine\Editor\assets\shaders\CSM\CSM.vert">
+    </None>
+    <None Include="E:\Code\Engine\Editor\assets\shaders\IBL\EquirectangularToCubeMap.frag">
+    </None>
+    <None Include="E:\Code\Engine\Editor\assets\shaders\IBL\EquirectangularToCubeMap.vert">
+    </None>
+    <None Include="E:\Code\Engine\Editor\assets\shaders\IBL\IrradianceConvolution.frag">
+    </None>
+    <None Include="E:\Code\Engine\Editor\assets\shaders\IBL\IrradianceConvolution.vert">
+    </None>
+    <None Include="E:\Code\Engine\Editor\assets\shaders\IBL\Prefilter.frag">
+    </None>
+    <None Include="E:\Code\Engine\Editor\assets\shaders\IBL\Prefilter.vert">
+    </None>
+    <None Include="E:\Code\Engine\Editor\assets\shaders\PBR.frag">
+    </None>
+    <None Include="E:\Code\Engine\Editor\assets\shaders\PBR.vert">
+    </None>
+    <None Include="E:\Code\Engine\Editor\assets\shaders\PBRAnim.frag">
+    </None>
+    <None Include="E:\Code\Engine\Editor\assets\shaders\PBRAnim.vert">
+    </None>
+    <None Include="E:\Code\Engine\Editor\assets\shaders\ShadowMap.frag">
+    </None>
+    <None Include="E:\Code\Engine\Editor\assets\shaders\ShadowMap.vert">
+    </None>
+    <None Include="E:\Code\Engine\Editor\assets\shaders\Skybox.frag">
+    </None>
+    <None Include="E:\Code\Engine\Editor\assets\shaders\Skybox.vert">
+    </None>
+    <None Include="E:\Code\Engine\Ethereal\vendor\shader_compile\CMakeFiles\ShaderCompile">
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="E:\Code\Engine\ZERO_CHECK.vcxproj">
+      <Project>{5C4D6E63-12BD-3414-808F-BAABEDA6DCD0}</Project>
+      <Name>ZERO_CHECK</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

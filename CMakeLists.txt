@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.23)
+set(CMAKE_TOOLCHAIN_FILE "D:/vcpkg/scripts/buildsystems/vcpkg.cmake")
 
 project(Ethereal)
 set(CMAKE_CXX_STANDARD 20)
@@ -18,6 +19,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 #message("EngineRuntimeDir " ${EngineRuntimeDir})
 #message("EngineEditorDir " ${EngineEditorDir})
 set(SHADER_COMPILE_TARGET ShaderCompile)
+
 
 add_subdirectory(Ethereal)
 add_subdirectory(Editor)

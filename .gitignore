@@ -5,6 +5,9 @@ note/
 .cache/*
 parser_header.h
  clangLog.txt
+.vs/
+out/
+.idea/
 
 *.pdb
 *.bak

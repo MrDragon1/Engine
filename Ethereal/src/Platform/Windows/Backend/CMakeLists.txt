@@ -1,6 +1,3 @@
-add_subdirectory(OpenGL)
-add_subdirectory(Backend)
-
 set(HFILES "")
 set(CPPFILES "")
 file(GLOB HFILES ${CMAKE_CURRENT_SOURCE_DIR}/*.h)
