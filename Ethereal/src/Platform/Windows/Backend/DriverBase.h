@@ -6,7 +6,7 @@
 namespace Ethereal {
 namespace Backend {
 struct Texture;
-struct Sampler;
+struct SamplerGroup;
 struct VertexBuffer;
 struct IndexBuffer;
 struct VertexArray;
@@ -17,7 +17,7 @@ struct RenderTarget;
 struct BufferObject;
 
 using TextureHandle = Ref<Texture>;
-using SamplerHandle = Ref<Sampler>;
+using SamplerGroupHandle = Ref<SamplerGroup>;
 using BufferObjectHandle = Ref<BufferObject>;
 using VertexBufferHandle = Ref<VertexBuffer>;
 using IndexBufferHandle = Ref<IndexBuffer>;
@@ -36,9 +36,21 @@ struct Texture : public RefCounted {
     TextureFormat format;
     TextureUsage usage;
     TextureType type;
+
+    Texture(uint32_t width, uint32_t height, uint32_t depth, uint32_t levels, TextureFormat format, TextureUsage usage, TextureType type)
+        : width(width), height(height), depth(depth), levels(levels), format(format), usage(usage), type(type) {}
 };
 
-struct Sampler : public RefCounted {};
+struct SamplerDescriptor {
+    TextureHandle texture;
+    SamplerParams params;
+    uint8_t binding;
+};
+using SamplerGroupDescriptor = std::vector<SamplerDescriptor>;
+
+struct SamplerGroup : public RefCounted {
+    SamplerGroup() = default;
+};
 
 struct BufferObject : public RefCounted {
     uint32_t byteCount{};
@@ -88,7 +100,20 @@ struct Program : public RefCounted {
     Program() = default;
 };
 
-struct RenderTarget : public RefCounted {};
+struct RenderTarget : public RefCounted {
+    uint32_t width{};
+    uint32_t height{};
+    Ref<Texture> color[MAX_COLOR_ATTACHMENT];
+    Ref<Texture> depth;
+
+    RenderTarget() noexcept = default;
+    RenderTarget(uint32_t w, uint32_t h) : width(w), height(h) {}
+};
+
+struct PipelineState {
+    Ref<Program> program;
+    Ref<SamplerGroup> samplerGroup;
+};
 
 }  // namespace Backend
 }  // namespace Ethereal

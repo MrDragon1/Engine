@@ -214,6 +214,76 @@ static GLenum ResolveShaderType(const ShaderType& type) {
             return GL_NONE;
     }
 }
+static GLenum ResolveSamplerMinFilter(const SamplerMinFilter& filter) {
+    switch (filter) {
+        case SamplerMinFilter::NEAREST:
+            return GL_NEAREST;
+        case SamplerMinFilter::LINEAR:
+            return GL_LINEAR;
+        case SamplerMinFilter::NEAREST_MIPMAP_NEAREST:
+            return GL_NEAREST_MIPMAP_NEAREST;
+        case SamplerMinFilter::LINEAR_MIPMAP_NEAREST:
+            return GL_LINEAR_MIPMAP_NEAREST;
+        case SamplerMinFilter::NEAREST_MIPMAP_LINEAR:
+            return GL_NEAREST_MIPMAP_LINEAR;
+        case SamplerMinFilter::LINEAR_MIPMAP_LINEAR:
+            return GL_LINEAR_MIPMAP_LINEAR;
+        default:
+            ET_CORE_ASSERT("Invalid SamplerMinFilter!")
+            return GL_NONE;
+    }
+}
+static GLenum ResolveSamplerMagFilter(const SamplerMagFilter& filter) {
+    switch (filter) {
+        case SamplerMagFilter::NEAREST:
+            return GL_NEAREST;
+        case SamplerMagFilter::LINEAR:
+            return GL_LINEAR;
+        default:
+            ET_CORE_ASSERT("Invalid SamplerMagFilter!")
+            return GL_NONE;
+    }
+}
+static GLenum ResolveSamplerWrapMode(const SamplerWrapMode& mode) {
+    switch (mode) {
+        case SamplerWrapMode::CLAMP_TO_EDGE:
+            return GL_CLAMP_TO_EDGE;
+        case SamplerWrapMode::MIRRORED_REPEAT:
+            return GL_MIRRORED_REPEAT;
+        case SamplerWrapMode::REPEAT:
+            return GL_REPEAT;
+        default:
+            ET_CORE_ASSERT("Invalide SamplerWrapMode!")
+            return GL_NONE;
+    }
+}
+static GLenum ResolveSamplerCompareMode(const SamplerCompareMode& mode) {
+    return mode == SamplerCompareMode::NONE ? GL_NONE : GL_COMPARE_REF_TO_TEXTURE;
+}
+static GLenum ResolveSamplerCompareFunc(const SamplerCompareFunc& func) noexcept {
+    switch (func) {
+        case SamplerCompareFunc::LE:
+            return GL_LEQUAL;
+        case SamplerCompareFunc::GE:
+            return GL_GEQUAL;
+        case SamplerCompareFunc::L:
+            return GL_LESS;
+        case SamplerCompareFunc::G:
+            return GL_GREATER;
+        case SamplerCompareFunc::E:
+            return GL_EQUAL;
+        case SamplerCompareFunc::NE:
+            return GL_NOTEQUAL;
+        case SamplerCompareFunc::A:
+            return GL_ALWAYS;
+        case SamplerCompareFunc::N:
+            return GL_NEVER;
+        default:
+            ET_CORE_ASSERT("Invalid SamplerComapreFunc!")
+            return GL_NONE;
+    }
+}
+
 }  // namespace GLUtils
 }  // namespace Backend
 }  // namespace Ethereal

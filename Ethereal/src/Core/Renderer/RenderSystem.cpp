@@ -17,21 +17,85 @@
 
 // Test Backend
 #include "Shader.h"
+#include "Utils/AssetLoader.h"
+
 namespace Ethereal {
+static uint32_t toUintColor(Vector4 color) {
+    color.x = Math::Clamp(color.x, 0, 1);
+    color.y = Math::Clamp(color.y, 0, 1);
+    color.z = Math::Clamp(color.z, 0, 1);
+    color.w = Math::Clamp(color.w, 0, 1);
+    uint32_t r = color.x * 255.0f;
+    uint32_t g = color.y * 255.0f;
+    uint32_t b = color.z * 255.0f;
+    uint32_t a = color.w * 255.0f;
+    return (r << 0) | (g << 8) | (b << 16) | (a << 24);
+}
+
+void createBitmap(Ref<Backend::DriverApi> dapi, Backend::TextureHandle texture, int baseWidth, int baseHeight, int level, int layer, Vector3 color,
+                  bool flipY) {
+    using namespace Backend;
+    auto cb = [](void* buffer, size_t size, void* user) { free(buffer); };
+    const int width = baseWidth >> level;
+    const int height = baseHeight >> level;
+    const size_t size0 = height * width * 4;
+    uint8_t* buffer0 = (uint8_t*)calloc(size0, 1);
+    PixelBufferDescriptor pb(buffer0, size0, PixelDataFormat::RGBA, PixelDataType::UBYTE);
+
+    const Vector3 foreground = color;
+    const Vector3 background = Vector3(1, 1, 0);
+
+    uint32_t* texels = (uint32_t*)buffer0;
+    for (int row = 0; row < height; row++) {
+        for (int col = 0; col < width; col++) {
+            Vector2 uv = {(col - width / 2.0f) / width, (row - height / 2.0f) / height};
+            const float d = abs(uv.x);
+            const float triangleWidth = uv.y >= -.3 && uv.y <= .3 ? (.4f / .6f * uv.y + .2f) : 0;
+            const float t = d < triangleWidth ? 1.0 : 0.0;
+            const Vector3 color = foreground * t + background * (1 - t);
+            int rowFlipped = flipY ? (height - 1) - row : row;
+            texels[rowFlipped * width + col] = toUintColor(Vector4(color, 1.0f));
+        }
+    }
+
+    // Upload to the GPU.
+    dapi->SetTextureData(texture, level, 0, 0, layer, width, height, 1, std::move(pb));
+}
+
 Ref<Backend::RenderPrimitive> GetTrianglePrimitive(Ref<Backend::DriverApi> api) {
     using namespace Backend;
     Vector2 gVertices[4] = {{0.5, 0.5}, {0.5, -0.5}, {-0.5, -0.5}, {-0.5, 0.5}};
-
+    Vector2 gUV[4] = {{1, 1}, {1, 0}, {0, 0}, {0, 1}};
     uint32_t gIndices[6] = {0, 1, 3, 1, 2, 3};
 
     uint8_t mVertexCount = 4;
-    AttributeArray attributes = {Attribute{.offset = 0, .stride = sizeof(Vector2), .buffer = 0, .type = ElementType::FLOAT2, .flags = 0}};
+    AttributeArray attributes = {Backend::Attribute{
+                                     .offset = 0,
+                                     .stride = sizeof(Vector2),
+                                     .buffer = 0,
+                                     .type = ElementType::FLOAT2,
+                                     .flags = 0,
+                                 },
+                                 Backend::Attribute{
+                                     .offset = 0,
+                                     .stride = sizeof(Vector2),
+                                     .buffer = 1,
+                                     .type = ElementType::FLOAT2,
+                                     .flags = 0,
+                                 }};
+
     const size_t size = sizeof(Vector2) * 4;
     BufferObjectHandle bufferObject = api->CreateBufferObject(size, BufferObjectBinding::VERTEX, BufferUsage::STATIC);
-    VertexBufferHandle vertexBuffer = api->CreateVertexBuffer(attributes, mVertexCount, 1, 1);
-    api->SetVertexBufferObject(vertexBuffer, 0, bufferObject);
     BufferDescriptor vertexBufferDesc(gVertices, size);
     api->UpdateBufferObject(bufferObject, std::move(vertexBufferDesc), 0);
+
+    BufferObjectHandle bufferObject2 = api->CreateBufferObject(size, BufferObjectBinding::VERTEX, BufferUsage::STATIC);
+    BufferDescriptor vertexBufferDesc2(gUV, size);
+    api->UpdateBufferObject(bufferObject2, std::move(vertexBufferDesc2), 0);
+
+    VertexBufferHandle vertexBuffer = api->CreateVertexBuffer(attributes, mVertexCount, 2, 2);
+    api->SetVertexBufferObject(vertexBuffer, 0, bufferObject);
+    api->SetVertexBufferObject(vertexBuffer, 1, bufferObject2);
 
     uint8_t mIndexCount = 6;
     ElementType elementType = ElementType::UINT;
@@ -81,10 +145,35 @@ void RenderSystem::Init() {
 
     mDriver = new Backend::Driver(Backend::BackendType::OPENGL);
     mTrianglePrimitive = GetTrianglePrimitive(mDriver->GetApi());
+
+    using namespace Backend;
+    Ref<TextureData> data = Ref<TextureData>::Create();
+    TextureLoader::LoadPath("assets/textures/awesomeface.png", data);
+    TextureHandle texture = mDriver->GetApi()->CreateTexture(1, data->m_width, data->m_height, data->m_depth, TextureFormat::R8G8B8A8_UNORM,
+                                                             TextureUsage::DEFAULT, TextureType::TEXTURE_2D);
+    size_t bufferSize = data->m_width * data->m_height * 4;
+    PixelBufferDescriptor pixelDesc(data->m_pixels, bufferSize, PixelDataFormat::RGBA, PixelDataType::UBYTE);  // The image loaded is 4 channel
+    mDriver->GetApi()->SetTextureData(texture, 0, 0, 0, 0, data->m_width, data->m_height, data->m_depth, pixelDesc);
+
+    mPipelineState.samplerGroup = mDriver->GetApi()->CreateSamplerGroup(1);
+    Backend::SamplerGroupDescriptor desc(1);
+    desc[0].texture = texture;
+    desc[0].binding = 0;
+    desc[0].params = SamplerParams{
+        .filterMag = SamplerMagFilter::LINEAR,
+        .filterMin = SamplerMinFilter::LINEAR,
+        .wrapS = SamplerWrapMode::REPEAT,
+        .wrapT = SamplerWrapMode::REPEAT,
+        .wrapR = SamplerWrapMode::REPEAT,
+        .compareMode = SamplerCompareMode::NONE,
+    };
+
+    mDriver->GetApi()->UpdateSamplerGroup(mPipelineState.samplerGroup, desc);
+
     Backend::ShaderSource source;
     source[Backend::ShaderType::VERTEX] = TEST_VERT;
     source[Backend::ShaderType::FRAGMENT] = TEST_FRAG;
-    mProgram = mDriver->GetApi()->CreateProgram("Test", source);
+    mPipelineState.program = mDriver->GetApi()->CreateProgram("Test", source);
 }
 
 void RenderSystem::Draw(TimeStamp ts) {
@@ -94,7 +183,7 @@ void RenderSystem::Draw(TimeStamp ts) {
     RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1});
     RenderCommand::Clear();
 
-    mDriver->GetApi()->Draw(mTrianglePrimitive, mProgram);
+    mDriver->GetApi()->Draw(mTrianglePrimitive, mPipelineState);
     m_MainCameraRenderPass->m_Framebuffer->Unbind();
     m_MainImage = m_MainCameraRenderPass->m_Framebuffer->GetColorAttachment(0);
 

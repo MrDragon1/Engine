@@ -13,11 +13,11 @@ enum class BackendType : uint8_t {
 };
 
 enum class TextureUsage : uint8_t {
-    NONE = 0x0 << 0,
-    COLOR_ATTACHMENT = 0x0 << 1,
-    DEPTH_ATTACHMENT = 0x0 << 2,
-    SAMPLEABLE = 0x0 << 3,
-    UPLOADABLE = 0x0 << 4,
+    NONE = 0x1 << 0,
+    COLOR_ATTACHMENT = 0x1 << 1,
+    DEPTH_ATTACHMENT = 0x1 << 2,
+    SAMPLEABLE = 0x1 << 3,
+    UPLOADABLE = 0x1 << 4,
     DEFAULT = SAMPLEABLE | UPLOADABLE,
 };
 
@@ -181,6 +181,55 @@ enum class ShaderType : uint8_t {
     COMPUTE,
 };
 
+enum class SamplerWrapMode : uint8_t {
+    CLAMP_TO_EDGE,
+    REPEAT,
+    MIRRORED_REPEAT,
+};
+
+enum class SamplerMinFilter : uint8_t {
+    NEAREST = 0,
+    LINEAR = 1,
+    NEAREST_MIPMAP_NEAREST = 2,
+    LINEAR_MIPMAP_NEAREST = 3,
+    NEAREST_MIPMAP_LINEAR = 4,
+    LINEAR_MIPMAP_LINEAR = 5,
+};
+
+//! Sampler magnification filter
+enum class SamplerMagFilter : uint8_t {
+    NEAREST = 0,
+    LINEAR = 1,
+};
+
+//! Sampler compare mode
+enum class SamplerCompareMode : uint8_t {
+    NONE = 0,
+    COMPARE_TO_TEXTURE = 1,
+};
+
+//! comparison function for the depth / stencil sampler
+enum class SamplerCompareFunc : uint8_t {
+    LE = 0,
+    GE,
+    L,
+    G,
+    E,
+    NE,
+    A,
+    N,
+};
+
+struct SamplerParams {
+    SamplerMagFilter filterMag : 1;
+    SamplerMinFilter filterMin : 3;
+    SamplerWrapMode wrapS : 2;
+    SamplerWrapMode wrapT : 2;
+    SamplerWrapMode wrapR : 2;
+    uint8_t anisotropyLog2 : 3;
+    SamplerCompareMode compareMode : 1;
+    SamplerCompareFunc compareFunc : 3;
+};
 }  // namespace Backend
 }  // namespace Ethereal
 

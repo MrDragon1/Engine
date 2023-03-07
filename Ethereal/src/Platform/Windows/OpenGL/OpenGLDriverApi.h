@@ -20,6 +20,19 @@ struct GLTexture : public Texture {
     } gl;
 };
 
+struct GLSamplerGroup : public SamplerGroup {
+    using SamplerGroup::SamplerGroup;
+
+    struct Entry {
+        Ref<Texture> texture;
+        GLuint id;
+        uint8_t binding = 0xff;
+    };
+
+    std::vector<Entry> entries;
+    GLSamplerGroup(uint32_t size) : entries(size) {}
+};
+
 /*!
  * @brief Map data from CPU to GPU, gl.id refers to a buffer object in OpenGL.
  */
@@ -76,23 +89,25 @@ struct GLProgram : public Program {
     } gl;
 };
 class OpenGLDriverApi : public DriverApi {
-    Ref<Texture> CreateTexture(uint32_t width, uint32_t height, uint32_t depth, TextureFormat format, TextureUsage usage, TextureType type) override;
+    Ref<Texture> CreateTexture(uint8_t levels, uint32_t width, uint32_t height, uint32_t depth, TextureFormat format, TextureUsage usage,
+                               TextureType type) override;
+    Ref<SamplerGroup> CreateSamplerGroup(uint32_t size) override;
     Ref<BufferObject> CreateBufferObject(uint32_t byteCount, BufferObjectBinding bindingType, BufferUsage usage) override;
-    Ref<VertexBuffer> CreateVertexBuffer(AttributeArray attributeArray, uint32_t vertexCount, uint8_t attributeCount, uint8_t buffer) override;
+    Ref<VertexBuffer> CreateVertexBuffer(AttributeArray attributeArray, uint32_t vertexCount, uint8_t attributeCount, uint8_t bufferCount) override;
     Ref<IndexBuffer> CreateIndexBuffer(ElementType elementType, uint32_t indexCount, BufferUsage usage) override;
     Ref<RenderPrimitive> CreateRenderPrimitive(Ref<VertexBuffer> vbh, Ref<IndexBuffer> ibh, PrimitiveType pt, uint32_t offset, uint32_t minIndex,
                                                uint32_t maxIndex, uint32_t count) override;
     Ref<Program> CreateProgram(std::string_view name, ShaderSource source) override;
-    void Draw(Ref<RenderPrimitive> rp, Ref<Program> p) override;
+    void Draw(Ref<RenderPrimitive> rph, PipelineState pipeline) override;
     void SetVertexBufferObject(Ref<VertexBuffer> vbh, uint32_t index, Ref<BufferObject> boh) override;
     void UpdateBufferObject(Ref<BufferObject> handle, BufferDescriptor&& bd, uint32_t byteOffset) override;
     void UpdateIndexBuffer(Ref<IndexBuffer> handle, BufferDescriptor&& bd, uint32_t byteOffset) override;
+    void SetTextureData(Ref<Texture> texture, uint32_t levels, uint32_t xoffset, uint32_t yoffset, uint32_t zoffset, uint32_t width, uint32_t height,
+                        uint32_t depth, const PixelBufferDescriptor& desc) override;
+    void UpdateSamplerGroup(SamplerGroupHandle sgh, SamplerGroupDescriptor& desc) override;
 
    private:
     void AllocateTexture(Ref<GLTexture> texture, uint32_t width, uint32_t height, uint32_t depth);
-
-    void SetTextureData(Ref<GLTexture> texture, uint32_t levels, uint32_t xoffset, uint32_t yoffset, uint32_t zoffset, uint32_t width,
-                        uint32_t height, uint32_t depth, const PixelBufferDescriptor& desc);
 
     void UpdateVertexArrayObject(Ref<GLRenderPrimitive> rp, Ref<GLVertexBuffer> vbh);
 };

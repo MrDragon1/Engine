@@ -6,9 +6,9 @@
 namespace Ethereal {
 namespace Backend {
 
-Ref<Texture> OpenGLDriverApi::CreateTexture(uint32_t width, uint32_t height, uint32_t depth, TextureFormat format, TextureUsage usage,
+Ref<Texture> OpenGLDriverApi::CreateTexture(uint8_t levels, uint32_t width, uint32_t height, uint32_t depth, TextureFormat format, TextureUsage usage,
                                             TextureType type) {
-    Ref<GLTexture> t = Ref<GLTexture>::Create();
+    Ref<GLTexture> t = Ref<GLTexture>::Create(width, height, depth, levels, format, usage, type);
     if (any(usage & TextureUsage::SAMPLEABLE)) {
         t->gl.format = GLUtils::ResolveTextureFormat(format);
         t->gl.target = GLUtils::ResolveTextureType(type);
@@ -17,9 +17,21 @@ Ref<Texture> OpenGLDriverApi::CreateTexture(uint32_t width, uint32_t height, uin
         glBindTexture(t->gl.target, t->gl.id);
 
         AllocateTexture(t, width, height, depth);
+    } else if (any(usage & (TextureUsage::COLOR_ATTACHMENT | TextureUsage::DEPTH_ATTACHMENT))) {
+        t->gl.format = GLUtils::ResolveTextureFormat(format);
+        t->gl.target = GL_RENDERBUFFER;
+        glGenRenderbuffers(1, &t->gl.id);
+
+        glBindRenderbuffer(GL_RENDERBUFFER, t->gl.id);
+        glRenderbufferStorage(GL_RENDERBUFFER, t->gl.format, width, height);
+        glBindRenderbuffer(GL_RENDERBUFFER, 0);
     }
-    // TODO: Handle other texture usage
     return t;
+}
+
+Ref<SamplerGroup> OpenGLDriverApi::CreateSamplerGroup(uint32_t size) {
+    Ref<GLSamplerGroup> sg = Ref<GLSamplerGroup>::Create(size);
+    return sg;
 }
 
 Ref<BufferObject> OpenGLDriverApi::CreateBufferObject(uint32_t byteCount, BufferObjectBinding bindingType, BufferUsage usage) {
@@ -39,8 +51,9 @@ Ref<BufferObject> OpenGLDriverApi::CreateBufferObject(uint32_t byteCount, Buffer
     return handle;
 }
 
-Ref<VertexBuffer> OpenGLDriverApi::CreateVertexBuffer(AttributeArray attributeArray, uint32_t vertexCount, uint8_t attributeCount, uint8_t buffer) {
-    Ref<GLVertexBuffer> vb = Ref<GLVertexBuffer>::Create(attributeArray, vertexCount, attributeCount, buffer);
+Ref<VertexBuffer> OpenGLDriverApi::CreateVertexBuffer(AttributeArray attributeArray, uint32_t vertexCount, uint8_t attributeCount,
+                                                      uint8_t bufferCount) {
+    Ref<GLVertexBuffer> vb = Ref<GLVertexBuffer>::Create(attributeArray, vertexCount, attributeCount, bufferCount);
     return vb;
 }
 
@@ -134,12 +147,20 @@ Ref<Program> OpenGLDriverApi::CreateProgram(std::string_view name, ShaderSource 
     return p;
 }
 
-void OpenGLDriverApi::Draw(Ref<RenderPrimitive> rph, Ref<Program> ph) {
+void OpenGLDriverApi::Draw(Ref<RenderPrimitive> rph, PipelineState pipeline) {
     Ref<GLRenderPrimitive> rp = rph.As<GLRenderPrimitive>();
-    Ref<GLProgram> p = ph.As<GLProgram>();
+    Ref<GLProgram> p = pipeline.program.As<GLProgram>();
     Ref<GLVertexBuffer> vb = rp->vertexBuffer.As<GLVertexBuffer>();
     Ref<GLIndexBuffer> ib = rp->indexBuffer.As<GLIndexBuffer>();
+    Ref<GLSamplerGroup> sg = pipeline.samplerGroup.As<GLSamplerGroup>();
+
     glUseProgram(p->gl.id);
+    for (auto& entry : sg->entries) {
+        Ref<GLTexture> tex = entry.texture.As<GLTexture>();
+        glActiveTexture(GL_TEXTURE0 + entry.binding);
+        glBindTexture(tex->gl.target, tex->gl.id);
+        glBindSampler(entry.binding, entry.id);
+    }
 
     glBindVertexArray(rp->gl.vao);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib->gl.buffer);
@@ -187,31 +208,11 @@ void OpenGLDriverApi::UpdateIndexBuffer(Ref<IndexBuffer> handle, BufferDescripto
     glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, byteOffset, (GLsizeiptr)bd.size, bd.buffer);
 }
 
-//---------------------------------------------------------------------
-// Private functions below
-//---------------------------------------------------------------------
-void OpenGLDriverApi::AllocateTexture(Ref<GLTexture> t, uint32_t width, uint32_t height, uint32_t depth) {
-    // Note: glTexStorage only specify the memory for texture, no actual data are provided.
-    // Also allow reallocate the memory for the texture, like resizing.
-    glBindTexture(t->gl.target, t->gl.id);
-    switch (t->gl.target) {
-        case GL_TEXTURE_2D:
-        case GL_TEXTURE_CUBE_MAP:
-            glTexStorage2D(t->gl.target, t->levels, t->gl.format, width, height);
-            break;
-        case GL_TEXTURE_3D:
-        case GL_TEXTURE_2D_ARRAY:
-            glTexStorage3D(t->gl.target, t->levels, t->gl.format, width, height, depth);
-    };
-    t->width = width;
-    t->height = height;
-    t->depth = depth;
-}
-void OpenGLDriverApi::SetTextureData(Ref<GLTexture> t, uint32_t levels, uint32_t xoffset, uint32_t yoffset, uint32_t zoffset, uint32_t width,
+void OpenGLDriverApi::SetTextureData(Ref<Texture> th, uint32_t levels, uint32_t xoffset, uint32_t yoffset, uint32_t zoffset, uint32_t width,
                                      uint32_t height, uint32_t depth, const PixelBufferDescriptor& desc) {
     GLenum format = GLUtils::ResolvePixelDataFormat(desc.dataFormat);
     GLenum type = GLUtils::ResolvePixelDataType(desc.dataType);
-
+    Ref<GLTexture> t = th.As<GLTexture>();
     glPixelStorei(GL_UNPACK_ALIGNMENT, desc.alignment);
     glPixelStorei(GL_UNPACK_ROW_LENGTH, desc.stride);
     glPixelStorei(GL_UNPACK_SKIP_ROWS, desc.top);
@@ -237,6 +238,51 @@ void OpenGLDriverApi::SetTextureData(Ref<GLTexture> t, uint32_t levels, uint32_t
             }
             break;
     }
+}
+
+void OpenGLDriverApi::UpdateSamplerGroup(SamplerGroupHandle sgh, SamplerGroupDescriptor& desc) {
+    Ref<GLSamplerGroup> sg = sgh.As<GLSamplerGroup>();
+    ET_CORE_ASSERT(sg->entries.size() == desc.size());
+
+    for (size_t i = 0; i < desc.size(); ++i) {
+        auto& entry = sg->entries[i];
+        if (desc[i].texture) {
+            Ref<GLTexture> t = desc[i].texture.As<GLTexture>();
+            entry.texture = t;
+            entry.binding = desc[i].binding;
+            auto& params = desc[i].params;
+
+            if (!entry.id) glGenSamplers(1, &entry.id);
+            glSamplerParameteri(entry.id, GL_TEXTURE_MIN_FILTER, (GLint)GLUtils::ResolveSamplerMinFilter(params.filterMin));
+            glSamplerParameteri(entry.id, GL_TEXTURE_MAG_FILTER, (GLint)GLUtils::ResolveSamplerMagFilter(params.filterMag));
+            glSamplerParameteri(entry.id, GL_TEXTURE_WRAP_S, (GLint)GLUtils::ResolveSamplerWrapMode(params.wrapS));
+            glSamplerParameteri(entry.id, GL_TEXTURE_WRAP_T, (GLint)GLUtils::ResolveSamplerWrapMode(params.wrapT));
+            glSamplerParameteri(entry.id, GL_TEXTURE_WRAP_R, (GLint)GLUtils::ResolveSamplerWrapMode(params.wrapR));
+            glSamplerParameteri(entry.id, GL_TEXTURE_COMPARE_MODE, (GLint)GLUtils::ResolveSamplerCompareMode(params.compareMode));
+            glSamplerParameteri(entry.id, GL_TEXTURE_COMPARE_FUNC, (GLint)GLUtils::ResolveSamplerCompareFunc(params.compareFunc));
+        }
+    }
+}
+
+//---------------------------------------------------------------------
+// Private functions below
+//---------------------------------------------------------------------
+void OpenGLDriverApi::AllocateTexture(Ref<GLTexture> t, uint32_t width, uint32_t height, uint32_t depth) {
+    // Note: glTexStorage only specify the memory for texture, no actual data are provided.
+    // Also allow reallocate the memory for the texture, like resizing.
+    glBindTexture(t->gl.target, t->gl.id);
+    switch (t->gl.target) {
+        case GL_TEXTURE_2D:
+        case GL_TEXTURE_CUBE_MAP:
+            glTexStorage2D(t->gl.target, t->levels, t->gl.format, width, height);
+            break;
+        case GL_TEXTURE_3D:
+        case GL_TEXTURE_2D_ARRAY:
+            glTexStorage3D(t->gl.target, t->levels, t->gl.format, width, height, depth);
+    };
+    t->width = width;
+    t->height = height;
+    t->depth = depth;
 }
 
 void OpenGLDriverApi::UpdateVertexArrayObject(Ref<GLRenderPrimitive> rp, Ref<GLVertexBuffer> vb) {

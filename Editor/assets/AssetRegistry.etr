@@ -419,6 +419,9 @@ Assets:
   - Handle: 12727184459995872817
     FilePath: buildin\Editor\eye.png
     Type: Texture
+  - Handle: 12924416104554141695
+    FilePath: textures\awesomeface.png
+    Type: Texture
   - Handle: 12991496061341425589
     FilePath: fonts\opensans\OpenSans-LightItalic.ttf
     Type: Font
