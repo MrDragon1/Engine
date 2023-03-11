@@ -155,7 +155,7 @@ void RenderSystem::Init() {
     PixelBufferDescriptor pixelDesc(data->m_pixels, bufferSize, PixelDataFormat::RGBA, PixelDataType::UBYTE);  // The image loaded is 4 channel
     mDriver->GetApi()->SetTextureData(texture, 0, 0, 0, 0, data->m_width, data->m_height, data->m_depth, pixelDesc);
 
-    mPipelineState.samplerGroup = mDriver->GetApi()->CreateSamplerGroup(1);
+    mSamplerGroup = mDriver->GetApi()->CreateSamplerGroup(1);
     Backend::SamplerGroupDescriptor desc(1);
     desc[0].texture = texture;
     desc[0].binding = 0;
@@ -168,24 +168,51 @@ void RenderSystem::Init() {
         .compareMode = SamplerCompareMode::NONE,
     };
 
-    mDriver->GetApi()->UpdateSamplerGroup(mPipelineState.samplerGroup, desc);
+    mDriver->GetApi()->UpdateSamplerGroup(mSamplerGroup, desc);
 
     Backend::ShaderSource source;
     source[Backend::ShaderType::VERTEX] = TEST_VERT;
     source[Backend::ShaderType::FRAGMENT] = TEST_FRAG;
     mPipelineState.program = mDriver->GetApi()->CreateProgram("Test", source);
+
+    // Create two Textures.
+    auto usage = TextureUsage::COLOR_ATTACHMENT | TextureUsage::SAMPLEABLE;
+    mTextureA = mDriver->GetApi()->CreateTexture(1, 512, 512, 1, TextureFormat::R8G8B8A8_UNORM, usage, TextureType::TEXTURE_2D);
+    mTextureB = mDriver->GetApi()->CreateTexture(1, 512, 512, 1, TextureFormat::R8G8B8A8_UNORM, usage, TextureType::TEXTURE_2D);
+    Backend::MRT mrt;
+    mrt[0] = {mTextureA};
+    mrt[1] = {mTextureB};
+
+    // Create a RenderTarget with two attachments.
+    mRenderTarget = mDriver->GetApi()->CreateRenderTarget(TargetBufferFlags::COLOR0 | TargetBufferFlags::COLOR1,
+                                                          // The width and height must match the width and height of the respective
+                                                          // mip level (at least for OpenGL).
+                                                          512,  // width
+                                                          512,  // height
+                                                          mrt,  // color
+                                                          {},   // depth
+                                                          {});  // stencil
 }
 
 void RenderSystem::Draw(TimeStamp ts) {
     LoadProjectSettings();
 
-    m_MainCameraRenderPass->m_Framebuffer->Bind();
-    RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1});
-    RenderCommand::Clear();
+    // m_MainCameraRenderPass->m_Framebuffer->Bind();
+    // RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1});
+    // RenderCommand::Clear();
+
+    Backend::RenderPassParams params = {};
+    params.clearColor = {0.3, 0.3, 0.3, 1.0};
+
+    mDriver->GetApi()->BindSamplerGroup(0, mSamplerGroup);
+
+    mDriver->GetApi()->BeginRenderPass(mRenderTarget, params);
 
     mDriver->GetApi()->Draw(mTrianglePrimitive, mPipelineState);
-    m_MainCameraRenderPass->m_Framebuffer->Unbind();
-    m_MainImage = m_MainCameraRenderPass->m_Framebuffer->GetColorAttachment(0);
+    mDriver->GetApi()->EndRenderPass();
+
+    // m_MainCameraRenderPass->m_Framebuffer->Unbind();
+    // m_MainImage = m_MainCameraRenderPass->m_Framebuffer->GetColorAttachment(0);
 
     //// m_ShadowMapRenderPass->SetLightPosition();
     // m_CSMRenderPass->Draw();

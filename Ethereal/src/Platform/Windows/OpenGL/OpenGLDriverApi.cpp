@@ -147,19 +147,77 @@ Ref<Program> OpenGLDriverApi::CreateProgram(std::string_view name, ShaderSource 
     return p;
 }
 
+Ref<RenderTarget> OpenGLDriverApi::CreateRenderTarget(TargetBufferFlags targets, uint32_t width, uint32_t height, MRT color, TargetBufferInfo depth,
+                                                      TargetBufferInfo stencil) {
+    Ref<GLRenderTarget> rt = Ref<GLRenderTarget>::Create(width, height);
+    glGenFramebuffers(1, &rt->gl.id);
+
+    rt->targets = targets;
+
+    if (any(targets & TargetBufferFlags::COLOR_ALL)) {
+        GLenum bufs[MAX_SUPPORTED_RENDER_TARGET_COUNT] = {GL_NONE};
+        const size_t maxDrawBuffers = MAX_SUPPORTED_RENDER_TARGET_COUNT;
+        for (size_t i = 0; i < maxDrawBuffers; i++) {
+            if (any(targets & getTargetBufferFlagsAt(i))) {
+                auto t = rt->color[i] = color[i].handle.As<GLTexture>();
+                const auto twidth = std::max(1u, t->width >> color[i].level);
+                const auto theight = std::max(1u, t->height >> color[i].level);
+                UpdateFrameBufferTexture(rt, color[i], GL_COLOR_ATTACHMENT0 + i);
+                bufs[i] = GL_COLOR_ATTACHMENT0 + i;
+            }
+        }
+        glDrawBuffers((GLsizei)maxDrawBuffers, bufs);
+    }
+
+    bool specialCased = false;
+    if ((targets & TargetBufferFlags::DEPTH_AND_STENCIL) == TargetBufferFlags::DEPTH_AND_STENCIL) {
+        ET_CORE_ASSERT(!stencil.handle || stencil.handle == depth.handle);
+        auto t = rt->depth = depth.handle.As<GLTexture>();
+        const auto twidth = std::max(1u, t->width >> depth.level);
+        const auto theight = std::max(1u, t->height >> depth.level);
+
+        if (any(rt->depth->usage & TextureUsage::SAMPLEABLE) || (!depth.handle && !stencil.handle)) {
+            // special case: depth & stencil requested, and both provided as the same texture
+            // special case: depth & stencil requested, but both not provided
+            specialCased = true;
+            UpdateFrameBufferTexture(rt, depth, GL_DEPTH_STENCIL_ATTACHMENT);
+        }
+    }
+
+    if (!specialCased) {
+        if (any(targets & TargetBufferFlags::DEPTH)) {
+            auto t = rt->depth = depth.handle.As<GLTexture>();
+            const auto twidth = std::max(1u, t->width >> depth.level);
+            const auto theight = std::max(1u, t->height >> depth.level);
+            UpdateFrameBufferTexture(rt, depth, GL_DEPTH_ATTACHMENT);
+        }
+        if (any(targets & TargetBufferFlags::STENCIL)) {
+            auto t = rt->stencil = stencil.handle.As<GLTexture>();
+            const auto twidth = std::max(1u, t->width >> stencil.level);
+            const auto theight = std::max(1u, t->height >> stencil.level);
+            UpdateFrameBufferTexture(rt, stencil, GL_STENCIL_ATTACHMENT);
+        }
+    }
+    return rt;
+}
+
 void OpenGLDriverApi::Draw(Ref<RenderPrimitive> rph, PipelineState pipeline) {
     Ref<GLRenderPrimitive> rp = rph.As<GLRenderPrimitive>();
     Ref<GLProgram> p = pipeline.program.As<GLProgram>();
     Ref<GLVertexBuffer> vb = rp->vertexBuffer.As<GLVertexBuffer>();
     Ref<GLIndexBuffer> ib = rp->indexBuffer.As<GLIndexBuffer>();
-    Ref<GLSamplerGroup> sg = pipeline.samplerGroup.As<GLSamplerGroup>();
 
     glUseProgram(p->gl.id);
-    for (auto& entry : sg->entries) {
-        Ref<GLTexture> tex = entry.texture.As<GLTexture>();
-        glActiveTexture(GL_TEXTURE0 + entry.binding);
-        glBindTexture(tex->gl.target, tex->gl.id);
-        glBindSampler(entry.binding, entry.id);
+    uint8_t offset = 0;
+    for (auto& sg : mSamplerGroupBindings) {
+        if (!sg) continue;
+        for (auto& entry : sg->entries) {
+            Ref<GLTexture> tex = entry.texture.As<GLTexture>();
+            glActiveTexture(GL_TEXTURE0 + offset + entry.binding);
+            glBindTexture(tex->gl.target, tex->gl.id);
+            glBindSampler(offset + entry.binding, entry.id);
+        }
+        offset += sg->entries.size();
     }
 
     glBindVertexArray(rp->gl.vao);
@@ -168,6 +226,24 @@ void OpenGLDriverApi::Draw(Ref<RenderPrimitive> rph, PipelineState pipeline) {
     UpdateVertexArrayObject(rp, vb);
     glDrawRangeElements(GLenum(rp->type), rp->minIndex, rp->maxIndex, (GLsizei)rp->count, rp->gl.getIndicesType(),
                         reinterpret_cast<const void*>(rp->offset));
+}
+
+void OpenGLDriverApi::BeginRenderPass(RenderTargetHandle rth, const RenderPassParams& params) {
+    mRenderPassTarget = rth;
+    mRenderPassParams = params;
+    Ref<GLRenderTarget> rt = rth.As<GLRenderTarget>();
+
+    glBindFramebuffer(GL_FRAMEBUFFER, rt->gl.id);
+
+    glClearColor(params.clearColor.x, params.clearColor.y, params.clearColor.z, params.clearColor.w);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    glViewport(0, 0, rt->width, rt->height);
+}
+
+void OpenGLDriverApi::EndRenderPass() {
+    Ref<GLRenderTarget> rt = mRenderPassTarget.As<GLRenderTarget>();
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void OpenGLDriverApi::SetVertexBufferObject(Ref<VertexBuffer> vbh, uint32_t index, Ref<BufferObject> boh) {
@@ -264,6 +340,8 @@ void OpenGLDriverApi::UpdateSamplerGroup(SamplerGroupHandle sgh, SamplerGroupDes
     }
 }
 
+void OpenGLDriverApi::BindSamplerGroup(uint8_t binding, Ref<SamplerGroup> sgh) { mSamplerGroupBindings[binding] = sgh.As<GLSamplerGroup>(); }
+
 //---------------------------------------------------------------------
 // Private functions below
 //---------------------------------------------------------------------
@@ -316,6 +394,83 @@ void OpenGLDriverApi::UpdateVertexArrayObject(Ref<GLRenderPrimitive> rp, Ref<GLV
             glDisableVertexAttribArray(GLuint(i));
         }
     }
+}
+
+void OpenGLDriverApi::UpdateFrameBufferTexture(Ref<GLRenderTarget> rt, TargetBufferInfo const& info, GLenum attachment) {
+    Ref<GLTexture> t = info.handle.As<GLTexture>();
+
+    auto valueForLevel = [](size_t level, size_t value) { return std::max(size_t(1), value >> level); };
+    ET_CORE_ASSERT((rt->width <= valueForLevel(info.level, t->width) && rt->height <= valueForLevel(info.level, t->height)),
+                   "Invalid size of attachment!");
+    TargetBufferFlags resolveFlags = {};
+    switch (attachment) {
+        case GL_COLOR_ATTACHMENT0:
+        case GL_COLOR_ATTACHMENT1:
+        case GL_COLOR_ATTACHMENT2:
+        case GL_COLOR_ATTACHMENT3:
+        case GL_COLOR_ATTACHMENT4:
+        case GL_COLOR_ATTACHMENT5:
+        case GL_COLOR_ATTACHMENT6:
+        case GL_COLOR_ATTACHMENT7:
+            static_assert(MAX_SUPPORTED_RENDER_TARGET_COUNT == 8);
+            resolveFlags = getTargetBufferFlagsAt(attachment - GL_COLOR_ATTACHMENT0);
+            break;
+        case GL_DEPTH_ATTACHMENT:
+            resolveFlags = TargetBufferFlags::DEPTH;
+            break;
+        case GL_STENCIL_ATTACHMENT:
+            resolveFlags = TargetBufferFlags::STENCIL;
+            break;
+        case GL_DEPTH_STENCIL_ATTACHMENT:
+            resolveFlags = TargetBufferFlags::DEPTH;
+            resolveFlags |= TargetBufferFlags::STENCIL;
+            break;
+        default:
+            break;
+    }
+
+    GLenum target = GL_TEXTURE_2D;
+    if (any(t->usage & TextureUsage::SAMPLEABLE)) {
+        target = t->gl.target;
+    }
+
+    glBindFramebuffer(GL_FRAMEBUFFER, rt->gl.id);
+    switch (target) {
+        case GL_TEXTURE_CUBE_MAP_POSITIVE_X:
+        case GL_TEXTURE_CUBE_MAP_NEGATIVE_X:
+        case GL_TEXTURE_CUBE_MAP_POSITIVE_Y:
+        case GL_TEXTURE_CUBE_MAP_NEGATIVE_Y:
+        case GL_TEXTURE_CUBE_MAP_POSITIVE_Z:
+        case GL_TEXTURE_CUBE_MAP_NEGATIVE_Z:
+        case GL_TEXTURE_2D:
+        case GL_TEXTURE_2D_MULTISAMPLE:
+            if (any(t->usage & TextureUsage::SAMPLEABLE)) {
+                glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, target, t->gl.id, info.level);
+            } else {
+                ET_CORE_ASSERT(target == GL_TEXTURE_2D);
+                glFramebufferRenderbuffer(GL_FRAMEBUFFER, attachment, GL_RENDERBUFFER, t->gl.id);
+            }
+            break;
+        case GL_TEXTURE_2D_ARRAY:
+        case GL_TEXTURE_CUBE_MAP_ARRAY:
+            glFramebufferTextureLayer(GL_FRAMEBUFFER, attachment, t->gl.id, info.level, info.layer);
+            break;
+        default:
+            // we shouldn't be here
+            break;
+    }
+
+    if (any(t->usage & TextureUsage::SAMPLEABLE)) {
+        // In a sense, drawing to a texture level is similar to calling setTextureData on it; in
+        // both cases, we update the base/max LOD to give shaders access to levels as they become
+        // available.  Note that this can only expand the LOD range (never shrink it), and that
+        // users can override this range by calling setMinMaxLevels().
+
+        // updateTextureLodRange(t, (int8_t)binfo.level);
+    }
+
+    auto fboStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+    ET_CORE_ASSERT(fboStatus == GL_FRAMEBUFFER_COMPLETE, "Framebuffer is incomplete!");
 }
 
 }  // namespace Backend

@@ -100,11 +100,25 @@ struct Program : public RefCounted {
     Program() = default;
 };
 
+struct TargetBufferInfo {
+    // texture to be used as render target
+    TextureHandle handle;
+
+    // level to be used
+    uint8_t level = 0;
+
+    // for cubemaps and 3D textures. See TextureCubemapFace for the face->layer mapping
+    uint16_t layer = 0;
+};
+using MRT = std::array<TargetBufferInfo, MAX_SUPPORTED_RENDER_TARGET_COUNT>;
+
 struct RenderTarget : public RefCounted {
     uint32_t width{};
     uint32_t height{};
-    Ref<Texture> color[MAX_COLOR_ATTACHMENT];
+    Ref<Texture> color[MAX_SUPPORTED_RENDER_TARGET_COUNT];
     Ref<Texture> depth;
+    Ref<Texture> stencil;
+    TargetBufferFlags targets = {};
 
     RenderTarget() noexcept = default;
     RenderTarget(uint32_t w, uint32_t h) : width(w), height(h) {}
@@ -112,7 +126,6 @@ struct RenderTarget : public RefCounted {
 
 struct PipelineState {
     Ref<Program> program;
-    Ref<SamplerGroup> samplerGroup;
 };
 
 }  // namespace Backend

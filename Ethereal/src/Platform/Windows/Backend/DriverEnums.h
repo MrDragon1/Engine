@@ -4,7 +4,7 @@
 
 namespace Ethereal {
 namespace Backend {
-static constexpr size_t MAX_COLOR_ATTACHMENT = 8u;
+static constexpr size_t MAX_SUPPORTED_RENDER_TARGET_COUNT = 8u;
 static constexpr size_t MAX_VERTEX_ATTRIBUTE_COUNT = 16u;
 
 enum class BackendType : uint8_t {
@@ -230,8 +230,48 @@ struct SamplerParams {
     SamplerCompareMode compareMode : 1;
     SamplerCompareFunc compareFunc : 3;
 };
+
+struct RenderPassParams {
+    Vector4 clearColor = {0, 0, 0, 1};
+};
+
+enum class TargetBufferFlags : uint32_t {
+    NONE = 0x0u,
+    COLOR0 = 0x00000001u,
+    COLOR1 = 0x00000002u,
+    COLOR2 = 0x00000004u,
+    COLOR3 = 0x00000008u,
+    COLOR4 = 0x00000010u,
+    COLOR5 = 0x00000020u,
+    COLOR6 = 0x00000040u,
+    COLOR7 = 0x00000080u,
+
+    COLOR = COLOR0,
+    COLOR_ALL = COLOR0 | COLOR1 | COLOR2 | COLOR3 | COLOR4 | COLOR5 | COLOR6 | COLOR7,
+    DEPTH = 0x10000000u,
+    STENCIL = 0x20000000u,
+    DEPTH_AND_STENCIL = DEPTH | STENCIL,
+    ALL = COLOR_ALL | DEPTH | STENCIL
+};
+
+inline constexpr TargetBufferFlags getTargetBufferFlagsAt(size_t index) noexcept {
+    if (index == 0u) return TargetBufferFlags::COLOR0;
+    if (index == 1u) return TargetBufferFlags::COLOR1;
+    if (index == 2u) return TargetBufferFlags::COLOR2;
+    if (index == 3u) return TargetBufferFlags::COLOR3;
+    if (index == 4u) return TargetBufferFlags::COLOR4;
+    if (index == 5u) return TargetBufferFlags::COLOR5;
+    if (index == 6u) return TargetBufferFlags::COLOR6;
+    if (index == 7u) return TargetBufferFlags::COLOR7;
+    if (index == 8u) return TargetBufferFlags::DEPTH;
+    if (index == 9u) return TargetBufferFlags::STENCIL;
+    return TargetBufferFlags::NONE;
+}
+
 }  // namespace Backend
 }  // namespace Ethereal
 
 template <>
 struct Utils::EnableBitMaskOperators<Ethereal::Backend::TextureUsage> : public std::true_type {};
+template <>
+struct Utils::EnableBitMaskOperators<Ethereal::Backend::TargetBufferFlags> : public std::true_type {};

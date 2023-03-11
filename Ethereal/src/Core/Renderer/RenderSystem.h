@@ -151,5 +151,8 @@ class RenderSystem : public RefCounted {
     Backend::Driver* mDriver;
     Ref<Backend::RenderPrimitive> mTrianglePrimitive;
     Backend::PipelineState mPipelineState;
+    Ref<Backend::SamplerGroup> mSamplerGroup;
+    Ref<Backend::Texture> mTextureA, mTextureB;
+    Ref<Backend::RenderTarget> mRenderTarget;
 };
 }  // namespace Ethereal

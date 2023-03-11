@@ -31,14 +31,19 @@ class DriverApi : public RefCounted {
                                                        uint32_t minIndex, uint32_t maxIndex, uint32_t count) = 0;
     // virtual Ref<UniformBuffer> CreateUniformBuffer() = 0;
     virtual Ref<Program> CreateProgram(std::string_view name, ShaderSource source) = 0;
-
+    virtual Ref<RenderTarget> CreateRenderTarget(TargetBufferFlags targets, uint32_t width, uint32_t height, MRT color, TargetBufferInfo depth,
+                                                 TargetBufferInfo stencil) = 0;
     virtual void Draw(Ref<RenderPrimitive> rph, PipelineState pipeline) = 0;
+    virtual void BeginRenderPass(RenderTargetHandle rth, const RenderPassParams& params) = 0;
+    virtual void EndRenderPass() = 0;
+
     virtual void SetVertexBufferObject(Ref<VertexBuffer> vbh, uint32_t index, Ref<BufferObject> boh) = 0;
     virtual void UpdateBufferObject(Ref<BufferObject> handle, BufferDescriptor&& bd, uint32_t byteOffset) = 0;
     virtual void UpdateIndexBuffer(Ref<IndexBuffer> handle, BufferDescriptor&& bd, uint32_t byteOffset) = 0;
     virtual void SetTextureData(Ref<Texture> texture, uint32_t levels, uint32_t xoffset, uint32_t yoffset, uint32_t zoffset, uint32_t width,
                                 uint32_t height, uint32_t depth, const PixelBufferDescriptor& desc) = 0;
     virtual void UpdateSamplerGroup(SamplerGroupHandle sgh, SamplerGroupDescriptor& desc) = 0;
+    virtual void BindSamplerGroup(uint8_t bingding, SamplerGroupHandle sgh) = 0;
 
    private:
     /*

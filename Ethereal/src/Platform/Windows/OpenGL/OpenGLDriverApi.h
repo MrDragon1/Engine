@@ -75,8 +75,8 @@ struct GLRenderPrimitive : public RenderPrimitive {
     struct RenderPrimitive {
         static_assert(MAX_VERTEX_ATTRIBUTE_COUNT <= 16);
 
-        GLuint vao = 0;           // 4
-        uint8_t indicesSize = 0;  // 1
+        GLuint vao = 0;
+        uint8_t indicesSize = 0;
 
         GLenum getIndicesType() const noexcept { return indicesSize == 4 ? GL_UNSIGNED_INT : GL_UNSIGNED_SHORT; }
     } gl;
@@ -85,9 +85,17 @@ struct GLRenderPrimitive : public RenderPrimitive {
 struct GLProgram : public Program {
     using Program::Program;
     struct {
+        GLuint id;  // fbo
+    } gl;
+};
+
+struct GLRenderTarget : public RenderTarget {
+    using RenderTarget::RenderTarget;
+    struct {
         GLuint id;
     } gl;
 };
+
 class OpenGLDriverApi : public DriverApi {
     Ref<Texture> CreateTexture(uint8_t levels, uint32_t width, uint32_t height, uint32_t depth, TextureFormat format, TextureUsage usage,
                                TextureType type) override;
@@ -98,18 +106,29 @@ class OpenGLDriverApi : public DriverApi {
     Ref<RenderPrimitive> CreateRenderPrimitive(Ref<VertexBuffer> vbh, Ref<IndexBuffer> ibh, PrimitiveType pt, uint32_t offset, uint32_t minIndex,
                                                uint32_t maxIndex, uint32_t count) override;
     Ref<Program> CreateProgram(std::string_view name, ShaderSource source) override;
+    Ref<RenderTarget> CreateRenderTarget(TargetBufferFlags targets, uint32_t width, uint32_t height, MRT color, TargetBufferInfo depth,
+                                         TargetBufferInfo stencil) override;
     void Draw(Ref<RenderPrimitive> rph, PipelineState pipeline) override;
+    void BeginRenderPass(RenderTargetHandle rth, const RenderPassParams& params) override;
+    void EndRenderPass() override;
+
     void SetVertexBufferObject(Ref<VertexBuffer> vbh, uint32_t index, Ref<BufferObject> boh) override;
     void UpdateBufferObject(Ref<BufferObject> handle, BufferDescriptor&& bd, uint32_t byteOffset) override;
     void UpdateIndexBuffer(Ref<IndexBuffer> handle, BufferDescriptor&& bd, uint32_t byteOffset) override;
     void SetTextureData(Ref<Texture> texture, uint32_t levels, uint32_t xoffset, uint32_t yoffset, uint32_t zoffset, uint32_t width, uint32_t height,
                         uint32_t depth, const PixelBufferDescriptor& desc) override;
     void UpdateSamplerGroup(SamplerGroupHandle sgh, SamplerGroupDescriptor& desc) override;
+    void BindSamplerGroup(uint8_t binding, Ref<SamplerGroup> sgh) override;
+
+   private:
+    std::array<Ref<GLSamplerGroup>, 4> mSamplerGroupBindings;
+    RenderTargetHandle mRenderPassTarget;
+    RenderPassParams mRenderPassParams;
 
    private:
     void AllocateTexture(Ref<GLTexture> texture, uint32_t width, uint32_t height, uint32_t depth);
-
     void UpdateVertexArrayObject(Ref<GLRenderPrimitive> rp, Ref<GLVertexBuffer> vbh);
+    void UpdateFrameBufferTexture(Ref<GLRenderTarget> rt, TargetBufferInfo const& info, GLenum attachment);
 };
 
 }  // namespace Backend
