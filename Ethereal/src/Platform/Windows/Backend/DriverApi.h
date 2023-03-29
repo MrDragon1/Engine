@@ -3,6 +3,7 @@
 #include "BufferDescriptor.h"
 #include "DriverBase.h"
 #include "DriverEnums.h"
+#include "UniformBuffer.h"
 namespace Ethereal {
 namespace Backend {
 /*
@@ -29,7 +30,6 @@ class DriverApi : public RefCounted {
     virtual Ref<IndexBuffer> CreateIndexBuffer(ElementType elementType, uint32_t indexCount, BufferUsage usage) = 0;
     virtual Ref<RenderPrimitive> CreateRenderPrimitive(Ref<VertexBuffer> vbh, Ref<IndexBuffer> ibh, PrimitiveType pt, uint32_t offset,
                                                        uint32_t minIndex, uint32_t maxIndex, uint32_t count) = 0;
-    // virtual Ref<UniformBuffer> CreateUniformBuffer() = 0;
     virtual Ref<Program> CreateProgram(std::string_view name, ShaderSource source) = 0;
     virtual Ref<RenderTarget> CreateRenderTarget(TargetBufferFlags targets, uint32_t width, uint32_t height, MRT color, TargetBufferInfo depth,
                                                  TargetBufferInfo stencil) = 0;
@@ -43,7 +43,10 @@ class DriverApi : public RefCounted {
     virtual void SetTextureData(Ref<Texture> texture, uint32_t levels, uint32_t xoffset, uint32_t yoffset, uint32_t zoffset, uint32_t width,
                                 uint32_t height, uint32_t depth, const PixelBufferDescriptor& desc) = 0;
     virtual void UpdateSamplerGroup(SamplerGroupHandle sgh, SamplerGroupDescriptor& desc) = 0;
-    virtual void BindSamplerGroup(uint8_t bingding, SamplerGroupHandle sgh) = 0;
+    virtual void BindSamplerGroup(uint8_t binding, SamplerGroupHandle sgh) = 0;
+    virtual void BindUniformBuffer(uint8_t binding, BufferObjectHandle boh) = 0;
+
+    virtual uint32_t GetTextueID(TextureHandle th) = 0;
 
    private:
     /*

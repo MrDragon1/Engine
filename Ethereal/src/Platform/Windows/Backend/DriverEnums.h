@@ -268,6 +268,27 @@ inline constexpr TargetBufferFlags getTargetBufferFlagsAt(size_t index) noexcept
     return TargetBufferFlags::NONE;
 }
 
+enum class UniformType : uint8_t {
+    BOOL,
+    BOOL2,
+    BOOL3,
+    BOOL4,
+    FLOAT,
+    FLOAT2,
+    FLOAT3,
+    FLOAT4,
+    MAT3,
+    MAT4,
+    STRUCT,
+};
+
+enum class Precision : uint8_t {
+    LOW,
+    MEDIUM,
+    HIGH,
+    DEFAULT,
+};
+
 }  // namespace Backend
 }  // namespace Ethereal
 

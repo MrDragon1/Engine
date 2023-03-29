@@ -36,7 +36,6 @@ struct Texture : public RefCounted {
     TextureFormat format;
     TextureUsage usage;
     TextureType type;
-
     Texture(uint32_t width, uint32_t height, uint32_t depth, uint32_t levels, TextureFormat format, TextureUsage usage, TextureType type)
         : width(width), height(height), depth(depth), levels(levels), format(format), usage(usage), type(type) {}
 };
@@ -77,8 +76,6 @@ struct IndexBuffer : public RefCounted {
         ET_CORE_ASSERT(indexCount < (1u << 27));
     }
 };
-
-struct UniformBuffer : public RefCounted {};
 
 struct RenderPrimitive : public RefCounted {
     uint32_t offset{};

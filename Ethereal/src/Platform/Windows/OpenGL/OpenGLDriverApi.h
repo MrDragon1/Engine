@@ -119,6 +119,9 @@ class OpenGLDriverApi : public DriverApi {
                         uint32_t depth, const PixelBufferDescriptor& desc) override;
     void UpdateSamplerGroup(SamplerGroupHandle sgh, SamplerGroupDescriptor& desc) override;
     void BindSamplerGroup(uint8_t binding, Ref<SamplerGroup> sgh) override;
+    void BindUniformBuffer(uint8_t binding, BufferObjectHandle boh) override;
+
+    uint32_t GetTextueID(TextureHandle th) override;
 
    private:
     std::array<Ref<GLSamplerGroup>, 4> mSamplerGroupBindings;

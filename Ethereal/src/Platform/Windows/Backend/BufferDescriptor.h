@@ -5,6 +5,7 @@ namespace Ethereal {
 namespace Backend {
 class BufferDescriptor {
    public:
+    BufferDescriptor() = default;
     BufferDescriptor(void* buffer, size_t size) : buffer(buffer), size(size) {}
 
     size_t size = 0;

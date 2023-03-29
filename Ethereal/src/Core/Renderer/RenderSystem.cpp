@@ -192,6 +192,28 @@ void RenderSystem::Init() {
                                                           mrt,  // color
                                                           {},   // depth
                                                           {});  // stencil
+
+    Backend::BufferInterfaceBlock::Builder b;
+    b.Name("UniformBufferSize2");
+    b.Add({
+        {"f4a", 0, Backend::BufferInterfaceBlock::Type::FLOAT4},  // offset = 0
+        {"f4b", 0, Backend::BufferInterfaceBlock::Type::FLOAT4},  // offset = 16
+        {"f1a", 0, Backend::BufferInterfaceBlock::Type::FLOAT},   // offset = 32
+        {"f2a", 0, Backend::BufferInterfaceBlock::Type::FLOAT2},  // offset = 36
+    });
+    Backend::BufferInterfaceBlock uib(b.Build());
+    Backend::UniformBuffer buffer(uib.GetSize());
+    buffer.SetUniform(16, 1.0f);
+
+    Vector4 f4(0.1f, 0.5f, 0.5f, 1.0f);
+    size_t f4_offset = uib.GetFieldOffset("f4a", 0);
+    buffer.SetUniformArray(f4_offset, &f4, 1);
+
+    auto f = buffer.GetUniform<Vector4>(f4_offset);
+    buffer.Invalidate();
+    BufferDescriptor uniformDesc = buffer.toBufferDescriptor();
+    mUniformBuffer = mDriver->GetApi()->CreateBufferObject(buffer.GetSize(), BufferObjectBinding::UNIFORM, BufferUsage::STATIC);
+    mDriver->GetApi()->UpdateBufferObject(mUniformBuffer, std::move(uniformDesc), 0);
 }
 
 void RenderSystem::Draw(TimeStamp ts) {
@@ -205,7 +227,7 @@ void RenderSystem::Draw(TimeStamp ts) {
     params.clearColor = {0.3, 0.3, 0.3, 1.0};
 
     mDriver->GetApi()->BindSamplerGroup(0, mSamplerGroup);
-
+    mDriver->GetApi()->BindUniformBuffer(1, mUniformBuffer);
     mDriver->GetApi()->BeginRenderPass(mRenderTarget, params);
 
     mDriver->GetApi()->Draw(mTrianglePrimitive, mPipelineState);
@@ -254,7 +276,10 @@ void RenderSystem::OnResize() {
     m_MainCameraRenderPass->OnResize(m_Width, m_Height);
 }
 
-uint64_t RenderSystem::GetMainImage() { return m_MainImage->GetRendererID(); }
+uint64_t RenderSystem::GetMainImage() {
+    return mDriver->GetApi()->GetTextueID(mRenderTarget->color[0]);
+    // return m_MainImage->GetRendererID();
+}
 
 int RenderSystem::GetMousePicking(int x, int y) { return m_MainCameraRenderPass->GetMousePicking(x, y); }
 

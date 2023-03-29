@@ -154,5 +154,6 @@ class RenderSystem : public RefCounted {
     Ref<Backend::SamplerGroup> mSamplerGroup;
     Ref<Backend::Texture> mTextureA, mTextureB;
     Ref<Backend::RenderTarget> mRenderTarget;
+    Ref<Backend::BufferObject> mUniformBuffer;
 };
 }  // namespace Ethereal
