@@ -269,6 +269,14 @@ inline constexpr TargetBufferFlags getTargetBufferFlagsAt(size_t index) noexcept
 }
 
 enum class UniformType : uint8_t {
+    INT,
+    INT2,
+    INT3,
+    INT4,
+    UINT,
+    UINT2,
+    UINT3,
+    UINT4,
     BOOL,
     BOOL2,
     BOOL3,

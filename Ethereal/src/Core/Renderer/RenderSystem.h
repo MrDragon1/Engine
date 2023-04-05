@@ -14,6 +14,8 @@
 
 // For test backend
 #include "Platform/Windows/Backend/Driver.h";
+#include "Uniform/TypedUniform.h"
+#include "Uniform/UibGenerator.h"
 namespace Ethereal {
 // Structs used in Buffers.glslh
 struct CameraData {
@@ -138,7 +140,7 @@ class RenderSystem : public RefCounted {
     Ref<CSMRenderPass> m_CSMRenderPass;
 
     Ref<Environment> m_Environment;
-    Ref<Texture> m_MainImage;
+    Ref<Ethereal::Texture> m_MainImage;
     uint32_t m_Height, m_Width;
 
     Ref<UniformBufferSet> m_UniformBufferSet;
@@ -155,5 +157,14 @@ class RenderSystem : public RefCounted {
     Ref<Backend::Texture> mTextureA, mTextureB;
     Ref<Backend::RenderTarget> mRenderTarget;
     Ref<Backend::BufferObject> mUniformBuffer;
+
+    TypedUniform<CameraUib> mCameraUib;
+    TypedUniform<ShadowUib> mShadowUib;
+    TypedUniform<SceneUib> mSceneUib;
+    TypedUniform<EditorUib> mEditorUib;
+    Ref<Backend::BufferObject> mCameraUB;
+    Ref<Backend::BufferObject> mShadowUB;
+    Ref<Backend::BufferObject> mSceneUB;
+    Ref<Backend::BufferObject> mEditorUB;
 };
 }  // namespace Ethereal

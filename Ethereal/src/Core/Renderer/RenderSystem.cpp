@@ -16,6 +16,7 @@
 #include "box2d/b2_world.h"
 
 // Test Backend
+#include "Core/Renderer/Uniform/UibGenerator.h"
 #include "Shader.h"
 #include "Utils/AssetLoader.h"
 
@@ -136,12 +137,12 @@ void RenderSystem::Init() {
     m_MainImage = m_MainCameraRenderPass->m_Framebuffer->GetColorAttachment(0);
 
     m_UniformBufferSet = UniformBufferSet::Create(1);
-    m_UniformBufferSet->Set(UniformBuffer::Create(sizeof(CameraData), 0), 0);
-    m_UniformBufferSet->Set(UniformBuffer::Create(sizeof(ShadowData), 1), 0);
-    m_UniformBufferSet->Set(UniformBuffer::Create(sizeof(SceneData), 2), 0);
-    m_UniformBufferSet->Set(UniformBuffer::Create(sizeof(RendererData), 3), 0);
-    m_UniformBufferSet->Set(UniformBuffer::Create(sizeof(MaterialData), 4), 0);
-    m_UniformBufferSet->Set(UniformBuffer::Create(sizeof(FogData), 5), 0);
+    m_UniformBufferSet->Set(UniformBuffer_::Create(sizeof(CameraData), 0), 0);
+    m_UniformBufferSet->Set(UniformBuffer_::Create(sizeof(ShadowData), 1), 0);
+    m_UniformBufferSet->Set(UniformBuffer_::Create(sizeof(SceneData), 2), 0);
+    m_UniformBufferSet->Set(UniformBuffer_::Create(sizeof(RendererData), 3), 0);
+    m_UniformBufferSet->Set(UniformBuffer_::Create(sizeof(MaterialData), 4), 0);
+    m_UniformBufferSet->Set(UniformBuffer_::Create(sizeof(FogData), 5), 0);
 
     mDriver = new Backend::Driver(Backend::BackendType::OPENGL);
     mTrianglePrimitive = GetTrianglePrimitive(mDriver->GetApi());
@@ -193,16 +194,16 @@ void RenderSystem::Init() {
                                                           {},   // depth
                                                           {});  // stencil
 
-    Backend::BufferInterfaceBlock::Builder b;
+    BufferInterfaceBlock::Builder b;
     b.Name("UniformBufferSize2");
     b.Add({
-        {"f4a", 0, Backend::BufferInterfaceBlock::Type::FLOAT4},  // offset = 0
-        {"f4b", 0, Backend::BufferInterfaceBlock::Type::FLOAT4},  // offset = 16
-        {"f1a", 0, Backend::BufferInterfaceBlock::Type::FLOAT},   // offset = 32
-        {"f2a", 0, Backend::BufferInterfaceBlock::Type::FLOAT2},  // offset = 36
+        {"f4a", 0, BufferInterfaceBlock::Type::FLOAT4},  // offset = 0
+        {"f4b", 0, BufferInterfaceBlock::Type::FLOAT4},  // offset = 16
+        {"f1a", 0, BufferInterfaceBlock::Type::FLOAT},   // offset = 32
+        {"f2a", 0, BufferInterfaceBlock::Type::FLOAT2},  // offset = 36
     });
-    Backend::BufferInterfaceBlock uib(b.Build());
-    Backend::UniformBuffer buffer(uib.GetSize());
+    BufferInterfaceBlock uib(b.Build());
+    Ethereal::UniformBuffer buffer(uib.GetSize());
     buffer.SetUniform(16, 1.0f);
 
     Vector4 f4(0.1f, 0.5f, 0.5f, 1.0f);
@@ -214,6 +215,17 @@ void RenderSystem::Init() {
     BufferDescriptor uniformDesc = buffer.toBufferDescriptor();
     mUniformBuffer = mDriver->GetApi()->CreateBufferObject(buffer.GetSize(), BufferObjectBinding::UNIFORM, BufferUsage::STATIC);
     mDriver->GetApi()->UpdateBufferObject(mUniformBuffer, std::move(uniformDesc), 0);
+
+    const auto& camera_uib = UibGenerator::GetCameraUib();
+    const auto& scene_uib = UibGenerator::GetSceneUib();
+    const auto& editor_uib = UibGenerator::GetEditorUib();
+    const auto& shadow_uib = UibGenerator::GetShadowUib();
+
+    auto& s = mSceneUib.Edit();
+    s.FogColor = Vector4(1.0, 0, 0, 0);
+
+    mSceneUB = mDriver->GetApi()->CreateBufferObject(scene_uib.GetSize(), BufferObjectBinding::UNIFORM, BufferUsage::STATIC);
+    mDriver->GetApi()->UpdateBufferObject(mSceneUB, mSceneUib.ToBufferDescriptor(), 0);
 }
 
 void RenderSystem::Draw(TimeStamp ts) {
@@ -227,7 +239,7 @@ void RenderSystem::Draw(TimeStamp ts) {
     params.clearColor = {0.3, 0.3, 0.3, 1.0};
 
     mDriver->GetApi()->BindSamplerGroup(0, mSamplerGroup);
-    mDriver->GetApi()->BindUniformBuffer(1, mUniformBuffer);
+    mDriver->GetApi()->BindUniformBuffer(1, mSceneUB);
     mDriver->GetApi()->BeginRenderPass(mRenderTarget, params);
 
     mDriver->GetApi()->Draw(mTrianglePrimitive, mPipelineState);

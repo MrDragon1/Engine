@@ -7,13 +7,15 @@
 #include "Platform\Windows\Backend\DriverEnums.h"
 
 namespace Ethereal {
-namespace Backend {
 class BufferInterfaceBlock {
    public:
+    using Type = Backend::UniformType;
+    using Precision = Backend::Precision;
+
     struct InterfaceBlockEntry {
         std::string_view name;
         uint32_t size;
-        UniformType type;
+        Type type;
         Precision precision{};
         std::string_view structName{};
         uint32_t stride{};
@@ -26,8 +28,6 @@ class BufferInterfaceBlock {
         VOLATILE = 0x08,
         RESTRICT = 0x10,
     };
-    using Type = Backend::UniformType;
-    using Precision = Backend::Precision;
 
     struct FieldInfo {
         std::string name;        // name of this field
@@ -140,11 +140,11 @@ class UniformBuffer {
         return *reinterpret_cast<T const*>(static_cast<char const*>(mBuffer) + offset);
     }
 
-    BufferDescriptor toBufferDescriptor() const noexcept { return toBufferDescriptor(0, GetSize()); }
+    Backend::BufferDescriptor toBufferDescriptor() const noexcept { return toBufferDescriptor(0, GetSize()); }
 
     // copy the UBO data and cleans the dirty bits
-    BufferDescriptor toBufferDescriptor(size_t offset, size_t size) const noexcept {
-        BufferDescriptor p;
+    Backend::BufferDescriptor toBufferDescriptor(size_t offset, size_t size) const noexcept {
+        Backend::BufferDescriptor p;
         p.size = size;
         p.buffer = (void*)new char[p.size];
         memcpy(p.buffer, static_cast<const char*>(GetBuffer()) + offset, p.size);  // inlined
@@ -185,5 +185,4 @@ class UniformBuffer {
     mutable bool mDirty = false;
 };
 
-}  // namespace Backend
 }  // namespace Ethereal

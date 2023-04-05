@@ -1,7 +1,6 @@
 #include "UniformBuffer.h"
 
 namespace Ethereal {
-namespace Backend {
 UniformBuffer::UniformBuffer(uint32_t size) : mSize(size), mDirty(true) {
     mBuffer = UniformBuffer::Alloc(mSize);
     memset(mBuffer, 0, mSize);
@@ -102,14 +101,22 @@ uint8_t BufferInterfaceBlock::BaseAlignmentForType(Type type) noexcept {
     switch (type) {
         case Type::BOOL:
         case Type::FLOAT:
+        case Type::INT:
+        case Type::UINT:
             return 1;
         case Type::BOOL2:
         case Type::FLOAT2:
+        case Type::INT2:
+        case Type::UINT2:
             return 2;
         case Type::BOOL3:
         case Type::BOOL4:
         case Type::FLOAT3:
         case Type::FLOAT4:
+        case Type::INT3:
+        case Type::INT4:
+        case Type::UINT3:
+        case Type::UINT4:
         case Type::MAT3:
         case Type::MAT4:
         case Type::STRUCT:
@@ -120,15 +127,23 @@ uint8_t BufferInterfaceBlock::BaseAlignmentForType(Type type) noexcept {
 uint8_t BufferInterfaceBlock::StrideForType(Type type, uint32_t stride) noexcept {
     switch (type) {
         case Type::BOOL:
+        case Type::INT:
+        case Type::UINT:
         case Type::FLOAT:
             return 1;
         case Type::BOOL2:
+        case Type::INT2:
+        case Type::UINT2:
         case Type::FLOAT2:
             return 2;
         case Type::BOOL3:
+        case Type::INT3:
+        case Type::UINT3:
         case Type::FLOAT3:
             return 3;
         case Type::BOOL4:
+        case Type::INT4:
+        case Type::UINT4:
         case Type::FLOAT4:
             return 4;
         case Type::MAT3:
@@ -178,5 +193,4 @@ template void UniformBuffer::SetUniformArrayUntyped<12ul>(size_t offset, void co
 template void UniformBuffer::SetUniformArrayUntyped<16ul>(size_t offset, void const* begin, size_t count) noexcept;
 template void UniformBuffer::SetUniformArrayUntyped<64ul>(size_t offset, void const* begin, size_t count) noexcept;
 
-}  // namespace Backend
 }  // namespace Ethereal
