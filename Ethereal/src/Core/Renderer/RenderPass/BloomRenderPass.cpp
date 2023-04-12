@@ -1,159 +1,259 @@
-#include <Ethereal/src/Base/GlobalContext.h>
 #include "BloomRenderPass.h"
+
+#include <Ethereal/src/Base/GlobalContext.h>
+
 #include "Core/Renderer/RenderResource.h"
+namespace Ethereal {
+void BloomRenderPass::Init(uint32_t width, uint32_t height) {
+    m_Quad = RenderResource::Quad;
 
-namespace Ethereal
-{
-    void BloomRenderPass::Init(uint32_t width, uint32_t height) {
-        m_Quad = RenderResource::Quad;
+    auto api = GlobalContext::GetDriverApi();
+    auto usage = TextureUsage::COLOR_ATTACHMENT | TextureUsage::SAMPLEABLE;
+    auto hdrTex = api->CreateTexture(1, width, height, 1, TextureFormat::R16G16B16A16_HDR, usage, TextureType::TEXTURE_2D);
+    mRenderTarget = api->CreateRenderTarget(TargetBufferFlags::COLOR0, width, height, {hdrTex}, {}, {});
 
-        TextureSpecification spec, depthSpec;
-        spec.Format = ETHEREAL_PIXEL_FORMAT::PLACEHOLDER;
-        depthSpec.Format = ETHEREAL_PIXEL_FORMAT::DEPTH;
+    ShaderSource source;
+    source[ShaderType::VERTEX] = BRIGHT_VERT;
+    source[ShaderType::FRAGMENT] = BRIGHT_FRAG;
+    mBrightPipeline.program = api->CreateProgram("BRIGHT", source);
 
-        FramebufferSpecification fbSpec;
-        // Input Image, BrightArea Image (Blur)
-        fbSpec.ColorAttachments.PushAttachmentSpec(spec);
-        fbSpec.DepthAttachment.SetAttachmentSpec(depthSpec);
-        fbSpec.Width = width;
-        fbSpec.Height = height;
-        m_Framebuffer = Framebuffer::Create(fbSpec);
+    source[ShaderType::VERTEX] = BLUR_VERT;
+    source[ShaderType::FRAGMENT] = BLUR_FRAG;
+    mBlurPipeline.program = api->CreateProgram("BLUR", source);
 
-        m_Shader_Bright = GlobalContext::GetShaderLibrary().Get("BRIGHT");
-        m_Shader_Bright->Bind();
+    source[ShaderType::VERTEX] = MERGE_VERT;
+    source[ShaderType::FRAGMENT] = MERGE_FRAG;
+    mMergePipeline.program = api->CreateProgram("MERGE", source);
 
-        m_Shader_Blur = GlobalContext::GetShaderLibrary().Get("BLUR");
-        m_Shader_Blur->Bind();
+    mUniformBuffer = api->CreateBufferObject(mUniformInterfaceBuffer.GetSize(), BufferObjectBinding::UNIFORM, BufferUsage::STATIC);
+    api->UpdateBufferObject(mUniformBuffer, mUniformInterfaceBuffer.ToBufferDescriptor(), 0);
 
-        m_Shader_Merge = GlobalContext::GetShaderLibrary().Get("MERGE");
-        m_Shader_Merge->Bind();
+    mSamplerGroup = api->CreateSamplerGroup(3);
+    mSamplerGroupDesc = SamplerGroupDescriptor(3);
 
-        Invalidate(width, height);
+    Invalidate(width, height);
+}
+
+void BloomRenderPass::Draw() {
+    if (m_MainImage == nullptr) {
+        ET_CORE_WARN("BloomRenderPass::Draw() - MainImage is nullptr");
+        return;
+    }
+    auto api = GlobalContext::GetDriverApi();
+
+    mParams.clearColor = Vector4{0.0, 0.0, 0.0, 0.0};
+    auto& s = mUniformInterfaceBuffer.Edit();
+    s.Threshold = Project::GetConfigManager().sBloomConfig.Threshold;
+    s.Intensity = Project::GetConfigManager().sBloomConfig.Intensity;
+    s.Knee = Project::GetConfigManager().sBloomConfig.Knee;
+
+    api->BeginRenderPass(mRenderTarget, mParams);
+
+    // Draw BrightArea Image
+    {
+        s.Threshold = 0.0;
+        /*
+         * Notice that we are not initialize .level and .layer,
+         * otherwise, the backend will take this texture as image2D, not sampler2D in shader (like we do in blur image stage below)
+         */
+        mSamplerGroupDesc[0] = SamplerDescriptor{
+            .texture = m_MainImage,
+            .params = SamplerParams::Default(),
+            .binding = 0,
+        };
+        api->SetRenderTargetAttachment(mRenderTarget, {.handle = m_BrightAreaImage, .level = 0, .layer = 0}, TargetBufferFlags::COLOR0);
+
+        api->UpdateBufferObject(mUniformBuffer, mUniformInterfaceBuffer.ToBufferDescriptor(), 0);
+        api->BindUniformBuffer(0, mUniformBuffer);
+
+        api->UpdateSamplerGroup(mSamplerGroup, mSamplerGroupDesc);
+        api->BindSamplerGroup(0, mSamplerGroup);
+
+        api->Draw(m_Quad->GetMeshSource()->GetRenderPrimitive(), mBrightPipeline);
     }
 
-    void BloomRenderPass::Draw() {
-        if (m_MainImage == nullptr) {
-            ET_CORE_WARN("BloomRenderPass::Draw() - MainImage is nullptr");
-            return;
-        }
-        m_Framebuffer->Resize(m_Width, m_Height);
-        m_Framebuffer->Bind();
-
-        // Draw BrightArea Image
-        m_Shader_Bright->Bind();
-//        m_Shader_Bright->SetInt("u_MainImage", 0);
-        m_Shader_Bright->SetFloat("u_Threshold", 0.0f);  // 0.0 for blooming entire image
-        m_MainImage->Bind(0);
-        m_BrightAreaImage->BindToFramebuffer(0);
-        RenderCommand::Clear();
-        RenderCommand::DrawIndexed(m_Quad->GetMeshSource()->GetVertexArray(), m_Quad->GetMeshSource()->GetIndexBuffer()->GetCount());
-
-        // Blur Image
-
-        m_Framebuffer->Resize(m_Width, m_Height);
-        m_Framebuffer->Bind();
+    // Blur Image
+    {
         // Down Sampler
-        m_Shader_Blur->Bind();
-        m_Shader_Blur->SetFloat("u_Threshold", m_Threshold);
-        m_Shader_Blur->SetFloat("u_Knee", m_Knee);
+        s.Threshold = Project::GetConfigManager().sBloomConfig.Threshold;
+        s.Knee = Project::GetConfigManager().sBloomConfig.Knee;
+        s.DownSample = true;
 
-        m_Shader_Blur->SetInt("u_DownSample", true);
-//        m_Shader_Blur->SetInt("o_image", 0);
-//        m_Shader_Blur->SetInt("i_image", 1);
-//        m_Shader_Blur->SetInt("i_DownSamplerImage", 2);
+        // For 0 mip level
+        s.MipLevel = 0;
+        mSamplerGroupDesc[0] = SamplerDescriptor{
+            .texture = m_DownSampledImage,
+            .params = SamplerParams::Default(),
+            .binding = 0,
+            .level = 0,
+            .layer = 0,
+        };
+        mSamplerGroupDesc[1] = SamplerDescriptor{
+            .texture = m_BrightAreaImage,
+            .params = SamplerParams::Default(),
+            .binding = 1,
+            .level = 0,
+            .layer = 0,
+        };
+        api->UpdateBufferObject(mUniformBuffer, mUniformInterfaceBuffer.ToBufferDescriptor(), 0);
+        api->BindUniformBuffer(0, mUniformBuffer);
 
-        m_DownSampledImage->BindImage(0, 0);
-        m_BrightAreaImage->BindImage(1);
-        m_Shader_Blur->SetInt("u_MipLevel", 0);
+        api->UpdateSamplerGroup(mSamplerGroup, mSamplerGroupDesc);
+        api->BindSamplerGroup(0, mSamplerGroup);
 
-        RenderCommand::Clear();
-        RenderCommand::DrawIndexed(m_Quad->GetMeshSource()->GetVertexArray(), m_Quad->GetMeshSource()->GetIndexBuffer()->GetCount());
+        api->Draw(m_Quad->GetMeshSource()->GetRenderPrimitive(), mBlurPipeline);
 
+        // For other mip level
         for (int i = 1; i < m_MipLevels; i++) {
             auto mipWidth = static_cast<unsigned int>(m_Width * std::pow(0.5, i));
             auto mipHeight = static_cast<unsigned int>(m_Height * std::pow(0.5, i));
 
-            m_Framebuffer->Resize(mipWidth, mipHeight);
-            m_Framebuffer->Bind();
+            s.MipLevel = i;
+            mSamplerGroupDesc[0] = SamplerDescriptor{
+                .texture = m_DownSampledImage,
+                .params = SamplerParams::Default(),
+                .binding = 0,
+                .level = static_cast<uint8_t>(i),
+                .layer = 0,
+            };
+            mSamplerGroupDesc[1] = SamplerDescriptor{
+                .texture = m_DownSampledImage,
+                .params = SamplerParams::Default(),
+                .binding = 1,
+                .level = static_cast<uint8_t>(i - 1),
+                .layer = 0,
+            };
 
-            m_DownSampledImage->BindImage(1, i - 1);
-            m_Shader_Blur->SetInt("u_MipLevel", i);
-            m_DownSampledImage->BindImage(0, i);
+            api->UpdateBufferObject(mUniformBuffer, mUniformInterfaceBuffer.ToBufferDescriptor(), 0);
+            api->BindUniformBuffer(0, mUniformBuffer);
 
-            RenderCommand::DrawIndexed(m_Quad->GetMeshSource()->GetVertexArray(), m_Quad->GetMeshSource()->GetIndexBuffer()->GetCount());
+            api->UpdateSamplerGroup(mSamplerGroup, mSamplerGroupDesc);
+            api->BindSamplerGroup(0, mSamplerGroup);
+
+            api->Draw(m_Quad->GetMeshSource()->GetRenderPrimitive(), mBlurPipeline);
         }
 
         // Up Sampler
         auto mipWidth = static_cast<unsigned int>(m_Width * std::pow(0.5, m_MipLevels - 2));
         auto mipHeight = static_cast<unsigned int>(m_Height * std::pow(0.5, m_MipLevels - 2));
-        m_Framebuffer->Resize(mipWidth, mipHeight);
-        m_Framebuffer->Bind();
 
-        m_Shader_Blur->SetInt("u_DownSample", false);
-        m_Shader_Blur->SetInt("u_MipLevel", m_MipLevels - 2);
-        m_UpSampledImage->BindImage(0, m_MipLevels - 2);
-        m_DownSampledImage->BindImage(1, m_MipLevels - 1);
-        m_DownSampledImage->BindImage(2, m_MipLevels - 2);
+        s.DownSample = false;
+        s.MipLevel = m_MipLevels - 2;
 
-        RenderCommand::DrawIndexed(m_Quad->GetMeshSource()->GetVertexArray(), m_Quad->GetMeshSource()->GetIndexBuffer()->GetCount());
+        mSamplerGroupDesc[0] = SamplerDescriptor{
+            .texture = m_UpSampledImage,
+            .params = SamplerParams::Default(),
+            .binding = 0,
+            .level = static_cast<uint8_t>(m_MipLevels - 2),
+            .layer = 0,
+        };
+        mSamplerGroupDesc[1] = SamplerDescriptor{
+            .texture = m_DownSampledImage,
+            .params = SamplerParams::Default(),
+            .binding = 1,
+            .level = static_cast<uint8_t>(m_MipLevels - 1),
+            .layer = 0,
+        };
+        mSamplerGroupDesc[2] = SamplerDescriptor{
+            .texture = m_DownSampledImage,
+            .params = SamplerParams::Default(),
+            .binding = 2,
+            .level = static_cast<uint8_t>(m_MipLevels - 2),
+            .layer = 0,
+        };
 
+        api->UpdateBufferObject(mUniformBuffer, mUniformInterfaceBuffer.ToBufferDescriptor(), 0);
+        api->BindUniformBuffer(0, mUniformBuffer);
+
+        api->UpdateSamplerGroup(mSamplerGroup, mSamplerGroupDesc);
+        api->BindSamplerGroup(0, mSamplerGroup);
+
+        api->Draw(m_Quad->GetMeshSource()->GetRenderPrimitive(), mBlurPipeline);
         for (int i = m_MipLevels - 3; i >= 0; --i) {
             mipWidth = static_cast<unsigned int>(m_Width * std::pow(0.5, i));
             mipHeight = static_cast<unsigned int>(m_Height * std::pow(0.5, i));
+            s.MipLevel = i;
 
-            m_Framebuffer->Resize(mipWidth, mipHeight);
-            m_Framebuffer->Bind();
+            mSamplerGroupDesc[0] = SamplerDescriptor{
+                .texture = m_UpSampledImage,
+                .params = SamplerParams::Default(),
+                .binding = 0,
+                .level = static_cast<uint8_t>(i),
+                .layer = 0,
+            };
+            mSamplerGroupDesc[1] = SamplerDescriptor{
+                .texture = m_UpSampledImage,
+                .params = SamplerParams::Default(),
+                .binding = 1,
+                .level = static_cast<uint8_t>(i + 1),
+                .layer = 0,
+            };
+            mSamplerGroupDesc[2] = SamplerDescriptor{
+                .texture = m_DownSampledImage,
+                .params = SamplerParams::Default(),
+                .binding = 2,
+                .level = static_cast<uint8_t>(i),
+                .layer = 0,
+            };
 
-            m_Shader_Blur->SetInt("u_DownSample", false);
-            m_Shader_Blur->SetInt("u_MipLevel", i);
-            m_UpSampledImage->BindImage(0, i);
-            m_UpSampledImage->BindImage(1, i + 1);
-            m_DownSampledImage->BindImage(2, i);
+            api->UpdateBufferObject(mUniformBuffer, mUniformInterfaceBuffer.ToBufferDescriptor(), 0);
+            api->BindUniformBuffer(0, mUniformBuffer);
 
-            RenderCommand::DrawIndexed(m_Quad->GetMeshSource()->GetVertexArray(), m_Quad->GetMeshSource()->GetIndexBuffer()->GetCount());
+            api->UpdateSamplerGroup(mSamplerGroup, mSamplerGroupDesc);
+            api->BindSamplerGroup(0, mSamplerGroup);
+
+            api->Draw(m_Quad->GetMeshSource()->GetRenderPrimitive(), mBlurPipeline);
         }
-
-        // Merge Image
-        m_Framebuffer->Resize(m_Width, m_Height);
-        m_Framebuffer->Bind();
-
-        m_Shader_Merge->Bind();
-        m_Shader_Merge->SetFloat("u_Intensity", m_Intensity);
-
-//        m_Shader_Merge->SetInt("u_MainImage", 0);
-        m_MainImage->Bind(0);
-//        m_Shader_Merge->SetInt("u_BlurImage", 1);
-        m_UpSampledImage->Bind(1);
-        m_BloomImage->BindToFramebuffer(0);
-        RenderCommand::Clear();
-        RenderCommand::DrawIndexed(m_Quad->GetMeshSource()->GetVertexArray(), m_Quad->GetMeshSource()->GetIndexBuffer()->GetCount());
-
-        m_Framebuffer->Unbind();
     }
 
-    void BloomRenderPass::OnResize(uint32_t width, uint32_t height) {
-        m_Framebuffer->Resize(width, height);
-        Invalidate(width, height);
+    // Merge Image
+    {
+        s.Intensity = Project::GetConfigManager().sBloomConfig.Intensity;
+        mSamplerGroupDesc[0] = SamplerDescriptor{
+            .texture = m_MainImage,
+            .params = SamplerParams::Default(),
+            .binding = 0,
+        };
+
+        mSamplerGroupDesc[1] = SamplerDescriptor{
+            .texture = m_UpSampledImage,
+            .params = SamplerParams::Default(),
+            .binding = 1,
+        };
+
+        api->SetRenderTargetAttachment(mRenderTarget, {.handle = m_BloomImage, .level = 0, .layer = 0}, TargetBufferFlags::COLOR0);
+        api->UpdateBufferObject(mUniformBuffer, mUniformInterfaceBuffer.ToBufferDescriptor(), 0);
+        api->BindUniformBuffer(0, mUniformBuffer);
+
+        api->UpdateSamplerGroup(mSamplerGroup, mSamplerGroupDesc);
+        api->BindSamplerGroup(0, mSamplerGroup);
+
+        api->Draw(m_Quad->GetMeshSource()->GetRenderPrimitive(), mMergePipeline);
     }
+    api->EndRenderPass();
+}
 
-    void BloomRenderPass::Invalidate(uint32_t width, uint32_t height) {
-        m_Height = height;
-        m_Width = width;
-        Ref<TextureData> data = Ref<TextureData>::Create();
-        data->m_width = width;
-        data->m_height = height;
-        data->m_depth = 1;
-        data->m_type = ETHEREAL_IMAGE_TYPE::ETHEREAL_IMAGE_TYPE_2D;
-        data->m_format = ETHEREAL_PIXEL_FORMAT::R16G16B16A16_HDR;
-        m_BrightAreaImage = Texture2D::Create(data);
-        m_BloomImage = Texture2D::Create(data);
+void BloomRenderPass::OnResize(uint32_t width, uint32_t height) { Invalidate(width, height); }
 
-        m_UpSampledImage = Texture2D::Create(data);
-        m_UpSampledImage->GenerateMipmaps();
+void BloomRenderPass::Invalidate(uint32_t width, uint32_t height) {
+    m_Height = height;
+    m_Width = width;
+    m_MipLevels = log(std::min(height, width)) / log(2);
 
-        m_DownSampledImage = Texture2D::Create(data);
-        m_DownSampledImage->GenerateMipmaps();
+    auto api = GlobalContext::GetDriverApi();
+    auto usage = TextureUsage::COLOR_ATTACHMENT | TextureUsage::SAMPLEABLE;
+    auto hdrTex = api->CreateTexture(1, width, height, 1, TextureFormat::R16G16B16A16_HDR, usage, TextureType::TEXTURE_2D);
 
-        m_MipLevels = log(std::min(height, width)) / log(2);
-    }
+    m_BrightAreaImage = api->CreateTexture(1, width, height, 1, TextureFormat::R16G16B16A16_HDR, usage, TextureType::TEXTURE_2D);
+    m_BloomImage = api->CreateTexture(1, width, height, 1, TextureFormat::R16G16B16A16_HDR, usage, TextureType::TEXTURE_2D);
+
+    m_UpSampledImage = api->CreateTexture(m_MipLevels, width, height, 1, TextureFormat::R16G16B16A16_HDR, usage, TextureType::TEXTURE_2D);
+    api->GenerateMipmaps(m_UpSampledImage);
+
+    m_DownSampledImage = api->CreateTexture(m_MipLevels, width, height, 1, TextureFormat::R16G16B16A16_HDR, usage, TextureType::TEXTURE_2D);
+    api->GenerateMipmaps(m_DownSampledImage);
+
+    // This will resize the render target
+    api->SetRenderTargetAttachment(mRenderTarget, {.handle = m_BloomImage, .level = 0, .layer = 0}, TargetBufferFlags::COLOR0);
+}
 }  // namespace Ethereal

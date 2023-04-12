@@ -2,13 +2,16 @@
 
 layout(location = 0) in vec3 a_Position;
 
-layout(location = 0) uniform mat4 u_Projection;
-layout(location = 1) uniform mat4 u_View;
+layout(std140, binding = 0) uniform Config{
+        mat4 Projection; 
+        mat4 View;
+        float Roughness; 
+}u_Config;
 
 layout(location = 0) out vec3 v_WorldPos;
 
 void main()
 {
     v_WorldPos = a_Position;
-    gl_Position = u_Projection * u_View * vec4(v_WorldPos, 1.0);
+    gl_Position = u_Config.Projection * u_Config.View * vec4(v_WorldPos, 1.0);
 }

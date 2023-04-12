@@ -23,11 +23,11 @@ class TypedUniform {
 
     // helper functions
 
-    Backend::BufferDescriptor ToBufferDescriptor() const noexcept { return ToBufferDescriptor(0, GetSize()); }
+    BufferDescriptor ToBufferDescriptor() const noexcept { return ToBufferDescriptor(0, GetSize()); }
 
     // copy the UBO data and cleans the dirty bits
-    Backend::BufferDescriptor ToBufferDescriptor(size_t offset, size_t size) const noexcept {
-        Backend::BufferDescriptor p;
+    BufferDescriptor ToBufferDescriptor(size_t offset, size_t size) const noexcept {
+        BufferDescriptor p;
         p.size = size;
         p.buffer = (void*)new char[p.size];
         memcpy(p.buffer, reinterpret_cast<const char*>(mBuffer) + offset, p.size);

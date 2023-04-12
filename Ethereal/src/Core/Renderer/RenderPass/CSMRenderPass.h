@@ -1,50 +1,31 @@
 #pragma once
 #include "Core/Renderer/RenderPass.h"
 
-namespace Ethereal
-{
-    struct CSMRenderPassData {
-        int ShadowMapSize = 4096;
+namespace Ethereal {
 
-        float FOV;
-        float AspectRatio;
+class CSMRenderPass : public RenderPass {
+   public:
+    CSMRenderPass() = default;
+    ~CSMRenderPass() = default;
 
-        Vector3 LightDir;
+    void Init(uint32_t width, uint32_t height) override;
+    void Draw() override;
 
-        Ref<Texture> ShadowMap;
-    };
+    void OnResize(uint32_t width, uint32_t height) override;
+    void UpdateDistance();
 
-    class CSMRenderPass : public RenderPass {
-      public:
-        CSMRenderPass() = default;
-        ~CSMRenderPass() = default;
+   private:
+    std::vector<Vector4> GetFrustumCornersWorldSpace(const Matrix4& projview);
+    std::vector<Vector4> GetFrustumCornersWorldSpace(const Matrix4& proj, const Matrix4& view);
+    Matrix4 GetLightSpaceMatrix(float nearPlane, float farPlane);
+    void CalculateLightSpaceMatrices();
 
-        void Init(uint32_t width, uint32_t height) override;
-        void Draw() override;
+   private:
+    RenderPassParams mParams = {};
+    PipelineState mPipelineState;
+    RenderTargetHandle mRenderTarget;
 
-        void OnResize(uint32_t width, uint32_t height) override;
-        void SetNearFarPlane(float nearPlane, float farPlane);
-        void SetFOV(const float fov) { m_Data.FOV = fov; }
-        void SetAspectRatio(const float ratio) { m_Data.AspectRatio = ratio; }
-
-        void SetLightDir(const Vector3& dir) { m_Data.LightDir = Math::Normalize(dir); }
-
-        CSMRenderPassData GetData() { return m_Data; }
-        void BindFramebuffer() { m_Framebuffer->Bind(); }
-      private:
-        std::vector<Vector4> GetFrustumCornersWorldSpace(const Matrix4& projview);
-        std::vector<Vector4> GetFrustumCornersWorldSpace(const Matrix4& proj, const Matrix4& view);
-        Matrix4 GetLightSpaceMatrix(float nearPlane, float farPlane);
-        void CalculateLightSpaceMatrices();
-
-      private:
-        Ref<Shader> m_Shader;
-
-        Ref<Framebuffer> m_Framebuffer;
-
-        std::vector<float> m_Distance;
-
-        CSMRenderPassData m_Data;
-    };
+    std::vector<float> m_Distance;
+};
 
 }  // namespace Ethereal

@@ -1,75 +1,69 @@
 #pragma once
 
-#include "Ethereal.h"
-#include "Core/Editor/PanelManager.h"
-
-#include "Core/Renderer/EditorCamera.h"
 #include "Base/Ref.h"
+#include "Core/Editor/PanelManager.h"
+#include "Core/Renderer/EditorCamera.h"
+#include "Ethereal.h"
 
-namespace Ethereal
-{
-    class EditorLayer : public Layer {
-      public:
-        EditorLayer();
-        ~EditorLayer() override = default;
+namespace Ethereal {
+class EditorLayer : public Layer {
+   public:
+    EditorLayer();
+    ~EditorLayer() override = default;
 
-        void OnAttach() override;
-        void OnDetach() override;
+    void OnAttach() override;
+    void OnDetach() override;
 
-        void OnUpdate(TimeStamp ts) override;
-        void OnImGuiRender() override;
-        void OnEvent(Event& e) override;
+    void OnUpdate(TimeStamp ts) override;
+    void OnImGuiRender() override;
+    void OnEvent(Event& e) override;
 
-      private:
-        bool OnKeyPressed(KeyPressedEvent& e);
-        bool OnMouseButtonPressed(MouseButtonPressedEvent& e);
+   private:
+    bool OnKeyPressed(KeyPressedEvent& e);
+    bool OnMouseButtonPressed(MouseButtonPressedEvent& e);
 
-        void NewScene();
-        void OpenScene();
-        void OpenScene(const std::filesystem::path& path);
-        void SaveSceneAs();
-        void SaveScene();
+    void NewScene();
+    void OpenScene();
+    void OpenScene(const std::filesystem::path& path);
+    void SaveSceneAs();
+    void SaveScene();
 
-        void DuplicateEntity();
-        void SerializeScene(Ref<Scene> scene, const std::filesystem::path& path);
+    void DuplicateEntity();
+    void SerializeScene(Ref<Scene> scene, const std::filesystem::path& path);
 
-        void OnScenePlay();
-        void OnSceneStop();
+    void OnScenePlay();
+    void OnSceneStop();
 
-        void UI_Toolbar();
-        void ShowSkyboxSettingWindow(bool* p_open);
-        void ShowProjectSettingWindow(bool* p_open);
+    void UI_Toolbar();
+    void ShowSkyboxSettingWindow(bool* p_open);
+    void ShowProjectSettingWindow(bool* p_open);
 
-      private:
-        EditorCamera m_EditorCamera;
+   private:
+    EditorCamera m_EditorCamera;
 
-        Scope<PanelManager> m_PanelManager;
+    Scope<PanelManager> m_PanelManager;
 
-        Ref<Texture2D> m_IconPlay;
-        Ref<Texture2D> m_IconStop;
+    Ref<Texture> m_IconPlay;
+    Ref<Texture> m_IconStop;
 
-        Ref<Scene> m_RuntimeScene, m_EditorScene, m_CurrentScene;
+    Ref<Scene> m_RuntimeScene, m_EditorScene, m_CurrentScene;
 
-        std::filesystem::path m_EditorScenePath;
+    std::filesystem::path m_EditorScenePath;
 
-        Entity m_HoveredEntity;
+    Entity m_HoveredEntity;
 
-        Vector2 m_ViewportBounds[2];
+    Vector2 m_ViewportBounds[2];
 
-        bool m_ViewportFocused = false, m_ViewportHovered = false;
+    bool m_ViewportFocused = false, m_ViewportHovered = false;
 
-        int m_GizmoType = -1;
+    int m_GizmoType = -1;
 
-        enum class SceneState
-        {
-            Edit = 0,
-            Play = 1
-        };
+    enum class SceneState { Edit = 0, Play = 1 };
 
-        SceneState m_SceneState = SceneState::Edit;
-        bool b_ShowDemoImGui = false;
-        bool b_ShowSkyboxSettings = false;
-        bool b_ShowProjectSettings = true;
-        Vector3 m_LightPos = Vector3(-20, 40, -10);  // as far as possiable (away from the scene to avoid clamp shadow)
-    };
+    SceneState m_SceneState = SceneState::Edit;
+    bool b_ShowDemoImGui = false;
+    bool b_ShowSkyboxSettings = false;
+    bool b_ShowProjectSettings = true;
+    Vector3 m_LightPos = Vector3(-20, 40, -10);  // as far as possiable (away from the scene to avoid clamp shadow)
+};
 }  // namespace Ethereal

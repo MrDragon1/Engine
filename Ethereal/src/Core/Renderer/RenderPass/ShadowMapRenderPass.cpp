@@ -1,60 +1,64 @@
-#include <Base/GlobalContext.h>
 #include "ShadowMapRenderPass.h"
 
-namespace Ethereal
-{
-    void ShadowMapRenderPass::Init(uint32_t width, uint32_t height) {
-        TextureSpecification depthSpec;
-        depthSpec.Format = ETHEREAL_PIXEL_FORMAT::DEPTH;
+#include <Base/GlobalContext.h>
 
-        FramebufferSpecification fbSpec;
-        fbSpec.DepthAttachment.SetAttachmentSpec(depthSpec);
-        fbSpec.Width = m_ShadowMapSize;
-        fbSpec.Height = m_ShadowMapSize;
-        m_Framebuffer = Framebuffer::Create(fbSpec);
+namespace Ethereal {
+void ShadowMapRenderPass::Init(uint32_t width, uint32_t height) {
+    m_LightPos = Vector3(-2.0f, 4.0f, -1.0f);
+    CalculateViewProjectionMatrix();
 
-        m_LightPos = Vector3(-2.0f, 4.0f, -1.0f);
-        CalculateViewProjectionMatrix();
+    auto api = GlobalContext::GetDriverApi();
+    ShaderSource source;
+    source[ShaderType::VERTEX] = SHADOWMAP_VERT;
+    source[ShaderType::FRAGMENT] = SHADOWMAP_FRAG;
+    mPipelineState.program = api->CreateProgram("SHADOWMAP", source);
 
-        m_Shader = GlobalContext::GetShaderLibrary().Get("SHADOWMAP");
-        m_Shader->Bind();
-    }
+    auto depthTex = api->CreateTexture(1, Project::GetConfigManager().sCSMConfig.ShadowMapSize, Project::GetConfigManager().sCSMConfig.ShadowMapSize,
+                                       Project::GetConfigManager().sCSMConfig.CascadeCount + 1, TextureFormat::DEPTH, TextureUsage::DEPTH_ATTACHMENT,
+                                       TextureType::TEXTURE_2D_ARRAY);
+    mRenderTarget = api->CreateRenderTarget(TargetBufferFlags::DEPTH, Project::GetConfigManager().sCSMConfig.ShadowMapSize,
+                                            Project::GetConfigManager().sCSMConfig.ShadowMapSize, {}, {depthTex}, {});
+    mParams.clearColor = {0, 0, 0, 0};
+}
 
-    void ShadowMapRenderPass::Draw() {
-        m_Framebuffer->Bind();
-        RenderCommand::SetClearColor({0, 0, 0, 0});
-        RenderCommand::Clear();
-        RenderCommand::SetCullFace(ETHEREAL_CULLFACE_TYPE::FRONT);
+void ShadowMapRenderPass::Draw() {
+    // This pass is not complete,
 
-        // Draw Shadow Map
-        const auto& staticMeshDrawList = m_DrawLists.StaticMeshDrawList;
-        const auto& meshTransformMap = m_DrawLists.MeshTransformMap;
+    // Draw Shadow Map
+    const auto& staticMeshDrawList = m_DrawLists.StaticMeshDrawList;
+    const auto& meshTransformMap = m_DrawLists.MeshTransformMap;
 
-        m_Shader->Bind();
-        m_Shader->SetMat4("u_ViewProjection", m_ViewProjectionMatrix);
-        if (!staticMeshDrawList.empty()) {
-            for (auto& [mk, dc] : staticMeshDrawList) {
-                Ref<MeshSource> ms = dc.StaticMesh->GetMeshSource();
-                ms->GetVertexArray()->Bind();
-                m_Shader->SetMat4("u_Model", meshTransformMap.at(mk).Transforms[dc.SubmeshIndex].Transform);
+    auto uniformManager = GlobalContext::GetUniformManager();
+    auto api = GlobalContext::GetDriverApi();
 
-                RenderCommand::DrawIndexed(ms->GetVertexArray(), ms->GetVertexArray()->GetIndexBuffer()->GetCount());
-            }
+    api->BeginRenderPass(mRenderTarget, mParams);
+    if (!staticMeshDrawList.empty()) {
+        for (auto& [mk, dc] : staticMeshDrawList) {
+            Ref<MeshSource> ms = dc.StaticMesh->GetMeshSource();
+            Ref<MaterialTable> mt = dc.MaterialTable;
+            Submesh& submesh = ms->GetSubmeshes()[dc.SubmeshIndex];
+
+            uniformManager->UpdateRenderPrimitive({.ModelMatrix = meshTransformMap.at(mk).Transforms[0].Transform});
+
+            // RenderCommand::DrawIndexed(ms->GetVertexArray(), submesh.IndexCount, reinterpret_cast<void*>(submesh.BaseIndex * sizeof(uint32_t)),
+            //                            submesh.BaseVertex);
+            api->Draw(ms->GetRenderPrimitive(), mPipelineState);
         }
-        RenderCommand::SetCullFace(ETHEREAL_CULLFACE_TYPE::BACK);
-        m_Framebuffer->Unbind();
     }
 
-    void ShadowMapRenderPass::OnResize(uint32_t width, uint32_t height) {
-        //* framebuffer dont need to resize
-        // m_Framebuffer->Resize(width, height);
-    }
+    api->EndRenderPass();
+}
 
-    void ShadowMapRenderPass::CalculateViewProjectionMatrix() {
-        GLfloat near_plane = 0.1f, far_plane = 100.0f;
-        Matrix4 lightProjection = Math::Ortho(-50.0f, 50.0f, -50.0f, 50.0f, near_plane, far_plane);
-        Matrix4 lightView = Math::LookAt(m_LightPos, Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f));
-        m_ViewProjectionMatrix = lightProjection * lightView;
-    }
+void ShadowMapRenderPass::OnResize(uint32_t width, uint32_t height) {
+    //* framebuffer dont need to resize
+    // m_Framebuffer->Resize(width, height);
+}
+
+void ShadowMapRenderPass::CalculateViewProjectionMatrix() {
+    GLfloat near_plane = 0.1f, far_plane = 100.0f;
+    Matrix4 lightProjection = Math::Ortho(-50.0f, 50.0f, -50.0f, 50.0f, near_plane, far_plane);
+    Matrix4 lightView = Math::LookAt(m_LightPos, Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f));
+    m_ViewProjectionMatrix = lightProjection * lightView;
+}
 
 }  // namespace Ethereal

@@ -1,17 +1,15 @@
 #pragma once
-#include "Core/Renderer/Texture.h"
-#include "Resource/ResourceLoader.h"
-#include "Utils/FileSystem.h"
-#include "Core/Asset/AssetManager.h"
-#include "Core/Renderer/Environment.h"
-
 #include <filesystem>
 
-namespace Ethereal
-{
-class RenderResource {
-public:
+#include "Core/Asset/AssetManager.h"
+#include "Core/Renderer/Environment.h"
+#include "Resource/ResourceLoader.h"
+#include "Resource/generated/cpp/ShaderBinaryData.h"
+#include "Utils/FileSystem.h"
 
+namespace Ethereal {
+class RenderResource {
+   public:
     inline static Ref<Texture> WhiteTexture;
     inline static Ref<Texture> BlackTexture;
     inline static Ref<Texture> BRDFLutTexture;
@@ -22,8 +20,7 @@ public:
 
     inline static MaterialDesc DefaultMaterialDesc;
 
-
-//    inline static Ref<Environment> Environment;
+    //    inline static Ref<Environment> Environment;
 
     static void Init() {
         WhiteTexture = AssetManager::GetAsset<Texture>("buildin/textures/white.png");
@@ -40,7 +37,6 @@ public:
         Quad = Ref<StaticMesh>::Create();
         Quad->Load(desc);
 
-
         {
             DefaultMaterialDesc.Name = "DefaultMaterial";
             DefaultMaterialDesc.AlbedoMap = WhiteTexture->Handle;
@@ -49,8 +45,6 @@ public:
             DefaultMaterialDesc.RoughnessMap = WhiteTexture->Handle;
             DefaultMaterialDesc.OcclusionMap = WhiteTexture->Handle;
         }
-
-
     }
 
     static void Shutdown() {
@@ -64,16 +58,15 @@ public:
         Quad.Reset();
     }
 
-private:
-    static Ref<Texture2D> LoadTexture(const std::filesystem::path& relativePath) {
-        std::filesystem::path path = std::filesystem::path("assets") /"buildin" / "Editor" / relativePath;
+   private:
+    static Ref<Texture> LoadTexture(const std::filesystem::path& relativePath) {
+        std::filesystem::path path = std::filesystem::path("assets") / "buildin" / "Editor" / relativePath;
 
         if (!FileSystem::Exists(path)) {
-            ET_CORE_ASSERT(false,"Failed to load icon {0}! The file doesn't exist.", path.string());
+            ET_CORE_ASSERT(false, "Failed to load icon {0}! The file doesn't exist.", path.string());
             return nullptr;
         }
-
-        return Texture2D::Create(path.string());
+        return ResourceLoader::LoadTexture(path.string());
     }
 };
 }  // namespace Ethereal

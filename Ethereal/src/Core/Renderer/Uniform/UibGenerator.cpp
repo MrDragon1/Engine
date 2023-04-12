@@ -2,13 +2,17 @@
 
 #include "Platform/Windows/Backend/UniformBuffer.h"
 namespace Ethereal {
-using namespace Backend;
-BufferInterfaceBlock const& UibGenerator::GetCameraUib() noexcept {
+BufferInterfaceBlock const& UibGenerator::GetViewUib() noexcept {
     using Type = BufferInterfaceBlock::Type;
 
     static BufferInterfaceBlock const uib = BufferInterfaceBlock::Builder()
-                                                .Name(CameraUib::_name)
+                                                .Name(ViewUib::_name)
                                                 .Add({
+                                                    {"CameraPosition", 0, Type::FLOAT3, Precision::HIGH},
+                                                    {"EnvironmentMapIntensity", 0, Type::FLOAT, Precision::HIGH},
+                                                    {"ScissorNormalized", 0, Type::FLOAT4, Precision::HIGH},
+
+                                                    // Camera
                                                     {"ViewProjectionMatrix", 0, Type::MAT4, Precision::HIGH},
                                                     {"InverseViewProjectionMatrix", 0, Type::MAT4, Precision::HIGH},
                                                     {"ProjectionMatrix", 0, Type::MAT4, Precision::HIGH},
@@ -17,8 +21,19 @@ BufferInterfaceBlock const& UibGenerator::GetCameraUib() noexcept {
                                                     {"InverseViewMatrix", 0, Type::MAT4, Precision::HIGH},
                                                     {"FarPlane", 0, Type::FLOAT, Precision::HIGH},
                                                     {"NearPlane", 0, Type::FLOAT, Precision::HIGH},
+                                                    {"EntityID", 0, Type::UINT, Precision::HIGH},
+                                                    {"padding", 0, Type::FLOAT, Precision::HIGH},
+                                                    // Fog
+                                                    {"FogColor", 0, Type::FLOAT4, Precision::HIGH},
+                                                    {"FogStart", 0, Type::FLOAT, Precision::HIGH},
+                                                    {"FogDensity", 0, Type::FLOAT, Precision::HIGH},
+                                                    {"FogHeight", 0, Type::FLOAT, Precision::HIGH},
+                                                    {"FogHeightFalloff", 0, Type::FLOAT, Precision::HIGH},
+                                                    {"FogScatteringStart", 0, Type::FLOAT, Precision::HIGH},
+                                                    {"FogScatteringSize", 0, Type::FLOAT, Precision::HIGH},
+                                                    {"FogEnbale", 0, Type::BOOL, Precision::HIGH},
+                                                    {"FogFromIBL", 0, Type::BOOL, Precision::HIGH},
 
-                                                    {"padding", 0, Type::FLOAT2, Precision::HIGH},
                                                 })
                                                 .Build();
 
@@ -42,39 +57,44 @@ BufferInterfaceBlock const& UibGenerator::GetShadowUib() noexcept {
     return uib;
 }
 
-BufferInterfaceBlock const& UibGenerator::GetSceneUib() noexcept {
+BufferInterfaceBlock const& UibGenerator::GetRenderPrimitiveUib() noexcept {
     using Type = BufferInterfaceBlock::Type;
     static BufferInterfaceBlock const uib = BufferInterfaceBlock::Builder()
-                                                .Name(SceneUib::_name)
+                                                .Name(RenderPrimitiveUib::_name)
                                                 .Add({
                                                     //{"DirLight", 0, Type::STRUCT, {}, "DirectionalLight", sizeof(SceneUib::DirectionalLight), {}},
-                                                    {"CameraPosition", 0, Type::FLOAT3, Precision::HIGH},
-                                                    {"EnvironmentMapIntensity", 0, Type::FLOAT, Precision::HIGH},
-                                                    {"ScissorNormalized", 0, Type::FLOAT4, Precision::HIGH},
-
-                                                    // Fog
-                                                    {"FogColor", 0, Type::FLOAT4, Precision::HIGH},
-                                                    {"FogStart", 0, Type::FLOAT, Precision::HIGH},
-                                                    {"FogDensity", 0, Type::FLOAT, Precision::HIGH},
-                                                    {"FogHeight", 0, Type::FLOAT, Precision::HIGH},
-                                                    {"FogHeightFalloff", 0, Type::FLOAT, Precision::HIGH},
-                                                    {"FogScatteringStart", 0, Type::FLOAT, Precision::HIGH},
-                                                    {"FogScatteringSize", 0, Type::FLOAT, Precision::HIGH},
-                                                    {"FogEnbale", 0, Type::BOOL, Precision::HIGH},
-                                                    {"FogFromIBL", 0, Type::BOOL, Precision::HIGH},
+                                                    {"ModelMatrix", 0, Type::MAT4, Precision::HIGH},
+                                                    {"Albedo", 0, Type::FLOAT4, Precision::HIGH},
+                                                    {"Metallic", 0, Type::FLOAT, Precision::HIGH},
+                                                    {"Roughness", 0, Type::FLOAT, Precision::HIGH},
+                                                    {"Occlusion", 0, Type::FLOAT, Precision::HIGH},
+                                                    {"Emisstion", 0, Type::FLOAT, Precision::HIGH},
+                                                    {"UseMap", 0, Type::UINT, Precision::HIGH},
                                                 })
                                                 .Build();
     return uib;
 }
 
-BufferInterfaceBlock const& UibGenerator::GetEditorUib() noexcept {
+BufferInterfaceBlock const& UibGenerator::GetRenderPrimitiveBoneUib() noexcept {
     using Type = BufferInterfaceBlock::Type;
     static BufferInterfaceBlock const uib = BufferInterfaceBlock::Builder()
-                                                .Name(EditorUib::_name)
+                                                .Name(RenderPrimitiveBoneUib::_name)
                                                 .Add({
-                                                    {"EntityID", 0, Type::UINT, Precision::HIGH},
+                                                    {"BoneTransform", 100, Type::MAT4, Precision::HIGH},
+                                                })
+                                                .Build();
+    return uib;
+}
 
-                                                    {"padding", 0, Type::FLOAT3, Precision::HIGH},
+BufferInterfaceBlock const& UibGenerator::GetLightUib() noexcept {
+    using Type = BufferInterfaceBlock::Type;
+    static BufferInterfaceBlock const uib = BufferInterfaceBlock::Builder()
+                                                .Name(LightUib::_name)
+                                                .Add({
+                                                    {"Direction", 0, Type::FLOAT3, Precision::HIGH},
+                                                    {"ShadowAmount", 0, Type::FLOAT, Precision::HIGH},
+                                                    {"Color", 0, Type::FLOAT3, Precision::HIGH},
+                                                    {"Intensity", 0, Type::FLOAT, Precision::HIGH},
                                                 })
                                                 .Build();
     return uib;

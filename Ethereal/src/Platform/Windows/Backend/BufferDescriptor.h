@@ -2,7 +2,6 @@
 #include "DriverEnums.h"
 
 namespace Ethereal {
-namespace Backend {
 class BufferDescriptor {
    public:
     BufferDescriptor() = default;
@@ -31,5 +30,4 @@ class PixelBufferDescriptor final : public BufferDescriptor {
     PixelDataType dataType;
 };
 
-}  // namespace Backend
 }  // namespace Ethereal

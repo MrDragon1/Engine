@@ -9,8 +9,8 @@
 namespace Ethereal {
 class BufferInterfaceBlock {
    public:
-    using Type = Backend::UniformType;
-    using Precision = Backend::Precision;
+    using Type = UniformType;
+    using Precision = Precision;
 
     struct InterfaceBlockEntry {
         std::string_view name;
@@ -140,11 +140,11 @@ class UniformBuffer {
         return *reinterpret_cast<T const*>(static_cast<char const*>(mBuffer) + offset);
     }
 
-    Backend::BufferDescriptor toBufferDescriptor() const noexcept { return toBufferDescriptor(0, GetSize()); }
+    BufferDescriptor toBufferDescriptor() const noexcept { return toBufferDescriptor(0, GetSize()); }
 
     // copy the UBO data and cleans the dirty bits
-    Backend::BufferDescriptor toBufferDescriptor(size_t offset, size_t size) const noexcept {
-        Backend::BufferDescriptor p;
+    BufferDescriptor toBufferDescriptor(size_t offset, size_t size) const noexcept {
+        BufferDescriptor p;
         p.size = size;
         p.buffer = (void*)new char[p.size];
         memcpy(p.buffer, static_cast<const char*>(GetBuffer()) + offset, p.size);  // inlined

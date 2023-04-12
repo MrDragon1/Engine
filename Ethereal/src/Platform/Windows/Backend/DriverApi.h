@@ -21,6 +21,8 @@ class DriverApi : public RefCounted {
      * The function below is provided to Driver
      */
    public:
+    virtual void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) = 0;
+
     virtual Ref<Texture> CreateTexture(uint8_t levels, uint32_t width, uint32_t height, uint32_t depth, TextureFormat format, TextureUsage usage,
                                        TextureType type) = 0;
     virtual Ref<SamplerGroup> CreateSamplerGroup(uint32_t size) = 0;
@@ -46,7 +48,12 @@ class DriverApi : public RefCounted {
     virtual void BindSamplerGroup(uint8_t binding, SamplerGroupHandle sgh) = 0;
     virtual void BindUniformBuffer(uint8_t binding, BufferObjectHandle boh) = 0;
 
+    virtual void GenerateMipmaps(TextureHandle th) = 0;
+    virtual void SetRenderTargetAttachment(RenderTargetHandle rth, TargetBufferInfo const& info, TargetBufferFlags flag) = 0;
     virtual uint32_t GetTextueID(TextureHandle th) = 0;
+    virtual void GetSubTexture(TextureHandle th, uint32_t layer, TextureHandle dst) = 0;
+
+    virtual void Clear() = 0;
 
    private:
     /*

@@ -17,6 +17,8 @@ struct GLTexture : public Texture {
         GLuint id;
         GLenum format;
         GLenum target;
+        uint32_t baseLevel = INVALID_UINT32;
+        uint32_t maxLevel = INVALID_UINT32;
     } gl;
 };
 
@@ -26,7 +28,9 @@ struct GLSamplerGroup : public SamplerGroup {
     struct Entry {
         Ref<Texture> texture;
         GLuint id;
-        uint8_t binding = 0xff;
+        uint32_t binding = INVALID_UINT32;
+        uint32_t level = INVALID_UINT32;
+        uint32_t layer = INVALID_UINT32;
     };
 
     std::vector<Entry> entries;
@@ -97,6 +101,7 @@ struct GLRenderTarget : public RenderTarget {
 };
 
 class OpenGLDriverApi : public DriverApi {
+    void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) override;
     Ref<Texture> CreateTexture(uint8_t levels, uint32_t width, uint32_t height, uint32_t depth, TextureFormat format, TextureUsage usage,
                                TextureType type) override;
     Ref<SamplerGroup> CreateSamplerGroup(uint32_t size) override;
@@ -121,7 +126,12 @@ class OpenGLDriverApi : public DriverApi {
     void BindSamplerGroup(uint8_t binding, Ref<SamplerGroup> sgh) override;
     void BindUniformBuffer(uint8_t binding, BufferObjectHandle boh) override;
 
+    void GenerateMipmaps(TextureHandle th) override;
+    void SetRenderTargetAttachment(RenderTargetHandle rth, TargetBufferInfo const& info, TargetBufferFlags flag) override;
+
     uint32_t GetTextueID(TextureHandle th) override;
+    void GetSubTexture(TextureHandle th, uint32_t layer, TextureHandle dst) override;
+    void Clear() override;
 
    private:
     std::array<Ref<GLSamplerGroup>, 4> mSamplerGroupBindings;
@@ -132,6 +142,7 @@ class OpenGLDriverApi : public DriverApi {
     void AllocateTexture(Ref<GLTexture> texture, uint32_t width, uint32_t height, uint32_t depth);
     void UpdateVertexArrayObject(Ref<GLRenderPrimitive> rp, Ref<GLVertexBuffer> vbh);
     void UpdateFrameBufferTexture(Ref<GLRenderTarget> rt, TargetBufferInfo const& info, GLenum attachment);
+    void SetRasterState(RasterState state);
 };
 
 }  // namespace Backend

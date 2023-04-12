@@ -30,10 +30,14 @@ static GLenum ResolveTextureFormat(const TextureFormat& format) {
             return GL_R32I;
         case TextureFormat::DEPTH:
             return GL_DEPTH_COMPONENT32F;
-        case TextureFormat::RED:
-            return GL_RED;
+        case TextureFormat::R8:
+            return GL_R8;
+        case TextureFormat::R16:
+            return GL_R16;
         case TextureFormat::R16G16B16A16_HDR:
             return GL_RGBA16F;  // Convert to RGBA
+        case TextureFormat::R16G16B16_HDR:
+            return GL_RGB16F;  // Convert to RGBA
         default:
             ET_CORE_ASSERT("Invalid Texture Format!");
             return GL_NONE;
@@ -207,8 +211,8 @@ static GLenum ResolveShaderType(const ShaderType& type) {
             return GL_VERTEX_SHADER;
         case ShaderType::FRAGMENT:
             return GL_FRAGMENT_SHADER;
-        case ShaderType::COMPUTE:
-            return GL_COMPUTE_SHADER;
+        case ShaderType::GEOMETRY:
+            return GL_GEOMETRY_SHADER;
         default:
             ET_CORE_ASSERT("Invalide ShaderType!")
             return GL_NONE;
@@ -283,7 +287,7 @@ static GLenum ResolveSamplerCompareFunc(const SamplerCompareFunc& func) noexcept
             return GL_NONE;
     }
 }
-
+static GLenum ResolveDepthFunc(const SamplerCompareFunc& func) { return ResolveSamplerCompareFunc(func); }
 }  // namespace GLUtils
 }  // namespace Backend
 }  // namespace Ethereal

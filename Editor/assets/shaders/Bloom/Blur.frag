@@ -6,11 +6,14 @@ layout(rgba16f, binding = 0) uniform image2D o_image;
 layout(rgba16f, binding = 1) uniform image2D i_image;
 layout(rgba16f, binding = 2) uniform image2D i_DownSamplerImage;
 
+layout(std140, binding = 0) uniform Config{
+    float Threshold;
+    float Knee;
+    float Intensity;
+    int DownSample;
+    int MipLevel;
+}u_Config;
 
-layout(location = 0) uniform int u_DownSample;
-layout(location = 1) uniform int u_MipLevel;
-layout(location = 2) uniform float u_Threshold;
-layout(location = 3) uniform float u_Knee;
 
 // Quadratic color thresholding
 // curve = (threshold - knee, knee * 2, 0.25 / knee)
@@ -30,7 +33,7 @@ vec3 Prefilter(vec3 color)
 {
     float clampValue = 20.0f;
     color = clamp(color, vec3(0.0f), vec3(clampValue));
-    color = QuadraticThreshold(color, u_Threshold, u_Knee);
+    color = QuadraticThreshold(color, u_Config.Threshold, u_Config.Knee);
     return color;
 }
 
@@ -171,9 +174,9 @@ void main()
     ivec2 coords = ivec2(gl_FragCoord.xy);
     vec3 result = vec3(1.0f, 0.0f, 0.0f);
 
-    if (bool(u_DownSample))
+    if (bool(u_Config.DownSample))
     {
-        if (int(u_MipLevel) == 0)
+        if (int(u_Config.MipLevel) == 0)
         {
             result.rgb = FirstDownsample(coords, 1);
             result.rgb = Prefilter(result);

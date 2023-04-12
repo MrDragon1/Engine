@@ -9,7 +9,7 @@ void main()
 {
     for (int i = 0; i < 3; ++i)
     {
-        gl_Position = u_CascadeShadowData.DirLightMatrices[gl_InvocationID] * gl_in[i].gl_Position;
+        gl_Position = u_Shadow.DirLightMatrices[gl_InvocationID] * gl_in[i].gl_Position;
         gl_Layer = gl_InvocationID;
         EmitVertex();
     }

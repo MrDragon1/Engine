@@ -3,7 +3,12 @@ layout(location = 0) out vec4 FragColor;
 layout(location = 0) in vec3 v_WorldPos;
 
 layout(binding = 0) uniform samplerCube u_EnvironmentMap;
-layout(location = 2) uniform float u_Roughness;
+
+layout(std140, binding = 0) uniform Config{
+        mat4 Projection; 
+        mat4 View;
+        float Roughness; 
+}u_Config;
 
 const float PI = 3.14159265359;
 // ----------------------------------------------------------------------------
@@ -77,14 +82,14 @@ void main()
     {
         // generates a sample vector that's biased towards the preferred alignment direction (importance sampling).
         vec2 Xi = Hammersley(i, SAMPLE_COUNT);
-        vec3 H = ImportanceSampleGGX(Xi, N, u_Roughness);
+        vec3 H = ImportanceSampleGGX(Xi, N, u_Config.Roughness);
         vec3 L  = normalize(2.0 * dot(V, H) * H - V);
 
         float NdotL = max(dot(N, L), 0.0);
         if(NdotL > 0.0)
         {
             // sample from the environment's mip level based on roughness/pdf
-            float D   = DistributionGGX(N, H, u_Roughness);
+            float D   = DistributionGGX(N, H, u_Config.Roughness);
             float NdotH = max(dot(N, H), 0.0);
             float HdotV = max(dot(H, V), 0.0);
             float pdf = D * NdotH / (4.0 * HdotV) + 0.0001;
@@ -93,7 +98,7 @@ void main()
             float saTexel  = 4.0 * PI / (6.0 * resolution * resolution);
             float saSample = 1.0 / (float(SAMPLE_COUNT) * pdf + 0.0001);
 
-            float mipLevel = u_Roughness == 0.0 ? 0.0 : 0.5 * log2(saSample / saTexel);
+            float mipLevel = u_Config.Roughness == 0.0 ? 0.0 : 0.5 * log2(saSample / saTexel);
 
             prefilteredColor += textureLod(u_EnvironmentMap, L, mipLevel).rgb * NdotL;
             totalWeight      += NdotL;

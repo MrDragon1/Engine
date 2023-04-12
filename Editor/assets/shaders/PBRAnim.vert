@@ -11,8 +11,6 @@ layout(location = 4) in vec2 a_TexCoord;
 layout(location = 5) in ivec4 a_BoneIDs;
 layout(location = 6) in vec4 a_BoneWeights;
 
-layout(location = 0) uniform mat4 u_Model;
-
 const int MAX_BONES = 100;
 layout(location = 1) uniform mat4 u_BoneTransforms[100];
 
@@ -29,7 +27,7 @@ void main()
 
 
     v_TexCoord = a_TexCoord;
-    v_WorldPos = vec3(u_Model * boneTransform * vec4(a_Position, 1.0));;
-    v_Normal = mat3(u_Model) * mat3(boneTransform) * a_Normal;
-    gl_Position = u_Camera.ViewProjectionMatrix * vec4(v_WorldPos, 1.0);
+    v_WorldPos = vec3(u_RenderPrimitive.ModelMatrix * boneTransform * vec4(a_Position, 1.0));;
+    v_Normal = mat3(u_RenderPrimitive.ModelMatrix) * mat3(boneTransform) * a_Normal;
+    gl_Position = u_View.ViewProjectionMatrix * vec4(v_WorldPos, 1.0);
 }

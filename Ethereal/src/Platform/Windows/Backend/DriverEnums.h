@@ -3,7 +3,6 @@
 #include "Utils/BitmaskEnum.h"
 
 namespace Ethereal {
-namespace Backend {
 static constexpr size_t MAX_SUPPORTED_RENDER_TARGET_COUNT = 8u;
 static constexpr size_t MAX_VERTEX_ATTRIBUTE_COUNT = 16u;
 
@@ -31,8 +30,10 @@ enum class TextureFormat : uint16_t {
     R32G32B32A32_FLOAT,
     R32_INTEGER,
     DEPTH,
-    RED,
+    R8,
+    R16,
     R16G16B16A16_HDR,
+    R16G16B16_HDR,
 };
 
 enum class TextureType : uint8_t {
@@ -89,7 +90,13 @@ enum class ElementType : uint8_t {
     USHORT3,
     USHORT4,
     INT,
+    INT2,
+    INT3,
+    INT4,
     UINT,
+    UINT2,
+    UINT3,
+    UINT4,
     FLOAT,
     FLOAT2,
     FLOAT3,
@@ -132,8 +139,20 @@ static constexpr size_t ResolveElementTypeSize(ElementType type) noexcept {
             return sizeof(uint16_t) * 4;
         case ElementType::INT:
             return sizeof(int32_t);
+        case ElementType::INT2:
+            return sizeof(int32_t) * 2;
+        case ElementType::INT3:
+            return sizeof(int32_t) * 3;
+        case ElementType::INT4:
+            return sizeof(int32_t) * 4;
         case ElementType::UINT:
             return sizeof(uint32_t);
+        case ElementType::UINT2:
+            return sizeof(uint32_t) * 2;
+        case ElementType::UINT3:
+            return sizeof(uint32_t) * 3;
+        case ElementType::UINT4:
+            return sizeof(uint32_t) * 4;
         case ElementType::FLOAT:
             return sizeof(float);
         case ElementType::FLOAT2:
@@ -178,7 +197,7 @@ enum class PrimitiveType : uint8_t {
 enum class ShaderType : uint8_t {
     VERTEX,
     FRAGMENT,
-    COMPUTE,
+    GEOMETRY,
 };
 
 enum class SamplerWrapMode : uint8_t {
@@ -221,6 +240,19 @@ enum class SamplerCompareFunc : uint8_t {
 };
 
 struct SamplerParams {
+    static SamplerParams Default() noexcept {
+        SamplerParams params;
+        params.filterMag = SamplerMagFilter::LINEAR;
+        params.filterMin = SamplerMinFilter::LINEAR_MIPMAP_LINEAR;
+        params.wrapS = SamplerWrapMode::REPEAT;
+        params.wrapT = SamplerWrapMode::REPEAT;
+        params.wrapR = SamplerWrapMode::REPEAT;
+        params.anisotropyLog2 = 0;
+        params.compareMode = SamplerCompareMode::NONE;
+        params.compareFunc = SamplerCompareFunc::LE;
+        return params;
+    }
+
     SamplerMagFilter filterMag : 1;
     SamplerMinFilter filterMin : 3;
     SamplerWrapMode wrapS : 2;
@@ -233,6 +265,13 @@ struct SamplerParams {
 
 struct RenderPassParams {
     Vector4 clearColor = {0, 0, 0, 1};
+};
+
+struct RasterState {
+    using DepthFunc = SamplerCompareFunc;
+    bool EnableDepthWrite = true;
+    bool EnableDepthTest = true;
+    DepthFunc depthFunc = DepthFunc::L;
 };
 
 enum class TargetBufferFlags : uint32_t {
@@ -296,11 +335,9 @@ enum class Precision : uint8_t {
     HIGH,
     DEFAULT,
 };
-
-}  // namespace Backend
 }  // namespace Ethereal
 
 template <>
-struct Utils::EnableBitMaskOperators<Ethereal::Backend::TextureUsage> : public std::true_type {};
+struct Utils::EnableBitMaskOperators<Ethereal::TextureUsage> : public std::true_type {};
 template <>
-struct Utils::EnableBitMaskOperators<Ethereal::Backend::TargetBufferFlags> : public std::true_type {};
+struct Utils::EnableBitMaskOperators<Ethereal::TargetBufferFlags> : public std::true_type {};

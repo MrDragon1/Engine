@@ -1,16 +1,14 @@
 #pragma once
 
 #include "Base/Ref.h"
-#include "Core/Renderer/Buffer.h"
+#include "Core/Asset/Asset.h"
 #include "DriverEnums.h"
 namespace Ethereal {
-namespace Backend {
 struct Texture;
 struct SamplerGroup;
 struct VertexBuffer;
 struct IndexBuffer;
 struct VertexArray;
-struct UniformBuffer;
 struct RenderPrimitive;
 struct Program;
 struct RenderTarget;
@@ -22,12 +20,13 @@ using BufferObjectHandle = Ref<BufferObject>;
 using VertexBufferHandle = Ref<VertexBuffer>;
 using IndexBufferHandle = Ref<IndexBuffer>;
 using VertexArrayHandle = Ref<VertexArray>;
-using UniformBufferHandle = Ref<UniformBuffer>;
 using RenderPrimitiveHandle = Ref<RenderPrimitive>;
 using ProgramHandle = Ref<Program>;
 using RenderTargetHandle = Ref<RenderTarget>;
 
-struct Texture : public RefCounted {
+static constexpr uint32_t INVALID_UINT32 = 0xffffffff;
+
+struct Texture : public Asset {
     uint32_t width;
     uint32_t height;
     uint32_t depth;
@@ -41,9 +40,12 @@ struct Texture : public RefCounted {
 };
 
 struct SamplerDescriptor {
-    TextureHandle texture;
+    TextureHandle texture = nullptr;
     SamplerParams params;
-    uint8_t binding;
+    uint32_t binding = INVALID_UINT32;
+
+    uint32_t level = INVALID_UINT32;
+    uint32_t layer = INVALID_UINT32;
 };
 using SamplerGroupDescriptor = std::vector<SamplerDescriptor>;
 
@@ -62,13 +64,14 @@ struct VertexBuffer : public RefCounted {
     uint8_t attributeCount{};
     uint8_t bufferCount{};
 
+    VertexBuffer(){};
     VertexBuffer(AttributeArray att, uint32_t verc, uint8_t attc, uint8_t buffer)
         : attributes(att), vertexCount(verc), attributeCount(attc), bufferCount(buffer){};
 };
 
 struct IndexBuffer : public RefCounted {
-    uint32_t count : 27;
-    uint32_t elementSize : 5;
+    uint32_t count;
+    uint32_t elementSize;
     IndexBuffer() noexcept : count{}, elementSize{} {}
     IndexBuffer(uint8_t elementSize, uint32_t indexCount) noexcept : count(indexCount), elementSize(elementSize) {
         // we could almost store elementSize on 4 bits because it's never > 16 and never 0
@@ -84,8 +87,8 @@ struct RenderPrimitive : public RefCounted {
     uint32_t count{};
     uint32_t maxVertexCount{};
     PrimitiveType type = PrimitiveType::TRIANGLES;
-    Ref<VertexBuffer> vertexBuffer = {};
-    Ref<IndexBuffer> indexBuffer = {};
+    Ref<VertexBuffer> vertexBuffer;
+    Ref<IndexBuffer> indexBuffer;
 };
 
 static constexpr size_t SHADER_TYPE_COUNT = 3;
@@ -99,13 +102,13 @@ struct Program : public RefCounted {
 
 struct TargetBufferInfo {
     // texture to be used as render target
-    TextureHandle handle;
+    TextureHandle handle = nullptr;
 
-    // level to be used
-    uint8_t level = 0;
+    // mip level to be used
+    uint32_t level = 0;
 
     // for cubemaps and 3D textures. See TextureCubemapFace for the face->layer mapping
-    uint16_t layer = 0;
+    uint32_t layer = 0xffffffff;
 };
 using MRT = std::array<TargetBufferInfo, MAX_SUPPORTED_RENDER_TARGET_COUNT>;
 
@@ -123,7 +126,7 @@ struct RenderTarget : public RefCounted {
 
 struct PipelineState {
     Ref<Program> program;
+    RasterState rasterState;
 };
 
-}  // namespace Backend
 }  // namespace Ethereal

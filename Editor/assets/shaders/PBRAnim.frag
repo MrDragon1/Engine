@@ -120,13 +120,13 @@ vec3 FresnelSchlickRoughness(vec3 F0, float cosTheta, float roughness)
 float ShadowCalculation(vec3 fragPosWorldSpace)
 {
     // select cascade layer
-    vec4 fragPosViewSpace = u_Camera.ViewMatrix * vec4(fragPosWorldSpace, 1.0);
+    vec4 fragPosViewSpace = u_View.ViewMatrix * vec4(fragPosWorldSpace, 1.0);
     float depthValue = abs(fragPosViewSpace.z);
 
     int layer = -1;
-    for (int i = 0; i < u_CascadeShadowData.CascadeCount; ++i)
+    for (int i = 0; i < u_Shadow.CascadeCount; ++i)
     {
-        if (depthValue < u_CascadeShadowData.CascadeSplits[i])
+        if (depthValue < u_Shadow.CascadeSplits[i].x)
         {
             layer = i;
             break;
@@ -134,15 +134,15 @@ float ShadowCalculation(vec3 fragPosWorldSpace)
     }
     if (layer == -1)
     {
-        layer = u_CascadeShadowData.CascadeCount;
+        layer = u_Shadow.CascadeCount;
     }
 
 
-    vec4 fragPosLightSpace = u_CascadeShadowData.DirLightMatrices[layer] * vec4(fragPosWorldSpace, 1.0);
+    vec4 fragPosLightSpace = u_Shadow.DirLightMatrices[layer] * vec4(fragPosWorldSpace, 1.0);
     // perform perspective divide
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
 
-    float bias = max(0.001 * (1.0 - dot(m_Params.Normal, u_Scene.DirectionalLights.Direction)), 0.000);
+    float bias = max(0.001 * (1.0 - dot(m_Params.Normal, u_Light.Direction)), 0.000);
     float shadowMapDepth = texture(u_ShadowMap, vec3(projCoords.xy * 0.5 + 0.5, layer)).r;
 
     return step(projCoords.z * 0.5 + 0.5, shadowMapDepth + bias);
@@ -157,15 +157,15 @@ float ShadowCalculation(vec3 fragPosWorldSpace)
     //    }
     //    // calculate bias (based on depth map resolution and slope)
     //    vec3 normal = u_UseNormalMap ? getNormalFromMap() : normalize(v_Normal);
-    //    float bias = max(0.05 * (1.0 - dot(normal, u_Scene.DirectionalLights.Direction)), 0.005);
+    //    float bias = max(0.05 * (1.0 - dot(normal, u_Light.Direction)), 0.005);
     //    const float biasModifier = 0.5f;
-    //    if (layer == u_CascadeShadowData.CascadeCount)
+    //    if (layer == u_Shadow.CascadeCount)
     //    {
-    //        bias *= 1 / (u_Camera.FarPlane * biasModifier);
+    //        bias *= 1 / (u_View.FarPlane * biasModifier);
     //    }
     //    else
     //    {
-    //        bias *= 1 / ( u_CascadeShadowData.CascadeSplits[layer] * biasModifier);
+    //        bias *= 1 / ( u_Shadow.CascadeSplits[layer] * biasModifier);
     //    }
     //
     //    // PCF
@@ -209,8 +209,8 @@ vec3 CalculateDirLights(vec3 F0)
     vec3 result = vec3(0.0);
     for (int i = 0; i < 1; i++) //Only one light for now
     {
-        vec3 Li = u_Scene.DirectionalLights.Direction;
-        //        vec3 Lradiance = u_Scene.DirectionalLights.Radiance * u_Scene.DirectionalLights.Multiplier;
+        vec3 Li = u_Light.Direction;
+        //        vec3 Lradiance = u_Light.Radiance * u_Light.Multiplier;
         vec3 Lradiance = vec3(1.0f);
         vec3 Lh = normalize(Li + m_Params.View);
 
@@ -236,13 +236,13 @@ vec3 CalculateDirLights(vec3 F0)
 // ----------------------------------------------------------------------------
 void main()
 {
-    m_Params.Albedo     = (u_Material.u_UseMap & 1<<1) == 0 ? pow(texture(u_AlbedoMap, v_TexCoord).rgb, vec3(2.2)) : u_Material.u_Albedo.rgb;
-    m_Params.Metalness  = (u_Material.u_UseMap & 1<<3) == 0 ? texture(u_MetallicMap, v_TexCoord).r : u_Material.u_Metallic;
-    m_Params.Roughness = (u_Material.u_UseMap & 1<<4) == 0 ? texture(u_RoughnessMap, v_TexCoord).r : u_Material.u_Roughness;
-    float ao        = (u_Material.u_UseMap & 1<<5) == 0 ? texture(u_OcclusionMap, v_TexCoord).r : u_Material.u_Occlusion;
+    m_Params.Albedo     = (u_RenderPrimitive.UseMap & 1<<1) == 0 ? pow(texture(u_AlbedoMap, v_TexCoord).rgb, vec3(2.2)) : u_RenderPrimitive.Albedo.rgb;
+    m_Params.Metalness  = (u_RenderPrimitive.UseMap & 1<<3) == 0 ? texture(u_MetallicMap, v_TexCoord).r : u_RenderPrimitive.Metallic;
+    m_Params.Roughness = (u_RenderPrimitive.UseMap & 1<<4) == 0 ? texture(u_RoughnessMap, v_TexCoord).r : u_RenderPrimitive.Roughness;
+    float ao        = (u_RenderPrimitive.UseMap & 1<<5) == 0 ? texture(u_OcclusionMap, v_TexCoord).r : u_RenderPrimitive.Occlusion;
 
-    m_Params.Normal = (u_Material.u_UseMap & 1<<2) == 0 ? getNormalFromMap() : normalize(v_Normal);
-    m_Params.View = normalize(u_Scene.CameraPosition - v_WorldPos);
+    m_Params.Normal = (u_RenderPrimitive.UseMap & 1<<2) == 0 ? getNormalFromMap() : normalize(v_Normal);
+    m_Params.View = normalize(u_View.CameraPosition - v_WorldPos);
     vec3 R = reflect(-m_Params.View, m_Params.Normal);
     m_Params.NdotV = max(dot(m_Params.Normal, m_Params.View), 0.0);
     // calculate reflectance at normal incidence; if dia-electric (like plastic) use F0
@@ -256,12 +256,12 @@ void main()
     shadowScale = 1.0 - clamp(1.0f - shadowScale, 0.0f, 1.0f);
 
     vec3 lightContribution = CalculateDirLights(F0) * shadowScale;
-    lightContribution += m_Params.Albedo * u_Material.u_Emisstion;
+    lightContribution += m_Params.Albedo * u_RenderPrimitive.Emisstion;
     vec3 iblContribution = IBL(F0, Lr) * 1.0f;
 
     vec4 color = vec4(iblContribution + lightContribution , 1.0);
 
     FragColor = color;
 
-    EntityID = u_RendererData.EntityID;
+    EntityID = u_View.EntityID;
 }

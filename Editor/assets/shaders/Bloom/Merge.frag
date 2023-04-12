@@ -7,13 +7,20 @@ layout(location = 0) in vec2 v_TexCoord;
 layout(binding = 0) uniform sampler2D u_MainImage;
 layout(binding = 1) uniform sampler2D u_BlurImage;
 
-layout(location = 0) uniform float u_Intensity;
+layout(std140, binding = 0) uniform Config{
+    float Threshold;
+    float Knee;
+    float Intensity;
+    int DownSample;
+    int MipLevel;
+}u_Config;
+
 
 void main()
 {
     const float gamma = 2.2;
     vec3 hdrColor = texture(u_MainImage, v_TexCoord).rgb;
-    vec3 bloomColor = texture(u_BlurImage, v_TexCoord).rgb * u_Intensity;
+    vec3 bloomColor = texture(u_BlurImage, v_TexCoord).rgb * u_Config.Intensity;
 
     hdrColor += bloomColor;
 

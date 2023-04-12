@@ -5,6 +5,8 @@
 #include "Core/Project/Project.h"
 #include "Core/Renderer/RenderSystem.h"
 
+#include "Platform/Windows/Backend/Driver.h";
+#include "Core/Renderer/Uniform/UniformManager.h"
 namespace Ethereal {
 class GlobalContext final : public Singleton<GlobalContext> {
    public:
@@ -16,13 +18,19 @@ class GlobalContext final : public Singleton<GlobalContext> {
     static void Init();
     static void Reset();
     static RenderSystem& GetRenderSystem() { return m_RenderSystem; };
-    static ShaderLibrary& GetShaderLibrary() { return m_ShaderLibrary; };
     static Vector2& GetViewportSize() { return m_ViewportSize; };
     static void SetViewportSize(const Vector2& viewportSize) { m_ViewportSize = viewportSize; };
+    static Ref<Backend::DriverApi> GetDriverApi() {
+        ET_CORE_ASSERT(mDriver, "Driver is not initialized!");
+        return mDriver->GetApi();
+    }
+
+    static Ref<UniformManager> GetUniformManager() { return mUniformManager; }
 
    private:
     static RenderSystem m_RenderSystem;
-    static ShaderLibrary m_ShaderLibrary;
+    static Backend::Driver* mDriver;
+    static Ref<UniformManager> mUniformManager;
     static Vector2 m_ViewportSize;
 };
 }  // namespace Ethereal

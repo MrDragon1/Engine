@@ -1,158 +1,144 @@
-#include <Base/GlobalContext.h>
 #include "MainCameraRenderPass.h"
 
-namespace Ethereal
-{
-    void MainCameraRenderPass::Init(uint32_t width, uint32_t height) {
-        TextureSpecification hdrSpec, r32Spec, depthSpec;
-        hdrSpec.Format = ETHEREAL_PIXEL_FORMAT::R16G16B16A16_HDR;
-        r32Spec.Format = ETHEREAL_PIXEL_FORMAT::R32_INTEGER;
-        depthSpec.Format = ETHEREAL_PIXEL_FORMAT::DEPTH;
+#include <Base/GlobalContext.h>
 
-        FramebufferSpecification fbSpec;
-        fbSpec.ColorAttachments.PushAttachmentSpec(hdrSpec);
-        fbSpec.ColorAttachments.PushAttachmentSpec(r32Spec);
-        fbSpec.DepthAttachment.SetAttachmentSpec(depthSpec);
-        fbSpec.Width = width;
-        fbSpec.Height = height;
-        m_Framebuffer = Framebuffer::Create(fbSpec);
+namespace Ethereal {
+void MainCameraRenderPass::Init(uint32_t width, uint32_t height) {
+    auto api = GlobalContext::GetDriverApi();
+    ShaderSource source;
+    source[ShaderType::VERTEX] = PBR_VERT;
+    source[ShaderType::FRAGMENT] = PBR_FRAG;
+    mStaticMeshPipeline.program = api->CreateProgram("PBR", source);
 
-        /* Static Mesh Shader */
-        m_StaticMeshShader = GlobalContext::GetShaderLibrary().Get("PBR");
-        m_StaticMeshShader->Bind();
+    source[ShaderType::VERTEX] = PBRANIM_VERT;
+    source[ShaderType::FRAGMENT] = PBRANIM_FRAG;
+    mMeshPipeline.program = api->CreateProgram("PBRANIM", source);
 
-        /* Mesh Shader */
-        m_MeshShader = GlobalContext::GetShaderLibrary().Get("PBRANIM");
-        m_MeshShader->Bind();
+    source[ShaderType::VERTEX] = SKYBOX_VERT;
+    source[ShaderType::FRAGMENT] = SKYBOX_FRAG;
+    mSkyboxPipeline.program = api->CreateProgram("SKYBOX", source);
+    mSkyboxPipeline.rasterState.depthFunc = RasterState::DepthFunc::LE;
 
-    }
+    auto usage = TextureUsage::COLOR_ATTACHMENT | TextureUsage::SAMPLEABLE;
+    auto hdrTex = api->CreateTexture(1, width, height, 1, TextureFormat::R16G16B16A16_HDR, usage, TextureType::TEXTURE_2D);
+    auto entityIdTex = api->CreateTexture(1, width, height, 1, TextureFormat::R32_INTEGER, usage, TextureType::TEXTURE_2D);
+    auto depthTex = api->CreateTexture(1, width, height, 1, TextureFormat::DEPTH, TextureUsage::DEPTH_ATTACHMENT, TextureType::TEXTURE_2D);
+    MRT mrt;
+    mrt[0] = {hdrTex};
+    mrt[1] = {entityIdTex};
+    mRenderTarget =
+        api->CreateRenderTarget(TargetBufferFlags::COLOR0 | TargetBufferFlags::COLOR1 | TargetBufferFlags::DEPTH, width, height, mrt, {depthTex}, {});
+}
 
-    void MainCameraRenderPass::Draw() {
-        m_Framebuffer->Bind();
-        RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1});
-        RenderCommand::Clear();
+void MainCameraRenderPass::Draw() {
+    mParams.clearColor = {0.1, 0.1, 0.1, 1.0};
+    auto uniformManager = GlobalContext::GetUniformManager();
+    auto api = GlobalContext::GetDriverApi();
 
-        // Clear our entity ID attachment to -1
-        m_Framebuffer->ClearAttachment(1, -1);
+    /*************************************************************************/
 
-        const auto& staticMeshDrawList = m_DrawLists.StaticMeshDrawList;
-        const auto& meshDrawList = m_DrawLists.MeshDrawList;
-        const auto& meshTransformMap = m_DrawLists.MeshTransformMap;
+    // Clear our entity ID attachment to -1
 
-        auto& shaderCommonData = GlobalContext::GetRenderSystem().GetShaderCommonData();
-        // Draw StaticMesh
-        {
-            m_StaticMeshShader->Bind();
+    const auto& staticMeshDrawList = m_DrawLists.StaticMeshDrawList;
+    const auto& meshDrawList = m_DrawLists.MeshDrawList;
+    const auto& meshTransformMap = m_DrawLists.MeshTransformMap;
 
-            // CSM
-            m_CSMData.ShadowMap->Bind(18);
+    api->BeginRenderPass(mRenderTarget, mParams);
 
-            // Draw Static Mesh
-            if (!staticMeshDrawList.empty()) {
-                for (auto& [mk, dc] : staticMeshDrawList) {
-                    Ref<MeshSource> ms = dc.StaticMesh->GetMeshSource();
-                    Ref<MaterialTable> mt = dc.MaterialTable;
-                    const auto& meshMaterialTable = dc.StaticMesh->GetMaterials();
-                    Submesh& submesh = ms->GetSubmeshes()[dc.SubmeshIndex];
-                    auto materialIndex = submesh.MaterialIndex;
+    // Draw StaticMesh
+    {
+        // CSM
 
-                    Ref<MaterialAsset> material =
-                        mt->HasMaterial(materialIndex) ? mt->GetMaterial(materialIndex) : meshMaterialTable->GetMaterial(materialIndex);
+        uniformManager->UpdateShadow(Project::GetConfigManager().sCSMConfig.ShadowMap);
 
-                    ms->GetVertexArray()->Bind();
-                    m_StaticMeshShader->SetMat4("u_Model", meshTransformMap.at(mk).Transforms[0].Transform);;
-                    shaderCommonData.RendererData.EntityID = mk.EntityID;
+        // Draw Static Mesh
+        if (!staticMeshDrawList.empty()) {
+            for (auto& [mk, dc] : staticMeshDrawList) {
+                Ref<MeshSource> ms = dc.StaticMesh->GetMeshSource();
+                Ref<MaterialTable> mt = dc.MaterialTable;
+                const auto& meshMaterialTable = dc.StaticMesh->GetMaterials();
+                Submesh& submesh = ms->GetSubmeshes()[dc.SubmeshIndex];
+                auto materialIndex = submesh.MaterialIndex;
 
-                    material->GetAlbedoMap()->Bind(10);
-                    material->GetNormalMap()->Bind(11);
-                    material->GetMetalnessMap()->Bind(12);
-                    material->GetRoughnessMap()->Bind(13);
-                    material->GetOcclusionMap()->Bind(14);
+                Ref<MaterialAsset> material =
+                    mt->HasMaterial(materialIndex) ? mt->GetMaterial(materialIndex) : meshMaterialTable->GetMaterial(materialIndex);
 
-                    shaderCommonData.MaterialData.u_Albedo = {material->GetAlbedoColor(), 1.0f}; // fourth element is not used
-                    shaderCommonData.MaterialData.u_Roughness = material->GetRoughness();
-                    shaderCommonData.MaterialData.u_Metallic = material->GetMetalness();
-                    shaderCommonData.MaterialData.u_Emisstion = material->GetEmission();
+                Project::GetConfigManager().sUniformManagerConfig.EditorParam.EntityID = mk.EntityID;
 
-                    shaderCommonData.MaterialData.u_UseMap = 0;
-                    shaderCommonData.MaterialData.u_UseMap |= material->IsUseAlbedoMap() ? 1 << 1 : 0;
-                    shaderCommonData.MaterialData.u_UseMap |= material->IsUseNormalMap() ? 1 << 2 : 0;
-                    shaderCommonData.MaterialData.u_UseMap |= material->IsUseMetallicMap() ? 1 << 3 : 0;
-                    shaderCommonData.MaterialData.u_UseMap |= material->IsUseRoughnessMap() ? 1 << 4 : 0;
+                uniformManager->UpdateMaterial(material);
+                uniformManager->UpdateEditor();
+                uniformManager->UpdateRenderPrimitive({.ModelMatrix = meshTransformMap.at(mk).Transforms[0].Transform});
+                // TODO: should not update ViewUib here ( UpdateEditor() will cause this problem )
+                uniformManager->Commit();
+                uniformManager->Bind();
 
-                    //TODO: Update All Uniform Buffer will cause performance issue
-                    GlobalContext::GetRenderSystem().GetUniformBufferSet()->Get(0, 3)->SetData(&shaderCommonData.RendererData, sizeof(RendererData));
-                    GlobalContext::GetRenderSystem().GetUniformBufferSet()->Get(0, 4)->SetData(&shaderCommonData.MaterialData, sizeof(MaterialData));
+                // RenderCommand::DrawIndexed(ms->GetVertexArray(), submesh.IndexCount, reinterpret_cast<void*>(submesh.BaseIndex * sizeof(uint32_t)),
+                //                            submesh.BaseVertex);
 
-                    RenderCommand::DrawIndexed(ms->GetVertexArray(), submesh.IndexCount,
-                                               reinterpret_cast<void*>(submesh.BaseIndex * sizeof(uint32_t)), submesh.BaseVertex);
-                }
+                api->Draw(ms->GetSubMeshRenderPrimitive(dc.SubmeshIndex), mStaticMeshPipeline);
             }
         }
+    }
 
-        // Draw Mesh
-        {
-            m_MeshShader->Bind();
+    // Draw Mesh
+    {
+        // CSM
+        uniformManager->UpdateShadow(Project::GetConfigManager().sCSMConfig.ShadowMap);
 
-            // CSM
-            m_CSMData.ShadowMap->Bind(9);
-            shaderCommonData.SceneData.DirectionalLight.Direction = m_CSMData.LightDir;
+        // Draw
+        if (!meshDrawList.empty()) {
+            for (auto& [mk, dc] : meshDrawList) {
+                Ref<MeshSource> ms = dc.Mesh->GetMeshSource();
 
-            // Draw
-            if (!meshDrawList.empty()) {
-                for (auto& [mk, dc] : meshDrawList) {
-                    Ref<MeshSource> ms = dc.Mesh->GetMeshSource();
-
-                    Ref<Animator> animator = ms->GetAnimator();
-                    auto boneMatrices = animator->GetFinalBoneMatrices();
-                    for (const auto& [id, m] : boneMatrices) {
-                        if (id >= 100) {
-                            ET_CORE_WARN("Only support 100 bones!");
-                            continue;
-                        }
-                        m_MeshShader->SetMat4("u_BoneTransforms[" + std::to_string(id) + "]", m);
+                Ref<Animator> animator = ms->GetAnimator();
+                auto boneMatrices = animator->GetFinalBoneMatrices();
+                BoneParam& param = Project::GetConfigManager().sUniformManagerConfig.BoneParam;
+                for (const auto& [id, m] : boneMatrices) {
+                    if (id >= 100) {
+                        ET_CORE_WARN("Only support 100 bones!");
+                        continue;
                     }
-
-                    Ref<MaterialTable> mt = dc.MaterialTable;
-                    const auto& meshMaterialTable = dc.Mesh->GetMaterials();
-                    Submesh& submesh = ms->GetSubmeshes()[dc.SubmeshIndex];
-                    auto materialIndex = submesh.MaterialIndex;
-
-                    Ref<MaterialAsset> material =
-                        mt->HasMaterial(materialIndex) ? mt->GetMaterial(materialIndex) : meshMaterialTable->GetMaterial(materialIndex);
-
-                    ms->GetVertexArray()->Bind();
-                    m_MeshShader->SetMat4("u_Model", meshTransformMap.at(mk).Transforms[0].Transform);
-                    shaderCommonData.RendererData.EntityID = mk.EntityID;
-
-                    material->GetAlbedoMap()->Bind(10);
-                    material->GetNormalMap()->Bind(11);
-                    material->GetMetalnessMap()->Bind(12);
-                    material->GetRoughnessMap()->Bind(13);
-                    material->GetOcclusionMap()->Bind(14);
-
-                    shaderCommonData.MaterialData.u_Albedo = {material->GetAlbedoColor(),0.0f}; // fourth element is not used
-                    shaderCommonData.MaterialData.u_Roughness = material->GetRoughness();
-                    shaderCommonData.MaterialData.u_Metallic = material->GetMetalness();
-                    shaderCommonData.MaterialData.u_Emisstion = material->GetEmission();
-
-                    shaderCommonData.MaterialData.u_UseMap = 0;
-                    shaderCommonData.MaterialData.u_UseMap |= material->IsUseAlbedoMap() ? 1 << 1 : 0;
-                    shaderCommonData.MaterialData.u_UseMap |= material->IsUseNormalMap() ? 1 << 2 : 0;
-                    shaderCommonData.MaterialData.u_UseMap |= material->IsUseMetallicMap() ? 1 << 3 : 0;
-                    shaderCommonData.MaterialData.u_UseMap |= material->IsUseRoughnessMap() ? 1 << 4 : 0;
-                    shaderCommonData.MaterialData.u_UseMap |= material->IsUseOcclusionMap() ? 1 << 5 : 0;
-
-                    RenderCommand::DrawIndexed(ms->GetVertexArray(), submesh.IndexCount,
-                                               reinterpret_cast<void*>(submesh.BaseIndex * sizeof(uint32_t)), submesh.BaseVertex);
+                    param.BoneTransform[id] = m;
                 }
+
+                Ref<MaterialTable> mt = dc.MaterialTable;
+                const auto& meshMaterialTable = dc.Mesh->GetMaterials();
+                Submesh& submesh = ms->GetSubmeshes()[dc.SubmeshIndex];
+                auto materialIndex = submesh.MaterialIndex;
+
+                Ref<MaterialAsset> material =
+                    mt->HasMaterial(materialIndex) ? mt->GetMaterial(materialIndex) : meshMaterialTable->GetMaterial(materialIndex);
+
+                Project::GetConfigManager().sUniformManagerConfig.EditorParam.EntityID = mk.EntityID;
+
+                uniformManager->UpdateBone();
+                uniformManager->UpdateMaterial(material);
+                uniformManager->UpdateEditor();
+                uniformManager->UpdateRenderPrimitive({.ModelMatrix = meshTransformMap.at(mk).Transforms[0].Transform});
+                // TODO: should not update ViewUib here ( UpdateEditor() will cause this problem )
+                uniformManager->Commit();
+                uniformManager->Bind();
+
+                api->Draw(ms->GetSubMeshRenderPrimitive(dc.SubmeshIndex), mMeshPipeline);
+
+                // RenderCommand::DrawIndexed(ms->GetVertexArray(), submesh.IndexCount, reinterpret_cast<void*>(submesh.BaseIndex * sizeof(uint32_t)),
+                //                            submesh.BaseVertex);
             }
         }
-
-        m_Framebuffer->Unbind();
     }
 
-    void MainCameraRenderPass::OnResize(uint32_t width, uint32_t height) { m_Framebuffer->Resize(width, height); }
+    // Draw Skybox
+    api->Draw(RenderResource::Cube->GetMeshSource()->GetRenderPrimitive(), mSkyboxPipeline);
 
-    int MainCameraRenderPass::GetMousePicking(int x, int y) { return m_Framebuffer->ReadPixel(1, x, y); }
+    api->EndRenderPass();
+}
+
+void MainCameraRenderPass::OnResize(uint32_t width, uint32_t height) {}
+
+int MainCameraRenderPass::GetMousePicking(int x, int y) {
+    auto api = GlobalContext::GetDriverApi();
+    // TDOO:fix this
+    return -1;
+    // return m_Framebuffer->ReadPixel(1, x, y);
+}
 }  // namespace Ethereal

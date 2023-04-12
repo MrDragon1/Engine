@@ -1,7 +1,9 @@
 #version 460 core
 layout(location = 0) in vec3 a_Position;
-layout(location = 0) uniform mat4 u_Model;
+#extension GL_GOOGLE_include_directive : enable
+#include "Common.glslh"
+
 void main()
 {
-    gl_Position = u_Model * vec4(a_Position, 1.0);
+    gl_Position = u_RenderPrimitive.ModelMatrix * vec4(a_Position, 1.0);
 }
