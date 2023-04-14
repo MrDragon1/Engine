@@ -2,7 +2,7 @@
 
 #include "Base/Ref.h"
 #include "Core/Asset/Asset.h"
-#include "DriverEnums.h"
+#include "DriverEnum.h"
 namespace Ethereal {
 struct Texture;
 struct SamplerGroup;

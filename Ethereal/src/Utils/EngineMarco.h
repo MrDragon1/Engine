@@ -2,7 +2,6 @@
 
 #include "pch.h"
 
-#include <memory>
 #ifdef ET_DEBUG
 #if defined(ET_PLATFORM_WINDOWS)
 #define ET_DEBUGBREAK() __debugbreak()
@@ -42,14 +41,13 @@
 
 #define ET_BIND_EVENT_FN(fn) std::bind(&fn, this, std::placeholders::_1)
 
-namespace Ethereal
-{
-    template <typename T>
-    using Scope = std::unique_ptr<T>;
-    template <typename T, typename... Args>
-    constexpr Scope<T> CreateScope(Args&&... args) {
-        return std::make_unique<T>(std::forward<Args>(args)...);
-    }
+namespace Ethereal {
+template <typename T>
+using Scope = std::unique_ptr<T>;
+template <typename T, typename... Args>
+constexpr Scope<T> CreateScope(Args&&... args) {
+    return std::make_unique<T>(std::forward<Args>(args)...);
+}
 }  // namespace Ethereal
 
 #ifdef ET_PLATFORM_WINDOWS

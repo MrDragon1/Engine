@@ -5,7 +5,7 @@
 #include "Core/Project/Project.h"
 #include "Core/Renderer/RenderSystem.h"
 
-#include "Platform/Windows/Backend/Driver.h";
+#include "Backend/Driver.h";
 #include "Core/Renderer/Uniform/UniformManager.h"
 namespace Ethereal {
 class GlobalContext final : public Singleton<GlobalContext> {

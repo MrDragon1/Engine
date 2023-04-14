@@ -31,5 +31,4 @@
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtx/matrix_decompose.hpp>
 
-
 #define STRING(classname) #classname

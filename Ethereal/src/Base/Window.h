@@ -1,9 +1,9 @@
 #pragma once
 
-//#include "pch.h"
+// #include "pch.h"
 
-#include "Utils.h"
-#include "Event/Event.h"
+#include "Base/Event/Event.h"
+#include "Utils/EngineMarco.h"
 
 namespace Ethereal {
 
@@ -18,7 +18,7 @@ struct WindowProps {
 
 // Interface representing a desktop system based Window
 class Window {
-  public:
+   public:
     using EventCallbackFn = std::function<void(Event&)>;
 
     virtual ~Window() {}

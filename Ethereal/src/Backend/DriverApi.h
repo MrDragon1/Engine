@@ -2,7 +2,7 @@
 
 #include "BufferDescriptor.h"
 #include "DriverBase.h"
-#include "DriverEnums.h"
+#include "DriverEnum.h"
 #include "UniformBuffer.h"
 namespace Ethereal {
 namespace Backend {

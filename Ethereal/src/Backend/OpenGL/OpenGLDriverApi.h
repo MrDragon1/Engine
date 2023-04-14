@@ -3,8 +3,8 @@
 
 #include <bitset>
 
-#include "Platform/Windows/Backend/DriverApi.h"
-#include "Platform/Windows/OpenGL/GLUtils.h"
+#include "Backend/DriverApi.h"
+#include "Backend/OpenGL/GLUtils.h"
 namespace Ethereal {
 namespace Backend {
 /*!

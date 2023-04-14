@@ -8,7 +8,7 @@
 #include <assimp/Importer.hpp>
 #include <assimp/LogStream.hpp>
 
-#include "Platform/Windows/Backend/Driver.h"
+#include "Backend/Driver.h"
 #include "stb_image.h"
 namespace Ethereal {
 namespace Utils {

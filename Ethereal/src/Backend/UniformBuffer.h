@@ -2,9 +2,9 @@
 #include <cstddef>
 #include <string>
 
-#include "Base\Utils.h"
-#include "Platform\Windows\Backend\BufferDescriptor.h"
-#include "Platform\Windows\Backend\DriverEnums.h"
+#include "Utils/EngineMarco.h"
+#include "Backend\BufferDescriptor.h"
+#include "Backend\DriverEnum.h"
 
 namespace Ethereal {
 class BufferInterfaceBlock {

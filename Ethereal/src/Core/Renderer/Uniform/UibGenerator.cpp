@@ -1,6 +1,6 @@
 #include "UibGenerator.h"
 
-#include "Platform/Windows/Backend/UniformBuffer.h"
+#include "Backend/UniformBuffer.h"
 namespace Ethereal {
 BufferInterfaceBlock const& UibGenerator::GetViewUib() noexcept {
     using Type = BufferInterfaceBlock::Type;

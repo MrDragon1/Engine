@@ -1,5 +1,5 @@
 #pragma once
-#include "Platform/Windows/Backend/BufferDescriptor.h"
+#include "Backend/BufferDescriptor.h"
 
 namespace Ethereal {
 template <typename T, size_t N = 1>

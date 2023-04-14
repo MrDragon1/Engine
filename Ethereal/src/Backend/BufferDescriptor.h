@@ -1,5 +1,5 @@
 #pragma once
-#include "DriverEnums.h"
+#include "DriverEnum.h"
 
 namespace Ethereal {
 class BufferDescriptor {

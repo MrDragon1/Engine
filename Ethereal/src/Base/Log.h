@@ -1,22 +1,22 @@
 #pragma once
+#include "Utils/EngineMarco.h"
+
 #include "spdlog/spdlog.h"
 #include "spdlog/fmt/ostr.h"
-#include "Utils.h"
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include "glm/gtx/string_cast.hpp"
-namespace Ethereal
-{
-    class Log {
-      public:
-        static void Init();
-        inline static std::shared_ptr<spdlog::logger>& GetCoreLogger() { return s_CoreLogger; }
-        inline static std::shared_ptr<spdlog::logger>& GetClientLogger() { return s_ClientLogger; }
+namespace Ethereal {
+class Log {
+   public:
+    static void Init();
+    inline static std::shared_ptr<spdlog::logger>& GetCoreLogger() { return s_CoreLogger; }
+    inline static std::shared_ptr<spdlog::logger>& GetClientLogger() { return s_ClientLogger; }
 
-      private:
-        static std::shared_ptr<spdlog::logger> s_CoreLogger;
-        static std::shared_ptr<spdlog::logger> s_ClientLogger;
-    };
+   private:
+    static std::shared_ptr<spdlog::logger> s_CoreLogger;
+    static std::shared_ptr<spdlog::logger> s_ClientLogger;
+};
 }  // namespace Ethereal
 
 template <typename OStream, glm::length_t L, typename T, glm::qualifier Q>

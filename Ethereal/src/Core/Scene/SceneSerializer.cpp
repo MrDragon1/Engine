@@ -7,33 +7,32 @@
 #include "Utils/YAMLSerializationHelpers.h"
 
 #include <fstream>
-#include "Base/Yaml.h"
+#include "Utils/Yaml.h"
 
-namespace Ethereal
-{
-    static std::string RigidBody2DBodyTypeToString(Rigidbody2DComponent::BodyType bodyType) {
-        switch (bodyType) {
-            case Rigidbody2DComponent::BodyType::Static:
-                return "Static";
-            case Rigidbody2DComponent::BodyType::Dynamic:
-                return "Dynamic";
-            case Rigidbody2DComponent::BodyType::Kinematic:
-                return "Kinematic";
-        }
-
-        ET_CORE_ASSERT(false, "Unknown body type");
-        return {};
+namespace Ethereal {
+static std::string RigidBody2DBodyTypeToString(Rigidbody2DComponent::BodyType bodyType) {
+    switch (bodyType) {
+        case Rigidbody2DComponent::BodyType::Static:
+            return "Static";
+        case Rigidbody2DComponent::BodyType::Dynamic:
+            return "Dynamic";
+        case Rigidbody2DComponent::BodyType::Kinematic:
+            return "Kinematic";
     }
 
-    static Rigidbody2DComponent::BodyType RigidBody2DBodyTypeFromString(const std::string& bodyTypeString) {
-        if (bodyTypeString == "Static") return Rigidbody2DComponent::BodyType::Static;
-        if (bodyTypeString == "Dynamic") return Rigidbody2DComponent::BodyType::Dynamic;
-        if (bodyTypeString == "Kinematic") return Rigidbody2DComponent::BodyType::Kinematic;
+    ET_CORE_ASSERT(false, "Unknown body type");
+    return {};
+}
 
-        ET_CORE_ASSERT(false, "Unknown body type");
-        return Rigidbody2DComponent::BodyType::Static;
-    }
+static Rigidbody2DComponent::BodyType RigidBody2DBodyTypeFromString(const std::string& bodyTypeString) {
+    if (bodyTypeString == "Static") return Rigidbody2DComponent::BodyType::Static;
+    if (bodyTypeString == "Dynamic") return Rigidbody2DComponent::BodyType::Dynamic;
+    if (bodyTypeString == "Kinematic") return Rigidbody2DComponent::BodyType::Kinematic;
 
-    SceneSerializer::SceneSerializer(const Ref<Scene>& scene) : m_Scene(scene) {}
+    ET_CORE_ASSERT(false, "Unknown body type");
+    return Rigidbody2DComponent::BodyType::Static;
+}
+
+SceneSerializer::SceneSerializer(const Ref<Scene>& scene) : m_Scene(scene) {}
 
 }  // namespace Ethereal
