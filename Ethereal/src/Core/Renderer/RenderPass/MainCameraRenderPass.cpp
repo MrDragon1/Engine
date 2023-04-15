@@ -137,8 +137,6 @@ void MainCameraRenderPass::OnResize(uint32_t width, uint32_t height) {}
 
 int MainCameraRenderPass::GetMousePicking(int x, int y) {
     auto api = GlobalContext::GetDriverApi();
-    // TDOO:fix this
-    return -1;
-    // return mFramebuffer->ReadPixel(1, x, y);
+    return api->ReadPixel(mRenderTarget, 1, x, y);
 }
 }  // namespace Ethereal

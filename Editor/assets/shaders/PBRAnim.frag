@@ -1,6 +1,9 @@
 #version 460 core
 #extension GL_GOOGLE_include_directive : enable
 #include "Common.glslh"
+#include "PBR.glslh"
+#include "ShadowMapping.glslh"
+
 
 layout(location = 0) out vec4 FragColor;
 layout(location = 1) out int EntityID;
@@ -9,21 +12,19 @@ layout(location = 0) in vec3 v_WorldPos;
 layout(location = 1) in vec3 v_Normal;
 layout(location = 2) in vec2 v_TexCoord;
 
-uniform sampler2D u_AlbedoMap;
-uniform sampler2D u_NormalMap;
-uniform sampler2D u_MetallicMap;
-uniform sampler2D u_RoughnessMap;
-uniform sampler2D u_OcclusionMap;
+layout(binding = 10) uniform sampler2D u_AlbedoMap;
+layout(binding = 11) uniform sampler2D u_NormalMap;
+layout(binding = 12) uniform sampler2D u_MetallicMap;
+layout(binding = 13) uniform sampler2D u_RoughnessMap;
+layout(binding = 14) uniform sampler2D u_OcclusionMap;
 
 // IBL
-uniform samplerCube u_IrradianceMap;
-uniform samplerCube u_PrefilterMap;
-uniform sampler2D u_BRDFLUT;
+layout(binding = 15) uniform sampler2D u_BRDFLUT;
+layout(binding = 17) uniform samplerCube u_IrradianceMap;
+layout(binding = 16) uniform samplerCube u_PrefilterMap;
 
-uniform sampler2DArray u_ShadowMap;
+layout(binding = 18) uniform sampler2DArray u_ShadowMap;
 
-
-const float PI = 3.14159265359;
 
 // Used in PBR shader
 struct PBRParameters
@@ -34,13 +35,12 @@ struct PBRParameters
 
     vec3 Normal;
     vec3 View;
-    float NdotV;
 } m_Params;
 
 // ----------------------------------------------------------------------------
 // Easy trick to get tangent-normals to world-space to keep PBR code simplified.
-// Don't worry if you don't get what's going on; you generally want to do normal
-// mapping the usual way for performance anways; I do plan make a note of this
+// Don't worry if you don't get what's going on; you generally want to do normal 
+// mapping the usual way for performance anways; I do plan make a note of this 
 // technique somewhere later in the normal mapping tutorial.
 vec3 getNormalFromMap()
 {
@@ -58,73 +58,65 @@ vec3 getNormalFromMap()
 
     return normalize(TBN * tangentNormal);
 }
-// GGX/Towbridge-Reitz normal distribution function.
-// Uses Disney's reparametrization of alpha = roughness^2
-float NdfGGX(float cosLh, float roughness)
-{
-    float alpha = roughness * roughness;
-    float alphaSq = alpha * alpha;
 
-    float denom = (cosLh * cosLh) * (alphaSq - 1.0) + 1.0;
-    return alphaSq / (PI * denom * denom);
+
+vec4 fog(vec4 color, vec3 view) {
+    if (u_View.FogDensity > 0.0) {
+        float A = u_View.FogDensity;
+        float B = u_View.FogHeightFalloff;
+
+        float d = length(view);
+
+        float h = max(0.001, view.y);
+        // The function below is continuous at h=0, so to avoid a divide-by-zero, we just clamp h
+        float fogIntegralFunctionOfDistance = A * ((1.0 - exp(-B * h)) / h);
+        float fogIntegral = fogIntegralFunctionOfDistance * max(d - u_View.FogStart, 0.0);
+        float fogOpacity = max(1.0 - exp2(-fogIntegral), 0.0);
+
+        // don't go above requested max opacity
+        fogOpacity = min(fogOpacity, 100.0f); //frameUniforms.fogMaxOpacity
+
+        // compute fog color
+        vec3 fogColor = u_View.FogColor.rgb;
+
+//        if (u_View.FogFromIBL > 0.0) {
+//            // get fog color from envmap
+//            float lod = 1.0f;
+//            fogColor *= textureLod(light_iblSpecular, view, lod).rgb * 1.0f;
+//        }
+
+        fogColor *= fogOpacity;
+        if (u_View.FogScatteringSize > 0.0) {
+            // compute a new line-integral for a different start distance
+            float inscatteringIntegral = fogIntegralFunctionOfDistance *
+            max(d - u_View.FogScatteringStart, 0.0);
+            float inscatteringOpacity = max(1.0 - exp2(-inscatteringIntegral), 0.0);
+
+            // Add sun colored fog when looking towards the sun
+            vec3 sunColor = vec3(203.0f, 119.0f, 49.0f)/255.0f; //frameUniforms.lightColorIntensity.rgb * frameUniforms.lightColorIntensity.w;
+            float sunAmount = max(dot(view, u_Light.Direction) / d, 0.0); // between 0 and 1
+            float sunInscattering = pow(sunAmount, u_View.FogScatteringSize);
+
+            fogColor += sunColor * (sunInscattering * inscatteringOpacity);
+        }
+
+        color.rgb = color.rgb * (1.0 - fogOpacity) + fogColor;
+    }
+    return color;
 }
 
-// Single term for separable Schlick-GGX below.
-float GaSchlickG1(float cosTheta, float k)
-{
-    return cosTheta / (cosTheta * (1.0 - k) + k);
-}
 
-// Schlick-GGX approximation of geometric attenuation function using Smith's method.
-float GaSchlickGGX(float cosLi, float NdotV, float roughness)
-{
-    float r = roughness + 1.0;
-    float k = (r * r) / 8.0; // Epic suggests using this roughness remapping for analytic lights.
-    return GaSchlickG1(cosLi, k) * GaSchlickG1(NdotV, k);
-}
 
-float GeometrySchlickGGX(float NdotV, float roughness)
-{
-    float r = (roughness + 1.0);
-    float k = (r * r) / 8.0;
-
-    float nom = NdotV;
-    float denom = NdotV * (1.0 - k) + k;
-
-    return nom / denom;
-}
-
-float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness)
-{
-    float NdotV = max(dot(N, V), 0.0);
-    float NdotL = max(dot(N, L), 0.0);
-    float ggx2 = GeometrySchlickGGX(NdotV, roughness);
-    float ggx1 = GeometrySchlickGGX(NdotL, roughness);
-
-    return ggx1 * ggx2;
-}
-
-// Shlick's approximation of the Fresnel factor.
-vec3 FresnelSchlick(vec3 F0, float cosTheta)
-{
-    return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);
-}
-
-vec3 FresnelSchlickRoughness(vec3 F0, float cosTheta, float roughness)
-{
-    return F0 + (max(vec3(1.0 - roughness), F0) - F0) * pow(1.0 - cosTheta, 5.0);
-}
-
-// ----------------------------------------------------------------------------
-// Cascaded Shadow Map
-float ShadowCalculation(vec3 fragPosWorldSpace)
-{
+/**
+ * Returns the cascade index for this fragment (between 0 and CONFIG_MAX_SHADOW_CASCADES - 1).
+ */
+uint getShadowCascade() {
     // select cascade layer
-    vec4 fragPosViewSpace = u_View.ViewMatrix * vec4(fragPosWorldSpace, 1.0);
+    vec4 fragPosViewSpace = u_View.ViewMatrix * vec4(v_WorldPos, 1.0);
     float depthValue = abs(fragPosViewSpace.z);
 
-    int layer = -1;
-    for (int i = 0; i < u_Shadow.CascadeCount; ++i)
+    uint layer = -1;
+    for (uint i = 0; i < u_Shadow.CascadeCount; ++i)
     {
         if (depthValue < u_Shadow.CascadeSplits[i].x)
         {
@@ -137,8 +129,28 @@ float ShadowCalculation(vec3 fragPosWorldSpace)
         layer = u_Shadow.CascadeCount;
     }
 
+    return layer;
+}
 
-    vec4 fragPosLightSpace = u_Shadow.DirLightMatrices[layer] * vec4(fragPosWorldSpace, 1.0);
+highp vec4 getCascadeLightSpacePosition(uint cascade) {
+
+    highp vec3 p = v_WorldPos;
+    highp float cosTheta = saturate(dot(m_Params.Normal, u_Light.Direction));
+    highp float sinTheta = sqrt(1.0 - cosTheta * cosTheta);
+    p += m_Params.Normal * (sinTheta * 0.02);
+
+    vec4 fragPosLightSpace = u_Shadow.DirLightMatrices[cascade] * vec4(p, 1.0);
+    // perform perspective divide
+    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+
+    return fragPosLightSpace;
+}
+
+float ShadowCalculation()
+{
+    uint layer = getShadowCascade();
+
+    vec4 fragPosLightSpace = getCascadeLightSpacePosition(layer);
     // perform perspective divide
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
 
@@ -184,84 +196,131 @@ float ShadowCalculation(vec3 fragPosWorldSpace)
     //    return shadow;
 }
 
-vec3 IBL(vec3 F0, vec3 Lr)
-{
+// Shadow requiring a sampler2D sampler (VSM, DPCF and PCSS)
+float shadow(const bool DIRECTIONAL,
+const mediump sampler2DArray shadowMap,
+const uint index, highp vec4 shadowPosition, highp float zLight) {
+    highp vec4 scissorNormalized = u_View.ScissorNormalized;
+    uint layer = index;
+
+    return ShadowSample_PCSS(DIRECTIONAL, shadowMap, scissorNormalized, layer, index,
+        shadowPosition, zLight);
+
+}
+
+vec3 isotropicLobe(const vec3 h,
+float NoV, float NoL, float NoH, float LoH) {
+    vec3 F0 = mix(vec3(0.04), m_Params.Albedo, m_Params.Metalness);// TDOO: for temp
+
+    float D = distribution(m_Params.Roughness, NoH, h);
+    float V = visibility(m_Params.Roughness, NoV, NoL);
+    vec3  F = fresnel(F0, LoH);
+
+    return (D * V) * F;
+}
+
+vec3 specularLobe(const vec3 h, float NoV, float NoL, float NoH, float LoH) {
+    return isotropicLobe(h, NoV, NoL, NoH, LoH);
+}
+
+vec3 diffuseLobe(float NoV, float NoL, float LoH) {
+    return m_Params.Albedo * diffuse(m_Params.Roughness, NoV, NoL, LoH);
+}
+
+vec3 surfaceShading(float occlusion) {
+    vec3 h = normalize(m_Params.View + u_Light.Direction);
+
+    float NoV = max(dot(m_Params.Normal, m_Params.View),1e-4);
+    float NoL = saturate(dot(m_Params.Normal, u_Light.Direction));
+    float NoH = saturate(dot(m_Params.Normal, h));
+    float LoH = saturate(dot(u_Light.Direction, h));
+
+    vec3 Fr = specularLobe(h, NoV, NoL, NoH, LoH);
+    vec3 Fd = diffuseLobe(NoV, NoL, LoH);
+
+    // The energy compensation term is used to counteract the darkening effect
+    // at high roughness
+    vec3 color = Fd + Fr; // * pixel.energyCompensation
+
+    return (color * u_Light.Radiance) * (NoL * occlusion);
+}
+
+void evaluateDirectionalLight(inout vec3 color) {
+    float visibility = 1.0;
+    uint cascade = getShadowCascade();
+    highp vec4 shadowPosition = getCascadeLightSpacePosition(cascade);
+    visibility = 1.0 - shadow(true, u_ShadowMap, cascade, shadowPosition, 0.0f);
+
+    if (visibility <= 0.0) {
+        return;
+    }
+    //Wierd bug, if I don't do this, the shadow is not correct
+    color.rgb += surfaceShading(visibility);
+}
+
+void evaluateIBL(inout vec3 color) {
+    float NoV = dot(m_Params.Normal, m_Params.View);
+
+    vec3 Lr = 2.0 * NoV * m_Params.Normal - m_Params.View;
+    vec3 F0 = mix(vec3(0.04), m_Params.Albedo, m_Params.Metalness);
+
     vec3 irradiance = texture(u_IrradianceMap, m_Params.Normal).rgb;
-    vec3 F = FresnelSchlickRoughness(F0, m_Params.NdotV, m_Params.Roughness);
+    vec3 F = F_Schlick(F0, m_Params.Roughness, NoV);
     vec3 kd = (1.0 - F) * (1.0 - m_Params.Metalness);
     vec3 diffuseIBL = m_Params.Albedo * irradiance;
 
     int envRadianceTexLevels = textureQueryLevels(u_IrradianceMap);
-    float NoV = clamp(m_Params.NdotV, 0.0, 1.0);
+    NoV = clamp(NoV, 0.0, 1.0);
     vec3 R = 2.0 * dot(m_Params.View, m_Params.Normal) * m_Params.Normal - m_Params.View;
     vec3 specularIrradiance = textureLod(u_PrefilterMap, R, (m_Params.Roughness) * envRadianceTexLevels).rgb;
     //specularIrradiance = vec3(Convert_sRGB_FromLinear(specularIrradiance.r), Convert_sRGB_FromLinear(specularIrradiance.g), Convert_sRGB_FromLinear(specularIrradiance.b));
 
     // Sample BRDF Lut, 1.0 - roughness for y-coord because texture was generated (in Sparky) for gloss model
-    vec2 specularBRDF = texture(u_BRDFLUT, vec2(m_Params.NdotV, 1.0 - m_Params.Roughness)).rg;
+    vec2 specularBRDF = texture(u_BRDFLUT, vec2(NoV, 1.0 - m_Params.Roughness)).rg;
     vec3 specularIBL = specularIrradiance * (F0 * specularBRDF.x + specularBRDF.y);
 
-    return kd * diffuseIBL + specularIBL;
+    color += kd * diffuseIBL + specularIBL;
 }
 
-vec3 CalculateDirLights(vec3 F0)
-{
-    vec3 result = vec3(0.0);
-    for (int i = 0; i < 1; i++) //Only one light for now
-    {
-        vec3 Li = u_Light.Direction;
-        //        vec3 Lradiance = u_Light.Radiance * u_Light.Multiplier;
-        vec3 Lradiance = vec3(1.0f);
-        vec3 Lh = normalize(Li + m_Params.View);
+vec4 evaluateLights() {
+    // Ideally we would keep the diffuse and specular components separate
+    // until the very end but it costs more ALUs on mobile. The gains are
+    // currently not worth the extra operations
+    vec3 color = vec3(0.0);
 
-        // Calculate angles between surface normal and various light vectors.
-        float cosLi = max(0.0, dot(m_Params.Normal, Li));
-        float cosLh = max(0.0, dot(m_Params.Normal, Lh));
+    // We always evaluate the IBL as not having one is going to be uncommon,
+    // it also saves 1 shader variant
+    evaluateIBL(color);
 
-        vec3 F = FresnelSchlickRoughness(F0, max(0.0, dot(Lh, m_Params.View)), m_Params.Roughness);
-        float D = NdfGGX(cosLh, m_Params.Roughness);
-        float G = GaSchlickGGX(cosLi, m_Params.NdotV, m_Params.Roughness);
+    evaluateDirectionalLight(color);
 
-        vec3 kd = (1.0 - F) * (1.0 - m_Params.Metalness);
-        vec3 diffuseBRDF = kd * m_Params.Albedo;
+    // In fade mode we un-premultiply baseColor early on, so we need to
+    // premultiply again at the end (affects diffuse and specular lighting)
+//    color *= u_Params.Albedo.a;
 
-        // Cook-Torrance
-        vec3 specularBRDF = (F * D * G) / max(0.00001, 4.0 * cosLi * m_Params.NdotV);
-        specularBRDF = clamp(specularBRDF, vec3(0.0f), vec3(10.0f));
-        result += (diffuseBRDF + specularBRDF) * Lradiance * cosLi;
-    }
-    return result;
+    return vec4(color, 1.0); // computeDiffuseAlpha(u_Params.Albedo.a)
 }
+
+vec4 evaluateMaterial() {
+    vec4 color = evaluateLights();
+    return color;
+}
+
 
 // ----------------------------------------------------------------------------
 void main()
 {
-    m_Params.Albedo     = (u_RenderPrimitive.UseMap & 1<<1) == 0 ? pow(texture(u_AlbedoMap, v_TexCoord).rgb, vec3(2.2)) : u_RenderPrimitive.Albedo.rgb;
-    m_Params.Metalness  = (u_RenderPrimitive.UseMap & 1<<3) == 0 ? texture(u_MetallicMap, v_TexCoord).r : u_RenderPrimitive.Metallic;
-    m_Params.Roughness = (u_RenderPrimitive.UseMap & 1<<4) == 0 ? texture(u_RoughnessMap, v_TexCoord).r : u_RenderPrimitive.Roughness;
-    float ao        = (u_RenderPrimitive.UseMap & 1<<5) == 0 ? texture(u_OcclusionMap, v_TexCoord).r : u_RenderPrimitive.Occlusion;
+    m_Params.Albedo     = (u_RenderPrimitive.UseMap & 1<<1) != 0 ? pow(texture(u_AlbedoMap, v_TexCoord).rgb, vec3(2.2)) : u_RenderPrimitive.Albedo.rgb;
+    m_Params.Metalness  = (u_RenderPrimitive.UseMap & 1<<3) != 0 ? texture(u_MetallicMap, v_TexCoord).r : u_RenderPrimitive.Metallic;
+    m_Params.Roughness = (u_RenderPrimitive.UseMap & 1<<4) != 0 ? texture(u_RoughnessMap, v_TexCoord).r : u_RenderPrimitive.Roughness;
 
-    m_Params.Normal = (u_RenderPrimitive.UseMap & 1<<2) == 0 ? getNormalFromMap() : normalize(v_Normal);
+    m_Params.Normal = (u_RenderPrimitive.UseMap & 1<<2) != 0 ? getNormalFromMap() : normalize(v_Normal);
+    m_Params.Normal = gl_FrontFacing ? m_Params.Normal : -m_Params.Normal; // for two-sided materials
     m_Params.View = normalize(u_View.CameraPosition - v_WorldPos);
-    vec3 R = reflect(-m_Params.View, m_Params.Normal);
-    m_Params.NdotV = max(dot(m_Params.Normal, m_Params.View), 0.0);
-    // calculate reflectance at normal incidence; if dia-electric (like plastic) use F0
-    // of 0.04 and if it's a metal, use the albedo color as F0 (metallic workflow)
-    // Specular reflection vector
-    vec3 Lr = 2.0 * m_Params.NdotV * m_Params.Normal - m_Params.View;
-    // Fresnel reflectance, metals use albedo
-    vec3 F0 = mix(vec3(0.04), m_Params.Albedo, m_Params.Metalness);
 
-    float shadowScale = ShadowCalculation(v_WorldPos);
-    shadowScale = 1.0 - clamp(1.0f - shadowScale, 0.0f, 1.0f);
+    FragColor = evaluateMaterial();
 
-    vec3 lightContribution = CalculateDirLights(F0) * shadowScale;
-    lightContribution += m_Params.Albedo * u_RenderPrimitive.Emisstion;
-    vec3 iblContribution = IBL(F0, Lr) * 1.0f;
-
-    vec4 color = vec4(iblContribution + lightContribution , 1.0);
-
-    FragColor = color;
+    if(u_View.FogEnable) FragColor = fog(FragColor, v_WorldPos - u_View.CameraPosition);
 
     EntityID = u_View.EntityID;
 }

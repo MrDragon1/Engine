@@ -11,19 +11,16 @@ layout(location = 4) in vec2 a_TexCoord;
 layout(location = 5) in ivec4 a_BoneIDs;
 layout(location = 6) in vec4 a_BoneWeights;
 
-const int MAX_BONES = 100;
-layout(location = 1) uniform mat4 u_BoneTransforms[100];
-
 layout(location = 0) out vec3 v_WorldPos;
 layout(location = 1) out vec3 v_Normal;
 layout(location = 2) out vec2 v_TexCoord;
 
 void main()
 {
-    mat4 boneTransform = u_BoneTransforms[a_BoneIDs[0]] * a_BoneWeights[0];
-    boneTransform += u_BoneTransforms[a_BoneIDs[1]] * a_BoneWeights[1];
-    boneTransform += u_BoneTransforms[a_BoneIDs[2]] * a_BoneWeights[2];
-    boneTransform += u_BoneTransforms[a_BoneIDs[3]] * a_BoneWeights[3];
+    mat4 boneTransform = u_RenderPrimitiveBone.BoneTransform[a_BoneIDs[0]] * a_BoneWeights[0];
+    boneTransform += u_RenderPrimitiveBone.BoneTransform[a_BoneIDs[1]] * a_BoneWeights[1];
+    boneTransform += u_RenderPrimitiveBone.BoneTransform[a_BoneIDs[2]] * a_BoneWeights[2];
+    boneTransform += u_RenderPrimitiveBone.BoneTransform[a_BoneIDs[3]] * a_BoneWeights[3];
 
 
     v_TexCoord = a_TexCoord;

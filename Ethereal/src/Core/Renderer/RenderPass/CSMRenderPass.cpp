@@ -26,6 +26,7 @@ void CSMRenderPass::Draw() {
     UpdateDistance();
     // Draw Shadow Map
     const auto& staticMeshDrawList = mDrawLists.StaticMeshDrawList;
+    const auto& meshDrawList = mDrawLists.MeshDrawList;
     const auto& meshTransformMap = mDrawLists.MeshTransformMap;
 
     auto count = Project::GetConfigManager().sCSMConfig.CascadeCount;

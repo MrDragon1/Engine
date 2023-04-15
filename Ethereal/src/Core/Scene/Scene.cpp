@@ -227,7 +227,7 @@ void Scene::SubmitRenderScene() {
     auto meshView = mRegistry.view<TransformComponent, MeshComponent>();
     for (auto entity : meshView) {
         const auto [transformComponent, meshComponent] = meshView.get<TransformComponent, MeshComponent>(entity);
-        auto mesh = AssetManager::GetAsset<StaticMesh>(meshComponent.MeshHandle);
+        auto mesh = AssetManager::GetAsset<Mesh>(meshComponent.MeshHandle);
         if (mesh && !mesh->IsFlagSet(AssetFlag::Missing)) {
             Entity e = Entity(entity, this);
             Matrix4 transform = transformComponent.getMatrix();  // GetWorldSpaceTransformMatrix(e);

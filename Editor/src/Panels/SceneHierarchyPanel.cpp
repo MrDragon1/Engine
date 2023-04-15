@@ -155,10 +155,13 @@ void SceneHierarchyPanel::ShowInspector() {
 
                 ImGui::Button("A", {1.0f, 1.0f});
                 ImGui::SameLine();
-                UI::DragDropBar(("##" + type_name).c_str(), type_name.c_str(), firstComponent.MeshHandle, AssetType::Mesh);
+                if (UI::DragDropBar(("##" + type_name).c_str(), type_name.c_str(), firstComponent.MeshHandle, AssetType::Mesh)) {
+                    firstComponent.PostLoad();
+                }
 
-                UI::ListHeader("Materials", firstComponent.MaterialTableRaw.Materials, AssetType::Material);
-                firstComponent.PostLoad();
+                if (UI::ListHeader("Materials", firstComponent.MaterialTableRaw.Materials, AssetType::Material)) {
+                    firstComponent.PostLoad();
+                }
             });
 
         DrawComponent<StaticMeshComponent>("Static Mesh", [&](StaticMeshComponent& firstComponent, const std::vector<UUID>& entities,
@@ -171,10 +174,13 @@ void SceneHierarchyPanel::ShowInspector() {
             //  the text in InputText.
             ImGui::Button("A", {1.0f, 1.0f});
             ImGui::SameLine();
-            UI::DragDropBar(("##" + type_name).c_str(), type_name.c_str(), firstComponent.StaticMeshHandle, AssetType::StaticMesh);
+            if (UI::DragDropBar(("##" + type_name).c_str(), type_name.c_str(), firstComponent.StaticMeshHandle, AssetType::StaticMesh)) {
+                firstComponent.PostLoad();
+            }
 
-            UI::ListHeader("Materials", firstComponent.MaterialTableRaw.Materials, AssetType::Material);
-            firstComponent.PostLoad();
+            if (UI::ListHeader("Materials", firstComponent.MaterialTableRaw.Materials, AssetType::Material)) {
+                firstComponent.PostLoad();
+            }
         });
     }
 

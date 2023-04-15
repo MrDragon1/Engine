@@ -372,6 +372,17 @@ void OpenGLDriverApi::GetSubTexture(TextureHandle th, uint32_t layer, TextureHan
     glCopyImageSubData(t->gl.id, t->gl.target, 0, 0, 0, layer, dst->gl.id, GL_TEXTURE_2D, 0, 0, 0, 0, t->width, t->height, 1);
 }
 
+int OpenGLDriverApi::ReadPixel(RenderTargetHandle rth, uint32_t attachmentIndex, uint32_t xoffset, uint32_t yoffset) {
+    Ref<GLRenderTarget> rt = rth.As<GLRenderTarget>();
+    glBindFramebuffer(GL_FRAMEBUFFER, rt->gl.id);
+
+    glReadBuffer(GL_COLOR_ATTACHMENT0 + attachmentIndex);
+    int pixelData;
+    glReadPixels(xoffset, yoffset, 1, 1, GL_RED_INTEGER, GL_INT, &pixelData);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    return pixelData;
+}
+
 void OpenGLDriverApi::Clear() { glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); }
 
 void OpenGLDriverApi::GenerateMipmaps(TextureHandle th) {

@@ -41,15 +41,15 @@ Quaternion QuatFromAssimpQuat(const aiQuaternion& pOrientation) { return Quatern
 }  // namespace Utils
 
 static const uint32_t sMeshImportFlags = aiProcess_CalcTangentSpace |  // Create binormals/tangents just in case
-                                          aiProcess_Triangulate |       // Make sure we're triangles
-                                          aiProcess_SortByPType |       // Split meshes by primitive type
-                                          aiProcess_GenNormals |        // Make sure we have legit normals
-                                          aiProcess_GenUVCoords |       // Convert UVs if required
-                                                                        // 		aiProcess_OptimizeGraph |
-                                          aiProcess_OptimizeMeshes |    // Batch draws where possible
-                                          aiProcess_JoinIdenticalVertices |
-                                          aiProcess_GlobalScale |  // e.g. convert cm to m for fbx import (and other formats where cm is native)
-                                          aiProcess_ValidateDataStructure;  // Validation
+                                         aiProcess_Triangulate |       // Make sure we're triangles
+                                         aiProcess_SortByPType |       // Split meshes by primitive type
+                                         aiProcess_GenNormals |        // Make sure we have legit normals
+                                         aiProcess_GenUVCoords |       // Convert UVs if required
+                                                                       // 		aiProcess_OptimizeGraph |
+                                         aiProcess_OptimizeMeshes |    // Batch draws where possible
+                                         aiProcess_JoinIdenticalVertices |
+                                         aiProcess_GlobalScale |  // e.g. convert cm to m for fbx import (and other formats where cm is native)
+                                         aiProcess_ValidateDataStructure;  // Validation
 
 struct LogStream : public Assimp::LogStream {
     static void Initialize() {
@@ -363,7 +363,7 @@ Ref<MeshSource> ResourceLoader::LoadMeshSource(const std::string& path) {
                                              .stride = 18 * sizeof(float) + 4 * sizeof(int),
                                              .buffer = 0,
                                              .type = ElementType::INT4,
-                                             .flags = 0,
+                                             .flags = Attribute::FLAG_INTEGER_TARGET,
                                          },
                                          Attribute{
                                              .offset = 14 * sizeof(float) + 4 * sizeof(int),

@@ -60,6 +60,4 @@ layout(std140, binding = 3) uniform RenderPrimitive
 layout(std140, binding = 4) uniform RenderPrimitiveBone
 {
     mat4 BoneTransform[100];
-
-   
 } u_RenderPrimitiveBone;

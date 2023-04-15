@@ -22,12 +22,15 @@ void MaterialEditPanel::OnImGuiRender(bool& isOpen) {
         mSelectedEntity = mContext->GetEntityWithUUID(SelectionManager::GetSelections(SelectionContext::Scene).front());
     }
 
-    const bool hasValidEntity = mSelectedEntity && mSelectedEntity.HasComponent<StaticMeshComponent>();
+    const bool hasValidEntity =
+        mSelectedEntity && (mSelectedEntity.HasComponent<StaticMeshComponent>() || mSelectedEntity.HasComponent<MeshComponent>());
     bool Open = isOpen;
     ImGui::SetNextWindowSize(ImVec2(200.0f, 300.0f), ImGuiCond_Appearing);
     if (ImGui::Begin("Materials", &Open) && hasValidEntity) {
         const bool hasStaticMesh = mSelectedEntity.HasComponent<StaticMeshComponent>() &&
                                    AssetManager::IsAssetHandleValid(mSelectedEntity.GetComponent<StaticMeshComponent>().StaticMeshHandle);
+        const bool hasMesh = mSelectedEntity.HasComponent<MeshComponent>() &&
+                             AssetManager::IsAssetHandleValid(mSelectedEntity.GetComponent<MeshComponent>().MeshHandle);
 
         if (hasStaticMesh) {
             Ref<MaterialTable> meshMaterialTable, componentMaterialTable;
@@ -36,6 +39,31 @@ void MaterialEditPanel::OnImGuiRender(bool& isOpen) {
                 const auto& staticMeshComponent = mSelectedEntity.GetComponent<StaticMeshComponent>();
                 componentMaterialTable = staticMeshComponent.materialTable;
                 auto mesh = AssetManager::GetAsset<StaticMesh>(staticMeshComponent.StaticMeshHandle);
+                if (mesh) meshMaterialTable = mesh->GetMaterials();
+            }
+
+            if (componentMaterialTable) {
+                if (meshMaterialTable) {
+                    if (componentMaterialTable->GetMaterialCount() < meshMaterialTable->GetMaterialCount())
+                        componentMaterialTable->SetMaterialCount(meshMaterialTable->GetMaterialCount());
+                }
+
+                for (size_t i = 0; i < componentMaterialTable->GetMaterialCount(); i++) {
+                    bool hasComponentMaterial = componentMaterialTable->HasMaterial(i);
+                    bool hasMeshMaterial = meshMaterialTable && meshMaterialTable->HasMaterial(i);
+
+                    if (hasComponentMaterial)  // Override
+                        RenderMaterial(i, componentMaterialTable->GetMaterial(i));
+                }
+            }
+        }
+        if (hasMesh) {
+            Ref<MaterialTable> meshMaterialTable, componentMaterialTable;
+
+            if (mSelectedEntity.HasComponent<MeshComponent>()) {
+                const auto& meshComponent = mSelectedEntity.GetComponent<MeshComponent>();
+                componentMaterialTable = meshComponent.materialTable;
+                auto mesh = AssetManager::GetAsset<Mesh>(meshComponent.MeshHandle);
                 if (mesh) meshMaterialTable = mesh->GetMaterials();
             }
 

@@ -157,8 +157,14 @@ static GLenum ResolveElementType(const ElementType& type) {
         case ElementType::USHORT4:
             return GL_UNSIGNED_SHORT;
         case ElementType::INT:
+        case ElementType::INT2:
+        case ElementType::INT3:
+        case ElementType::INT4:
             return GL_INT;
         case ElementType::UINT:
+        case ElementType::UINT2:
+        case ElementType::UINT3:
+        case ElementType::UINT4:
             return GL_UNSIGNED_INT;
         case ElementType::FLOAT:
         case ElementType::FLOAT2:
@@ -186,18 +192,24 @@ static GLuint ResolveElementTypeCount(const ElementType& type) {
         case ElementType::UBYTE2:
         case ElementType::SHORT2:
         case ElementType::USHORT2:
+        case ElementType::INT2:
+        case ElementType::UINT2:
             return 2;
         case ElementType::FLOAT3:
         case ElementType::BYTE3:
         case ElementType::UBYTE3:
         case ElementType::SHORT3:
         case ElementType::USHORT3:
+        case ElementType::INT3:
+        case ElementType::UINT3:
             return 3;
         case ElementType::FLOAT4:
         case ElementType::BYTE4:
         case ElementType::UBYTE4:
         case ElementType::SHORT4:
         case ElementType::USHORT4:
+        case ElementType::INT4:
+        case ElementType::UINT4:
             return 4;
         default:
             ET_CORE_ASSERT("Invalid ElementType!")

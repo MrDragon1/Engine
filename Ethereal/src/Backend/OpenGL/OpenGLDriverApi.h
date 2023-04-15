@@ -131,6 +131,7 @@ class OpenGLDriverApi : public DriverApi {
 
     uint32_t GetTextueID(TextureHandle th) override;
     void GetSubTexture(TextureHandle th, uint32_t layer, TextureHandle dst) override;
+    int ReadPixel(RenderTargetHandle rth, uint32_t attachmentIndex, uint32_t xoffset, uint32_t yoffset) override;
     void Clear() override;
 
    private:

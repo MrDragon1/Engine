@@ -305,9 +305,8 @@ static bool ComponentHeader(const char* label, ImGuiTreeNodeFlags flags = ImGuiT
     {
         ShiftCursorY(2.0f);
         ScopedColorStack style(ImGuiCol_Border, IM_COL32(0, 0, 0, 0), ImGuiCol_Button, IM_COL32(0, 0, 0, 0));
-        UI::ImageButton((cc + "AssetIcon").c_str(), (ImTextureID)(intptr_t)GlobalContext::GetDriverApi()->GetTextueID(icon),
-                        ImVec2(16.0f, 16.0f), ImU32(IM_COL32(196, 196, 196, 255)), ImU32(IM_COL32(196, 196, 196, 255)),
-                        ImU32(IM_COL32(196, 196, 196, 255)));
+        UI::ImageButton((cc + "AssetIcon").c_str(), (ImTextureID)(intptr_t)GlobalContext::GetDriverApi()->GetTextueID(icon), ImVec2(16.0f, 16.0f),
+                        ImU32(IM_COL32(196, 196, 196, 255)), ImU32(IM_COL32(196, 196, 196, 255)), ImU32(IM_COL32(196, 196, 196, 255)));
 
         ShiftCursorY(-2.0f);
     }
@@ -342,6 +341,7 @@ static bool ComponentHeader(const char* label, ImGuiTreeNodeFlags flags = ImGuiT
  */
 static bool DragDropBar(const char* id_label, const char* type_label, AssetHandle& payload, AssetType assetType, float label_shift = 20.0f,
                         float text_shift = 50.0f) {
+    bool modified = false;
     UI::ScopedStyle style(ImGuiStyleVar_FrameRounding, 2.0f);
     ScopedID id(id_label);
 
@@ -358,6 +358,7 @@ static bool DragDropBar(const char* id_label, const char* type_label, AssetHandl
         if (const ImGuiPayload* accept_payload = ImGui::AcceptDragDropPayload(Utils::AssetTypeToString(assetType))) {
             IM_ASSERT(accept_payload->DataSize == sizeof(AssetHandle));
             payload = *(const AssetHandle*)accept_payload->Data;
+            modified = true;
         }
         ImGui::EndDragDropTarget();
     }
@@ -371,15 +372,14 @@ static bool DragDropBar(const char* id_label, const char* type_label, AssetHandl
         ShiftCursorY(2.0f);
         ScopedColorStack style(ImGuiCol_Border, IM_COL32(0, 0, 0, 0), ImGuiCol_Button, IM_COL32(0, 0, 0, 0), ImGuiCol_ButtonHovered,
                                IM_COL32(0, 0, 0, 0));
-        if (UI::ImageButton(id_label, (ImTextureID)(intptr_t)GlobalContext::GetDriverApi()->GetTextueID(icon),
-                            ImVec2(16.0f, 16.0f))) {
+        if (UI::ImageButton(id_label, (ImTextureID)(intptr_t)GlobalContext::GetDriverApi()->GetTextueID(icon), ImVec2(16.0f, 16.0f))) {
             // TODO: Open component select menu
         }
 
         ShiftCursorY(-2.0f);
     }
     //            DrawItemActivityOutline();
-    return false;
+    return modified;
 }
 
 /*!
@@ -392,7 +392,7 @@ static bool ListHeader(const char* label, std::vector<AssetHandle>& payloads, As
     int value = payloads.size();
     std::string cc = "##dummy_id_" + std::string(label) + "_";
     bool open;
-
+    bool modified = false;
     {
         UI::ScopedColorStack(ImGuiCol_Border, IM_COL32(0, 0, 0, 0), ImGuiCol_Header, Colors::Theme::background);
         open = ImGui::CollapsingHeader(cc.c_str());
@@ -427,11 +427,10 @@ static bool ListHeader(const char* label, std::vector<AssetHandle>& payloads, As
                 {
                     ShiftCursorY(2.0f);
                     ScopedColorStack style(ImGuiCol_Border, IM_COL32(0, 0, 0, 0), ImGuiCol_Button, IM_COL32(0, 0, 0, 0));
-                    if (UI::ImageButton(
-                            (cc + "BurgerMenuIcon " + std::to_string(i)).c_str(),
-                            (ImTextureID)(intptr_t)GlobalContext::GetDriverApi()->GetTextueID(EditorResource::BurgerMenuIcon),
-                            ImVec2(16.0f, 16.0f), ImU32(IM_COL32(196, 196, 196, 255)), ImU32(IM_COL32(196, 196, 196, 255)),
-                            ImU32(IM_COL32(196, 196, 196, 255)))) {
+                    if (UI::ImageButton((cc + "BurgerMenuIcon " + std::to_string(i)).c_str(),
+                                        (ImTextureID)(intptr_t)GlobalContext::GetDriverApi()->GetTextueID(EditorResource::BurgerMenuIcon),
+                                        ImVec2(16.0f, 16.0f), ImU32(IM_COL32(196, 196, 196, 255)), ImU32(IM_COL32(196, 196, 196, 255)),
+                                        ImU32(IM_COL32(196, 196, 196, 255)))) {
                         //                                ET_CORE_INFO("BurgerMenuIcon Pressed");
                     }
 
@@ -440,8 +439,8 @@ static bool ListHeader(const char* label, std::vector<AssetHandle>& payloads, As
                 ImGui::SameLine();
                 ShiftCursorY(3.0f);  // Wired bug
                 std::string elementlabel = "Element " + std::to_string(i);
-                auto tmp = payloads[i];
-                DragDropBar((cc + elementlabel).c_str(), elementlabel.c_str(), payloads[i], assetType, 5.0f, 10.0f);
+                auto& tmp = payloads[i];
+                modified = modified || DragDropBar((cc + elementlabel).c_str(), elementlabel.c_str(), payloads[i], assetType, 5.0f, 10.0f);
                 ImGui::SetCursorPosY(cury + height);
             }
             ImGui::EndChild();
@@ -463,7 +462,7 @@ static bool ListHeader(const char* label, std::vector<AssetHandle>& payloads, As
         }
     }
 
-    return open;
+    return modified;
 }
 
 };  // namespace UI
