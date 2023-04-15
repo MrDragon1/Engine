@@ -16,7 +16,7 @@ class EnvironmentMapRenderPass : public RenderPass {
     void OnResize(uint32_t width, uint32_t height) override;
 
    private:
-    Ref<StaticMesh> m_Cube;
+    Ref<StaticMesh> mCube;
 
     TextureHandle mEnvironmentCubeMap;
     TextureHandle mReflectionCubeMap;

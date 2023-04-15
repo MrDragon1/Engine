@@ -11,13 +11,13 @@ namespace Ethereal
     Project::~Project() {}
 
     void Project::SetActive(Ref<Project> project) {
-        if (s_ActiveProject) {
+        if (sActiveProject) {
             RenderResource::Shutdown();
             AssetManager::Shutdown();
         }
 
-        s_ActiveProject = project;
-        if (s_ActiveProject) {
+        sActiveProject = project;
+        if (sActiveProject) {
             AssetManager::Init();
             RenderResource::Init();
         }

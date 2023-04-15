@@ -85,25 +85,25 @@ class MeshSource : public Asset {
     MeshSource();
     virtual ~MeshSource();
 
-    std::vector<Submesh>& GetSubmeshes() { return m_Submeshes; }
-    const std::vector<Submesh>& GetSubmeshes() const { return m_Submeshes; }
+    std::vector<Submesh>& GetSubmeshes() { return mSubmeshes; }
+    const std::vector<Submesh>& GetSubmeshes() const { return mSubmeshes; }
 
-    const std::vector<Vertex>& GetVertices() const { return m_StaticVertices; }
-    const std::vector<AnimationVertex>& GetAnimationVertices() const { return m_AnimationVertices; }
-    const std::vector<Index>& GetIndices() const { return m_Indices; }
+    const std::vector<Vertex>& GetVertices() const { return mStaticVertices; }
+    const std::vector<AnimationVertex>& GetAnimationVertices() const { return mAnimationVertices; }
+    const std::vector<Index>& GetIndices() const { return mIndices; }
 
-    const std::string& GetFilePath() const { return m_FilePath; }
+    const std::string& GetFilePath() const { return mFilePath; }
 
-    RenderPrimitiveHandle GetRenderPrimitive() { return m_RenderPrimitive; }
+    RenderPrimitiveHandle GetRenderPrimitive() { return mRenderPrimitive; }
     RenderPrimitiveHandle GetSubMeshRenderPrimitive(uint32_t index);
 
-    Ref<Animator> GetAnimator() { return m_Animator; }
+    Ref<Animator> GetAnimator() { return mAnimator; }
 
     static AssetType GetStaticType() { return AssetType::MeshSource; }
     virtual AssetType GetAssetType() const override { return GetStaticType(); }
 
-    const AABB& GetBoundingBox() const { return m_BoundingBox; }
-    bool IsAnimated() const { return m_IsAnimated; }
+    const AABB& GetBoundingBox() const { return mBoundingBox; }
+    bool IsAnimated() const { return mIsAnimated; }
     void LoadMaterials(Ref<MaterialTable>& materials);
 
    private:
@@ -111,26 +111,26 @@ class MeshSource : public Asset {
     void TraverseNodesAnim(aiNode* node, Ref<Joint>& joint);
 
    private:
-    std::unique_ptr<Assimp::Importer> m_Importer;
-    const aiScene* m_Scene;
+    std::unique_ptr<Assimp::Importer> mImporter;
+    const aiScene* mScene;
 
-    std::string m_FilePath;
+    std::string mFilePath;
 
-    Matrix4 m_InverseTransform;
+    Matrix4 mInverseTransform;
 
-    RenderPrimitiveHandle m_RenderPrimitive;
+    RenderPrimitiveHandle mRenderPrimitive;
 
-    std::vector<Submesh> m_Submeshes;
-    AABB m_BoundingBox;
+    std::vector<Submesh> mSubmeshes;
+    AABB mBoundingBox;
 
-    std::vector<Vertex> m_StaticVertices;
-    std::vector<Index> m_Indices;
-    std::unordered_map<aiNode*, std::vector<uint32_t>> m_NodeMap;
+    std::vector<Vertex> mStaticVertices;
+    std::vector<Index> mIndices;
+    std::unordered_map<aiNode*, std::vector<uint32_t>> mNodeMap;
 
-    bool m_IsAnimated;
-    std::vector<AnimationVertex> m_AnimationVertices;
-    Ref<Animator> m_Animator;
-    size_t m_JointCount = 0;
+    bool mIsAnimated;
+    std::vector<AnimationVertex> mAnimationVertices;
+    Ref<Animator> mAnimator;
+    size_t mJointCount = 0;
 
     friend class ResourceLoader;
 };
@@ -148,27 +148,27 @@ class StaticMesh : public Asset {
     void Load(const StaticMeshDesc& desc);
     void Save(StaticMeshDesc& desc);
 
-    std::vector<uint32_t>& GetSubmeshes() { return m_Submeshes; }
-    const std::vector<uint32_t>& GetSubmeshes() const { return m_Submeshes; }
+    std::vector<uint32_t>& GetSubmeshes() { return mSubmeshes; }
+    const std::vector<uint32_t>& GetSubmeshes() const { return mSubmeshes; }
 
     // Pass in an empty vector to set ALL submeshes for MeshSource
     void SetSubmeshes(const std::vector<uint32_t>& submeshes);
 
-    Ref<MeshSource> GetMeshSource() { return m_MeshSource; }
-    Ref<MeshSource> GetMeshSource() const { return m_MeshSource; }
-    void SetMeshAsset(Ref<MeshSource> meshAsset) { m_MeshSource = meshAsset; }
+    Ref<MeshSource> GetMeshSource() { return mMeshSource; }
+    Ref<MeshSource> GetMeshSource() const { return mMeshSource; }
+    void SetMeshAsset(Ref<MeshSource> meshAsset) { mMeshSource = meshAsset; }
 
-    Ref<MaterialTable> GetMaterials() const { return m_Materials; }
+    Ref<MaterialTable> GetMaterials() const { return mMaterials; }
 
     static AssetType GetStaticType() { return AssetType::StaticMesh; }
     virtual AssetType GetAssetType() const override { return GetStaticType(); }
 
    private:
-    Ref<MeshSource> m_MeshSource;
-    std::vector<uint32_t> m_Submeshes;
+    Ref<MeshSource> mMeshSource;
+    std::vector<uint32_t> mSubmeshes;
 
     // Materials
-    Ref<MaterialTable> m_Materials;
+    Ref<MaterialTable> mMaterials;
 
     friend class Scene;
     friend class Renderer;
@@ -187,35 +187,35 @@ class Mesh : public Asset {
     void Load(const MeshDesc& desc);
     void Save(MeshDesc& desc);
 
-    std::vector<uint32_t>& GetSubmeshes() { return m_Submeshes; }
-    const std::vector<uint32_t>& GetSubmeshes() const { return m_Submeshes; }
+    std::vector<uint32_t>& GetSubmeshes() { return mSubmeshes; }
+    const std::vector<uint32_t>& GetSubmeshes() const { return mSubmeshes; }
 
     // Pass in an empty vector to set ALL submeshes for MeshSource
     void SetSubmeshes(const std::vector<uint32_t>& submeshes);
 
-    Ref<MeshSource> GetMeshSource() { return m_MeshSource; }
-    Ref<MeshSource> GetMeshSource() const { return m_MeshSource; }
-    void SetMeshAsset(Ref<MeshSource> meshAsset) { m_MeshSource = meshAsset; }
+    Ref<MeshSource> GetMeshSource() { return mMeshSource; }
+    Ref<MeshSource> GetMeshSource() const { return mMeshSource; }
+    void SetMeshAsset(Ref<MeshSource> meshAsset) { mMeshSource = meshAsset; }
 
-    Ref<MaterialTable> GetMaterials() const { return m_Materials; }
-    Ref<Animator> GetAnimator() { return m_MeshSource->GetAnimator(); }
+    Ref<MaterialTable> GetMaterials() const { return mMaterials; }
+    Ref<Animator> GetAnimator() { return mMeshSource->GetAnimator(); }
 
     static AssetType GetStaticType() { return AssetType::Mesh; }
     virtual AssetType GetAssetType() const override { return GetStaticType(); }
 
    private:
-    Ref<MeshSource> m_MeshSource;
-    std::vector<uint32_t> m_Submeshes;
+    Ref<MeshSource> mMeshSource;
+    std::vector<uint32_t> mSubmeshes;
 
     // Materials
-    Ref<MaterialTable> m_Materials;
+    Ref<MaterialTable> mMaterials;
 
     // Animation
-    bool m_IsAnimated = false;
-    float m_AnimationTime = 0.0f;
-    float m_WorldTime = 0.0f;
-    float m_TimeMultiplier = 1.0f;
-    bool m_AnimationPlaying = true;
+    bool mIsAnimated = false;
+    float mAnimationTime = 0.0f;
+    float mWorldTime = 0.0f;
+    float mTimeMultiplier = 1.0f;
+    bool mAnimationPlaying = true;
 
     friend class Scene;
     friend class Renderer;

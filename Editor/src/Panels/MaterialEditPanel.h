@@ -18,9 +18,9 @@ class MaterialEditPanel : public EditorPanel {
     void RenderMaterial(size_t materialIndex, Ref<MaterialAsset> materialAsset);
 
    private:
-    Ref<Scene> m_Context;
-    Entity m_SelectedEntity;
-    Ref<Texture> m_CheckerBoardTexture;
+    Ref<Scene> mContext;
+    Entity mSelectedEntity;
+    Ref<Texture> mCheckerBoardTexture;
 };
 
 }  // namespace Ethereal

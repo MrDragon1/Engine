@@ -39,9 +39,9 @@ void MainCameraRenderPass::Draw() {
 
     // Clear our entity ID attachment to -1
 
-    const auto& staticMeshDrawList = m_DrawLists.StaticMeshDrawList;
-    const auto& meshDrawList = m_DrawLists.MeshDrawList;
-    const auto& meshTransformMap = m_DrawLists.MeshTransformMap;
+    const auto& staticMeshDrawList = mDrawLists.StaticMeshDrawList;
+    const auto& meshDrawList = mDrawLists.MeshDrawList;
+    const auto& meshTransformMap = mDrawLists.MeshTransformMap;
 
     api->BeginRenderPass(mRenderTarget, mParams);
 
@@ -139,6 +139,6 @@ int MainCameraRenderPass::GetMousePicking(int x, int y) {
     auto api = GlobalContext::GetDriverApi();
     // TDOO:fix this
     return -1;
-    // return m_Framebuffer->ReadPixel(1, x, y);
+    // return mFramebuffer->ReadPixel(1, x, y);
 }
 }  // namespace Ethereal

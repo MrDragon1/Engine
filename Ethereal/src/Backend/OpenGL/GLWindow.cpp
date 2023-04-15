@@ -84,7 +84,7 @@ void APIENTRY glDebugOutput(GLenum source, GLenum type, unsigned int id, GLenum 
     std::cout << std::endl;
 }
 
-static bool s_GLFWInitialized = false;
+static bool sGLFWInitialized = false;
 
 static void GLFWErrorCallback(int error, const char* description) { ET_ERROR("GLFW Error ({0}): {1}", error, description); }
 
@@ -95,29 +95,29 @@ GLWindow::GLWindow(const WindowProps& props) { Init(props); }
 GLWindow::~GLWindow() { Shutdown(); }
 
 void GLWindow::Init(const WindowProps& props) {
-    m_Data.Title = props.Title;
-    m_Data.Width = props.Width;
-    m_Data.Height = props.Height;
+    mData.Title = props.Title;
+    mData.Width = props.Width;
+    mData.Height = props.Height;
 
-    ET_CORE_INFO("Creating window {0} ({1}, {2})", m_Data.Title, m_Data.Width, m_Data.Height);
-    if (!s_GLFWInitialized) {
+    ET_CORE_INFO("Creating window {0} ({1}, {2})", mData.Title, mData.Width, mData.Height);
+    if (!sGLFWInitialized) {
         int success = glfwInit();
         ET_CORE_ASSERT(success, "Could not initialize GLFW!");
         glfwSetErrorCallback(GLFWErrorCallback);
-        s_GLFWInitialized = true;
+        sGLFWInitialized = true;
     }
     glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);  // Debug Only
-    m_Window = glfwCreateWindow(m_Data.Width, m_Data.Height, m_Data.Title.c_str(), nullptr, nullptr);
-    glfwMakeContextCurrent(m_Window);
+    mWindow = glfwCreateWindow(mData.Width, mData.Height, mData.Title.c_str(), nullptr, nullptr);
+    glfwMakeContextCurrent(mWindow);
 
     int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
     ET_CORE_ASSERT(status, "Failed to initialize Glad!");
 
-    glfwSetWindowUserPointer(m_Window, &m_Data);
+    glfwSetWindowUserPointer(mWindow, &mData);
     SetVSync(true);
 
     // Set GLFW callbacks
-    glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height) {
+    glfwSetWindowSizeCallback(mWindow, [](GLFWwindow* window, int width, int height) {
         WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
         data.Width = width;
         data.Height = height;
@@ -126,13 +126,13 @@ void GLWindow::Init(const WindowProps& props) {
         data.EventCallback(event);
     });
 
-    glfwSetWindowCloseCallback(m_Window, [](GLFWwindow* window) {
+    glfwSetWindowCloseCallback(mWindow, [](GLFWwindow* window) {
         WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
         WindowCloseEvent event;
         data.EventCallback(event);
     });
 
-    glfwSetKeyCallback(m_Window, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
+    glfwSetKeyCallback(mWindow, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
         WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
         switch (action) {
@@ -154,14 +154,14 @@ void GLWindow::Init(const WindowProps& props) {
         }
     });
 
-    glfwSetCharCallback(m_Window, [](GLFWwindow* window, unsigned int keycode) {
+    glfwSetCharCallback(mWindow, [](GLFWwindow* window, unsigned int keycode) {
         WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
         KeyTypedEvent event(keycode);
         data.EventCallback(event);
     });
 
-    glfwSetMouseButtonCallback(m_Window, [](GLFWwindow* window, int button, int action, int mods) {
+    glfwSetMouseButtonCallback(mWindow, [](GLFWwindow* window, int button, int action, int mods) {
         WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
         switch (action) {
@@ -178,14 +178,14 @@ void GLWindow::Init(const WindowProps& props) {
         }
     });
 
-    glfwSetScrollCallback(m_Window, [](GLFWwindow* window, double xOffset, double yOffset) {
+    glfwSetScrollCallback(mWindow, [](GLFWwindow* window, double xOffset, double yOffset) {
         WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
         MouseScrolledEvent event((float)xOffset, (float)yOffset);
         data.EventCallback(event);
     });
 
-    glfwSetCursorPosCallback(m_Window, [](GLFWwindow* window, double xPos, double yPos) {
+    glfwSetCursorPosCallback(mWindow, [](GLFWwindow* window, double xPos, double yPos) {
         WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
         MouseMovedEvent event((float)xPos, (float)yPos);
@@ -203,11 +203,11 @@ void GLWindow::Init(const WindowProps& props) {
     }
 }
 
-void GLWindow::Shutdown() { glfwDestroyWindow(m_Window); }
+void GLWindow::Shutdown() { glfwDestroyWindow(mWindow); }
 
 void GLWindow::OnUpdate() {
     glfwPollEvents();
-    glfwSwapBuffers(m_Window);
+    glfwSwapBuffers(mWindow);
 }
 
 void GLWindow::SetVSync(bool enabled) {
@@ -216,8 +216,8 @@ void GLWindow::SetVSync(bool enabled) {
     } else {
         glfwSwapInterval(0);
     }
-    m_Data.VSync = enabled;
+    mData.VSync = enabled;
 }
 
-bool GLWindow::IsVSync() const { return m_Data.VSync; }
+bool GLWindow::IsVSync() const { return mData.VSync; }
 }  // namespace Ethereal

@@ -25,13 +25,13 @@ void CSMRenderPass::Init(uint32_t width, uint32_t height) {
 void CSMRenderPass::Draw() {
     UpdateDistance();
     // Draw Shadow Map
-    const auto& staticMeshDrawList = m_DrawLists.StaticMeshDrawList;
-    const auto& meshTransformMap = m_DrawLists.MeshTransformMap;
+    const auto& staticMeshDrawList = mDrawLists.StaticMeshDrawList;
+    const auto& meshTransformMap = mDrawLists.MeshTransformMap;
 
     auto count = Project::GetConfigManager().sCSMConfig.CascadeCount;
     auto& splits = Project::GetConfigManager().sCSMConfig.CascadeSplits;
     for (int i = 0; i < count; i++) {
-        splits[i].x = m_Distance[i];  // Refer to the comment in RenderSystem.h of ShadowData
+        splits[i].x = mDistance[i];  // Refer to the comment in RenderSystem.h of ShadowData
     }
     CalculateLightSpaceMatrices();
 
@@ -140,11 +140,11 @@ void CSMRenderPass::CalculateLightSpaceMatrices() {
 
     for (size_t i = 0; i < count + 1; ++i) {
         if (i == 0) {
-            matrices[i] = GetLightSpaceMatrix(Project::GetConfigManager().sCSMConfig.NearPlane, m_Distance[i]);
-        } else if (i < m_Distance.size()) {
-            matrices[i] = GetLightSpaceMatrix(m_Distance[i - 1], m_Distance[i]);
+            matrices[i] = GetLightSpaceMatrix(Project::GetConfigManager().sCSMConfig.NearPlane, mDistance[i]);
+        } else if (i < mDistance.size()) {
+            matrices[i] = GetLightSpaceMatrix(mDistance[i - 1], mDistance[i]);
         } else {
-            matrices[i] = GetLightSpaceMatrix(m_Distance[i - 1], Project::GetConfigManager().sCSMConfig.FarPlane);
+            matrices[i] = GetLightSpaceMatrix(mDistance[i - 1], Project::GetConfigManager().sCSMConfig.FarPlane);
         }
     }
 }
@@ -152,11 +152,11 @@ void CSMRenderPass::CalculateLightSpaceMatrices() {
 void CSMRenderPass::UpdateDistance() {
     auto nearPlane = Project::GetConfigManager().sCSMConfig.NearPlane;
     auto farPlane = Project::GetConfigManager().sCSMConfig.FarPlane;
-    // TODO: automatically generate distance according to m_Cascaded
-    m_Distance.clear();
-    m_Distance.push_back(farPlane / 50.0f);
-    m_Distance.push_back(farPlane / 25.0f);
-    m_Distance.push_back(farPlane / 10.0f);
-    m_Distance.push_back(farPlane / 2.0f);
+    // TODO: automatically generate distance according to mCascaded
+    mDistance.clear();
+    mDistance.push_back(farPlane / 50.0f);
+    mDistance.push_back(farPlane / 25.0f);
+    mDistance.push_back(farPlane / 10.0f);
+    mDistance.push_back(farPlane / 2.0f);
 }
 }  // namespace Ethereal

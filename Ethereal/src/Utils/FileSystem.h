@@ -82,6 +82,6 @@ namespace Ethereal
         static unsigned long Watch(void* param);
 
       private:
-        static FileSystemChangedCallbackFn s_Callback;
+        static FileSystemChangedCallbackFn sCallback;
     };
 }  // namespace Ethereal

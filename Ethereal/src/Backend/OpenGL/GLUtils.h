@@ -7,9 +7,9 @@ namespace Backend {
 namespace GLUtils {
 
 static GLenum ResolveTextureFormat(const TextureFormat& format) {
-    // m_InternalFormat: https://www.khronos.org/opengl/wiki/Texture_Storage
+    // mInternalFormat: https://www.khronos.org/opengl/wiki/Texture_Storage
 
-    // m_DataFormat: https://docs.gl/gl4/glTexSubImage2D
+    // mDataFormat: https://docs.gl/gl4/glTexSubImage2D
     // Only: GL_RED, GL_RG, GL_RGB, GL_BGR, GL_RGBA, GL_BGRA, GL_DEPTH_COMPONENT, and GL_STENCIL_INDEX.
     switch (format) {
         case TextureFormat::R8G8B8_UNORM:

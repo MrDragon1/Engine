@@ -34,14 +34,14 @@ namespace Ethereal
         // Create animator that mesh used
         if (meshSource->IsAnimated()) {
             AnimationDesc animationDesc;
-            meshSource->GetAnimator()->m_Animation->Save(animationDesc);
+            meshSource->GetAnimator()->mAnimation->Save(animationDesc);
             AssetManager::CreateAsset_Ref(metaData.FilePath.stem().string(), path.parent_path().string(), animationDesc);
-            meshSource->GetAnimator()->m_Animation->Load(animationDesc);
+            meshSource->GetAnimator()->mAnimation->Load(animationDesc);
 
             SkeletonDesc skeletonDesc;
-            meshSource->GetAnimator()->m_Skeleton->Save(skeletonDesc);
+            meshSource->GetAnimator()->mSkeleton->Save(skeletonDesc);
             AssetManager::CreateAsset_Ref(metaData.FilePath.stem().string(), path.parent_path().string(), skeletonDesc);
-            meshSource->GetAnimator()->m_Skeleton->Load(skeletonDesc);
+            meshSource->GetAnimator()->mSkeleton->Load(skeletonDesc);
 
             AnimatorDesc desc;
             meshSource->GetAnimator()->Save(desc);

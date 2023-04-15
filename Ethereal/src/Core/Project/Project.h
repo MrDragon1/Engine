@@ -31,38 +31,38 @@ class Project : public RefCounted {
     Project();
     ~Project();
 
-    static const ProjectConfig& GetConfig() { return m_Config; }
+    static const ProjectConfig& GetConfig() { return mConfig; }
 
-    static Ref<Project> GetActive() { return s_ActiveProject; }
+    static Ref<Project> GetActive() { return sActiveProject; }
     static void SetActive(Ref<Project> project);
     static const std::string& GetProjectName() {
-        ET_CORE_ASSERT(s_ActiveProject);
-        return s_ActiveProject->GetConfig().Name;
+        ET_CORE_ASSERT(sActiveProject);
+        return sActiveProject->GetConfig().Name;
     }
 
     static std::filesystem::path GetProjectDirectory() {
-        ET_CORE_ASSERT(s_ActiveProject);
-        return s_ActiveProject->GetConfig().ProjectDirectory;
+        ET_CORE_ASSERT(sActiveProject);
+        return sActiveProject->GetConfig().ProjectDirectory;
     }
 
     static std::filesystem::path GetAssetDirectory() {
-        ET_CORE_ASSERT(s_ActiveProject);
-        return std::filesystem::path(s_ActiveProject->GetConfig().ProjectDirectory) / s_ActiveProject->GetConfig().AssetDirectory;
+        ET_CORE_ASSERT(sActiveProject);
+        return std::filesystem::path(sActiveProject->GetConfig().ProjectDirectory) / sActiveProject->GetConfig().AssetDirectory;
     }
 
     static std::filesystem::path GetAssetRegistryPath() {
-        ET_CORE_ASSERT(s_ActiveProject);
-        return std::filesystem::path(s_ActiveProject->GetConfig().ProjectDirectory) / s_ActiveProject->GetConfig().AssetRegistryPath;
+        ET_CORE_ASSERT(sActiveProject);
+        return std::filesystem::path(sActiveProject->GetConfig().ProjectDirectory) / sActiveProject->GetConfig().AssetRegistryPath;
     }
 
     static std::filesystem::path GetMeshPath() {
-        ET_CORE_ASSERT(s_ActiveProject);
-        return std::filesystem::path(s_ActiveProject->GetConfig().ProjectDirectory) / s_ActiveProject->GetConfig().MeshPath;
+        ET_CORE_ASSERT(sActiveProject);
+        return std::filesystem::path(sActiveProject->GetConfig().ProjectDirectory) / sActiveProject->GetConfig().MeshPath;
     }
 
     static std::filesystem::path GetCacheDirectory() {
-        ET_CORE_ASSERT(s_ActiveProject);
-        return std::filesystem::path(s_ActiveProject->GetConfig().ProjectDirectory) / "Cache";
+        ET_CORE_ASSERT(sActiveProject);
+        return std::filesystem::path(sActiveProject->GetConfig().ProjectDirectory) / "Cache";
     }
 
     static const ConfigManager& GetConfigManager() { return sConfigManager; };
@@ -72,8 +72,8 @@ class Project : public RefCounted {
 
    private:
     // TODO: merge projectconfig & projectsetting to configmanager
-    inline static ProjectConfig m_Config;
-    inline static Ref<Project> s_ActiveProject;
+    inline static ProjectConfig mConfig;
+    inline static Ref<Project> sActiveProject;
     inline static ConfigManager sConfigManager;
 };
 

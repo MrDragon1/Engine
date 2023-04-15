@@ -5,7 +5,7 @@
 #include "Core/Renderer/RenderResource.h"
 namespace Ethereal {
 void BloomRenderPass::Init(uint32_t width, uint32_t height) {
-    m_Quad = RenderResource::Quad;
+    mQuad = RenderResource::Quad;
 
     auto api = GlobalContext::GetDriverApi();
     auto usage = TextureUsage::COLOR_ATTACHMENT | TextureUsage::SAMPLEABLE;
@@ -35,7 +35,7 @@ void BloomRenderPass::Init(uint32_t width, uint32_t height) {
 }
 
 void BloomRenderPass::Draw() {
-    if (m_MainImage == nullptr) {
+    if (mMainImage == nullptr) {
         ET_CORE_WARN("BloomRenderPass::Draw() - MainImage is nullptr");
         return;
     }
@@ -57,11 +57,11 @@ void BloomRenderPass::Draw() {
          * otherwise, the backend will take this texture as image2D, not sampler2D in shader (like we do in blur image stage below)
          */
         mSamplerGroupDesc[0] = SamplerDescriptor{
-            .texture = m_MainImage,
+            .texture = mMainImage,
             .params = SamplerParams::Default(),
             .binding = 0,
         };
-        api->SetRenderTargetAttachment(mRenderTarget, {.handle = m_BrightAreaImage, .level = 0, .layer = 0}, TargetBufferFlags::COLOR0);
+        api->SetRenderTargetAttachment(mRenderTarget, {.handle = mBrightAreaImage, .level = 0, .layer = 0}, TargetBufferFlags::COLOR0);
 
         api->UpdateBufferObject(mUniformBuffer, mUniformInterfaceBuffer.ToBufferDescriptor(), 0);
         api->BindUniformBuffer(0, mUniformBuffer);
@@ -69,7 +69,7 @@ void BloomRenderPass::Draw() {
         api->UpdateSamplerGroup(mSamplerGroup, mSamplerGroupDesc);
         api->BindSamplerGroup(0, mSamplerGroup);
 
-        api->Draw(m_Quad->GetMeshSource()->GetRenderPrimitive(), mBrightPipeline);
+        api->Draw(mQuad->GetMeshSource()->GetRenderPrimitive(), mBrightPipeline);
     }
 
     // Blur Image
@@ -82,14 +82,14 @@ void BloomRenderPass::Draw() {
         // For 0 mip level
         s.MipLevel = 0;
         mSamplerGroupDesc[0] = SamplerDescriptor{
-            .texture = m_DownSampledImage,
+            .texture = mDownSampledImage,
             .params = SamplerParams::Default(),
             .binding = 0,
             .level = 0,
             .layer = 0,
         };
         mSamplerGroupDesc[1] = SamplerDescriptor{
-            .texture = m_BrightAreaImage,
+            .texture = mBrightAreaImage,
             .params = SamplerParams::Default(),
             .binding = 1,
             .level = 0,
@@ -101,23 +101,23 @@ void BloomRenderPass::Draw() {
         api->UpdateSamplerGroup(mSamplerGroup, mSamplerGroupDesc);
         api->BindSamplerGroup(0, mSamplerGroup);
 
-        api->Draw(m_Quad->GetMeshSource()->GetRenderPrimitive(), mBlurPipeline);
+        api->Draw(mQuad->GetMeshSource()->GetRenderPrimitive(), mBlurPipeline);
 
         // For other mip level
-        for (int i = 1; i < m_MipLevels; i++) {
-            auto mipWidth = static_cast<unsigned int>(m_Width * std::pow(0.5, i));
-            auto mipHeight = static_cast<unsigned int>(m_Height * std::pow(0.5, i));
+        for (int i = 1; i < mMipLevels; i++) {
+            auto mipWidth = static_cast<unsigned int>(mWidth * std::pow(0.5, i));
+            auto mipHeight = static_cast<unsigned int>(mHeight * std::pow(0.5, i));
 
             s.MipLevel = i;
             mSamplerGroupDesc[0] = SamplerDescriptor{
-                .texture = m_DownSampledImage,
+                .texture = mDownSampledImage,
                 .params = SamplerParams::Default(),
                 .binding = 0,
                 .level = static_cast<uint8_t>(i),
                 .layer = 0,
             };
             mSamplerGroupDesc[1] = SamplerDescriptor{
-                .texture = m_DownSampledImage,
+                .texture = mDownSampledImage,
                 .params = SamplerParams::Default(),
                 .binding = 1,
                 .level = static_cast<uint8_t>(i - 1),
@@ -130,35 +130,35 @@ void BloomRenderPass::Draw() {
             api->UpdateSamplerGroup(mSamplerGroup, mSamplerGroupDesc);
             api->BindSamplerGroup(0, mSamplerGroup);
 
-            api->Draw(m_Quad->GetMeshSource()->GetRenderPrimitive(), mBlurPipeline);
+            api->Draw(mQuad->GetMeshSource()->GetRenderPrimitive(), mBlurPipeline);
         }
 
         // Up Sampler
-        auto mipWidth = static_cast<unsigned int>(m_Width * std::pow(0.5, m_MipLevels - 2));
-        auto mipHeight = static_cast<unsigned int>(m_Height * std::pow(0.5, m_MipLevels - 2));
+        auto mipWidth = static_cast<unsigned int>(mWidth * std::pow(0.5, mMipLevels - 2));
+        auto mipHeight = static_cast<unsigned int>(mHeight * std::pow(0.5, mMipLevels - 2));
 
         s.DownSample = false;
-        s.MipLevel = m_MipLevels - 2;
+        s.MipLevel = mMipLevels - 2;
 
         mSamplerGroupDesc[0] = SamplerDescriptor{
-            .texture = m_UpSampledImage,
+            .texture = mUpSampledImage,
             .params = SamplerParams::Default(),
             .binding = 0,
-            .level = static_cast<uint8_t>(m_MipLevels - 2),
+            .level = static_cast<uint8_t>(mMipLevels - 2),
             .layer = 0,
         };
         mSamplerGroupDesc[1] = SamplerDescriptor{
-            .texture = m_DownSampledImage,
+            .texture = mDownSampledImage,
             .params = SamplerParams::Default(),
             .binding = 1,
-            .level = static_cast<uint8_t>(m_MipLevels - 1),
+            .level = static_cast<uint8_t>(mMipLevels - 1),
             .layer = 0,
         };
         mSamplerGroupDesc[2] = SamplerDescriptor{
-            .texture = m_DownSampledImage,
+            .texture = mDownSampledImage,
             .params = SamplerParams::Default(),
             .binding = 2,
-            .level = static_cast<uint8_t>(m_MipLevels - 2),
+            .level = static_cast<uint8_t>(mMipLevels - 2),
             .layer = 0,
         };
 
@@ -168,28 +168,28 @@ void BloomRenderPass::Draw() {
         api->UpdateSamplerGroup(mSamplerGroup, mSamplerGroupDesc);
         api->BindSamplerGroup(0, mSamplerGroup);
 
-        api->Draw(m_Quad->GetMeshSource()->GetRenderPrimitive(), mBlurPipeline);
-        for (int i = m_MipLevels - 3; i >= 0; --i) {
-            mipWidth = static_cast<unsigned int>(m_Width * std::pow(0.5, i));
-            mipHeight = static_cast<unsigned int>(m_Height * std::pow(0.5, i));
+        api->Draw(mQuad->GetMeshSource()->GetRenderPrimitive(), mBlurPipeline);
+        for (int i = mMipLevels - 3; i >= 0; --i) {
+            mipWidth = static_cast<unsigned int>(mWidth * std::pow(0.5, i));
+            mipHeight = static_cast<unsigned int>(mHeight * std::pow(0.5, i));
             s.MipLevel = i;
 
             mSamplerGroupDesc[0] = SamplerDescriptor{
-                .texture = m_UpSampledImage,
+                .texture = mUpSampledImage,
                 .params = SamplerParams::Default(),
                 .binding = 0,
                 .level = static_cast<uint8_t>(i),
                 .layer = 0,
             };
             mSamplerGroupDesc[1] = SamplerDescriptor{
-                .texture = m_UpSampledImage,
+                .texture = mUpSampledImage,
                 .params = SamplerParams::Default(),
                 .binding = 1,
                 .level = static_cast<uint8_t>(i + 1),
                 .layer = 0,
             };
             mSamplerGroupDesc[2] = SamplerDescriptor{
-                .texture = m_DownSampledImage,
+                .texture = mDownSampledImage,
                 .params = SamplerParams::Default(),
                 .binding = 2,
                 .level = static_cast<uint8_t>(i),
@@ -202,7 +202,7 @@ void BloomRenderPass::Draw() {
             api->UpdateSamplerGroup(mSamplerGroup, mSamplerGroupDesc);
             api->BindSamplerGroup(0, mSamplerGroup);
 
-            api->Draw(m_Quad->GetMeshSource()->GetRenderPrimitive(), mBlurPipeline);
+            api->Draw(mQuad->GetMeshSource()->GetRenderPrimitive(), mBlurPipeline);
         }
     }
 
@@ -210,25 +210,25 @@ void BloomRenderPass::Draw() {
     {
         s.Intensity = Project::GetConfigManager().sBloomConfig.Intensity;
         mSamplerGroupDesc[0] = SamplerDescriptor{
-            .texture = m_MainImage,
+            .texture = mMainImage,
             .params = SamplerParams::Default(),
             .binding = 0,
         };
 
         mSamplerGroupDesc[1] = SamplerDescriptor{
-            .texture = m_UpSampledImage,
+            .texture = mUpSampledImage,
             .params = SamplerParams::Default(),
             .binding = 1,
         };
 
-        api->SetRenderTargetAttachment(mRenderTarget, {.handle = m_BloomImage, .level = 0, .layer = 0}, TargetBufferFlags::COLOR0);
+        api->SetRenderTargetAttachment(mRenderTarget, {.handle = mBloomImage, .level = 0, .layer = 0}, TargetBufferFlags::COLOR0);
         api->UpdateBufferObject(mUniformBuffer, mUniformInterfaceBuffer.ToBufferDescriptor(), 0);
         api->BindUniformBuffer(0, mUniformBuffer);
 
         api->UpdateSamplerGroup(mSamplerGroup, mSamplerGroupDesc);
         api->BindSamplerGroup(0, mSamplerGroup);
 
-        api->Draw(m_Quad->GetMeshSource()->GetRenderPrimitive(), mMergePipeline);
+        api->Draw(mQuad->GetMeshSource()->GetRenderPrimitive(), mMergePipeline);
     }
     api->EndRenderPass();
 }
@@ -236,24 +236,24 @@ void BloomRenderPass::Draw() {
 void BloomRenderPass::OnResize(uint32_t width, uint32_t height) { Invalidate(width, height); }
 
 void BloomRenderPass::Invalidate(uint32_t width, uint32_t height) {
-    m_Height = height;
-    m_Width = width;
-    m_MipLevels = log(std::min(height, width)) / log(2);
+    mHeight = height;
+    mWidth = width;
+    mMipLevels = log(std::min(height, width)) / log(2);
 
     auto api = GlobalContext::GetDriverApi();
     auto usage = TextureUsage::COLOR_ATTACHMENT | TextureUsage::SAMPLEABLE;
     auto hdrTex = api->CreateTexture(1, width, height, 1, TextureFormat::R16G16B16A16_HDR, usage, TextureType::TEXTURE_2D);
 
-    m_BrightAreaImage = api->CreateTexture(1, width, height, 1, TextureFormat::R16G16B16A16_HDR, usage, TextureType::TEXTURE_2D);
-    m_BloomImage = api->CreateTexture(1, width, height, 1, TextureFormat::R16G16B16A16_HDR, usage, TextureType::TEXTURE_2D);
+    mBrightAreaImage = api->CreateTexture(1, width, height, 1, TextureFormat::R16G16B16A16_HDR, usage, TextureType::TEXTURE_2D);
+    mBloomImage = api->CreateTexture(1, width, height, 1, TextureFormat::R16G16B16A16_HDR, usage, TextureType::TEXTURE_2D);
 
-    m_UpSampledImage = api->CreateTexture(m_MipLevels, width, height, 1, TextureFormat::R16G16B16A16_HDR, usage, TextureType::TEXTURE_2D);
-    api->GenerateMipmaps(m_UpSampledImage);
+    mUpSampledImage = api->CreateTexture(mMipLevels, width, height, 1, TextureFormat::R16G16B16A16_HDR, usage, TextureType::TEXTURE_2D);
+    api->GenerateMipmaps(mUpSampledImage);
 
-    m_DownSampledImage = api->CreateTexture(m_MipLevels, width, height, 1, TextureFormat::R16G16B16A16_HDR, usage, TextureType::TEXTURE_2D);
-    api->GenerateMipmaps(m_DownSampledImage);
+    mDownSampledImage = api->CreateTexture(mMipLevels, width, height, 1, TextureFormat::R16G16B16A16_HDR, usage, TextureType::TEXTURE_2D);
+    api->GenerateMipmaps(mDownSampledImage);
 
     // This will resize the render target
-    api->SetRenderTargetAttachment(mRenderTarget, {.handle = m_BloomImage, .level = 0, .layer = 0}, TargetBufferFlags::COLOR0);
+    api->SetRenderTargetAttachment(mRenderTarget, {.handle = mBloomImage, .level = 0, .layer = 0}, TargetBufferFlags::COLOR0);
 }
 }  // namespace Ethereal

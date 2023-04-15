@@ -9,19 +9,19 @@ class SceneSerializer {
     SceneSerializer(const Ref<Scene>& scene);
 
     void Serialize(const std::string& filepath) {
-        m_Scene->m_ScenePath = filepath;
-        m_Scene->Save();
+        mScene->mScenePath = filepath;
+        mScene->Save();
     }
     void SerializeRuntime(const std::string& filepath);
 
     bool Deserialize(const std::string& filepath) {
-        m_Scene->Load(filepath);
+        mScene->Load(filepath);
         return true;
     }
     bool DeserializeRuntime(const std::string& filepath);
 
    private:
-    Ref<Scene> m_Scene;
+    Ref<Scene> mScene;
 };
 
 }  // namespace Ethereal

@@ -12,28 +12,28 @@ MaterialEditPanel::MaterialEditPanel() {}
 
 MaterialEditPanel::~MaterialEditPanel() {}
 
-void MaterialEditPanel::SetSceneContext(const Ref<Scene>& context) { m_Context = context; }
+void MaterialEditPanel::SetSceneContext(const Ref<Scene>& context) { mContext = context; }
 
 void MaterialEditPanel::OnEvent(Event& event){};
 
 void MaterialEditPanel::OnImGuiRender(bool& isOpen) {
-    m_SelectedEntity = {};
+    mSelectedEntity = {};
     if (SelectionManager::GetSelectionCount(SelectionContext::Scene) > 0) {
-        m_SelectedEntity = m_Context->GetEntityWithUUID(SelectionManager::GetSelections(SelectionContext::Scene).front());
+        mSelectedEntity = mContext->GetEntityWithUUID(SelectionManager::GetSelections(SelectionContext::Scene).front());
     }
 
-    const bool hasValidEntity = m_SelectedEntity && m_SelectedEntity.HasComponent<StaticMeshComponent>();
+    const bool hasValidEntity = mSelectedEntity && mSelectedEntity.HasComponent<StaticMeshComponent>();
     bool Open = isOpen;
     ImGui::SetNextWindowSize(ImVec2(200.0f, 300.0f), ImGuiCond_Appearing);
     if (ImGui::Begin("Materials", &Open) && hasValidEntity) {
-        const bool hasStaticMesh = m_SelectedEntity.HasComponent<StaticMeshComponent>() &&
-                                   AssetManager::IsAssetHandleValid(m_SelectedEntity.GetComponent<StaticMeshComponent>().StaticMeshHandle);
+        const bool hasStaticMesh = mSelectedEntity.HasComponent<StaticMeshComponent>() &&
+                                   AssetManager::IsAssetHandleValid(mSelectedEntity.GetComponent<StaticMeshComponent>().StaticMeshHandle);
 
         if (hasStaticMesh) {
             Ref<MaterialTable> meshMaterialTable, componentMaterialTable;
 
-            if (m_SelectedEntity.HasComponent<StaticMeshComponent>()) {
-                const auto& staticMeshComponent = m_SelectedEntity.GetComponent<StaticMeshComponent>();
+            if (mSelectedEntity.HasComponent<StaticMeshComponent>()) {
+                const auto& staticMeshComponent = mSelectedEntity.GetComponent<StaticMeshComponent>();
                 componentMaterialTable = staticMeshComponent.materialTable;
                 auto mesh = AssetManager::GetAsset<StaticMesh>(staticMeshComponent.StaticMeshHandle);
                 if (mesh) meshMaterialTable = mesh->GetMaterials();

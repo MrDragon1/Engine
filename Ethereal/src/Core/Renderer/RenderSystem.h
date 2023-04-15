@@ -33,29 +33,29 @@ class RenderSystem : public RefCounted {
     void OnResize();
     void LoadProjectSettings();
     void UpdateUniformData();
-    Ref<Environment> GetDefaultEnvironment() { return m_BuildinData->Environment; }
+    Ref<Environment> GetDefaultEnvironment() { return mBuildinData->Environment; }
 
-    uint32_t GetMainImageHeight() { return m_Height; };
-    uint32_t GetMainImageWidth() { return m_Width; };
+    uint32_t GetMainImageHeight() { return mHeight; };
+    uint32_t GetMainImageWidth() { return mWidth; };
     uint64_t GetMainImage();
     uint64_t GetSkyboxImage();
     int GetMousePicking(int x, int y);
 
-    Ref<CSMRenderPass> GetCSMRenderPass() { return m_CSMRenderPass; }
-    Ref<Environment> GetEnv() { return m_Environment; }
+    Ref<CSMRenderPass> GetCSMRenderPass() { return mCSMRenderPass; }
+    Ref<Environment> GetEnv() { return mEnvironment; }
 
    private:
-    Ref<MainCameraRenderPass> m_MainCameraRenderPass;
-    Ref<ShadowMapRenderPass> m_ShadowMapRenderPass;  // Don't use it for now.
-    Ref<EnvironmentMapRenderPass> m_EnvironmentMapRenderPass;
-    Ref<BloomRenderPass> m_BloomRenderPass;
-    Ref<CSMRenderPass> m_CSMRenderPass;
+    Ref<MainCameraRenderPass> mMainCameraRenderPass;
+    Ref<ShadowMapRenderPass> mShadowMapRenderPass;  // Don't use it for now.
+    Ref<EnvironmentMapRenderPass> mEnvironmentMapRenderPass;
+    Ref<BloomRenderPass> mBloomRenderPass;
+    Ref<CSMRenderPass> mCSMRenderPass;
 
-    Ref<Environment> m_Environment;
-    Ref<Texture> m_MainImage;
-    uint32_t m_Height, m_Width;
+    Ref<Environment> mEnvironment;
+    Ref<Texture> mMainImage;
+    uint32_t mHeight, mWidth;
 
-    DrawLists* m_DrawLists;
-    BuildinData* m_BuildinData;
+    DrawLists* mDrawLists;
+    BuildinData* mBuildinData;
 };
 }  // namespace Ethereal

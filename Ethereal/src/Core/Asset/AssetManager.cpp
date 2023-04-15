@@ -12,7 +12,7 @@
 
 namespace Ethereal {
 
-static AssetMetaData s_NullMetadata;
+static AssetMetaData sNullMetadata;
 
 void AssetManager::Init() {
     LoadAssetRegistry();
@@ -22,31 +22,31 @@ void AssetManager::Init() {
 void AssetManager::Shutdown() {
     WriteRegistryToFile();
 
-    s_MemoryAssets.clear();
-    s_AssetRegistry.Clear();
-    s_LoadedAssets.clear();
+    sMemoryAssets.clear();
+    sAssetRegistry.Clear();
+    sLoadedAssets.clear();
 }
 
 AssetMetaData& AssetManager::GetMetadataInternal(AssetHandle handle) {
-    if (s_AssetRegistry.Contains(handle)) return s_AssetRegistry[handle];
+    if (sAssetRegistry.Contains(handle)) return sAssetRegistry[handle];
 
-    return s_NullMetadata;  // make sure to check return value before you go changing it!
+    return sNullMetadata;  // make sure to check return value before you go changing it!
 }
 
 const AssetMetaData& AssetManager::GetMetadata(AssetHandle handle) {
-    if (s_AssetRegistry.Contains(handle)) return s_AssetRegistry[handle];
+    if (sAssetRegistry.Contains(handle)) return sAssetRegistry[handle];
 
-    return s_NullMetadata;
+    return sNullMetadata;
 }
 
 const AssetMetaData& AssetManager::GetMetadata(const std::filesystem::path& filepath) {
     const auto relativePath = GetRelativePath(filepath);
 
-    for (auto& [handle, metadata] : s_AssetRegistry) {
+    for (auto& [handle, metadata] : sAssetRegistry) {
         if (metadata.FilePath == relativePath) return metadata;
     }
 
-    return s_NullMetadata;
+    return sNullMetadata;
 }
 
 std::filesystem::path AssetManager::GetRelativePath(const std::filesystem::path& filepath) {
@@ -66,9 +66,9 @@ AssetHandle AssetManager::GetAssetHandleFromFilePath(const std::filesystem::path
 AssetType AssetManager::GetAssetTypeFromExtension(const std::string& extension) {
     std::string ext = extension;
     //        std::string ext = Utils::String::ToLowerCopy(extension);
-    if (s_AssetExtensionMap.find(ext) == s_AssetExtensionMap.end()) return AssetType::None;
+    if (sAssetExtensionMap.find(ext) == sAssetExtensionMap.end()) return AssetType::None;
 
-    return s_AssetExtensionMap.at(ext.c_str());
+    return sAssetExtensionMap.at(ext.c_str());
 }
 
 AssetType AssetManager::GetAssetTypeFromPath(const std::filesystem::path& path) { return GetAssetTypeFromExtension(path.extension().string()); }
@@ -117,10 +117,10 @@ void AssetManager::LoadAssetRegistry() {
             continue;
         }
 
-        s_AssetRegistry[metadata.Handle] = metadata;
+        sAssetRegistry[metadata.Handle] = metadata;
     }
 
-    ET_CORE_INFO("[AssetManager] Loaded {0} asset entries", s_AssetRegistry.Count());
+    ET_CORE_INFO("[AssetManager] Loaded {0} asset entries", sAssetRegistry.Count());
 }
 
 AssetHandle AssetManager::LoadAsset(const std::filesystem::path& filepath) {
@@ -135,7 +135,7 @@ AssetHandle AssetManager::LoadAsset(const std::filesystem::path& filepath) {
     metadata.Handle = AssetHandle();
     metadata.FilePath = path;
     metadata.Type = type;
-    s_AssetRegistry[metadata.Handle] = metadata;
+    sAssetRegistry[metadata.Handle] = metadata;
 
     return metadata.Handle;
 }
@@ -155,8 +155,8 @@ bool AssetManager::ReloadData(AssetHandle assetHandle) {
         return metadata.IsDataLoaded;
     }
 
-    ET_CORE_ASSERT(s_LoadedAssets.find(assetHandle) != s_LoadedAssets.end());
-    Ref<Asset>& asset = s_LoadedAssets.at(assetHandle);
+    ET_CORE_ASSERT(sLoadedAssets.find(assetHandle) != sLoadedAssets.end());
+    Ref<Asset>& asset = sLoadedAssets.at(assetHandle);
     metadata.IsDataLoaded = AssetImporter::TryLoadData(metadata, asset);
     return metadata.IsDataLoaded;
 }
@@ -182,7 +182,7 @@ void AssetManager::WriteRegistryToFile() {
         AssetType Type;
     };
     std::map<UUID, AssetRegistryEntry> sortedMap;
-    for (auto& [filepath, metadata] : s_AssetRegistry) {
+    for (auto& [filepath, metadata] : sAssetRegistry) {
         if (!FileSystem::Exists(GetFileSystemPath(metadata))) continue;
 
         if (metadata.IsMemoryAsset) continue;
@@ -214,6 +214,6 @@ void AssetManager::WriteRegistryToFile() {
     fout << out.c_str();
 }
 
-std::unordered_map<AssetHandle, Ref<Asset>> AssetManager::s_LoadedAssets;
-std::unordered_map<AssetHandle, Ref<Asset>> AssetManager::s_MemoryAssets;
+std::unordered_map<AssetHandle, Ref<Asset>> AssetManager::sLoadedAssets;
+std::unordered_map<AssetHandle, Ref<Asset>> AssetManager::sMemoryAssets;
 }  // namespace Ethereal

@@ -3,41 +3,40 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
-namespace Ethereal
-{
-    SceneCamera::SceneCamera() { RecalculateProjection(); }
+namespace Ethereal {
+SceneCamera::SceneCamera() { RecalculateProjection(); }
 
-    void SceneCamera::SetOrthographic(float size, float nearClip, float farClip) {
-        m_ProjectionType = ProjectionType::Orthographic;
-        m_OrthographicSize = size;
-        m_OrthographicNear = nearClip;
-        m_OrthographicFar = farClip;
-        RecalculateProjection();
+void SceneCamera::SetOrthographic(float size, float nearClip, float farClip) {
+    mProjectionType = ProjectionType::Orthographic;
+    mOrthographicSize = size;
+    mOrthographicNear = nearClip;
+    mOrthographicFar = farClip;
+    RecalculateProjection();
+}
+
+void SceneCamera::SetPerspective(float verticalFOV, float nearClip, float farClip) {
+    mProjectionType = ProjectionType::Perspective;
+    mPerspectiveFOV = verticalFOV;
+    mPerspectiveNear = nearClip;
+    mPerspectiveFar = farClip;
+    RecalculateProjection();
+}
+
+void SceneCamera::SetViewportSize(uint32_t width, uint32_t height) {
+    mAspectRatio = (float)width / (float)height;
+    RecalculateProjection();
+}
+
+void SceneCamera::RecalculateProjection() {
+    if (mProjectionType == ProjectionType::Perspective) {
+        mProjection = Math::Perspective(Math::Radians(mPerspectiveFOV), mAspectRatio, mPerspectiveNear, mPerspectiveFar);
+    } else {
+        float orthoLeft = -mOrthographicSize * mAspectRatio * 0.5f;
+        float orthoRight = mOrthographicSize * mAspectRatio * 0.5f;
+        float orthoBottom = -mOrthographicSize * 0.5f;
+        float orthoTop = mOrthographicSize * 0.5f;
+
+        mProjection = Math::Ortho(orthoLeft, orthoRight, orthoBottom, orthoTop, mOrthographicNear, mOrthographicFar);
     }
-
-    void SceneCamera::SetPerspective(float verticalFOV, float nearClip, float farClip) {
-        m_ProjectionType = ProjectionType::Perspective;
-        m_PerspectiveFOV = verticalFOV;
-        m_PerspectiveNear = nearClip;
-        m_PerspectiveFar = farClip;
-        RecalculateProjection();
-    }
-
-    void SceneCamera::SetViewportSize(uint32_t width, uint32_t height) {
-        m_AspectRatio = (float)width / (float)height;
-        RecalculateProjection();
-    }
-
-    void SceneCamera::RecalculateProjection() {
-        if (m_ProjectionType == ProjectionType::Perspective) {
-            m_Projection = Math::Perspective(Math::Radians(m_PerspectiveFOV), m_AspectRatio, m_PerspectiveNear, m_PerspectiveFar);
-       } else {
-            float orthoLeft = -m_OrthographicSize * m_AspectRatio * 0.5f;
-            float orthoRight = m_OrthographicSize * m_AspectRatio * 0.5f;
-            float orthoBottom = -m_OrthographicSize * 0.5f;
-            float orthoTop = m_OrthographicSize * 0.5f;
-
-            m_Projection = Math::Ortho(orthoLeft, orthoRight, orthoBottom, orthoTop, m_OrthographicNear, m_OrthographicFar);
-        }
-    }
+}
 }  // namespace Ethereal

@@ -11,17 +11,17 @@
 #include "Core/Renderer/RenderResource.h"
 
 namespace Ethereal {
-SelectionContext SceneHierarchyPanel::s_ActiveSelectionContext = SelectionContext::Scene;
+SelectionContext SceneHierarchyPanel::sActiveSelectionContext = SelectionContext::Scene;
 
 SceneHierarchyPanel::SceneHierarchyPanel(const Ref<Scene>& context, SelectionContext selectionContext)
-    : m_Context(context), m_SelectionContext(selectionContext) {}
+    : mContext(context), mSelectionContext(selectionContext) {}
 
-void SceneHierarchyPanel::SetSceneContext(const Ref<Scene>& scene) { m_Context = scene; }
+void SceneHierarchyPanel::SetSceneContext(const Ref<Scene>& scene) { mContext = scene; }
 
 void SceneHierarchyPanel::OnEvent(Event& event) {}
 
 void SceneHierarchyPanel::OnImGuiRender(bool& isOpen) {
-    s_ActiveSelectionContext = m_SelectionContext;
+    sActiveSelectionContext = mSelectionContext;
 
     ShowHierarchy();
     ShowInspector();
@@ -29,24 +29,24 @@ void SceneHierarchyPanel::OnImGuiRender(bool& isOpen) {
 
 void SceneHierarchyPanel::DrawEntityCreateMenu(Entity parent) {
     Entity newEntity;
-    if (ImGui::MenuItem("Create Empty Entity")) m_Context->CreateEntity("Empty Entity");
+    if (ImGui::MenuItem("Create Empty Entity")) mContext->CreateEntity("Empty Entity");
     if (ImGui::BeginMenu("3D Object")) {
-        if (ImGui::MenuItem("Cube")) newEntity = m_Context->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_CUBE);
-        if (ImGui::MenuItem("Sphere")) newEntity = m_Context->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_SPHERE);
-        if (ImGui::MenuItem("Cylinder")) newEntity = m_Context->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_CYLINDER);
-        if (ImGui::MenuItem("Cone")) newEntity = m_Context->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_CONE);
-        if (ImGui::MenuItem("Torus")) newEntity = m_Context->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_TORUS);
-        if (ImGui::MenuItem("Plane")) newEntity = m_Context->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_PLANE);
-        if (ImGui::MenuItem("Quad")) newEntity = m_Context->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_QUAD);
-        if (ImGui::MenuItem("Monkey")) newEntity = m_Context->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_MONKEY);
+        if (ImGui::MenuItem("Cube")) newEntity = mContext->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_CUBE);
+        if (ImGui::MenuItem("Sphere")) newEntity = mContext->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_SPHERE);
+        if (ImGui::MenuItem("Cylinder")) newEntity = mContext->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_CYLINDER);
+        if (ImGui::MenuItem("Cone")) newEntity = mContext->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_CONE);
+        if (ImGui::MenuItem("Torus")) newEntity = mContext->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_TORUS);
+        if (ImGui::MenuItem("Plane")) newEntity = mContext->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_PLANE);
+        if (ImGui::MenuItem("Quad")) newEntity = mContext->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_QUAD);
+        if (ImGui::MenuItem("Monkey")) newEntity = mContext->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_MONKEY);
         ImGui::EndMenu();
     }
     if (newEntity) {
         //            if (parent)
-        //                m_Context->ParentEntity(newEntity, parent);
+        //                mContext->ParentEntity(newEntity, parent);
 
         SelectionManager::DeselectAll();
-        SelectionManager::Select(s_ActiveSelectionContext, newEntity.GetUUID());
+        SelectionManager::Select(sActiveSelectionContext, newEntity.GetUUID());
     }
 
     if (ImGui::MenuItem("Material")) {
@@ -61,9 +61,9 @@ template <typename TComponent, typename UIFunction>
 void SceneHierarchyPanel::DrawComponent(const std::string& name, UIFunction uiFunction, Ref<Texture> icon) {
     bool shouldDraw = true;
 
-    auto& entities = SelectionManager::GetSelections(s_ActiveSelectionContext);
+    auto& entities = SelectionManager::GetSelections(sActiveSelectionContext);
     for (const auto& entityID : entities) {
-        Entity entity = m_Context->GetEntityWithUUID(entityID);
+        Entity entity = mContext->GetEntityWithUUID(entityID);
         if (!entity.HasComponent<TComponent>()) {
             shouldDraw = false;
             break;
@@ -87,7 +87,7 @@ void SceneHierarchyPanel::DrawComponent(const std::string& name, UIFunction uiFu
     bool removeComponent = false;
 
     if (open) {
-        Entity entity = m_Context->GetEntityWithUUID(entities[0]);
+        Entity entity = mContext->GetEntityWithUUID(entities[0]);
         TComponent& firstComponent = entity.GetComponent<TComponent>();
         const bool isMultiEdit = entities.size() > 1;
         uiFunction(firstComponent, entities, isMultiEdit, name);
@@ -100,9 +100,9 @@ void SceneHierarchyPanel::ShowInspector() {
     UI::ScopedStyleStack style(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 4.0f), ImGuiStyleVar_ChildBorderSize, 0.0f);
     ImGui::Begin("Inspector", nullptr);
 
-    const std::vector<UUID> entities = SelectionManager::GetSelections(s_ActiveSelectionContext);
+    const std::vector<UUID> entities = SelectionManager::GetSelections(sActiveSelectionContext);
     if (!entities.empty()) {
-        auto entity = m_Context->GetEntityWithUUID(entities[0]);
+        auto entity = mContext->GetEntityWithUUID(entities[0]);
 
         UI::ShiftCursorX(10.0f);
         ImGui::SetNextItemWidth(ImGui::GetWindowWidth() / 3.0f);
@@ -124,7 +124,7 @@ void SceneHierarchyPanel::ShowInspector() {
         DrawComponent<TransformComponent>("Transform", [&](TransformComponent& firstComponent, const std::vector<UUID>& entities,
                                                            const bool isMultiEdit, const std::string& type_name) {
             // Not support multi edit for now
-            Entity entity = m_Context->GetEntityWithUUID(entities[0]);
+            Entity entity = mContext->GetEntityWithUUID(entities[0]);
             auto& component = entity.GetComponent<TransformComponent>();
 
             UI::ScopedStyleStack style(ImGuiStyleVar_FramePadding, ImVec2(4.0f, 4.0f), ImGuiStyleVar_ItemSpacing, ImVec2(8.0f, 8.0f));
@@ -226,14 +226,14 @@ void SceneHierarchyPanel::ShowHierarchy() {
                 }
 
                 ImGui::TableNextColumn();
-                const bool is_selected = SelectionManager::IsSelected(s_ActiveSelectionContext, node->ChildIdx);
+                const bool is_selected = SelectionManager::IsSelected(sActiveSelectionContext, node->ChildIdx);
                 const bool is_folder = !node->ChildList.empty();
                 ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_OpenOnArrow;
                 if (is_selected) node_flags |= ImGuiTreeNodeFlags_Selected;
 
                 ImGui::TreeNodeEx(node->Name, ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen | node_flags);
                 if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen()) {
-                    SelectionManager::UniqueSelect(s_ActiveSelectionContext, node->ChildIdx);
+                    SelectionManager::UniqueSelect(sActiveSelectionContext, node->ChildIdx);
                 }
                 ImGui::TableNextColumn();
                 ImGui::TextUnformatted(node->Type);
@@ -241,16 +241,16 @@ void SceneHierarchyPanel::ShowHierarchy() {
         };
         std::vector<EntityNode> all_nodes;
 
-        if (m_Context) {
-            m_Context->m_Registry.each([&](auto entityID) {
-                Entity entity{entityID, m_Context.Raw()};
+        if (mContext) {
+            mContext->mRegistry.each([&](auto entityID) {
+                Entity entity{entityID, mContext.Raw()};
                 EntityNode node{entity.IsVisible(), entity.GetName().c_str(), "Entity", entity.GetUUID(), {}};
                 all_nodes.push_back(node);
             });
         }
 
         for (auto& node : all_nodes) {
-            EntityNode::DisplayNode(&node, all_nodes.data(), m_Context.Raw());
+            EntityNode::DisplayNode(&node, all_nodes.data(), mContext.Raw());
         }
 
         ImGui::EndTable();

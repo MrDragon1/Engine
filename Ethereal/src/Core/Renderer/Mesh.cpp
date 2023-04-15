@@ -19,20 +19,20 @@ MeshSource::MeshSource() {}
 MeshSource::~MeshSource() {}
 
 RenderPrimitiveHandle MeshSource::GetSubMeshRenderPrimitive(uint32_t index) {
-    m_RenderPrimitive->count = m_Submeshes[index].IndexCount;
-    m_RenderPrimitive->minIndex = m_Submeshes[index].BaseVertex;
-    m_RenderPrimitive->maxIndex = m_Submeshes[index].BaseVertex + m_Submeshes[index].VertexCount;
-    m_RenderPrimitive->offset = m_Submeshes[index].BaseIndex * sizeof(uint32_t);
-    return m_RenderPrimitive;
+    mRenderPrimitive->count = mSubmeshes[index].IndexCount;
+    mRenderPrimitive->minIndex = mSubmeshes[index].BaseVertex;
+    mRenderPrimitive->maxIndex = mSubmeshes[index].BaseVertex + mSubmeshes[index].VertexCount;
+    mRenderPrimitive->offset = mSubmeshes[index].BaseIndex * sizeof(uint32_t);
+    return mRenderPrimitive;
 }
 
 void MeshSource::LoadMaterials(Ref<MaterialTable>& materials) {
     // Materials
-    if (m_Scene->HasMaterials()) {
-        ET_CORE_INFO("---- Materials - {0} ----", m_FilePath);
-        materials->SetMaterialCount(m_Scene->mNumMaterials);
-        for (uint32_t i = 0; i < m_Scene->mNumMaterials; i++) {
-            auto aiMaterial = m_Scene->mMaterials[i];
+    if (mScene->HasMaterials()) {
+        ET_CORE_INFO("---- Materials - {0} ----", mFilePath);
+        materials->SetMaterialCount(mScene->mNumMaterials);
+        for (uint32_t i = 0; i < mScene->mNumMaterials; i++) {
+            auto aiMaterial = mScene->mMaterials[i];
             auto aiMaterialName = aiMaterial->GetName();
             ET_CORE_INFO("  {0} (Index = {1})", aiMaterialName.data, i);
             std::string materialName = aiMaterialName.C_Str();
@@ -72,7 +72,7 @@ void MeshSource::LoadMaterials(Ref<MaterialTable>& materials) {
             bool fallback = !hasAlbedoMap;
             if (hasAlbedoMap) {
                 // TODO: Temp - this should be handled by Filesystem
-                std::filesystem::path path = m_FilePath;
+                std::filesystem::path path = mFilePath;
                 auto parentPath = path.parent_path();
                 parentPath /= std::string(aiTexPath.data);
                 std::string texturePath = parentPath.string();
@@ -96,7 +96,7 @@ void MeshSource::LoadMaterials(Ref<MaterialTable>& materials) {
             fallback = !hasNormalMap;
             if (hasNormalMap) {
                 // TODO: Temp - this should be handled by Filesystem
-                std::filesystem::path path = m_FilePath;
+                std::filesystem::path path = mFilePath;
                 auto parentPath = path.parent_path();
                 parentPath /= std::string(aiTexPath.data);
                 std::string texturePath = parentPath.string();
@@ -120,7 +120,7 @@ void MeshSource::LoadMaterials(Ref<MaterialTable>& materials) {
             fallback = !hasRoughnessMap;
             if (hasRoughnessMap) {
                 // TODO: Temp - this should be handled by Filesystem
-                std::filesystem::path path = m_FilePath;
+                std::filesystem::path path = mFilePath;
                 auto parentPath = path.parent_path();
                 parentPath /= std::string(aiTexPath.data);
                 std::string texturePath = parentPath.string();
@@ -150,7 +150,7 @@ void MeshSource::LoadMaterials(Ref<MaterialTable>& materials) {
                     std::string key = prop->mKey.data;
                     if (key == "$raw.ReflectionFactor|file") {
                         // TODO: Temp - this should be handled by Filesystem
-                        std::filesystem::path path = m_FilePath;
+                        std::filesystem::path path = mFilePath;
                         auto parentPath = path.parent_path();
                         parentPath /= str;
                         std::string texturePath = parentPath.string();
@@ -179,98 +179,98 @@ void MeshSource::LoadMaterials(Ref<MaterialTable>& materials) {
     }
 }
 
-StaticMesh::StaticMesh(Ref<MeshSource> meshSource, Ref<MaterialTable> materialTable) : m_MeshSource(meshSource) {
+StaticMesh::StaticMesh(Ref<MeshSource> meshSource, Ref<MaterialTable> materialTable) : mMeshSource(meshSource) {
     // Generate a new asset handle
     Handle = {};
 
     SetSubmeshes({});
-    m_Materials = Ref<MaterialTable>::Create();
+    mMaterials = Ref<MaterialTable>::Create();
     for (int i = 0; i < materialTable->GetMaterialCount(); i++) {
-        m_Materials->SetMaterial(i, materialTable->GetMaterial(i));
+        mMaterials->SetMaterial(i, materialTable->GetMaterial(i));
     }
 }
 
-StaticMesh::StaticMesh(Ref<MeshSource> meshSource, const std::vector<uint32_t>& submeshes) : m_MeshSource(meshSource) {
+StaticMesh::StaticMesh(Ref<MeshSource> meshSource, const std::vector<uint32_t>& submeshes) : mMeshSource(meshSource) {
     // Generate a new asset handle
     Handle = {};
 
     SetSubmeshes(submeshes);
-    m_Materials = Ref<MaterialTable>::Create();
+    mMaterials = Ref<MaterialTable>::Create();
     //        const auto& meshMaterials = meshSource->GetMaterials();
-    //        m_Materials = Ref<MaterialTable>::Create(meshMaterials.size());
-    //        for (size_t i = 0; i < meshMaterials.size(); i++) m_Materials->SetMaterial(i, meshMaterials[i]);
+    //        mMaterials = Ref<MaterialTable>::Create(meshMaterials.size());
+    //        for (size_t i = 0; i < meshMaterials.size(); i++) mMaterials->SetMaterial(i, meshMaterials[i]);
 }
 
-StaticMesh::StaticMesh(const Ref<StaticMesh>& other) : m_MeshSource(other->m_MeshSource), m_Materials(other->m_Materials) {
-    SetSubmeshes(other->m_Submeshes);
+StaticMesh::StaticMesh(const Ref<StaticMesh>& other) : mMeshSource(other->mMeshSource), mMaterials(other->mMaterials) {
+    SetSubmeshes(other->mSubmeshes);
 }
 
 StaticMesh::~StaticMesh() {}
 
 void StaticMesh::Load(const StaticMeshDesc& desc) {
     Handle = desc.Handle;
-    m_MeshSource = AssetManager::GetAsset<MeshSource>(desc.Mesh);
-    m_Materials = Ref<MaterialTable>::Create();
+    mMeshSource = AssetManager::GetAsset<MeshSource>(desc.Mesh);
+    mMaterials = Ref<MaterialTable>::Create();
     for (int i = 0; i < desc.Materials.size(); i++) {
         auto material = AssetManager::GetAsset<MaterialAsset>(desc.Materials[i]);
-        m_Materials->SetMaterial(i, material);
+        mMaterials->SetMaterial(i, material);
     }
     SetSubmeshes({});
 }
 
 void StaticMesh::Save(StaticMeshDesc& desc) {
     desc.Handle = Handle;
-    desc.Mesh = m_MeshSource->Handle;
+    desc.Mesh = mMeshSource->Handle;
 
     desc.Materials.clear();
-    for (auto& m : m_Materials->GetMaterials()) {
+    for (auto& m : mMaterials->GetMaterials()) {
         desc.Materials.push_back(m->Handle);
     }
 }
 
 void StaticMesh::SetSubmeshes(const std::vector<uint32_t>& submeshes) {
     if (!submeshes.empty()) {
-        m_Submeshes = submeshes;
+        mSubmeshes = submeshes;
     } else {
-        const auto& submeshes = m_MeshSource->GetSubmeshes();
-        m_Submeshes.resize(submeshes.size());
-        for (uint32_t i = 0; i < submeshes.size(); i++) m_Submeshes[i] = i;
+        const auto& submeshes = mMeshSource->GetSubmeshes();
+        mSubmeshes.resize(submeshes.size());
+        for (uint32_t i = 0; i < submeshes.size(); i++) mSubmeshes[i] = i;
     }
 }
 
-Mesh::Mesh(Ref<MeshSource> meshSource, Ref<MaterialTable> materialTable) : m_MeshSource(meshSource) {
+Mesh::Mesh(Ref<MeshSource> meshSource, Ref<MaterialTable> materialTable) : mMeshSource(meshSource) {
     // Generate a new asset handle
     Handle = {};
 
     SetSubmeshes({});
-    m_Materials = Ref<MaterialTable>::Create();
+    mMaterials = Ref<MaterialTable>::Create();
     for (int i = 0; i < materialTable->GetMaterialCount(); i++) {
-        m_Materials->SetMaterial(i, materialTable->GetMaterial(i));
+        mMaterials->SetMaterial(i, materialTable->GetMaterial(i));
     }
 }
 
-Mesh::Mesh(Ref<MeshSource> meshSource, const std::vector<uint32_t>& submeshes) : m_MeshSource(meshSource) {
+Mesh::Mesh(Ref<MeshSource> meshSource, const std::vector<uint32_t>& submeshes) : mMeshSource(meshSource) {
     // Generate a new asset handle
     Handle = {};
 
     SetSubmeshes(submeshes);
-    m_Materials = Ref<MaterialTable>::Create();
+    mMaterials = Ref<MaterialTable>::Create();
     //        const auto& meshMaterials = meshSource->GetMaterials();
-    //        m_Materials = Ref<MaterialTable>::Create(meshMaterials.size());
-    //        for (size_t i = 0; i < meshMaterials.size(); i++) m_Materials->SetMaterial(i, meshMaterials[i]);
+    //        mMaterials = Ref<MaterialTable>::Create(meshMaterials.size());
+    //        for (size_t i = 0; i < meshMaterials.size(); i++) mMaterials->SetMaterial(i, meshMaterials[i]);
 }
 
-Mesh::Mesh(const Ref<Mesh>& other) : m_MeshSource(other->m_MeshSource), m_Materials(other->m_Materials) { SetSubmeshes(other->m_Submeshes); }
+Mesh::Mesh(const Ref<Mesh>& other) : mMeshSource(other->mMeshSource), mMaterials(other->mMaterials) { SetSubmeshes(other->mSubmeshes); }
 
 Mesh::~Mesh() {}
 
 void Mesh::Load(const MeshDesc& desc) {
     Handle = desc.Handle;
-    m_MeshSource = AssetManager::GetAsset<MeshSource>(desc.Mesh);
-    m_Materials = Ref<MaterialTable>::Create();
+    mMeshSource = AssetManager::GetAsset<MeshSource>(desc.Mesh);
+    mMaterials = Ref<MaterialTable>::Create();
     for (int i = 0; i < desc.Materials.size(); i++) {
         auto material = AssetManager::GetAsset<MaterialAsset>(desc.Materials[i]);
-        m_Materials->SetMaterial(i, material);
+        mMaterials->SetMaterial(i, material);
     }
     SetSubmeshes({});
 
@@ -280,23 +280,23 @@ void Mesh::Load(const MeshDesc& desc) {
 
 void Mesh::Save(MeshDesc& desc) {
     desc.Handle = Handle;
-    desc.Mesh = m_MeshSource->Handle;
+    desc.Mesh = mMeshSource->Handle;
 
     desc.Materials.clear();
-    for (auto& m : m_Materials->GetMaterials()) {
+    for (auto& m : mMaterials->GetMaterials()) {
         desc.Materials.push_back(m->Handle);
     }
 
-    desc.Animator = m_MeshSource->GetAnimator()->Handle;
+    desc.Animator = mMeshSource->GetAnimator()->Handle;
 }
 
 void Mesh::SetSubmeshes(const std::vector<uint32_t>& submeshes) {
     if (!submeshes.empty()) {
-        m_Submeshes = submeshes;
+        mSubmeshes = submeshes;
     } else {
-        const auto& submeshes = m_MeshSource->GetSubmeshes();
-        m_Submeshes.resize(submeshes.size());
-        for (uint32_t i = 0; i < submeshes.size(); i++) m_Submeshes[i] = i;
+        const auto& submeshes = mMeshSource->GetSubmeshes();
+        mSubmeshes.resize(submeshes.size());
+        for (uint32_t i = 0; i < submeshes.size(); i++) mSubmeshes[i] = i;
     }
 }
 }  // namespace Ethereal

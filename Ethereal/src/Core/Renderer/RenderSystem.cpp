@@ -21,86 +21,86 @@ namespace Ethereal {
 RenderSystem::RenderSystem() {}
 
 void RenderSystem::Init() {
-    m_Width = 1280;
-    m_Height = 720;
+    mWidth = 1280;
+    mHeight = 720;
 
-    m_DrawLists = &RenderPass::m_DrawLists;
+    mDrawLists = &RenderPass::mDrawLists;
 
-    m_BuildinData = new BuildinData();
+    mBuildinData = new BuildinData();
 
-    m_EnvironmentMapRenderPass = Ref<EnvironmentMapRenderPass>::Create();
-    m_EnvironmentMapRenderPass->Init(m_Width, m_Height);
-    m_MainCameraRenderPass = Ref<MainCameraRenderPass>::Create();
-    m_MainCameraRenderPass->Init(m_Width, m_Height);
-    m_ShadowMapRenderPass = Ref<ShadowMapRenderPass>::Create();
-    m_ShadowMapRenderPass->Init(m_Width, m_Height);
-    m_BloomRenderPass = Ref<BloomRenderPass>::Create();
-    m_BloomRenderPass->Init(m_Width, m_Height);
-    m_CSMRenderPass = Ref<CSMRenderPass>::Create();
-    m_CSMRenderPass->Init(m_Width, m_Height);
+    mEnvironmentMapRenderPass = Ref<EnvironmentMapRenderPass>::Create();
+    mEnvironmentMapRenderPass->Init(mWidth, mHeight);
+    mMainCameraRenderPass = Ref<MainCameraRenderPass>::Create();
+    mMainCameraRenderPass->Init(mWidth, mHeight);
+    mShadowMapRenderPass = Ref<ShadowMapRenderPass>::Create();
+    mShadowMapRenderPass->Init(mWidth, mHeight);
+    mBloomRenderPass = Ref<BloomRenderPass>::Create();
+    mBloomRenderPass->Init(mWidth, mHeight);
+    mCSMRenderPass = Ref<CSMRenderPass>::Create();
+    mCSMRenderPass->Init(mWidth, mHeight);
 
-    // Must after m_EnvironmentMapRenderPass Init
-    m_BuildinData->Environment = AssetManager::GetAsset<Environment>("skyboxs/Newport_Loft_Ref.hdr");
+    // Must after mEnvironmentMapRenderPass Init
+    mBuildinData->Environment = AssetManager::GetAsset<Environment>("skyboxs/Newport_Loft_Ref.hdr");
 
-    m_MainImage = m_MainCameraRenderPass->mRenderTarget->color[0];
+    mMainImage = mMainCameraRenderPass->mRenderTarget->color[0];
 }
 
 void RenderSystem::Draw(TimeStamp ts) {
     LoadProjectSettings();
-    // m_MainCameraRenderPass->m_Framebuffer->Bind();
+    // mMainCameraRenderPass->mFramebuffer->Bind();
     // RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1});
     // RenderCommand::Clear();
-    m_MainImage = m_MainCameraRenderPass->mRenderTarget->color[0];
-    m_CSMRenderPass->Draw();
+    mMainImage = mMainCameraRenderPass->mRenderTarget->color[0];
+    mCSMRenderPass->Draw();
 
-    m_MainCameraRenderPass->Draw();
+    mMainCameraRenderPass->Draw();
 
-    // m_MainCameraRenderPass->m_Framebuffer->Unbind();
-    // m_MainImage = m_MainCameraRenderPass->m_Framebuffer->GetColorAttachment(0);
+    // mMainCameraRenderPass->mFramebuffer->Unbind();
+    // mMainImage = mMainCameraRenderPass->mFramebuffer->GetColorAttachment(0);
 
-    //// m_ShadowMapRenderPass->SetLightPosition();
-    // m_CSMRenderPass->Draw();
+    //// mShadowMapRenderPass->SetLightPosition();
+    // mCSMRenderPass->Draw();
 
-    //// m_ShadowMapRenderPass->Draw();
-    //// m_ShadowMapRenderPass->m_Framebuffer->GetDepthAttachment()->Bind(5);
+    //// mShadowMapRenderPass->Draw();
+    //// mShadowMapRenderPass->mFramebuffer->GetDepthAttachment()->Bind(5);
 
-    // m_MainCameraRenderPass->SetCSMData(m_CSMRenderPass->GetData());
+    // mMainCameraRenderPass->SetCSMData(mCSMRenderPass->GetData());
     //// TODO: Radiance and Irradiance may used as reversed wrongly in shader!!!
-    // m_Environment->RadianceMap->Bind(17);
-    // m_Environment->IrradianceMap->Bind(16);
+    // mEnvironment->RadianceMap->Bind(17);
+    // mEnvironment->IrradianceMap->Bind(16);
     // RenderResource::BRDFLutTexture->Bind(15);
-    // m_MainCameraRenderPass->Draw();
+    // mMainCameraRenderPass->Draw();
 
     //// TODO : make skybox render pass a subpass of main camera render pass
-    // m_MainCameraRenderPass->m_Framebuffer->Bind();
-    // m_Environment->IrradianceMap->Bind(0);
-    // m_SkyboxRenderPass->Draw();
-    // m_MainCameraRenderPass->m_Framebuffer->Unbind();
+    // mMainCameraRenderPass->mFramebuffer->Bind();
+    // mEnvironment->IrradianceMap->Bind(0);
+    // mSkyboxRenderPass->Draw();
+    // mMainCameraRenderPass->mFramebuffer->Unbind();
 
     // For postprocessing
     if (Project::GetConfigManager().sBloomConfig.Enabled) {
-        m_BloomRenderPass->SetMainImage(m_MainImage);
-        m_BloomRenderPass->Draw();
+        mBloomRenderPass->SetMainImage(mMainImage);
+        mBloomRenderPass->Draw();
 
-        m_MainImage = m_BloomRenderPass->GetBloomImage();
+        mMainImage = mBloomRenderPass->GetBloomImage();
     }
 
-    m_DrawLists->MeshTransformMap.clear();
-    m_DrawLists->StaticMeshDrawList.clear();
+    mDrawLists->MeshTransformMap.clear();
+    mDrawLists->StaticMeshDrawList.clear();
 }
 
 void RenderSystem::OnResize() {
-    m_Height = GlobalContext::GetViewportSize().y;
-    m_Width = GlobalContext::GetViewportSize().x;
-    m_ShadowMapRenderPass->OnResize(m_Width, m_Height);
-    m_MainCameraRenderPass->OnResize(m_Width, m_Height);
+    mHeight = GlobalContext::GetViewportSize().y;
+    mWidth = GlobalContext::GetViewportSize().x;
+    mShadowMapRenderPass->OnResize(mWidth, mHeight);
+    mMainCameraRenderPass->OnResize(mWidth, mHeight);
 }
 
-uint64_t RenderSystem::GetMainImage() { return GlobalContext::GetDriverApi()->GetTextueID(m_MainImage); }
+uint64_t RenderSystem::GetMainImage() { return GlobalContext::GetDriverApi()->GetTextueID(mMainImage); }
 
-uint64_t RenderSystem::GetSkyboxImage() { return GlobalContext::GetDriverApi()->GetTextueID(m_EnvironmentMapRenderPass->mInputTexture); };
+uint64_t RenderSystem::GetSkyboxImage() { return GlobalContext::GetDriverApi()->GetTextueID(mEnvironmentMapRenderPass->mInputTexture); };
 
-int RenderSystem::GetMousePicking(int x, int y) { return m_MainCameraRenderPass->GetMousePicking(x, y); }
+int RenderSystem::GetMousePicking(int x, int y) { return mMainCameraRenderPass->GetMousePicking(x, y); }
 
 void RenderSystem::SubmitStaticMesh(Ref<StaticMesh> staticMesh, Ref<MaterialTable> materialTable, uint32_t EntityID, const Matrix4& transform) {
     Ref<MeshSource> meshSource = staticMesh->GetMeshSource();
@@ -114,13 +114,13 @@ void RenderSystem::SubmitStaticMesh(Ref<StaticMesh> staticMesh, Ref<MaterialTabl
         AssetHandle materialHandle = material->Handle;
 
         MeshKey meshKey = {staticMesh->Handle, materialHandle, submeshIndex, false, EntityID};
-        auto& transformStorage = m_DrawLists->MeshTransformMap[meshKey].Transforms.emplace_back();
+        auto& transformStorage = mDrawLists->MeshTransformMap[meshKey].Transforms.emplace_back();
         transformStorage.Transform = submeshTransform;
         // Main geo
         {
             bool isTransparent = material->IsTransparent();
             if (isTransparent) ET_CORE_WARN("Only support untransparent material");
-            auto& destDrawList = m_DrawLists->StaticMeshDrawList;
+            auto& destDrawList = mDrawLists->StaticMeshDrawList;
             auto& dc = destDrawList[meshKey];
             dc.StaticMesh = staticMesh;
             dc.SubmeshIndex = submeshIndex;
@@ -142,13 +142,13 @@ void RenderSystem::SubmitMesh(Ref<Mesh> mesh, Ref<MaterialTable> materialTable, 
         AssetHandle materialHandle = material->Handle;
 
         MeshKey meshKey = {mesh->Handle, materialHandle, submeshIndex, false, EntityID};
-        auto& transformStorage = m_DrawLists->MeshTransformMap[meshKey].Transforms.emplace_back();
+        auto& transformStorage = mDrawLists->MeshTransformMap[meshKey].Transforms.emplace_back();
         transformStorage.Transform = submeshTransform;
         // Main geo
         {
             bool isTransparent = material->IsTransparent();
             if (isTransparent) ET_CORE_WARN("Only support untransparent material");
-            auto& destDrawList = m_DrawLists->MeshDrawList;
+            auto& destDrawList = mDrawLists->MeshDrawList;
             auto& dc = destDrawList[meshKey];
             dc.Mesh = mesh;
             dc.SubmeshIndex = submeshIndex;
@@ -161,11 +161,11 @@ void RenderSystem::SubmitMesh(Ref<Mesh> mesh, Ref<MaterialTable> materialTable, 
 void RenderSystem::SubmitRenderSceneData() { UpdateUniformData(); }
 
 std::pair<Ref<Texture>, Ref<Texture>> RenderSystem::CreateEnvironmentMap(const std::string& path) {
-    m_EnvironmentMapRenderPass->mInputTexture = ResourceLoader::LoadTexture(path);
+    mEnvironmentMapRenderPass->mInputTexture = ResourceLoader::LoadTexture(path);
 
-    m_EnvironmentMapRenderPass->Draw();
+    mEnvironmentMapRenderPass->Draw();
     // TODO: Copy the Ref<TextureCube> otherwise every Environment will point to the same Ref
-    return {m_EnvironmentMapRenderPass->mEnvironmentCubeMap, m_EnvironmentMapRenderPass->mReflectionCubeMap};
+    return {mEnvironmentMapRenderPass->mEnvironmentCubeMap, mEnvironmentMapRenderPass->mReflectionCubeMap};
 }
 
 void RenderSystem::LoadProjectSettings() {}

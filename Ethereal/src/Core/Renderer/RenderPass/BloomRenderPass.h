@@ -15,16 +15,16 @@ class BloomRenderPass : public RenderPass {
     virtual void Draw() override;
     virtual void OnResize(uint32_t width, uint32_t height) override;
 
-    void SetMainImage(const TextureHandle& texture) { m_MainImage = texture; }
-    TextureHandle GetBloomImage() { return m_BloomImage; }
+    void SetMainImage(const TextureHandle& texture) { mMainImage = texture; }
+    TextureHandle GetBloomImage() { return mBloomImage; }
 
    private:
-    TextureHandle m_MainImage;
-    TextureHandle m_BloomImage;
-    TextureHandle m_BrightAreaImage;
+    TextureHandle mMainImage;
+    TextureHandle mBloomImage;
+    TextureHandle mBrightAreaImage;
 
-    TextureHandle m_UpSampledImage;
-    TextureHandle m_DownSampledImage;
+    TextureHandle mUpSampledImage;
+    TextureHandle mDownSampledImage;
 
     RenderTargetHandle mRenderTarget;
     RenderPassParams mParams;
@@ -38,10 +38,10 @@ class BloomRenderPass : public RenderPass {
     SamplerGroupHandle mSamplerGroup;
     SamplerGroupDescriptor mSamplerGroupDesc;
 
-    Ref<StaticMesh> m_Quad;
-    unsigned int m_MipLevels;
+    Ref<StaticMesh> mQuad;
+    unsigned int mMipLevels;
 
-    uint32_t m_Height, m_Width;
+    uint32_t mHeight, mWidth;
 
    private:
     void Invalidate(uint32_t width, uint32_t height);

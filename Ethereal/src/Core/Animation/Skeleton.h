@@ -15,23 +15,23 @@ namespace Ethereal
 
         void UpdatePose(AnimInterClip clip);
         size_t GetJointID(std::string name) {
-            if (m_NameIDMap.find(name) == m_NameIDMap.end()) {
+            if (mNameIDMap.find(name) == mNameIDMap.end()) {
                 ET_CORE_WARN("Unknow joint name {0}", name);
                 return -1;
             }
-            return m_NameIDMap[name];
+            return mNameIDMap[name];
         }
-        std::unordered_map<size_t, Matrix4> GetFinalBoneMatrices() { return m_FinalBoneMatrices; }
+        std::unordered_map<size_t, Matrix4> GetFinalBoneMatrices() { return mFinalBoneMatrices; }
 
         static AssetType GetStaticType() { return AssetType::Skeleton; }
         virtual AssetType GetAssetType() const override { return GetStaticType(); }
 
       public:
-        Ref<Joint> m_Root;
-        std::unordered_map<size_t, Ref<Joint>> m_JointsMap;
-        std::unordered_map<std::string, size_t> m_NameIDMap;
-        std::unordered_map<size_t, Matrix4> m_FinalBoneMatrices;
-        std::string m_Name;
+        Ref<Joint> mRoot;
+        std::unordered_map<size_t, Ref<Joint>> mJointsMap;
+        std::unordered_map<std::string, size_t> mNameIDMap;
+        std::unordered_map<size_t, Matrix4> mFinalBoneMatrices;
+        std::string mName;
 
       private:
         void CalculateMatrices(Ref<Joint> node, Matrix4 parentTransform);

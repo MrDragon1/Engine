@@ -10,7 +10,7 @@ namespace Ethereal
 
         template <typename T>
         T& GetComponent() {
-            return m_Entity.GetComponent<T>();
+            return mEntity.GetComponent<T>();
         }
 
       protected:
@@ -19,7 +19,7 @@ namespace Ethereal
         virtual void OnDestroy() {}
 
       private:
-        Entity m_Entity;
+        Entity mEntity;
         friend class Scene;
         friend class RenderSystem;
     };

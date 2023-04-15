@@ -23,10 +23,10 @@ namespace Ethereal
         static UUID GetSelection(SelectionContext context, size_t index);
 
         static size_t GetSelectionCount(SelectionContext contextID);
-        inline static const std::vector<UUID>& GetSelections(SelectionContext context) { return s_Contexts[context]; }
+        inline static const std::vector<UUID>& GetSelections(SelectionContext context) { return sContexts[context]; }
 
       private:
-        inline static std::unordered_map<SelectionContext, std::vector<UUID>> s_Contexts;
+        inline static std::unordered_map<SelectionContext, std::vector<UUID>> sContexts;
     };
 
 

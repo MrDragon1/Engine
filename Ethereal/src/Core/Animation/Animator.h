@@ -21,16 +21,16 @@ namespace Ethereal
 
         void PlayAnimation();
         void UpdateAnimation(TimeStamp ts);
-        std::unordered_map<size_t, Matrix4> GetFinalBoneMatrices() { return m_Skeleton->GetFinalBoneMatrices(); }
+        std::unordered_map<size_t, Matrix4> GetFinalBoneMatrices() { return mSkeleton->GetFinalBoneMatrices(); }
 
         static AssetType GetStaticType() { return AssetType::Animator; }
         virtual AssetType GetAssetType() const override { return GetStaticType(); }
 
       public:
-        Ref<Animation> m_Animation;
-        Ref<Skeleton> m_Skeleton;
-        TimeStamp m_CurrentTime;
-        TimeStamp m_DeltaTime;
+        Ref<Animation> mAnimation;
+        Ref<Skeleton> mSkeleton;
+        TimeStamp mCurrentTime;
+        TimeStamp mDeltaTime;
     };
 
 }  // namespace Ethereal

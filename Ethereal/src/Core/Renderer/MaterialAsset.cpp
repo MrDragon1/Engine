@@ -6,23 +6,23 @@
 #include "Core/Renderer/RenderResource.h"
 namespace Ethereal {
 MaterialAsset::MaterialAsset(const std::string &name, bool transparent) : b_Transparent(transparent) {
-    m_Name = name;
+    mName = name;
     SetDefaults();
 }
 MaterialAsset::MaterialAsset(const Ref<MaterialAsset> &other) {
-    m_Name = other->m_Name;
+    mName = other->mName;
 
-    m_AlbedoMap = other->m_AlbedoMap;
-    m_NormalMap = other->m_NormalMap;
-    m_MetallicMap = other->m_MetallicMap;
-    m_RoughnessMap = other->m_RoughnessMap;
-    m_OcclusionMap = other->m_OcclusionMap;
+    mAlbedoMap = other->mAlbedoMap;
+    mNormalMap = other->mNormalMap;
+    mMetallicMap = other->mMetallicMap;
+    mRoughnessMap = other->mRoughnessMap;
+    mOcclusionMap = other->mOcclusionMap;
 
-    m_Albedo = other->m_Albedo;
-    m_Metallic = other->m_Metallic;
-    m_Roughness = other->m_Roughness;
-    m_Emisstion = other->m_Emisstion;
-    m_Transparency = other->m_Transparency;
+    mAlbedo = other->mAlbedo;
+    mMetallic = other->mMetallic;
+    mRoughness = other->mRoughness;
+    mEmisstion = other->mEmisstion;
+    mTransparency = other->mTransparency;
     b_Transparent = other->b_Transparent;
 
     b_Albedo = other->b_Albedo;
@@ -36,19 +36,19 @@ MaterialAsset::~MaterialAsset() {}
 
 void MaterialAsset::Load(const MaterialDesc &desc) {
     Handle = desc.Handle;
-    m_Name = desc.Name;
+    mName = desc.Name;
 
-    m_AlbedoMap = AssetManager::GetAsset<Texture>(desc.AlbedoMap);
-    m_NormalMap = AssetManager::GetAsset<Texture>(desc.NormalMap);
-    m_MetallicMap = AssetManager::GetAsset<Texture>(desc.MetallicMap);
-    m_RoughnessMap = AssetManager::GetAsset<Texture>(desc.RoughnessMap);
-    m_OcclusionMap = AssetManager::GetAsset<Texture>(desc.OcclusionMap);
+    mAlbedoMap = AssetManager::GetAsset<Texture>(desc.AlbedoMap);
+    mNormalMap = AssetManager::GetAsset<Texture>(desc.NormalMap);
+    mMetallicMap = AssetManager::GetAsset<Texture>(desc.MetallicMap);
+    mRoughnessMap = AssetManager::GetAsset<Texture>(desc.RoughnessMap);
+    mOcclusionMap = AssetManager::GetAsset<Texture>(desc.OcclusionMap);
 
-    m_Albedo = desc.Albedo;
-    m_Metallic = desc.Metallic;
-    m_Roughness = desc.Roughness;
-    m_Emisstion = desc.Emisstion;
-    m_Transparency = desc.Transparency;
+    mAlbedo = desc.Albedo;
+    mMetallic = desc.Metallic;
+    mRoughness = desc.Roughness;
+    mEmisstion = desc.Emisstion;
+    mTransparency = desc.Transparency;
 
     b_Albedo = desc.IsAlbedo;
     b_Metallic = desc.IsMetallic;
@@ -61,19 +61,19 @@ void MaterialAsset::Load(const MaterialDesc &desc) {
 void MaterialAsset::Save(MaterialDesc &desc) {
     desc.Handle = Handle;
 
-    desc.Name = m_Name;
+    desc.Name = mName;
 
-    desc.AlbedoMap = m_AlbedoMap->Handle;
-    desc.NormalMap = m_NormalMap->Handle;
-    desc.MetallicMap = m_MetallicMap->Handle;
-    desc.RoughnessMap = m_RoughnessMap->Handle;
-    desc.OcclusionMap = m_OcclusionMap->Handle;
+    desc.AlbedoMap = mAlbedoMap->Handle;
+    desc.NormalMap = mNormalMap->Handle;
+    desc.MetallicMap = mMetallicMap->Handle;
+    desc.RoughnessMap = mRoughnessMap->Handle;
+    desc.OcclusionMap = mOcclusionMap->Handle;
 
-    desc.Albedo = m_Albedo;
-    desc.Metallic = m_Metallic;
-    desc.Roughness = m_Roughness;
-    desc.Emisstion = m_Emisstion;
-    desc.Transparency = m_Transparency;
+    desc.Albedo = mAlbedo;
+    desc.Metallic = mMetallic;
+    desc.Roughness = mRoughness;
+    desc.Emisstion = mEmisstion;
+    desc.Transparency = mTransparency;
 
     desc.IsAlbedo = b_Albedo;
     desc.IsMetallic = b_Metallic;
@@ -83,26 +83,26 @@ void MaterialAsset::Save(MaterialDesc &desc) {
     desc.IsTransparent = b_Transparent;
 }
 
-Vector3 &MaterialAsset::GetAlbedoColor() { return m_Albedo; }
+Vector3 &MaterialAsset::GetAlbedoColor() { return mAlbedo; }
 
-void MaterialAsset::SetAlbedoColor(const Vector3 &color) { m_Albedo = color; }
+void MaterialAsset::SetAlbedoColor(const Vector3 &color) { mAlbedo = color; }
 
-float &MaterialAsset::GetMetalness() { return m_Metallic; }
+float &MaterialAsset::GetMetalness() { return mMetallic; }
 
-void MaterialAsset::SetMetalness(float value) { m_Metallic = value; }
+void MaterialAsset::SetMetalness(float value) { mMetallic = value; }
 
-float &MaterialAsset::GetRoughness() { return m_Roughness; }
+float &MaterialAsset::GetRoughness() { return mRoughness; }
 
-void MaterialAsset::SetRoughness(float value) { m_Roughness = value; }
+void MaterialAsset::SetRoughness(float value) { mRoughness = value; }
 
-float &MaterialAsset::GetEmission() { return m_Emisstion; }
+float &MaterialAsset::GetEmission() { return mEmisstion; }
 
-void MaterialAsset::SetEmission(float value) { m_Emisstion = value; }
+void MaterialAsset::SetEmission(float value) { mEmisstion = value; }
 
-Ref<Texture> MaterialAsset::GetAlbedoMap() { return m_AlbedoMap; }
+Ref<Texture> MaterialAsset::GetAlbedoMap() { return mAlbedoMap; }
 
 void MaterialAsset::SetAlbedoMap(Ref<Texture> texture) {
-    m_AlbedoMap = texture;
+    mAlbedoMap = texture;
     SetUseAlbedoMap(true);
 }
 
@@ -111,10 +111,10 @@ void MaterialAsset::ClearAlbedoMap() {
     SetUseAlbedoMap(false);
 }
 
-Ref<Texture> MaterialAsset::GetNormalMap() { return m_NormalMap; }
+Ref<Texture> MaterialAsset::GetNormalMap() { return mNormalMap; }
 
 void MaterialAsset::SetNormalMap(Ref<Texture> texture) {
-    m_NormalMap = texture;
+    mNormalMap = texture;
     SetUseNormalMap(true);
 }
 
@@ -124,10 +124,10 @@ void MaterialAsset::ClearNormalMap() {
     SetNormalMap(RenderResource::WhiteTexture);
     SetUseNormalMap(false);
 }
-Ref<Texture> MaterialAsset::GetMetalnessMap() { return m_MetallicMap; }
+Ref<Texture> MaterialAsset::GetMetalnessMap() { return mMetallicMap; }
 
 void MaterialAsset::SetMetalnessMap(Ref<Texture> texture) {
-    m_MetallicMap = texture;
+    mMetallicMap = texture;
     SetUseMetalnessMap(true);
 }
 
@@ -135,10 +135,10 @@ void MaterialAsset::ClearMetalnessMap() {
     SetMetalnessMap(RenderResource::WhiteTexture);
     SetUseMetalnessMap(false);
 }
-Ref<Texture> MaterialAsset::GetRoughnessMap() { return m_RoughnessMap; }
+Ref<Texture> MaterialAsset::GetRoughnessMap() { return mRoughnessMap; }
 
 void MaterialAsset::SetRoughnessMap(Ref<Texture> texture) {
-    m_RoughnessMap = texture;
+    mRoughnessMap = texture;
     SetUseRoughnessMap(true);
 }
 
@@ -146,9 +146,9 @@ void MaterialAsset::ClearRoughnessMap() {
     SetRoughnessMap(RenderResource::WhiteTexture);
     SetUseRoughnessMap(false);
 }
-float &MaterialAsset::GetTransparency() { return m_Transparency; }
+float &MaterialAsset::GetTransparency() { return mTransparency; }
 
-void MaterialAsset::SetTransparency(float transparency) { m_Transparency = transparency; }
+void MaterialAsset::SetTransparency(float transparency) { mTransparency = transparency; }
 
 void MaterialAsset::SetDefaults() {
     // Set defaults
@@ -170,10 +170,10 @@ void MaterialAsset::SetDefaults() {
     SetUseOcclusionMap(false);
     SetUseAlbedoMap(false);
 }
-Ref<Texture> MaterialAsset::GetOcclusionMap() { return m_OcclusionMap; }
+Ref<Texture> MaterialAsset::GetOcclusionMap() { return mOcclusionMap; }
 
 void MaterialAsset::SetOcclusionMap(Ref<Texture> texture) {
-    m_OcclusionMap = texture;
+    mOcclusionMap = texture;
     SetUseOcclusionMap(true);
 }
 
@@ -202,15 +202,15 @@ MaterialTable::MaterialTable(Ref<MaterialTable> other) {
 
 void MaterialTable::SetMaterial(uint32_t index, Ref<MaterialAsset> material) {
     // if (material->Handle == 0) ET_CORE_ERROR("Can not set material with handle 0");
-    if (index >= GetMaterialCount()) m_Materials.resize(index + 1);
-    m_Materials[index] = material;
+    if (index >= GetMaterialCount()) mMaterials.resize(index + 1);
+    mMaterials[index] = material;
 }
 
 void MaterialTable::ClearMaterial(uint32_t index) {
     ET_CORE_ASSERT(HasMaterial(index));
-    m_Materials[index] = nullptr;
+    mMaterials[index] = nullptr;
 }
 
-void MaterialTable::Clear() { m_Materials.clear(); }
+void MaterialTable::Clear() { mMaterials.clear(); }
 
 }  // namespace Ethereal

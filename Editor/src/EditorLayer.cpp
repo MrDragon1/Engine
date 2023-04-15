@@ -29,18 +29,18 @@ EditorLayer::EditorLayer() : Layer("EditorLayer") {}
 
 void EditorLayer::OnAttach() {
     EditorResource::Init();
-    m_PanelManager = CreateScope<PanelManager>();
+    mPanelManager = CreateScope<PanelManager>();
 
-    m_PanelManager->AddPanel<SceneHierarchyPanel>(PanelCategory::View, SCENE_HIERARCHY_PANEL_ID, "Scene Hierarchy", true, m_EditorScene,
-                                                  SelectionContext::Scene);
-    m_PanelManager->AddPanel<ContentBrowserPanel>(PanelCategory::View, CONTENT_BROWSER_PANEL_ID, "Content Browser", true);
-    m_PanelManager->AddPanel<MaterialEditPanel>(PanelCategory::View, MATERIALS_PANEL_ID, "Material", true);
-    m_PanelManager->AddPanel<DebugPanel>(PanelCategory::View, DEBUG_PANEL_ID, "Debug", true);
+    mPanelManager->AddPanel<SceneHierarchyPanel>(PanelCategory::View, SCENE_HIERARCHY_PANEL_ID, "Scene Hierarchy", true, mEditorScene,
+                                                 SelectionContext::Scene);
+    mPanelManager->AddPanel<ContentBrowserPanel>(PanelCategory::View, CONTENT_BROWSER_PANEL_ID, "Content Browser", true);
+    mPanelManager->AddPanel<MaterialEditPanel>(PanelCategory::View, MATERIALS_PANEL_ID, "Material", true);
+    mPanelManager->AddPanel<DebugPanel>(PanelCategory::View, DEBUG_PANEL_ID, "Debug", true);
 
-    m_IconPlay = EditorResource::PlayIcon;
-    m_IconStop = EditorResource::StopIcon;
+    mIconPlay = EditorResource::PlayIcon;
+    mIconStop = EditorResource::StopIcon;
 
-    m_EditorCamera = EditorCamera(30.0f, 1280.0f / 720.0f, 0.1f, 500.0f);
+    mEditorCamera = EditorCamera(30.0f, 1280.0f / 720.0f, 0.1f, 500.0f);
 
     // TODO: Remove this when support default project
     OpenScene("assets/scenes/meta.EScene");
@@ -49,53 +49,53 @@ void EditorLayer::OnAttach() {
 void EditorLayer::OnDetach() { EditorResource::Shutdown(); }
 
 void EditorLayer::OnUpdate(TimeStamp ts) {
-    switch (m_SceneState) {
+    switch (mSceneState) {
         case SceneState::Play: {
-            m_RuntimeScene->OnUpdateRuntime(ts);
+            mRuntimeScene->OnUpdateRuntime(ts);
             break;
         }
         case SceneState::Edit: {
-            m_EditorCamera.OnUpdate(ts);
+            mEditorCamera.OnUpdate(ts);
 
             SceneParam& sp = Project::GetConfigManager().sUniformManagerConfig.SceneParam;
-            sp.CameraPosition = m_EditorCamera.GetPosition();
+            sp.CameraPosition = mEditorCamera.GetPosition();
             sp.ScissorNormalized = Vector4(1, 1, 4096 - 2, 4096 - 2) / 4096;  // the size of shadow map
             sp.EnvironmentMapIntensity = 1.0f;
 
             CameraParam& cp = Project::GetConfigManager().sUniformManagerConfig.CameraParam;
-            cp.ViewProjectionMatrix = m_EditorCamera.GetViewProjection();
-            cp.ViewMatrix = m_EditorCamera.GetViewMatrix();
-            cp.ProjectionMatrix = m_EditorCamera.GetProjection();
-            cp.InverseViewProjectionMatrix = Math::Inverse(m_EditorCamera.GetViewProjection());
-            cp.InverseViewMatrix = Math::Inverse(m_EditorCamera.GetViewMatrix());
-            cp.InverseProjectionMatrix = Math::Inverse(m_EditorCamera.GetProjection());
-            cp.NearPlane = m_EditorCamera.GetNearPlane();
-            cp.FarPlane = m_EditorCamera.GetFarPlane();
+            cp.ViewProjectionMatrix = mEditorCamera.GetViewProjection();
+            cp.ViewMatrix = mEditorCamera.GetViewMatrix();
+            cp.ProjectionMatrix = mEditorCamera.GetProjection();
+            cp.InverseViewProjectionMatrix = Math::Inverse(mEditorCamera.GetViewProjection());
+            cp.InverseViewMatrix = Math::Inverse(mEditorCamera.GetViewMatrix());
+            cp.InverseProjectionMatrix = Math::Inverse(mEditorCamera.GetProjection());
+            cp.NearPlane = mEditorCamera.GetNearPlane();
+            cp.FarPlane = mEditorCamera.GetFarPlane();
 
-            Project::GetConfigManager().sCSMConfig.NearPlane = m_EditorCamera.GetNearPlane();
-            Project::GetConfigManager().sCSMConfig.FarPlane = m_EditorCamera.GetFarPlane();
-            Project::GetConfigManager().sCSMConfig.ViewMatrix = m_EditorCamera.GetViewMatrix();
-            Project::GetConfigManager().sCSMConfig.AspectRatio = m_EditorCamera.GetAspectRatio();
-            Project::GetConfigManager().sCSMConfig.FOV = m_EditorCamera.GetFOV();
+            Project::GetConfigManager().sCSMConfig.NearPlane = mEditorCamera.GetNearPlane();
+            Project::GetConfigManager().sCSMConfig.FarPlane = mEditorCamera.GetFarPlane();
+            Project::GetConfigManager().sCSMConfig.ViewMatrix = mEditorCamera.GetViewMatrix();
+            Project::GetConfigManager().sCSMConfig.AspectRatio = mEditorCamera.GetAspectRatio();
+            Project::GetConfigManager().sCSMConfig.FOV = mEditorCamera.GetFOV();
 
-            m_EditorScene->OnUpdateEditor(ts);
+            mEditorScene->OnUpdateEditor(ts);
             break;
         }
     }
     GlobalContext::GetRenderSystem().Draw(ts);
 
-    if (m_SceneState == SceneState::Edit) {
+    if (mSceneState == SceneState::Edit) {
         auto [mx, my] = ImGui::GetMousePos();
-        mx -= m_ViewportBounds[0].x;
-        my -= m_ViewportBounds[0].y;
-        Vector2 viewportSize = m_ViewportBounds[1] - m_ViewportBounds[0];
+        mx -= mViewportBounds[0].x;
+        my -= mViewportBounds[0].y;
+        Vector2 viewportSize = mViewportBounds[1] - mViewportBounds[0];
         my = viewportSize.y - my;
         int mouseX = (int)mx;
         int mouseY = (int)my;
 
         if (mouseX >= 0 && mouseY >= 0 && mouseX < (int)viewportSize.x && mouseY < (int)viewportSize.y) {
             int pixelData = GlobalContext::GetRenderSystem().GetMousePicking(mouseX, mouseY);
-            m_HoveredEntity = pixelData == -1 ? Entity() : Entity((entt::entity)pixelData, m_CurrentScene.Raw());
+            mHoveredEntity = pixelData == -1 ? Entity() : Entity((entt::entity)pixelData, mCurrentScene.Raw());
         }
     }
 }
@@ -179,11 +179,11 @@ void EditorLayer::OnImGuiRender() {
     if (b_ShowSkyboxSettings) ShowSkyboxSettingWindow(&b_ShowSkyboxSettings);
     if (b_ShowProjectSettings) ShowProjectSettingWindow(&b_ShowProjectSettings);
 
-    m_PanelManager->OnImGuiRender();
+    mPanelManager->OnImGuiRender();
 
     ImGui::Begin("Stats");
     std::string name = "None";
-    // if (m_HoveredEntity && m_HoveredEntity.HasComponent<TagComponent>()) name = m_HoveredEntity.GetComponent<TagComponent>().Tag;
+    // if (mHoveredEntity && mHoveredEntity.HasComponent<TagComponent>()) name = mHoveredEntity.GetComponent<TagComponent>().Tag;
     ImGui::Text("Hovered Entity: %s", name.c_str());
 
     // TODO: fix this
@@ -220,10 +220,10 @@ void EditorLayer::OnImGuiRender() {
     {
         auto viewportOffset = ImGui::GetCursorPos();  // Includes tab bar
 
-        m_ViewportFocused = ImGui::IsWindowFocused();
-        m_ViewportHovered = ImGui::IsWindowHovered();
+        mViewportFocused = ImGui::IsWindowFocused();
+        mViewportHovered = ImGui::IsWindowHovered();
         // Not support for now
-        //            Application::Get().GetImGuiLayer()->BlockEvents(!(m_ViewportHovered && Input::IsMouseButtonPressed(Mouse::ButtonRight)));
+        //            Application::Get().GetImGuiLayer()->BlockEvents(!(mViewportHovered && Input::IsMouseButtonPressed(Mouse::ButtonRight)));
 
         ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
         GlobalContext::SetViewportSize({viewportPanelSize.x, viewportPanelSize.y});
@@ -232,9 +232,9 @@ void EditorLayer::OnImGuiRender() {
             (GlobalContext::GetRenderSystem().GetMainImageWidth() != GlobalContext::GetViewportSize().x ||
              GlobalContext::GetRenderSystem().GetMainImageHeight() != GlobalContext::GetViewportSize().y)) {
             GlobalContext::GetRenderSystem().OnResize();
-            // m_CameraController.OnResize(GlobalContext::GetViewportSize().x, GlobalContext::GetViewportSize().y);
-            m_EditorCamera.SetViewportSize();
-            m_CurrentScene->OnViewportResize((uint32_t)GlobalContext::GetViewportSize().x, (uint32_t)GlobalContext::GetViewportSize().y);
+            // mCameraController.OnResize(GlobalContext::GetViewportSize().x, GlobalContext::GetViewportSize().y);
+            mEditorCamera.SetViewportSize();
+            mCurrentScene->OnViewportResize((uint32_t)GlobalContext::GetViewportSize().x, (uint32_t)GlobalContext::GetViewportSize().y);
         }
         uint64_t textureID = GlobalContext::GetRenderSystem().GetMainImage();
         // ET_CORE_INFO("texture ID {}", textureID);
@@ -251,9 +251,9 @@ void EditorLayer::OnImGuiRender() {
                 if (assetData.Type == AssetType::Scene)
                     OpenScene(workingDirPath.string());
                 else if (assetData.Type == AssetType::StaticMesh)
-                    m_EditorScene->CreateEntityWithStaticMesh(assetHandle);
+                    mEditorScene->CreateEntityWithStaticMesh(assetHandle);
                 else if (assetData.Type == AssetType::Mesh)
-                    m_EditorScene->CreateEntityWithMesh(assetHandle);
+                    mEditorScene->CreateEntityWithMesh(assetHandle);
             }
             ImGui::EndDragDropTarget();
         }
@@ -263,14 +263,14 @@ void EditorLayer::OnImGuiRender() {
         minBound.y += viewportOffset.y;
 
         ImVec2 maxBound = {minBound.x + GlobalContext::GetViewportSize().x, minBound.y + GlobalContext::GetViewportSize().y};
-        m_ViewportBounds[0] = {minBound.x, minBound.y};
-        m_ViewportBounds[1] = {maxBound.x, maxBound.y};
+        mViewportBounds[0] = {minBound.x, minBound.y};
+        mViewportBounds[1] = {maxBound.x, maxBound.y};
 
         // Gizmos
         Entity selectedEntity = Entity();
         if (SelectionManager::GetSelections(SelectionContext::Scene).size() > 0)
-            selectedEntity = m_CurrentScene->GetEntityWithUUID(SelectionManager::GetSelections(SelectionContext::Scene)[0]);
-        if (selectedEntity && m_GizmoType != -1) {
+            selectedEntity = mCurrentScene->GetEntityWithUUID(SelectionManager::GetSelections(SelectionContext::Scene)[0]);
+        if (selectedEntity && mGizmoType != -1) {
             ImGuizmo::SetOrthographic(false);
             ImGuizmo::SetDrawlist();
 
@@ -279,8 +279,8 @@ void EditorLayer::OnImGuiRender() {
             ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
 
             // Editor camera
-            const Matrix4& cameraProjection = m_EditorCamera.GetProjection();
-            Matrix4 cameraView = m_EditorCamera.GetViewMatrix();
+            const Matrix4& cameraProjection = mEditorCamera.GetProjection();
+            Matrix4 cameraView = mEditorCamera.GetViewMatrix();
 
             // Entity transform
             auto& tc = selectedEntity.GetComponent<TransformComponent>();
@@ -290,11 +290,11 @@ void EditorLayer::OnImGuiRender() {
             bool snap = Input::IsKeyPressed(Key::LeftControl);
             float snapValue = 0.5f;  // Snap to 0.5m for translation/scale
             // Snap to 45 degrees for rotation
-            if (m_GizmoType == ImGuizmo::OPERATION::ROTATE) snapValue = 45.0f;
+            if (mGizmoType == ImGuizmo::OPERATION::ROTATE) snapValue = 45.0f;
 
             float snapValues[3] = {snapValue, snapValue, snapValue};
 
-            ImGuizmo::Manipulate(Math::Ptr(cameraView), Math::Ptr(cameraProjection), (ImGuizmo::OPERATION)m_GizmoType, ImGuizmo::LOCAL,
+            ImGuizmo::Manipulate(Math::Ptr(cameraView), Math::Ptr(cameraProjection), (ImGuizmo::OPERATION)mGizmoType, ImGuizmo::LOCAL,
                                  Math::Ptr(transform), nullptr, snap ? snapValues : nullptr);
             if (ImGuizmo::IsUsing()) {
                 Vector3 translation, scale, skew;
@@ -319,13 +319,13 @@ void EditorLayer::OnImGuiRender() {
 }
 
 void EditorLayer::OnEvent(Event& e) {
-    if (m_SceneState == SceneState::Edit && m_ViewportHovered) {
-        m_EditorCamera.OnEvent(e);
+    if (mSceneState == SceneState::Edit && mViewportHovered) {
+        mEditorCamera.OnEvent(e);
     }
     EventDispatcher dispatcher(e);
     dispatcher.Dispatch<KeyPressedEvent>(ET_BIND_EVENT_FN(EditorLayer::OnKeyPressed));
     dispatcher.Dispatch<MouseButtonPressedEvent>(ET_BIND_EVENT_FN(EditorLayer::OnMouseButtonPressed));
-    m_PanelManager->OnEvent(e);
+    mPanelManager->OnEvent(e);
 }
 
 bool EditorLayer::OnKeyPressed(KeyPressedEvent& e) {
@@ -359,16 +359,16 @@ bool EditorLayer::OnKeyPressed(KeyPressedEvent& e) {
         // Gizmos
         // TODO: Find a more human friendly way bind keys
         case Key::C:
-            m_GizmoType = -1;
+            mGizmoType = -1;
             break;
         case Key::R:
-            m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
+            mGizmoType = ImGuizmo::OPERATION::TRANSLATE;
             break;
         case Key::F:
-            m_GizmoType = ImGuizmo::OPERATION::ROTATE;
+            mGizmoType = ImGuizmo::OPERATION::ROTATE;
             break;
         case Key::V:
-            m_GizmoType = ImGuizmo::OPERATION::SCALE;
+            mGizmoType = ImGuizmo::OPERATION::SCALE;
             break;
     }
     return true;
@@ -376,22 +376,22 @@ bool EditorLayer::OnKeyPressed(KeyPressedEvent& e) {
 
 bool EditorLayer::OnMouseButtonPressed(MouseButtonPressedEvent& e) {
     if (e.GetMouseButton() == Mouse::ButtonLeft) {
-        if (m_ViewportHovered && !ImGuizmo::IsOver()) {
+        if (mViewportHovered && !ImGuizmo::IsOver()) {
             SelectionManager::DeselectAll();
-            if (m_HoveredEntity) SelectionManager::Select(SelectionContext::Scene, m_HoveredEntity.GetUUID());
+            if (mHoveredEntity) SelectionManager::Select(SelectionContext::Scene, mHoveredEntity.GetUUID());
         }
     }
     return false;
 }
 
 void EditorLayer::NewScene() {
-    m_EditorScene = Ref<Scene>::Create();
-    m_EditorScene->OnViewportResize((uint32_t)GlobalContext::GetViewportSize().x, (uint32_t)GlobalContext::GetViewportSize().y);
-    m_PanelManager->SetSceneContext(m_EditorScene);
+    mEditorScene = Ref<Scene>::Create();
+    mEditorScene->OnViewportResize((uint32_t)GlobalContext::GetViewportSize().x, (uint32_t)GlobalContext::GetViewportSize().y);
+    mPanelManager->SetSceneContext(mEditorScene);
 
-    m_EditorScenePath = std::filesystem::path();
+    mEditorScenePath = std::filesystem::path();
 
-    m_CurrentScene = m_EditorScene;
+    mCurrentScene = mEditorScene;
 }
 
 void EditorLayer::OpenScene() {
@@ -402,52 +402,52 @@ void EditorLayer::OpenScene() {
 }
 
 void EditorLayer::OpenScene(const std::filesystem::path& path) {
-    if (m_SceneState != SceneState::Edit) OnSceneStop();
+    if (mSceneState != SceneState::Edit) OnSceneStop();
 
     //        // TODO!: Make sure no panel is drawing entity in current scene, otherwise it will crash
-    //        m_HoveredEntity = Entity();
-    //        m_SceneHierarchyPanel.SetSelectedEntity(m_HoveredEntity);
-    //        m_MaterialEditPanel.SetSelectEntity(m_HoveredEntity);
+    //        mHoveredEntity = Entity();
+    //        mSceneHierarchyPanel.SetSelectedEntity(mHoveredEntity);
+    //        mMaterialEditPanel.SetSelectEntity(mHoveredEntity);
 
     if (AssetManager::GetAssetTypeFromExtension(path.extension().string()) != AssetType::Scene) {
         ET_WARN("Could not load {0} - not a scene file", path.filename().string());
         return;
     }
-    m_EditorScene = Ref<Scene>::Create();
-    m_EditorScene->OnViewportResize((uint32_t)GlobalContext::GetViewportSize().x, (uint32_t)GlobalContext::GetViewportSize().y);
+    mEditorScene = Ref<Scene>::Create();
+    mEditorScene->OnViewportResize((uint32_t)GlobalContext::GetViewportSize().x, (uint32_t)GlobalContext::GetViewportSize().y);
 
-    m_PanelManager->SetSceneContext(m_EditorScene);
+    mPanelManager->SetSceneContext(mEditorScene);
 
-    SceneSerializer serializer(m_EditorScene);
+    SceneSerializer serializer(mEditorScene);
     ET_CORE_ASSERT(serializer.Deserialize(path.string()), "Deserialize Scene {0} failed", path.string());
 
-    m_CurrentScene = m_EditorScene;
-    m_EditorScenePath = path;
+    mCurrentScene = mEditorScene;
+    mEditorScenePath = path;
 }
 
 void EditorLayer::SaveSceneAs() {
     std::string filepath = FileDialogs::SaveFile("Scene (*.EScene)\0*.EScene\0");
     if (!filepath.empty()) {
-        SerializeScene(m_EditorScene, filepath);
-        m_EditorScenePath = filepath;
+        SerializeScene(mEditorScene, filepath);
+        mEditorScenePath = filepath;
     }
 }
 
 void EditorLayer::SaveScene() {
-    if (!m_EditorScenePath.empty())
-        SerializeScene(m_EditorScene, m_EditorScenePath);
+    if (!mEditorScenePath.empty())
+        SerializeScene(mEditorScene, mEditorScenePath);
     else
         SaveSceneAs();
 }
 
 void EditorLayer::DuplicateEntity() {
-    if (m_SceneState != SceneState::Edit) return;
+    if (mSceneState != SceneState::Edit) return;
 
     Entity selectedEntity;
     if (SelectionManager::GetSelections(SelectionContext::Scene).size() > 0) {
-        selectedEntity = m_EditorScene->GetEntityWithUUID(SelectionManager::GetSelections(SelectionContext::Scene)[0]);
+        selectedEntity = mEditorScene->GetEntityWithUUID(SelectionManager::GetSelections(SelectionContext::Scene)[0]);
     }
-    if (selectedEntity) m_EditorScene->DuplicateEntity(selectedEntity);
+    if (selectedEntity) mEditorScene->DuplicateEntity(selectedEntity);
 }
 
 void EditorLayer::SerializeScene(Ref<Scene> scene, const std::filesystem::path& path) {
@@ -459,21 +459,21 @@ void EditorLayer::OnScenePlay() {
     SelectionManager::DeselectAll();
 
     // TODO: Save Scene when changed
-    m_SceneState = SceneState::Play;
-    m_RuntimeScene = Scene::Copy(m_EditorScene);
-    m_RuntimeScene->OnRuntimeStart();
+    mSceneState = SceneState::Play;
+    mRuntimeScene = Scene::Copy(mEditorScene);
+    mRuntimeScene->OnRuntimeStart();
 
-    m_PanelManager->SetSceneContext(m_RuntimeScene);
-    m_CurrentScene = m_RuntimeScene;
+    mPanelManager->SetSceneContext(mRuntimeScene);
+    mCurrentScene = mRuntimeScene;
 }
 
 void EditorLayer::OnSceneStop() {
-    m_SceneState = SceneState::Edit;
-    m_RuntimeScene->OnRuntimeStop();
-    m_RuntimeScene = nullptr;
+    mSceneState = SceneState::Edit;
+    mRuntimeScene->OnRuntimeStop();
+    mRuntimeScene = nullptr;
 
-    m_PanelManager->SetSceneContext(m_EditorScene);
-    m_CurrentScene = m_EditorScene;
+    mPanelManager->SetSceneContext(mEditorScene);
+    mCurrentScene = mEditorScene;
 }
 
 void EditorLayer::UI_Toolbar() {
@@ -489,12 +489,12 @@ void EditorLayer::UI_Toolbar() {
     ImGui::Begin("##toolbar", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
 
     float size = ImGui::GetWindowHeight() - 4.0f;
-    Ref<Texture> icon = m_SceneState == SceneState::Edit ? m_IconPlay : m_IconStop;
+    Ref<Texture> icon = mSceneState == SceneState::Edit ? mIconPlay : mIconStop;
     ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size * 0.5f));
 
     auto api = GlobalContext::GetDriverApi();
     if (ImGui::ImageButton((ImTextureID)(intptr_t)(api->GetTextueID(icon)), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0)) {
-        if (m_SceneState == SceneState::Edit) {
+        if (mSceneState == SceneState::Edit) {
             OnScenePlay();
         } else {
             OnSceneStop();
@@ -516,9 +516,9 @@ void EditorLayer::ShowSkyboxSettingWindow(bool* p_open) {
         if (ImGui::Button("Load Skybox")) {
             std::string filepath = FileDialogs::OpenFile("Skybox (*.hdr)\0*.hdr\0");
             if (!filepath.empty()) {
-                if (m_EditorScene) {
+                if (mEditorScene) {
                     ET_CORE_INFO("Open Skybox {0}", filepath);
-                    m_EditorScene->SetEnvironment(AssetManager::GetAsset<Environment>(filepath));
+                    mEditorScene->SetEnvironment(AssetManager::GetAsset<Environment>(filepath));
                 }
             }
         }

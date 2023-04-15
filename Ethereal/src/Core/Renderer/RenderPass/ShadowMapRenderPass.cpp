@@ -4,7 +4,7 @@
 
 namespace Ethereal {
 void ShadowMapRenderPass::Init(uint32_t width, uint32_t height) {
-    m_LightPos = Vector3(-2.0f, 4.0f, -1.0f);
+    mLightPos = Vector3(-2.0f, 4.0f, -1.0f);
     CalculateViewProjectionMatrix();
 
     auto api = GlobalContext::GetDriverApi();
@@ -25,8 +25,8 @@ void ShadowMapRenderPass::Draw() {
     // This pass is not complete,
 
     // Draw Shadow Map
-    const auto& staticMeshDrawList = m_DrawLists.StaticMeshDrawList;
-    const auto& meshTransformMap = m_DrawLists.MeshTransformMap;
+    const auto& staticMeshDrawList = mDrawLists.StaticMeshDrawList;
+    const auto& meshTransformMap = mDrawLists.MeshTransformMap;
 
     auto uniformManager = GlobalContext::GetUniformManager();
     auto api = GlobalContext::GetDriverApi();
@@ -51,14 +51,14 @@ void ShadowMapRenderPass::Draw() {
 
 void ShadowMapRenderPass::OnResize(uint32_t width, uint32_t height) {
     //* framebuffer dont need to resize
-    // m_Framebuffer->Resize(width, height);
+    // mFramebuffer->Resize(width, height);
 }
 
 void ShadowMapRenderPass::CalculateViewProjectionMatrix() {
     GLfloat near_plane = 0.1f, far_plane = 100.0f;
     Matrix4 lightProjection = Math::Ortho(-50.0f, 50.0f, -50.0f, 50.0f, near_plane, far_plane);
-    Matrix4 lightView = Math::LookAt(m_LightPos, Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f));
-    m_ViewProjectionMatrix = lightProjection * lightView;
+    Matrix4 lightView = Math::LookAt(mLightPos, Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f));
+    mViewProjectionMatrix = lightProjection * lightView;
 }
 
 }  // namespace Ethereal

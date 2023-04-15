@@ -85,17 +85,17 @@ class AssetManager {
             metadata.FilePath = AssetManager::GetRelativePath(directoryPath + "/" + filename + suffix);
 
         // TODO: actually the metadata is not loaded,
-        //  only the descriptor is stored in the s_LoadedAssets.
+        //  only the descriptor is stored in the sLoadedAssets.
         //  Need to store the actual asset data (not descriptor data).
         //  For now, just set the IsDataLoaded to false
         metadata.IsDataLoaded = false;
 
-        s_AssetRegistry[metadata.Handle] = metadata;
+        sAssetRegistry[metadata.Handle] = metadata;
 
         WriteRegistryToFile();
 
         asset.Handle = metadata.Handle;
-        //            s_LoadedAssets[asset.Handle] = &asset;
+        //            sLoadedAssets[asset.Handle] = &asset;
 
         YNode&& node = Serializer::write(asset);
         YAML::Emitter out;
@@ -111,7 +111,7 @@ class AssetManager {
 
     template <typename T>
     static Ref<T> GetAsset(AssetHandle assetHandle) {
-        if (IsMemoryAsset(assetHandle)) return s_MemoryAssets[assetHandle].As<T>();
+        if (IsMemoryAsset(assetHandle)) return sMemoryAssets[assetHandle].As<T>();
 
         auto& metadata = GetMetadataInternal(assetHandle);
         if (!metadata.IsValid()) return nullptr;
@@ -121,9 +121,9 @@ class AssetManager {
             metadata.IsDataLoaded = AssetImporter::TryLoadData(metadata, asset);
             if (!metadata.IsDataLoaded) return nullptr;
 
-            s_LoadedAssets[assetHandle] = asset;
+            sLoadedAssets[assetHandle] = asset;
         } else {
-            asset = s_LoadedAssets[assetHandle];
+            asset = sLoadedAssets[assetHandle];
         }
 
         return asset.As<T>();
@@ -136,11 +136,11 @@ class AssetManager {
 
     static bool FileExists(AssetMetaData& metadata) { return FileSystem::Exists(Project::GetActive()->GetAssetDirectory() / metadata.FilePath); }
 
-    static const std::unordered_map<AssetHandle, Ref<Asset>>& GetLoadedAssets() { return s_LoadedAssets; }
-    static const AssetRegistry& GetAssetRegistry() { return s_AssetRegistry; }
-    static const std::unordered_map<AssetHandle, Ref<Asset>>& GetMemoryOnlyAssets() { return s_MemoryAssets; }
+    static const std::unordered_map<AssetHandle, Ref<Asset>>& GetLoadedAssets() { return sLoadedAssets; }
+    static const AssetRegistry& GetAssetRegistry() { return sAssetRegistry; }
+    static const std::unordered_map<AssetHandle, Ref<Asset>>& GetMemoryOnlyAssets() { return sMemoryAssets; }
 
-    static bool IsMemoryAsset(AssetHandle handle) { return s_MemoryAssets.find(handle) != s_MemoryAssets.end(); }
+    static bool IsMemoryAsset(AssetHandle handle) { return sMemoryAssets.find(handle) != sMemoryAssets.end(); }
 
    private:
     static void LoadAssetRegistry();
@@ -151,9 +151,9 @@ class AssetManager {
     static AssetMetaData& GetMetadataInternal(AssetHandle handle);
 
    private:
-    static std::unordered_map<AssetHandle, Ref<Asset>> s_LoadedAssets;
-    static std::unordered_map<AssetHandle, Ref<Asset>> s_MemoryAssets;
-    inline static AssetRegistry s_AssetRegistry;
+    static std::unordered_map<AssetHandle, Ref<Asset>> sLoadedAssets;
+    static std::unordered_map<AssetHandle, Ref<Asset>> sMemoryAssets;
+    inline static AssetRegistry sAssetRegistry;
 
    private:
     friend class ContentBrowserPanel;

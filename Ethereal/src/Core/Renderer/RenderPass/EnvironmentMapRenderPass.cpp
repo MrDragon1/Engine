@@ -20,7 +20,7 @@ void EnvironmentMapRenderPass::Init(uint32_t width, uint32_t height) {
     auto dummyTex = api->CreateTexture(1, width, height, 1, TextureFormat::R16G16B16A16_HDR, usage, TextureType::TEXTURE_2D);
     mRenderTarget = api->CreateRenderTarget(TargetBufferFlags::COLOR0, width, height, {dummyTex}, {}, {});
 
-    m_Cube = RenderResource::Cube;
+    mCube = RenderResource::Cube;
 
     mEnvironmentCubeMap = api->CreateTexture(1, 32, 32, 6, TextureFormat::R16G16B16A16_HDR, usage, TextureType::TEXTURE_CUBEMAP);
     mReflectionCubeMap = api->CreateTexture(10, 512, 512, 6, TextureFormat::R16G16B16A16_HDR, usage, TextureType::TEXTURE_CUBEMAP);
@@ -68,7 +68,7 @@ void EnvironmentMapRenderPass::Draw() {
         api->UpdateSamplerGroup(mSamplerGroup, mSamplerGroupDesc);
         api->BindSamplerGroup(0, mSamplerGroup);
 
-        api->Draw(m_Cube->GetMeshSource()->GetRenderPrimitive(), mEquirectangularToCubeMapPipeline);
+        api->Draw(mCube->GetMeshSource()->GetRenderPrimitive(), mEquirectangularToCubeMapPipeline);
     }
 
     api->EndRenderPass();
@@ -91,11 +91,11 @@ void EnvironmentMapRenderPass::Draw() {
 
         api->UpdateSamplerGroup(mSamplerGroup, mSamplerGroupDesc);
         api->BindSamplerGroup(0, mSamplerGroup);
-        api->Draw(m_Cube->GetMeshSource()->GetRenderPrimitive(), mConvolutionPipeline);
+        api->Draw(mCube->GetMeshSource()->GetRenderPrimitive(), mConvolutionPipeline);
     }
 
     // Generate Reflection CubeMap
-    // here, we reuse the m_TextureCube
+    // here, we reuse the mTextureCube
     api->EndRenderPass();
 
     // Generate Pre-filter CubeMap
@@ -125,7 +125,7 @@ void EnvironmentMapRenderPass::Draw() {
 
             api->UpdateSamplerGroup(mSamplerGroup, mSamplerGroupDesc);
             api->BindSamplerGroup(0, mSamplerGroup);
-            api->Draw(m_Cube->GetMeshSource()->GetRenderPrimitive(), mPrefilterPipeline);
+            api->Draw(mCube->GetMeshSource()->GetRenderPrimitive(), mPrefilterPipeline);
         }
         api->EndRenderPass();
     }

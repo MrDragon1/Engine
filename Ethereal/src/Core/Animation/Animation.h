@@ -18,17 +18,17 @@ class Animation : public Asset {
     void Load(const AnimationDesc& desc);
     void Save(AnimationDesc& desc);
 
-    double GetFramesPerSecond() const { return m_FramesPersecond; }
-    TimeStamp GetDuration() const { return m_Duration; }
+    double GetFramesPerSecond() const { return mFramesPersecond; }
+    TimeStamp GetDuration() const { return mDuration; }
 
     static AssetType GetStaticType() { return AssetType::Animation; }
     AssetType GetAssetType() const override { return GetStaticType(); }
 
    public:
-    std::vector<AnimKeyClip> m_KeyClips;
-    double m_FramesPersecond;  // Frame per second
-    TimeStamp m_Duration;      // Duration (total frames)
-    std::string m_Name{"Default Animation"};
+    std::vector<AnimKeyClip> mKeyClips;
+    double mFramesPersecond;  // Frame per second
+    TimeStamp mDuration;      // Duration (total frames)
+    std::string mName{"Default Animation"};
 
    private:
     std::vector<int> GetPositionIndex(TimeStamp animationTime);

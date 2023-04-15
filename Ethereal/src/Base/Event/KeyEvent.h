@@ -7,30 +7,30 @@ namespace Ethereal
 
     class KeyEvent : public Event {
       public:
-        inline KeyCode GetKeyCode() const { return m_KeyCode; }
+        inline KeyCode GetKeyCode() const { return mKeyCode; }
 
         EVENT_CLASS_CATEGORY(EventCategoryKeyboard | EventCategoryInput)
       protected:
-        KeyEvent(KeyCode keycode) : m_KeyCode(keycode) {}
+        KeyEvent(KeyCode keycode) : mKeyCode(keycode) {}
 
-        KeyCode m_KeyCode;
+        KeyCode mKeyCode;
     };
 
     class KeyPressedEvent : public KeyEvent {
       public:
-        KeyPressedEvent(KeyCode keycode, bool isRepeat = false) : KeyEvent(keycode), m_IsRepeat(isRepeat) {}
+        KeyPressedEvent(KeyCode keycode, bool isRepeat = false) : KeyEvent(keycode), mIsRepeat(isRepeat) {}
 
-        bool IsRepeat() const { return m_IsRepeat; }
+        bool IsRepeat() const { return mIsRepeat; }
 
         std::string ToString() const override {
             std::stringstream ss;
-            ss << "KeyPressedEvent: " << m_KeyCode << " (repeat = " << m_IsRepeat << ")";
+            ss << "KeyPressedEvent: " << mKeyCode << " (repeat = " << mIsRepeat << ")";
             return ss.str();
         }
 
         EVENT_CLASS_TYPE(KeyPressed)
       private:
-        bool m_IsRepeat;
+        bool mIsRepeat;
     };
 
     class KeyReleasedEvent : public KeyEvent {
@@ -39,7 +39,7 @@ namespace Ethereal
 
         std::string ToString() const override {
             std::stringstream ss;
-            ss << "KeyReleasedEvent: " << m_KeyCode;
+            ss << "KeyReleasedEvent: " << mKeyCode;
             return ss.str();
         }
 
@@ -52,7 +52,7 @@ namespace Ethereal
 
         std::string ToString() const override {
             std::stringstream ss;
-            ss << "KeyTypedEvent: " << m_KeyCode;
+            ss << "KeyTypedEvent: " << mKeyCode;
             return ss.str();
         }
 

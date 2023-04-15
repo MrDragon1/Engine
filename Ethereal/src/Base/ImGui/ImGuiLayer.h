@@ -18,7 +18,7 @@ namespace Ethereal
         virtual void OnImGuiRender() override;
         virtual void OnEvent(Event& e) override;
 
-        void BlockEvents(bool block) { m_BlockEvents = block; }
+        void BlockEvents(bool block) { mBlockEvents = block; }
         void Begin();
         void End();
 
@@ -26,7 +26,7 @@ namespace Ethereal
         void SetDarkThemeColors();
 
       private:
-        float m_Time = 0.0f;
-        bool m_BlockEvents = true;
+        float mTime = 0.0f;
+        bool mBlockEvents = true;
     };
 }  // namespace Ethereal

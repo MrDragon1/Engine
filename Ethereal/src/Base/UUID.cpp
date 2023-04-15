@@ -6,11 +6,11 @@
 
 namespace Ethereal
 {
-    static std::random_device s_RandomDevice;
-    static std::mt19937_64 s_Engine(s_RandomDevice());
-    static std::uniform_int_distribution<uint64_t> s_UniformDistribution;
+    static std::random_device sRandomDevice;
+    static std::mt19937_64 sEngine(sRandomDevice());
+    static std::uniform_int_distribution<uint64_t> sUniformDistribution;
 
-    UUID::UUID() : m_UUID(s_UniformDistribution(s_RandomDevice)) {}
+    UUID::UUID() : mUUID(sUniformDistribution(sRandomDevice)) {}
 
-    UUID::UUID(uint64_t uuid) : m_UUID(uuid) {}
+    UUID::UUID(uint64_t uuid) : mUUID(uuid) {}
 }  // namespace Ethereal

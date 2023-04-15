@@ -70,19 +70,19 @@ class EventDispatcher {
     using EventFn = std::function<bool(T&)>;
 
    public:
-    EventDispatcher(Event& event) : m_Event(event) {}
+    EventDispatcher(Event& event) : mEvent(event) {}
 
     template <typename T>
     bool Dispatch(EventFn<T> func) {
-        if (m_Event.GetEventType() == T::GetStaticType()) {
-            m_Event.Handled = func(*(T*)&m_Event);
+        if (mEvent.GetEventType() == T::GetStaticType()) {
+            mEvent.Handled = func(*(T*)&mEvent);
             return true;
         }
         return false;
     }
 
    private:
-    Event& m_Event;
+    Event& mEvent;
 };
 
 inline std::ostream& operator<<(std::ostream& os, const Event& e) { return os << e.ToString(); }

@@ -14,21 +14,21 @@ namespace Ethereal
 
         void SetLocalTransform(AnimState state);
 
-        Matrix4 GetLocalTransform() { return m_LocalTransform; }
+        Matrix4 GetLocalTransform() { return mLocalTransform; }
 
       public:
-        Ref<Joint> m_Parent = nullptr;
-        std::vector<Ref<Joint>> m_Children;
-        std::string m_Name;
-        size_t m_ID = -1;
+        Ref<Joint> mParent = nullptr;
+        std::vector<Ref<Joint>> mChildren;
+        std::string mName;
+        size_t mID = -1;
 
-        Vector3 m_InitialPosition{Vector3(0.0f)};
-        Quaternion m_InitialRotation{Quaternion()};
-        Vector3 m_InitialScale{Vector3(1.0f)};
+        Vector3 mInitialPosition{Vector3(0.0f)};
+        Quaternion mInitialRotation{Quaternion()};
+        Vector3 mInitialScale{Vector3(1.0f)};
 
-        Matrix4 m_OffsetMatrix{Matrix4::IDENTITY};
-        Matrix4 m_InverseOffsetMatrix{Matrix4::IDENTITY};
-        Matrix4 m_LocalTransform{Matrix4::IDENTITY};
+        Matrix4 mOffsetMatrix{Matrix4::IDENTITY};
+        Matrix4 mInverseOffsetMatrix{Matrix4::IDENTITY};
+        Matrix4 mLocalTransform{Matrix4::IDENTITY};
     };
 
 }  // namespace Ethereal

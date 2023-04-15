@@ -18,17 +18,17 @@ static bool IsImageFormat(std::string filePath) {
 }
 }  // namespace Utils
 
-ContentBrowserPanel::ContentBrowserPanel() : m_CurrentDirectory(Project::GetAssetDirectory()) {}
+ContentBrowserPanel::ContentBrowserPanel() : mCurrentDirectory(Project::GetAssetDirectory()) {}
 
 void ContentBrowserPanel::OnEvent(Event& event) {}
 
 void ContentBrowserPanel::OnImGuiRender(bool& isOpen) {
     auto api = GlobalContext::GetDriverApi();
     ImGui::Begin("Content Browser", &isOpen);
-    if (m_CurrentDirectory != Project::GetAssetDirectory()) {
+    if (mCurrentDirectory != Project::GetAssetDirectory()) {
         if (ImGui::Button("<-")) {
-            m_SelectedDirectory = m_CurrentDirectory;
-            m_CurrentDirectory = m_CurrentDirectory.parent_path();
+            mSelectedDirectory = mCurrentDirectory;
+            mCurrentDirectory = mCurrentDirectory.parent_path();
         }
     }
     static float padding = 4.0f;
@@ -41,10 +41,10 @@ void ContentBrowserPanel::OnImGuiRender(bool& isOpen) {
 
     ImGui::Columns(columnCount, 0, false);
 
-    for (auto& directoryEntry : std::filesystem::directory_iterator(m_CurrentDirectory)) {
+    for (auto& directoryEntry : std::filesystem::directory_iterator(mCurrentDirectory)) {
         const auto& path = directoryEntry.path();
         std::string filenameString = path.filename().string();
-        bool IsSelect = m_SelectedDirectory == directoryEntry.path();
+        bool IsSelect = mSelectedDirectory == directoryEntry.path();
         ImGui::PushID(filenameString.c_str());
 
         Ref<Texture> icon =
@@ -61,7 +61,7 @@ void ContentBrowserPanel::OnImGuiRender(bool& isOpen) {
                 press = ImGui::ImageButton((ImTextureID)(intptr_t)api->GetTextueID(icon), {thumbnailSize, thumbnailSize}, {0, 1}, {1, 0});
 
             if (press) {
-                m_SelectedDirectory = directoryEntry.path();
+                mSelectedDirectory = directoryEntry.path();
                 IsSelect = true;
             }
         }
@@ -73,7 +73,7 @@ void ContentBrowserPanel::OnImGuiRender(bool& isOpen) {
         }
 
         if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
-            if (directoryEntry.is_directory()) m_CurrentDirectory /= path.filename();
+            if (directoryEntry.is_directory()) mCurrentDirectory /= path.filename();
         }
         const float TEXT_BASE_WIDTH = ImGui::CalcTextSize("A").x;
         const float TEXT_BASE_HEIGHT = ImGui::GetTextLineHeightWithSpacing();

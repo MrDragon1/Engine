@@ -43,25 +43,25 @@ class Scene : public Asset {
     void Load(const std::filesystem::path& url);
     void Save();
 
-    entt::registry& GetRegistry() { return m_Registry; }
-    const std::string& GetName() const { return m_SceneName; }
-    Ref<Environment> GetEnvironment() const { return m_Environment; }
-    void SetName(const std::string& name) { m_SceneName = name; }
-    void SetEnvironment(Ref<Environment> env) { m_Environment = env; }
+    entt::registry& GetRegistry() { return mRegistry; }
+    const std::string& GetName() const { return mSceneName; }
+    Ref<Environment> GetEnvironment() const { return mEnvironment; }
+    void SetName(const std::string& name) { mSceneName = name; }
+    void SetEnvironment(Ref<Environment> env) { mEnvironment = env; }
 
    private:
     template <typename T>
     void OnComponentAdded(Entity entity, T& component);
 
    private:
-    entt::registry m_Registry;
-    uint32_t m_ViewportWidth = 0, m_ViewportHeight = 0;
-    std::string m_SceneName = "Untitled";
-    std::filesystem::path m_ScenePath;
+    entt::registry mRegistry;
+    uint32_t mViewportWidth = 0, mViewportHeight = 0;
+    std::string mSceneName = "Untitled";
+    std::filesystem::path mScenePath;
 
-    Ref<Environment> m_Environment;
+    Ref<Environment> mEnvironment;
 
-    b2World* m_PhysicsWorld = nullptr;
+    b2World* mPhysicsWorld = nullptr;
 
     friend class Entity;
     friend class SceneSerializer;

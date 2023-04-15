@@ -75,7 +75,7 @@ class RenderPass : public RefCounted {
     virtual void Draw() = 0;
     virtual void OnResize(uint32_t width, uint32_t height) = 0;
 
-    static DrawLists m_DrawLists;
+    static DrawLists mDrawLists;
 
     friend class RenderSystem;
 };

@@ -4,40 +4,40 @@
 namespace Ethereal
 {
     Animator::Animator(Ref<Animation> anim, Ref<Skeleton> skel) {
-        m_Animation = anim;
-        m_Skeleton = skel;
-        m_CurrentTime = 0.0f;
+        mAnimation = anim;
+        mSkeleton = skel;
+        mCurrentTime = 0.0f;
     }
 
     Animator::Animator(const Ref<Animator>& anim) {
-        m_Animation = anim->m_Animation;
-        m_Skeleton = anim->m_Skeleton;
-        m_CurrentTime = 0.0f;
+        mAnimation = anim->mAnimation;
+        mSkeleton = anim->mSkeleton;
+        mCurrentTime = 0.0f;
     }
 
     void Animator::Load(const AnimatorDesc& desc) {
         Handle = desc.Handle;
-        m_Animation = AssetManager::GetAsset<Animation>(desc.Animation);
-        m_Skeleton = AssetManager::GetAsset<Skeleton>(desc.Skeleton);
-        m_CurrentTime = 0.0f;
+        mAnimation = AssetManager::GetAsset<Animation>(desc.Animation);
+        mSkeleton = AssetManager::GetAsset<Skeleton>(desc.Skeleton);
+        mCurrentTime = 0.0f;
     }
     void Animator::Save(AnimatorDesc& desc) {
         desc.Handle = Handle;
-        desc.Animation = m_Animation->Handle;
-        desc.Skeleton = m_Skeleton->Handle;
+        desc.Animation = mAnimation->Handle;
+        desc.Skeleton = mSkeleton->Handle;
     }
 
-    void Animator::PlayAnimation() { m_CurrentTime = 0.0f; }
+    void Animator::PlayAnimation() { mCurrentTime = 0.0f; }
 
     void Animator::UpdateAnimation(TimeStamp ts) {
-        m_DeltaTime = ts;
-        if (m_Animation) {
-            m_CurrentTime += m_Animation->GetFramesPerSecond() * ts;
-            m_CurrentTime = fmod(m_CurrentTime, m_Animation->GetDuration());
+        mDeltaTime = ts;
+        if (mAnimation) {
+            mCurrentTime += mAnimation->GetFramesPerSecond() * ts;
+            mCurrentTime = fmod(mCurrentTime, mAnimation->GetDuration());
             // Get animation pose for current frame
-            AnimInterClip clip = m_Animation->GetInterpolateClip(m_CurrentTime);
+            AnimInterClip clip = mAnimation->GetInterpolateClip(mCurrentTime);
             // Update Matrices
-            m_Skeleton->UpdatePose(clip);
+            mSkeleton->UpdatePose(clip);
         }
     }
 

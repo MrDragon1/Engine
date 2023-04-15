@@ -2,5 +2,5 @@
 
 namespace Ethereal
 {
-    DrawLists RenderPass::m_DrawLists;
+    DrawLists RenderPass::mDrawLists;
 }  // namespace Ethereal

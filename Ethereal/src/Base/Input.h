@@ -6,15 +6,15 @@
 namespace Ethereal {
 class Input {
    public:
-    inline static bool IsKeyPressed(KeyCode key) { return s_Instance->IsKeyPressedImpl(key); }
-    inline static bool IsMouseButtonPressed(MouseCode button) { return s_Instance->IsMouseButtonPressedImpl(button); }
-    inline static std::pair<float, float> GetMousePosition() { return s_Instance->GetMousePositionImpl(); }
-    inline static float GetMouseX() { return s_Instance->GetMouseXImpl(); }
-    inline static float GetMouseY() { return s_Instance->GetMouseYImpl(); }
+    inline static bool IsKeyPressed(KeyCode key) { return sInstance->IsKeyPressedImpl(key); }
+    inline static bool IsMouseButtonPressed(MouseCode button) { return sInstance->IsMouseButtonPressedImpl(button); }
+    inline static std::pair<float, float> GetMousePosition() { return sInstance->GetMousePositionImpl(); }
+    inline static float GetMouseX() { return sInstance->GetMouseXImpl(); }
+    inline static float GetMouseY() { return sInstance->GetMouseYImpl(); }
 
-    inline static void SetMousePos(const Vector2& pos) { s_Instance->SetMousePosImpl(pos); }
-    inline static void SetMouseVisible() { s_Instance->SetMouseVisibleImpl(); }
-    inline static void SetMouseInvisible() { s_Instance->SetMouseInvisibleImpl(); }
+    inline static void SetMousePos(const Vector2& pos) { sInstance->SetMousePosImpl(pos); }
+    inline static void SetMouseVisible() { sInstance->SetMouseVisibleImpl(); }
+    inline static void SetMouseInvisible() { sInstance->SetMouseInvisibleImpl(); }
 
    protected:
     virtual bool IsKeyPressedImpl(KeyCode keycode) = 0;
@@ -28,6 +28,6 @@ class Input {
     virtual void SetMouseInvisibleImpl() = 0;
 
    private:
-    static Input* s_Instance;
+    static Input* sInstance;
 };
 }  // namespace Ethereal

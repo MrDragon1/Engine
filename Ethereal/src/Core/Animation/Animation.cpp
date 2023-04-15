@@ -3,10 +3,10 @@
 namespace Ethereal
 {
     Animation::Animation(const Ref<Animation>& anim) {
-        m_KeyClips = anim->m_KeyClips;
-        m_Name = anim->m_Name;
-        m_FramesPersecond = anim->m_FramesPersecond;
-        m_Duration = anim->m_Duration;
+        mKeyClips = anim->mKeyClips;
+        mName = anim->mName;
+        mFramesPersecond = anim->mFramesPersecond;
+        mDuration = anim->mDuration;
     }
 
     AnimInterClip Animation::GetInterpolateClip(TimeStamp animationTime) {
@@ -15,10 +15,10 @@ namespace Ethereal
         std::vector<int> rotationIndex = GetRotationIndex(animationTime);
         std::vector<int> scaleIndex = GetScaleIndex(animationTime);
 
-        for (int i = 0; i < m_KeyClips.size(); i++) {
+        for (int i = 0; i < mKeyClips.size(); i++) {
             AnimState state{};
 
-            state.JointID = m_KeyClips[i].JointID;
+            state.JointID = mKeyClips[i].JointID;
             state.PositionState = InterpolatePosition(i, positionIndex[i], animationTime);
             state.RotationState = InterpolateRotation(i, positionIndex[i], animationTime);
             state.ScaleState = InterpolateScale(i, positionIndex[i], animationTime);
@@ -30,25 +30,25 @@ namespace Ethereal
 
     void Animation::Load(const AnimationDesc& desc) {
         Handle = desc.Handle;
-        m_KeyClips = desc.Clips;
-        m_FramesPersecond = desc.FramesPersecond;
-        m_Duration = desc.Duration;
-        m_Name = desc.Name;
+        mKeyClips = desc.Clips;
+        mFramesPersecond = desc.FramesPersecond;
+        mDuration = desc.Duration;
+        mName = desc.Name;
     }
 
     void Animation::Save(AnimationDesc& desc) {
         desc.Handle = Handle;
-        desc.Clips = m_KeyClips;
-        desc.FramesPersecond = m_FramesPersecond;
-        desc.Duration = m_Duration;
-        desc.Name = m_Name;
+        desc.Clips = mKeyClips;
+        desc.FramesPersecond = mFramesPersecond;
+        desc.Duration = mDuration;
+        desc.Name = mName;
     }
 
 
     std::vector<int> Animation::GetPositionIndex(TimeStamp animationTime) {
         std::vector<int> res;
         res.clear();
-        for (auto& joint : m_KeyClips) {
+        for (auto& joint : mKeyClips) {
             int ind = -1;
             for (int index = 0; index < joint.PositionStates.size() - 1 && ind == -1; ++index) {
                 if (animationTime < joint.PositionStates[index + 1].TimeStamp) ind = index;
@@ -61,7 +61,7 @@ namespace Ethereal
     std::vector<int> Animation::GetRotationIndex(TimeStamp animationTime) {
         std::vector<int> res;
         res.clear();
-        for (auto& joint : m_KeyClips) {
+        for (auto& joint : mKeyClips) {
             int ind = -1;
             for (int index = 0; index < joint.RotationStates.size() - 1 && ind == -1; ++index) {
                 if (animationTime < joint.RotationStates[index + 1].TimeStamp) ind = index;
@@ -74,7 +74,7 @@ namespace Ethereal
     std::vector<int> Animation::GetScaleIndex(TimeStamp animationTime) {
         std::vector<int> res;
         res.clear();
-        for (auto& joint : m_KeyClips) {
+        for (auto& joint : mKeyClips) {
             int ind = -1;
             for (int index = 0; index < joint.ScaleStates.size() - 1 && ind == -1; ++index) {
                 if (animationTime < joint.ScaleStates[index + 1].TimeStamp) ind = index;
@@ -93,7 +93,7 @@ namespace Ethereal
     }
 
     AnimPositionState Animation::InterpolatePosition(int jointIndex, int keyIndex, TimeStamp animationTime) {
-        auto& keyClip = m_KeyClips[jointIndex];
+        auto& keyClip = mKeyClips[jointIndex];
         AnimPositionState res;
         res.TimeStamp = animationTime;
         if (1 == keyClip.PositionStates.size()) {
@@ -112,7 +112,7 @@ namespace Ethereal
     }
 
     AnimRotationState Animation::InterpolateRotation(int jointIndex, int keyIndex, TimeStamp animationTime) {
-        auto& joint = m_KeyClips[jointIndex];
+        auto& joint = mKeyClips[jointIndex];
 
         AnimRotationState res;
         res.TimeStamp = animationTime;
@@ -134,7 +134,7 @@ namespace Ethereal
     }
 
     AnimScaleState Animation::InterpolateScale(int jointIndex, int keyIndex, TimeStamp animationTime) {
-        auto& joint = m_KeyClips[jointIndex];
+        auto& joint = mKeyClips[jointIndex];
 
         AnimScaleState res;
         res.TimeStamp = animationTime;

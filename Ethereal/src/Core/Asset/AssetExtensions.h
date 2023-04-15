@@ -7,7 +7,7 @@
 
 namespace Ethereal {
 
-inline static std::unordered_map<std::string, AssetType> s_AssetExtensionMap = {{".EScene", AssetType::Scene},
+inline static std::unordered_map<std::string, AssetType> sAssetExtensionMap = {{".EScene", AssetType::Scene},
                                                                                 {".ESMesh", AssetType::StaticMesh},
                                                                                 {".EMesh", AssetType::Mesh},
                                                                                 {".EMaterial", AssetType::Material},

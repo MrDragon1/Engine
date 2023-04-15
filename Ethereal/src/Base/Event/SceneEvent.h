@@ -4,110 +4,92 @@
 #include "Core/Scene/Scene.h"
 #include "Core/Editor/SelectionManager.h"
 
-namespace Ethereal{
-    class SceneEvent : public Event
-    {
-      public:
-        const Ref<Scene>& GetScene() const { return m_Scene; }
-        Ref<Scene> GetScene() { return m_Scene; }
+namespace Ethereal {
+class SceneEvent : public Event {
+   public:
+    const Ref<Scene>& GetScene() const { return mScene; }
+    Ref<Scene> GetScene() { return mScene; }
 
-        EVENT_CLASS_CATEGORY(EventCategoryApplication | EventCategoryScene)
-      protected:
-        SceneEvent(const Ref<Scene>& scene)
-            : m_Scene(scene) {}
+    EVENT_CLASS_CATEGORY(EventCategoryApplication | EventCategoryScene)
+   protected:
+    SceneEvent(const Ref<Scene>& scene) : mScene(scene) {}
 
-        Ref<Scene> m_Scene;
-    };
+    Ref<Scene> mScene;
+};
 
-    class ScenePreStartEvent : public SceneEvent
-    {
-      public:
-        ScenePreStartEvent(const Ref<Scene>& scene)
-            : SceneEvent(scene) {}
+class ScenePreStartEvent : public SceneEvent {
+   public:
+    ScenePreStartEvent(const Ref<Scene>& scene) : SceneEvent(scene) {}
 
-        std::string ToString() const override
-        {
-            std::stringstream ss;
-            ss << "ScenePreStartEvent: " << m_Scene->GetName();
-            return ss.str();
-        }
+    std::string ToString() const override {
+        std::stringstream ss;
+        ss << "ScenePreStartEvent: " << mScene->GetName();
+        return ss.str();
+    }
 
-        EVENT_CLASS_TYPE(ScenePreStart)
-    };
+    EVENT_CLASS_TYPE(ScenePreStart)
+};
 
-    class ScenePostStartEvent : public SceneEvent
-    {
-      public:
-        ScenePostStartEvent(const Ref<Scene>& scene)
-            : SceneEvent(scene) {}
+class ScenePostStartEvent : public SceneEvent {
+   public:
+    ScenePostStartEvent(const Ref<Scene>& scene) : SceneEvent(scene) {}
 
-        std::string ToString() const override
-        {
-            std::stringstream ss;
-            ss << "ScenePostStartEvent: " << m_Scene->GetName();
-            return ss.str();
-        }
+    std::string ToString() const override {
+        std::stringstream ss;
+        ss << "ScenePostStartEvent: " << mScene->GetName();
+        return ss.str();
+    }
 
-        EVENT_CLASS_TYPE(ScenePostStart)
-    };
+    EVENT_CLASS_TYPE(ScenePostStart)
+};
 
-    class ScenePreStopEvent : public SceneEvent
-    {
-      public:
-        ScenePreStopEvent(const Ref<Scene>& scene)
-            : SceneEvent(scene) {}
+class ScenePreStopEvent : public SceneEvent {
+   public:
+    ScenePreStopEvent(const Ref<Scene>& scene) : SceneEvent(scene) {}
 
-        std::string ToString() const override
-        {
-            std::stringstream ss;
-            ss << "ScenePreStopEvent: " << m_Scene->GetName();
-            return ss.str();
-        }
+    std::string ToString() const override {
+        std::stringstream ss;
+        ss << "ScenePreStopEvent: " << mScene->GetName();
+        return ss.str();
+    }
 
-        EVENT_CLASS_TYPE(ScenePreStop)
-    };
+    EVENT_CLASS_TYPE(ScenePreStop)
+};
 
-    class ScenePostStopEvent : public SceneEvent
-    {
-      public:
-        ScenePostStopEvent(const Ref<Scene>& scene)
-            : SceneEvent(scene) {}
+class ScenePostStopEvent : public SceneEvent {
+   public:
+    ScenePostStopEvent(const Ref<Scene>& scene) : SceneEvent(scene) {}
 
-        std::string ToString() const override
-        {
-            std::stringstream ss;
-            ss << "ScenePostStopEvent: " << m_Scene->GetName();
-            return ss.str();
-        }
+    std::string ToString() const override {
+        std::stringstream ss;
+        ss << "ScenePostStopEvent: " << mScene->GetName();
+        return ss.str();
+    }
 
-        EVENT_CLASS_TYPE(ScenePostStop)
-    };
+    EVENT_CLASS_TYPE(ScenePostStop)
+};
 
-    // TODO(Peter): Probably move this somewhere else...
-    class SelectionChangedEvent : public Event
-    {
-      public:
-        SelectionChangedEvent(SelectionContext contextID, UUID selectionID, bool selected)
-            : m_Context(contextID), m_SelectionID(selectionID), m_Selected(selected)
-        {
-        }
+// TODO(Peter): Probably move this somewhere else...
+class SelectionChangedEvent : public Event {
+   public:
+    SelectionChangedEvent(SelectionContext contextID, UUID selectionID, bool selected)
+        : mContext(contextID), mSelectionID(selectionID), mSelected(selected) {}
 
-        SelectionContext GetContextID() const { return m_Context; }
-        UUID GetSelectionID() const { return m_SelectionID; }
-        bool IsSelected() const { return m_Selected; }
+    SelectionContext GetContextID() const { return mContext; }
+    UUID GetSelectionID() const { return mSelectionID; }
+    bool IsSelected() const { return mSelected; }
 
-        std::string ToString() const override
-        {
-            std::stringstream ss;
-            ss << "EntitySelectionChangedEvent: Context(" << (int32_t)m_Context << "), Selection(" << m_SelectionID << "), " << m_Selected;
-            return ss.str();
-        }
+    std::string ToString() const override {
+        std::stringstream ss;
+        ss << "EntitySelectionChangedEvent: Context(" << (int32_t)mContext << "), Selection(" << mSelectionID << "), " << mSelected;
+        return ss.str();
+    }
 
-        EVENT_CLASS_CATEGORY(EventCategoryScene)
-        EVENT_CLASS_TYPE(SelectionChanged)
-      private:
-        SelectionContext m_Context;
-        UUID m_SelectionID;
-        bool m_Selected;
-    };
-}
+    EVENT_CLASS_CATEGORY(EventCategoryScene)
+    EVENT_CLASS_TYPE(SelectionChanged)
+   private:
+    SelectionContext mContext;
+    UUID mSelectionID;
+    bool mSelected;
+};
+}  // namespace Ethereal

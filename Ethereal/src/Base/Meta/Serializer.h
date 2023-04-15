@@ -27,7 +27,7 @@ namespace Ethereal
                 instance = new T;
                 read(yaml_context["Context"], *instance);
             } else {
-                instance = static_cast<T*>(Reflection::TypeMeta::newFromNameAndYAML(type_name, yaml_context["Context"]).m_instance);
+                instance = static_cast<T*>(Reflection::TypeMeta::newFromNameAndYAML(type_name, yaml_context["Context"]).mInstance);
             }
             return instance;
         }

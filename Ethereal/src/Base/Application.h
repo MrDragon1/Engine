@@ -18,8 +18,8 @@ class Application {
 
     void PushLayer(Layer* layer);
     void PushOverlay(Layer* layer);
-    Window& GetWindow() { return *m_Window; }
-    ImGuiLayer* GetImGuiLayer() { return m_ImGuiLayer; }
+    Window& GetWindow() { return *mWindow; }
+    ImGuiLayer* GetImGuiLayer() { return mImGuiLayer; }
 
     /// Creates & Dispatches an event either immediately, or adds it to an event queue which will be proccessed at the end of each frame
     template <typename TEvent, bool DispatchImmediately = true, typename... TEventArgs>
@@ -34,7 +34,7 @@ class Application {
         }
     }
 
-    static Application& Get() { return *s_Instance; }
+    static Application& Get() { return *sInstance; }
     void Close();
 
    private:
@@ -42,15 +42,15 @@ class Application {
     bool OnWindowResize(WindowResizeEvent& e);
 
    private:
-    std::unique_ptr<Window> m_Window;
-    bool m_Running = true;
-    bool m_Minimized = false;
-    ImGuiLayer* m_ImGuiLayer;
-    LayerStack m_LayerStack;
-    float m_LastFrameTime = 0.0f;
+    std::unique_ptr<Window> mWindow;
+    bool mRunning = true;
+    bool mMinimized = false;
+    ImGuiLayer* mImGuiLayer;
+    LayerStack mLayerStack;
+    float mLastFrameTime = 0.0f;
 
    private:
-    static Application* s_Instance;
+    static Application* sInstance;
 };
 
 // To be defined in CLIENT

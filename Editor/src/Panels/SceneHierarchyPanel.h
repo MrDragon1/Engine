@@ -11,13 +11,13 @@ class SceneHierarchyPanel : public EditorPanel {
     SceneHierarchyPanel() = default;
     SceneHierarchyPanel(const Ref<Scene>& scene, SelectionContext selectionContext);
 
-    static SelectionContext GetActiveSelectionContext() { return s_ActiveSelectionContext; }
+    static SelectionContext GetActiveSelectionContext() { return sActiveSelectionContext; }
 
     void OnImGuiRender(bool& isOpen) override;
     void OnEvent(Event& event) override;
 
     void SetSceneContext(const Ref<Scene>& scene) override;
-    Ref<Scene> GetSceneContext() const { return m_Context; }
+    Ref<Scene> GetSceneContext() const { return mContext; }
 
    private:
     void ShowInspector();
@@ -28,9 +28,9 @@ class SceneHierarchyPanel : public EditorPanel {
     void DrawComponent(const std::string& name, UIFunction uiFunction, Ref<Texture> icon = nullptr);
 
    private:
-    Ref<Scene> m_Context;
-    SelectionContext m_SelectionContext;
+    Ref<Scene> mContext;
+    SelectionContext mSelectionContext;
 
-    static SelectionContext s_ActiveSelectionContext;
+    static SelectionContext sActiveSelectionContext;
 };
 }  // namespace Ethereal

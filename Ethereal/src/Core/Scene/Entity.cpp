@@ -4,7 +4,7 @@
 
 namespace Ethereal
 {
-    Entity::Entity(entt::entity handle, Scene* Scene) : m_Entity(handle), m_Scene(Scene) {}
+    Entity::Entity(entt::entity handle, Scene* Scene) : mEntity(handle), mScene(Scene) {}
 
     bool Entity::Load(const EntityRaw& raw) {
         for(auto component: raw.Components) {

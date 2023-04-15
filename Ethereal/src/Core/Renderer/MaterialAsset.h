@@ -68,23 +68,23 @@ class MaterialAsset : public Asset {
     virtual AssetType GetAssetType() const override { return GetStaticType(); }
 
     bool IsTransparent() const { return b_Transparent; }
-    std::string GetName() const { return m_Name; }
+    std::string GetName() const { return mName; }
 
    private:
     void SetDefaults();
 
    private:
-    Ref<Texture> m_AlbedoMap;
-    Ref<Texture> m_NormalMap;
-    Ref<Texture> m_MetallicMap;
-    Ref<Texture> m_RoughnessMap;
-    Ref<Texture> m_OcclusionMap;
+    Ref<Texture> mAlbedoMap;
+    Ref<Texture> mNormalMap;
+    Ref<Texture> mMetallicMap;
+    Ref<Texture> mRoughnessMap;
+    Ref<Texture> mOcclusionMap;
 
-    Vector3 m_Albedo = Vector3(1.0f);
-    float m_Metallic = 0.0f;
-    float m_Roughness = 1.0f;
-    float m_Emisstion = 0.0f;
-    float m_Transparency = 0.0f;
+    Vector3 mAlbedo = Vector3(1.0f);
+    float mMetallic = 0.0f;
+    float mRoughness = 1.0f;
+    float mEmisstion = 0.0f;
+    float mTransparency = 0.0f;
 
     // TODO : Fix this
     bool b_Albedo = false;
@@ -95,7 +95,7 @@ class MaterialAsset : public Asset {
 
     bool b_Transparent = false;
 
-    std::string m_Name;
+    std::string mName;
 };
 
 class MaterialTable : public RefCounted {
@@ -106,25 +106,25 @@ class MaterialTable : public RefCounted {
 
     bool HasMaterial(uint32_t materialIndex) const {
         ET_CORE_ASSERT(materialIndex < GetMaterialCount(), "Material Index Out of Range!");
-        return m_Materials[materialIndex] != nullptr;
+        return mMaterials[materialIndex] != nullptr;
     }
     void SetMaterial(uint32_t index, Ref<MaterialAsset> material);
     void ClearMaterial(uint32_t index);
 
     Ref<MaterialAsset> GetMaterial(uint32_t materialIndex) const {
         ET_CORE_ASSERT(HasMaterial(materialIndex));
-        return m_Materials[materialIndex];
+        return mMaterials[materialIndex];
     }
-    std::vector<Ref<MaterialAsset>>& GetMaterials() { return m_Materials; }
-    const std::vector<Ref<MaterialAsset>>& GetMaterials() const { return m_Materials; }
+    std::vector<Ref<MaterialAsset>>& GetMaterials() { return mMaterials; }
+    const std::vector<Ref<MaterialAsset>>& GetMaterials() const { return mMaterials; }
 
-    uint32_t GetMaterialCount() const { return m_Materials.size(); }
-    void SetMaterialCount(uint32_t materialCount) { m_Materials.resize(materialCount); }
+    uint32_t GetMaterialCount() const { return mMaterials.size(); }
+    void SetMaterialCount(uint32_t materialCount) { mMaterials.resize(materialCount); }
 
     void Clear();
 
    private:
-    std::vector<Ref<MaterialAsset>> m_Materials;
+    std::vector<Ref<MaterialAsset>> mMaterials;
 };
 
 }  // namespace Ethereal

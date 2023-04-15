@@ -8,11 +8,11 @@ namespace Ethereal
       public:
         Camera() = default;
         virtual ~Camera() = default;
-        Camera(const Matrix4& projection) : m_Projection(projection) {}
+        Camera(const Matrix4& projection) : mProjection(projection) {}
 
-        const Matrix4& GetProjection() const { return m_Projection; }
+        const Matrix4& GetProjection() const { return mProjection; }
 
       protected:
-        Matrix4 m_Projection = Matrix4::IDENTITY;
+        Matrix4 mProjection = Matrix4::IDENTITY;
     };
 }  // namespace Ethereal

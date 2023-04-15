@@ -9,9 +9,9 @@ namespace Ethereal
         UUID();
         UUID(uint64_t uuid);
         UUID(const UUID&) = default;
-        operator uint64_t() const { return m_UUID; };
+        operator uint64_t() const { return mUUID; };
 
-        uint64_t m_UUID;
+        uint64_t mUUID;
     };
 
 }  // namespace Ethereal

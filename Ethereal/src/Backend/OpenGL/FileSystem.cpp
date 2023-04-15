@@ -15,32 +15,32 @@
 
 namespace Ethereal {
 
-FileSystem::FileSystemChangedCallbackFn FileSystem::s_Callback;
+FileSystem::FileSystemChangedCallbackFn FileSystem::sCallback;
 
-static bool s_Watching = false;
-static bool s_IgnoreNextChange = false;
-static HANDLE s_WatcherThread;
+static bool sWatching = false;
+static bool sIgnoreNextChange = false;
+static HANDLE sWatcherThread;
 
-void FileSystem::SetChangeCallback(const FileSystemChangedCallbackFn& callback) { s_Callback = callback; }
+void FileSystem::SetChangeCallback(const FileSystemChangedCallbackFn& callback) { sCallback = callback; }
 
 void FileSystem::StartWatching() {
-    s_Watching = true;
+    sWatching = true;
     DWORD threadId;
-    s_WatcherThread = CreateThread(NULL, 0, Watch, 0, 0, &threadId);
-    ET_CORE_ASSERT(s_WatcherThread != NULL);
-    SetThreadDescription(s_WatcherThread, L"Hazel FileSystemWatcher");
+    sWatcherThread = CreateThread(NULL, 0, Watch, 0, 0, &threadId);
+    ET_CORE_ASSERT(sWatcherThread != NULL);
+    SetThreadDescription(sWatcherThread, L"Hazel FileSystemWatcher");
 }
 
 void FileSystem::StopWatching() {
-    if (!s_Watching) return;
+    if (!sWatching) return;
 
-    s_Watching = false;
-    // DWORD result = WaitForSingleObject(s_WatcherThread, 5000);
+    sWatching = false;
+    // DWORD result = WaitForSingleObject(sWatcherThread, 5000);
     // if (result == WAIT_TIMEOUT)
     //  NOTE(Yan): this is a little annoying, but it's a quick and dirty
     //             way to shutdown the file watching ASAP.
-    TerminateThread(s_WatcherThread, 0);
-    CloseHandle(s_WatcherThread);
+    TerminateThread(sWatcherThread, 0);
+    CloseHandle(sWatcherThread);
 }
 
 std::filesystem::path FileSystem::OpenFileDialog(const char* filter) {
@@ -117,7 +117,7 @@ std::filesystem::path FileSystem::SaveFileDialog(const char* filter) {
     return std::filesystem::path();
 }
 
-void FileSystem::SkipNextFileSystemChange() { s_IgnoreNextChange = true; }
+void FileSystem::SkipNextFileSystemChange() { sIgnoreNextChange = true; }
 
 unsigned long FileSystem::Watch(void* param) {
     auto assetDirectory = Project::GetActive()->GetAssetDirectory();
@@ -144,15 +144,15 @@ unsigned long FileSystem::Watch(void* param) {
     std::vector<FileSystemChangedEvent> eventBatch;
     eventBatch.reserve(10);
 
-    while (s_Watching && result) {
+    while (sWatching && result) {
         result = ReadDirectoryChangesW(directoryHandle, &buf, sizeof(buf), TRUE,
                                        FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_DIR_NAME | FILE_NOTIFY_CHANGE_SIZE, &bytesReturned,
                                        &pollingOverlap, NULL);
 
         WaitForSingleObject(pollingOverlap.hEvent, INFINITE);
 
-        if (s_IgnoreNextChange) {
-            s_IgnoreNextChange = false;
+        if (sIgnoreNextChange) {
+            sIgnoreNextChange = false;
             eventBatch.clear();
             continue;
         }
@@ -207,7 +207,7 @@ unsigned long FileSystem::Watch(void* param) {
         } while (pNotify->NextEntryOffset);
 
         if (eventBatch.size() > 0) {
-            s_Callback(eventBatch);
+            sCallback(eventBatch);
             eventBatch.clear();
         }
     }

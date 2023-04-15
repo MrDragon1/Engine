@@ -7,17 +7,17 @@ namespace Ethereal
     //    {
     //    public:
     //        TimeStamp(float time = 0.0f)
-    //            : m_Time(time)
+    //            : mTime(time)
     //        {
     //        }
     //
-    //        operator float() const { return m_Time; }
-    //        TimeStamp operator+(float ts) const { return m_Time + ts; }
+    //        operator float() const { return mTime; }
+    //        TimeStamp operator+(float ts) const { return mTime + ts; }
     //
-    //        float GetSeconds() const { return m_Time; }
-    //        float GetMilliseconds() const { return m_Time * 1000.0f; }
+    //        float GetSeconds() const { return mTime; }
+    //        float GetMilliseconds() const { return mTime * 1000.0f; }
     //
     //    private:
-    //        float m_Time;
+    //        float mTime;
     //    };
 }  // namespace Ethereal

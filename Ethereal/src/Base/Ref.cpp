@@ -6,28 +6,28 @@
 namespace Ethereal
 {
 
-    static std::unordered_set<void*> s_LiveReferences;
-    static std::mutex s_LiveReferenceMutex;
+    static std::unordered_set<void*> sLiveReferences;
+    static std::mutex sLiveReferenceMutex;
 
     namespace RefUtils
     {
 
         void AddToLiveReferences(void* instance) {
-            std::scoped_lock<std::mutex> lock(s_LiveReferenceMutex);
+            std::scoped_lock<std::mutex> lock(sLiveReferenceMutex);
             ET_CORE_ASSERT(instance);
-            s_LiveReferences.insert(instance);
+            sLiveReferences.insert(instance);
         }
 
         void RemoveFromLiveReferences(void* instance) {
-            std::scoped_lock<std::mutex> lock(s_LiveReferenceMutex);
+            std::scoped_lock<std::mutex> lock(sLiveReferenceMutex);
             ET_CORE_ASSERT(instance);
-            ET_CORE_ASSERT(s_LiveReferences.find(instance) != s_LiveReferences.end());
-            s_LiveReferences.erase(instance);
+            ET_CORE_ASSERT(sLiveReferences.find(instance) != sLiveReferences.end());
+            sLiveReferences.erase(instance);
         }
 
         bool IsLive(void* instance) {
             ET_CORE_ASSERT(instance);
-            return s_LiveReferences.find(instance) != s_LiveReferences.end();
+            return sLiveReferences.find(instance) != sLiveReferences.end();
         }
     }  // namespace RefUtils
 

@@ -35,7 +35,7 @@ namespace Ethereal {
         Ref<TPanel> AddPanel(PanelCategory category, const PanelData& panelData) {
             static_assert(std::is_base_of<EditorPanel, TPanel>::value, "PanelManager::AddPanel only support TPanel derived from EditorPanel");
 
-            auto& panels = m_Panels[(size_t)category];
+            auto& panels = mPanels[(size_t)category];
 
             auto id = Math::Hash::GenerateFNVHash(panelData.ID);
             if(panels.find(id) != panels.end()) {
@@ -57,11 +57,11 @@ namespace Ethereal {
         {
             return AddPanel<TPanel>(category, PanelData{ strID, displayName, Ref<TPanel>::Create(std::forward<TArgs>(args)...), isOpenByDefault });
         }
-        std::unordered_map<uint32_t, PanelData>& GetPanels(PanelCategory category) { return m_Panels[(size_t)category]; }
-        const std::unordered_map<uint32_t, PanelData>& GetPanels(PanelCategory category) const { return m_Panels[(size_t)category]; }
+        std::unordered_map<uint32_t, PanelData>& GetPanels(PanelCategory category) { return mPanels[(size_t)category]; }
+        const std::unordered_map<uint32_t, PanelData>& GetPanels(PanelCategory category) const { return mPanels[(size_t)category]; }
 
       private:
-        std::array<std::unordered_map<uint32_t, PanelData>, (size_t)PanelCategory::COUNT> m_Panels;
+        std::array<std::unordered_map<uint32_t, PanelData>, (size_t)PanelCategory::COUNT> mPanels;
     };
 }
 

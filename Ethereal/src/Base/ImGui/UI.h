@@ -10,10 +10,10 @@
 #include "pch.h"
 namespace Ethereal {
 namespace UI {
-static int s_UIContextID = 0;
-static uint32_t s_Counter = 0;
-static char s_IDBuffer[16] = "##";
-static char s_LabelIDBuffer[1024];
+static int sUIContextID = 0;
+static uint32_t sCounter = 0;
+static char sIDBuffer[16] = "##";
+static char sLabelIDBuffer[1024];
 
 class ScopedStyle {
    public:
@@ -62,17 +62,17 @@ class ScopedColorStack {
     ScopedColorStack& operator=(const ScopedColorStack&) = delete;
 
     template <typename ColorType, typename... OtherColors>
-    ScopedColorStack(ImGuiCol firstColorID, ColorType firstColor, OtherColors&&... otherColorPairs) : m_Count((sizeof...(otherColorPairs) / 2) + 1) {
+    ScopedColorStack(ImGuiCol firstColorID, ColorType firstColor, OtherColors&&... otherColorPairs) : mCount((sizeof...(otherColorPairs) / 2) + 1) {
         static_assert((sizeof...(otherColorPairs) & 1u) == 0,
                       "ScopedColorStack constructor expects a list of pairs of Color IDs and Colors as its arguments");
 
         PushColor(firstColorID, firstColor, std::forward<OtherColors>(otherColorPairs)...);
     }
 
-    ~ScopedColorStack() { ImGui::PopStyleColor(m_Count); }
+    ~ScopedColorStack() { ImGui::PopStyleColor(mCount); }
 
    private:
-    int m_Count;
+    int mCount;
 
     template <typename ColorType, typename... OtherColors>
     static void PushColor(ImGuiCol ColorID, ColorType Color, OtherColors&&... otherColorPairs) {
@@ -92,17 +92,17 @@ class ScopedStyleStack {
 
     template <typename ValueType, typename... OtherStylePairs>
     ScopedStyleStack(ImGuiStyleVar firstStyleVar, ValueType firstValue, OtherStylePairs&&... otherStylePairs)
-        : m_Count((sizeof...(otherStylePairs) / 2) + 1) {
+        : mCount((sizeof...(otherStylePairs) / 2) + 1) {
         static_assert((sizeof...(otherStylePairs) & 1u) == 0,
                       "ScopedStyleStack constructor expects a list of pairs of Color IDs and Colors as its arguments");
 
         PushStyle(firstStyleVar, firstValue, std::forward<OtherStylePairs>(otherStylePairs)...);
     }
 
-    ~ScopedStyleStack() { ImGui::PopStyleVar(m_Count); }
+    ~ScopedStyleStack() { ImGui::PopStyleVar(mCount); }
 
    private:
-    int m_Count;
+    int mCount;
 
     template <typename ValueType, typename... OtherStylePairs>
     static void PushStyle(ImGuiStyleVar styleVar, ValueType value, OtherStylePairs&&... otherStylePairs) {
@@ -126,23 +126,23 @@ static void ShiftCursor(float x, float y) {
 }
 
 static void PushID() {
-    ImGui::PushID(s_UIContextID++);
-    s_Counter = 0;
+    ImGui::PushID(sUIContextID++);
+    sCounter = 0;
 }
 
 static void PopID() {
     ImGui::PopID();
-    s_UIContextID--;
+    sUIContextID--;
 }
 
 static const char* GenerateLabelID(std::string_view label) {
-    *fmt::format_to_n(s_LabelIDBuffer, std::size(s_LabelIDBuffer), "{}##{}", label, s_Counter++).out = 0;
-    return s_LabelIDBuffer;
+    *fmt::format_to_n(sLabelIDBuffer, std::size(sLabelIDBuffer), "{}##{}", label, sCounter++).out = 0;
+    return sLabelIDBuffer;
 }
 
 static const char* GenerateID() {
-    _itoa_s(s_Counter++, s_IDBuffer + 2, 16, 10);
-    return s_IDBuffer;
+    _itoa_s(sCounter++, sIDBuffer + 2, 16, 10);
+    return sIDBuffer;
 }
 
 static void BeginPropertyGrid(uint32_t columns = 2) {

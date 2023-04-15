@@ -5,7 +5,7 @@
 #include <GLFW/glfw3.h>
 
 namespace Ethereal {
-Input* Input::s_Instance = new GLInput();
+Input* Input::sInstance = new GLInput();
 
 bool GLInput::IsKeyPressedImpl(KeyCode keycode) {
     auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());

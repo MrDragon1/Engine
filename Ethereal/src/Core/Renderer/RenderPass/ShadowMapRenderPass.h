@@ -11,15 +11,15 @@ class ShadowMapRenderPass : public RenderPass {
 
     void OnResize(uint32_t width, uint32_t height) override;
     void SetLightPosition(const Vector3& pos) {
-        m_LightPos = pos;
+        mLightPos = pos;
         CalculateViewProjectionMatrix();
     }
 
    private:
-    Matrix4 m_ViewProjectionMatrix;
+    Matrix4 mViewProjectionMatrix;
 
-    Vector3 m_LightPos;
-    const int m_ShadowMapSize = 1024;
+    Vector3 mLightPos;
+    const int mShadowMapSize = 1024;
 
     RenderPassParams mParams = {};
     PipelineState mPipelineState;

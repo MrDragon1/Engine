@@ -39,31 +39,31 @@ class EditorLayer : public Layer {
     void ShowProjectSettingWindow(bool* p_open);
 
    private:
-    EditorCamera m_EditorCamera;
+    EditorCamera mEditorCamera;
 
-    Scope<PanelManager> m_PanelManager;
+    Scope<PanelManager> mPanelManager;
 
-    Ref<Texture> m_IconPlay;
-    Ref<Texture> m_IconStop;
+    Ref<Texture> mIconPlay;
+    Ref<Texture> mIconStop;
 
-    Ref<Scene> m_RuntimeScene, m_EditorScene, m_CurrentScene;
+    Ref<Scene> mRuntimeScene, mEditorScene, mCurrentScene;
 
-    std::filesystem::path m_EditorScenePath;
+    std::filesystem::path mEditorScenePath;
 
-    Entity m_HoveredEntity;
+    Entity mHoveredEntity;
 
-    Vector2 m_ViewportBounds[2];
+    Vector2 mViewportBounds[2];
 
-    bool m_ViewportFocused = false, m_ViewportHovered = false;
+    bool mViewportFocused = false, mViewportHovered = false;
 
-    int m_GizmoType = -1;
+    int mGizmoType = -1;
 
     enum class SceneState { Edit = 0, Play = 1 };
 
-    SceneState m_SceneState = SceneState::Edit;
+    SceneState mSceneState = SceneState::Edit;
     bool b_ShowDemoImGui = false;
     bool b_ShowSkyboxSettings = false;
     bool b_ShowProjectSettings = true;
-    Vector3 m_LightPos = Vector3(-20, 40, -10);  // as far as possiable (away from the scene to avoid clamp shadow)
+    Vector3 mLightPos = Vector3(-20, 40, -10);  // as far as possiable (away from the scene to avoid clamp shadow)
 };
 }  // namespace Ethereal

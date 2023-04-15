@@ -70,7 +70,7 @@ namespace Ethereal
 
     void ImGuiLayer::OnEvent(Event& e) {
         // Assign e.Handled to block this event
-//        if (m_BlockEvents) {
+//        if (mBlockEvents) {
 //            ImGuiIO& io = ImGui::GetIO();
 //            e.Handled |= e.IsInCategory(EventCategoryMouse) & io.WantCaptureMouse;
 //            e.Handled |= e.IsInCategory(EventCategoryKeyboard) & io.WantCaptureKeyboard;

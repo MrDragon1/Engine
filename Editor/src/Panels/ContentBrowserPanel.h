@@ -11,11 +11,11 @@ class ContentBrowserPanel : public EditorPanel {
     void OnImGuiRender(bool& isOpen) override;
     void OnEvent(Event& event) override;
 
-    void SetSceneContext(const Ref<Scene>& context) override { m_SceneContext = context; }
+    void SetSceneContext(const Ref<Scene>& context) override { mSceneContext = context; }
 
    private:
-    std::filesystem::path m_CurrentDirectory;
-    std::filesystem::path m_SelectedDirectory;
-    Ref<Scene> m_SceneContext;
+    std::filesystem::path mCurrentDirectory;
+    std::filesystem::path mSelectedDirectory;
+    Ref<Scene> mSceneContext;
 };
 }  // namespace Ethereal

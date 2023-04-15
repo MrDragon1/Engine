@@ -51,11 +51,11 @@ static void CopyComponentIfExists(Entity dst, Entity src) {
 Ref<Scene> Scene::Copy(Ref<Scene> other) {
     Ref<Scene> newScene = Ref<Scene>::Create();
 
-    newScene->m_ViewportWidth = other->m_ViewportWidth;
-    newScene->m_ViewportHeight = other->m_ViewportHeight;
+    newScene->mViewportWidth = other->mViewportWidth;
+    newScene->mViewportHeight = other->mViewportHeight;
 
-    auto& srcSceneRegistry = other->m_Registry;
-    auto& dstSceneRegistry = newScene->m_Registry;
+    auto& srcSceneRegistry = other->mRegistry;
+    auto& dstSceneRegistry = newScene->mRegistry;
     std::unordered_map<UUID, entt::entity> enttMap;
 
     // Create entities in new scene
@@ -79,7 +79,7 @@ Ref<Scene> Scene::Copy(Ref<Scene> other) {
 Entity Scene::CreateEntity(const std::string& name) { return CreateEntityWithUUID(UUID(), name); }
 
 Entity Scene::CreateEntityWithUUID(UUID uuid, const std::string& name) {
-    Entity entity = {m_Registry.create(), this};
+    Entity entity = {mRegistry.create(), this};
     entity.AddComponent<IDComponent>(uuid);
     entity.AddComponent<TransformComponent>();
     auto& tag = entity.AddComponent<BasicPropertyComponent>();
@@ -148,10 +148,10 @@ void Scene::OnUpdateRuntime(TimeStamp ts) {
     {
         const int32_t velocityIterations = 6;
         const int32_t positionIterations = 2;
-        m_PhysicsWorld->Step(ts, velocityIterations, positionIterations);
+        mPhysicsWorld->Step(ts, velocityIterations, positionIterations);
 
         // Retrieve transform from Box2D
-        auto view = m_Registry.view<Rigidbody2DComponent>();
+        auto view = mRegistry.view<Rigidbody2DComponent>();
         for (auto e : view) {
             Entity entity = {e, this};
             auto& transform = entity.GetComponent<TransformComponent>();
@@ -169,7 +169,7 @@ void Scene::OnUpdateRuntime(TimeStamp ts) {
     Matrix4 cameraTransform = Matrix4::IDENTITY;
     Vector3 cameraPosition = Vector3(1.0f);
     {
-        auto view = m_Registry.view<TransformComponent, CameraComponent>();
+        auto view = mRegistry.view<TransformComponent, CameraComponent>();
         for (auto entity : view) {
             const auto [transform, camera] = view.get<TransformComponent, CameraComponent>(entity);
             if (camera.Camera.Primary) {
@@ -187,19 +187,19 @@ void Scene::OnUpdateRuntime(TimeStamp ts) {
         //            renderSceneData.ViewMatrix = Math::Inverse(cameraTransform);
         //            renderSceneData.ProjectionMatrix = mainCamera->GetProjection();
         //            renderSceneData.CameraPosition = cameraPosition;
-        //            if (!m_Environment) m_Environment = GlobalContext::GetRenderSystem().GetDefaultEnvironment();
-        //            renderSceneData.Environment = m_Environment;
+        //            if (!m_Environment) mEnvironment = GlobalContext::GetRenderSystem().GetDefaultEnvironment();
+        //            renderSceneData.Environment = mEnvironment;
         //            SubmitRenderScene(renderSceneData);
     }
 }
 
 void Scene::OnUpdateEditor(TimeStamp ts) {
-    if (!m_Environment) m_Environment = GlobalContext::GetRenderSystem().GetDefaultEnvironment();
+    if (!mEnvironment) mEnvironment = GlobalContext::GetRenderSystem().GetDefaultEnvironment();
     SceneParam& sp = Project::GetConfigManager().sUniformManagerConfig.SceneParam;
-    sp.Environment = m_Environment;
+    sp.Environment = mEnvironment;
 
     // TODO: Should update animation OnUpdateRuntime
-    auto view = m_Registry.view<MeshComponent>();
+    auto view = mRegistry.view<MeshComponent>();
     for (auto& entity : view) {
         const auto meshComponent = view.get<MeshComponent>(entity);
         if (!AssetManager::IsAssetHandleValid(meshComponent.MeshHandle)) continue;
@@ -213,7 +213,7 @@ void Scene::OnUpdateEditor(TimeStamp ts) {
 void Scene::SubmitRenderScene() {
     GlobalContext::GetRenderSystem().SubmitRenderSceneData();
 
-    auto staticMeshView = m_Registry.view<TransformComponent, StaticMeshComponent>();
+    auto staticMeshView = mRegistry.view<TransformComponent, StaticMeshComponent>();
     for (auto entity : staticMeshView) {
         const auto [transformComponent, staticMeshComponent] = staticMeshView.get<TransformComponent, StaticMeshComponent>(entity);
         auto staticMesh = AssetManager::GetAsset<StaticMesh>(staticMeshComponent.StaticMeshHandle);
@@ -224,7 +224,7 @@ void Scene::SubmitRenderScene() {
         }
     }
 
-    auto meshView = m_Registry.view<TransformComponent, MeshComponent>();
+    auto meshView = mRegistry.view<TransformComponent, MeshComponent>();
     for (auto entity : meshView) {
         const auto [transformComponent, meshComponent] = meshView.get<TransformComponent, MeshComponent>(entity);
         auto mesh = AssetManager::GetAsset<StaticMesh>(meshComponent.MeshHandle);
@@ -241,7 +241,7 @@ void Scene::SubmitRenderScene() {
     GlobalContext::GetUniformManager()->UpdateLight();
 }
 
-void Scene::DestroyEntity(Entity entity) { m_Registry.destroy(entity); }
+void Scene::DestroyEntity(Entity entity) { mRegistry.destroy(entity); }
 
 void Scene::DuplicateEntity(Entity entity) {
     std::string name = entity.GetName();
@@ -254,15 +254,15 @@ void Scene::DuplicateEntity(Entity entity) {
 }
 
 void Scene::OnRuntimeStart() {
-    m_PhysicsWorld = new b2World({0.0f, -9.8f});
-    m_Registry.view<Rigidbody2DComponent, TransformComponent>().each([&](const auto e, auto& rb2d, auto& tranform) {
+    mPhysicsWorld = new b2World({0.0f, -9.8f});
+    mRegistry.view<Rigidbody2DComponent, TransformComponent>().each([&](const auto e, auto& rb2d, auto& tranform) {
         Entity entity{e, this};
         b2BodyDef bodyDef;
         bodyDef.type = Rigidbody2DTypeToBox2DBody(rb2d.Type);
         bodyDef.position.Set(tranform.Position.x, tranform.Position.y);
         bodyDef.angle = tranform.Rotation.z;
 
-        b2Body* body = m_PhysicsWorld->CreateBody(&bodyDef);
+        b2Body* body = mPhysicsWorld->CreateBody(&bodyDef);
         body->SetFixedRotation(rb2d.FixedRotation);
         rb2d.Body = body;
 
@@ -284,16 +284,16 @@ void Scene::OnRuntimeStart() {
 }
 
 void Scene::OnRuntimeStop() {
-    delete m_PhysicsWorld;
-    m_PhysicsWorld = nullptr;
+    delete mPhysicsWorld;
+    mPhysicsWorld = nullptr;
 }
 
 void Scene::OnViewportResize(uint32_t width, uint32_t height) {
-    m_ViewportWidth = width;
-    m_ViewportHeight = height;
+    mViewportWidth = width;
+    mViewportHeight = height;
 
     // Resize our non-FixedAspectRatio cameras
-    auto view = m_Registry.view<CameraComponent>();
+    auto view = mRegistry.view<CameraComponent>();
     for (auto entity : view) {
         auto& cameraComponent = view.get<CameraComponent>(entity);
         if (!cameraComponent.Camera.FixedAspectRatio) cameraComponent.SceneCamera.SetViewportSize(width, height);
@@ -301,7 +301,7 @@ void Scene::OnViewportResize(uint32_t width, uint32_t height) {
 }
 
 Entity Scene::GetPrimaryCameraEntity() {
-    auto view = m_Registry.view<CameraComponent>();
+    auto view = mRegistry.view<CameraComponent>();
     for (auto entity : view) {
         const auto& camera = view.get<CameraComponent>(entity);
         if (camera.Camera.Primary) return Entity{entity, this};
@@ -311,17 +311,17 @@ Entity Scene::GetPrimaryCameraEntity() {
 
 void Scene::Load(const std::filesystem::path& url) {
     ET_CORE_INFO("Loading scene from {0}", url.string());
-    m_ScenePath = url;
+    mScenePath = url;
     SceneRaw data;
     const bool IsLoadSuccess = AssetManager::LoadAsset_Ref(url, data);
     if (!IsLoadSuccess) {
         ET_CORE_ERROR("Failed to load scene: {0}", url.string());
         return;
     }
-    m_SceneName = data.Name;
-    m_Environment = AssetManager::GetAsset<Environment>(data.Environment);
+    mSceneName = data.Name;
+    mEnvironment = AssetManager::GetAsset<Environment>(data.Environment);
     for (const EntityRaw entityraw : data.Entities) {
-        Entity entity = {m_Registry.create(), this};
+        Entity entity = {mRegistry.create(), this};
         bool is_loaded = entity.Load(entityraw);
         if (!is_loaded) {
             ET_CORE_ERROR("loading object " + entityraw.Name + " failed");
@@ -331,17 +331,17 @@ void Scene::Load(const std::filesystem::path& url) {
 
 void Scene::Save() {
     SceneRaw data;
-    data.Name = m_SceneName;
-    data.Entities.reserve(m_Registry.size());
-    data.Environment = m_Environment->Handle;
-    auto view = m_Registry.view<IDComponent>();
+    data.Name = mSceneName;
+    data.Entities.reserve(mRegistry.size());
+    data.Environment = mEnvironment->Handle;
+    auto view = mRegistry.view<IDComponent>();
     for (auto entity : view) {
         Entity e = {entity, this};
         EntityRaw entityRaw;
         e.Save(entityRaw);
         data.Entities.push_back(entityRaw);
     }
-    AssetManager::SaveAsset_Ref(m_ScenePath, data);
+    AssetManager::SaveAsset_Ref(mScenePath, data);
 }
 
 Entity Scene::CreateEntityWithStaticMesh(AssetHandle assetHandle) {
@@ -385,7 +385,7 @@ Entity Scene::CreateEntityWithMesh(AssetHandle assetHandle) {
 }
 
 Entity Scene::GetEntityWithUUID(UUID uuid) {
-    auto view = m_Registry.view<IDComponent>();
+    auto view = mRegistry.view<IDComponent>();
     for (auto entity : view) {
         const auto& id = view.get<IDComponent>(entity);
         if (id.ID == uuid) return Entity{entity, this};
@@ -407,7 +407,7 @@ template <>
 void Scene::OnComponentAdded<MeshComponent>(Entity entity, MeshComponent& component) {}
 template <>
 void Scene::OnComponentAdded<CameraComponent>(Entity entity, CameraComponent& component) {
-    component.SceneCamera.SetViewportSize(m_ViewportWidth, m_ViewportHeight);
+    component.SceneCamera.SetViewportSize(mViewportWidth, mViewportHeight);
 }
 template <>
 void Scene::OnComponentAdded<BasicPropertyComponent>(Entity entity, BasicPropertyComponent& component) {}

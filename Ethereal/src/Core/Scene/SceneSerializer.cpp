@@ -33,6 +33,6 @@ static Rigidbody2DComponent::BodyType RigidBody2DBodyTypeFromString(const std::s
     return Rigidbody2DComponent::BodyType::Static;
 }
 
-SceneSerializer::SceneSerializer(const Ref<Scene>& scene) : m_Scene(scene) {}
+SceneSerializer::SceneSerializer(const Ref<Scene>& scene) : mScene(scene) {}
 
 }  // namespace Ethereal

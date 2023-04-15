@@ -13,28 +13,28 @@ namespace Ethereal
 
     AssetMetaData& AssetRegistry::operator[](const AssetHandle handle) {
         ASSET_LOG("Retrieving handle {}", handle);
-        return m_AssetRegistry[handle];
+        return mAssetRegistry[handle];
     }
 
     const AssetMetaData& AssetRegistry::Get(const AssetHandle handle) const {
-        ET_CORE_ASSERT(m_AssetRegistry.find(handle) != m_AssetRegistry.end());
+        ET_CORE_ASSERT(mAssetRegistry.find(handle) != mAssetRegistry.end());
         ASSET_LOG("Retrieving const handle {}", handle);
-        return m_AssetRegistry.at(handle);
+        return mAssetRegistry.at(handle);
     }
 
     bool AssetRegistry::Contains(const AssetHandle handle) const {
         ASSET_LOG("Contains handle {}", handle);
-        return m_AssetRegistry.find(handle) != m_AssetRegistry.end();
+        return mAssetRegistry.find(handle) != mAssetRegistry.end();
     }
 
     size_t AssetRegistry::Remove(const AssetHandle handle) {
         ASSET_LOG("Removing handle", handle);
-        return m_AssetRegistry.erase(handle);
+        return mAssetRegistry.erase(handle);
     }
 
     void AssetRegistry::Clear() {
         ASSET_LOG("Clearing registry");
-        m_AssetRegistry.clear();
+        mAssetRegistry.clear();
     }
 
 }  // namespace Ethereal

@@ -25,7 +25,7 @@ class CSMRenderPass : public RenderPass {
     PipelineState mPipelineState;
     RenderTargetHandle mRenderTarget;
 
-    std::vector<float> m_Distance;
+    std::vector<float> mDistance;
 };
 
 }  // namespace Ethereal
