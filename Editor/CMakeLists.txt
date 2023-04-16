@@ -23,6 +23,7 @@ add_compile_definitions("ENGINE_ROOT_DIR=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
 target_link_libraries(EtherealEditor PRIVATE EtherealRuntime)
 
 target_include_directories(EtherealEditor PRIVATE
+        "${EngineRuntimeDir}/vendor"
         "${EngineRuntimeDir}/src"
         "${EngineRuntimeDir}"
         )

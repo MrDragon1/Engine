@@ -1,3 +1,4 @@
 add_subdirectory(stb_image)
 add_subdirectory(shader_compile)
+add_subdirectory(imgui_node_editor)
 RUNTIME_ADD_SOURCE()

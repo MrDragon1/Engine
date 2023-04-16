@@ -17,6 +17,7 @@
 #include "Panels/DebugPanel.h"
 #include "Panels/MaterialEditPanel.h"
 #include "Panels/SceneHierarchyPanel.h"
+#include "Panels//MaterialGraphPanel.h"
 #include "Utils/PlatformUtils.h"
 
 namespace Ethereal {
@@ -24,6 +25,7 @@ namespace Ethereal {
 #define CONTENT_BROWSER_PANEL_ID "ContentBrowserPanel"
 #define MATERIALS_PANEL_ID "MaterialEditPanel"
 #define DEBUG_PANEL_ID "DebugPanel"
+#define MATERIAL_GRAPH_PANEL_ID "MaterialGraphPanel"
 
 EditorLayer::EditorLayer() : Layer("EditorLayer") {}
 
@@ -36,6 +38,7 @@ void EditorLayer::OnAttach() {
     mPanelManager->AddPanel<ContentBrowserPanel>(PanelCategory::View, CONTENT_BROWSER_PANEL_ID, "Content Browser", true);
     mPanelManager->AddPanel<MaterialEditPanel>(PanelCategory::View, MATERIALS_PANEL_ID, "Material", true);
     mPanelManager->AddPanel<DebugPanel>(PanelCategory::View, DEBUG_PANEL_ID, "Debug", true);
+    mPanelManager->AddPanel<MaterialGraphPanel>(PanelCategory::View, MATERIAL_GRAPH_PANEL_ID, "Material Graph", true);
 
     mIconPlay = EditorResource::PlayIcon;
     mIconStop = EditorResource::StopIcon;

@@ -21,7 +21,8 @@ add_library(EtherealRuntime STATIC ${RuntimeSourceFiles})
 
 target_include_directories(EtherealRuntime
         PRIVATE "${EngineRootDir}"
-        PRIVATE "${EngineRuntimeDir}/src" ) # make sure we can directly include "pch.h")
+        PRIVATE "${EngineRuntimeDir}/src" # make sure we can directly include "pch.h"
+        PRIVATE "${EngineRuntimeDir}/vendor" ) 
 
 target_compile_definitions(EtherealRuntime
         PUBLIC ET_ENABLE_ASSERTS
