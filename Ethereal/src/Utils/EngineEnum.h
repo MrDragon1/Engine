@@ -15,4 +15,23 @@ enum class ETHEREAL_BASIC_3DOBJECT : uint8_t {
     ETHEREAL_BASIC_3DOBJECT_QUAD,
     ETHEREAL_BASIC_3DOBJECT_MONKEY
 };
+
+enum class MaterialPinType : uint32_t {
+    Unknown = BIT(0),
+    Bool = BIT(1),
+    Float = BIT(2),
+    RGB = BIT(3),
+    BSDF = BIT(4),
+    Texture = BIT(5),
+};
+enum class PinKind : uint8_t {
+    Input,
+    Output,
+};
+
+enum class NodeType : uint8_t {
+    BluePrint,
+    Comment,
+};
+
 }  // namespace Ethereal

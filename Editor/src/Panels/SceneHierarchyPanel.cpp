@@ -262,7 +262,7 @@ void SceneHierarchyPanel::ShowHierarchy() {
         ImGui::EndTable();
     }
 
-    if (ImGui::BeginPopupContextWindow("HierarchyPopup", ImGuiMouseButton_Right, false)) {
+    if (ImGui::BeginPopupContextWindow("HierarchyPopup", ImGuiMouseButton_Right)) {
         DrawEntityCreateMenu();
         ImGui::EndPopup();
     }

@@ -1,6 +1,6 @@
 #pragma once
 #include "Core/Editor/EditorPanel.h"
-
+#include "Core/Material/MaterialGraph.h"
 namespace Ethereal {
 class MaterialGraphPanel : public EditorPanel {
    public:
@@ -9,9 +9,10 @@ class MaterialGraphPanel : public EditorPanel {
 
     void OnImGuiRender(bool& isOpen) override;
     void OnEvent(Event& event) override;
+    void SetGraph(Ref<MaterialGraph> graph) { mGraph = graph; }
 
    private:
-   private:
+    Ref<MaterialGraph> mGraph;
 };
 
 }  // namespace Ethereal

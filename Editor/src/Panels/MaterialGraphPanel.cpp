@@ -5,20 +5,8 @@
 #include <imgui_internal.h>
 
 namespace ed = ax::NodeEditor;
-// Struct to hold basic information about connection between
-// pins. Note that connection (aka. link) has its own ID.
-// This is useful later with dealing with selections, deletion
-// or other operations.
-struct LinkInfo {
-    ed::LinkId Id;
-    ed::PinId InputId;
-    ed::PinId OutputId;
-};
-
 static ed::EditorContext* g_Context = nullptr;  // Editor context, required to trace a editor state.
 static bool g_FirstFrame = true;                // Flag set for first frame only, some action need to be executed once.
-static ImVector<LinkInfo> g_Links;              // List of live links. It is dynamic unless you want to create read-only view over nodes.
-static int g_NextLinkId = 100;  // Counter to help generate link ids. In real application this will probably based on pointer to user data structure.
 
 namespace Ethereal {
 void ImGuiEx_BeginColumn() { ImGui::BeginGroup(); }
@@ -32,16 +20,23 @@ void ImGuiEx_NextColumn() {
 void ImGuiEx_EndColumn() { ImGui::EndGroup(); }
 
 MaterialGraphPanel::MaterialGraphPanel() {
-    ed::Config config;
-    config.SettingsFile = "BasicInteraction.json";
-    g_Context = ed::CreateEditor(&config);
+    g_Context = ed::CreateEditor();
+
+    mGraph = Ref<MaterialGraph>::Create();
+    mGraph->SetName("Test Material");
+
+    mGraph->AddNode(TextureNode(GenerateNodeID(), "Texture 1"));
+
+    mGraph->AddNode(TextureNode(GenerateNodeID(), "Texture 2"));
+
+    mGraph->AddLink(GenerateLinkID(), mGraph->GetNode("Texture 1").Outputs[0].ID, mGraph->GetNode("Texture 2").Inputs[0].ID);
 }
 
 MaterialGraphPanel::~MaterialGraphPanel() { ed::DestroyEditor(g_Context); }
 
 void MaterialGraphPanel::OnImGuiRender(bool& isOpen) {
     ImGui::SetNextWindowSize(ImVec2(200.0f, 300.0f), ImGuiCond_Appearing);
-    ImGui::Begin("Content", nullptr);
+    ImGui::Begin("Material Graph Editor", nullptr);
 
     auto& io = ImGui::GetIO();
 
@@ -52,56 +47,37 @@ void MaterialGraphPanel::OnImGuiRender(bool& isOpen) {
     ed::SetCurrentEditor(g_Context);
 
     // Start interaction with editor.
-    ed::Begin("My Editor", ImVec2(0.0, 0.0f));
+    ed::Begin(mGraph->GetName().c_str(), ImVec2(0.0, 0.0f));
 
     int uniqueId = 1;
 
     //
     // 1) Commit known data to editor
     //
-
-    // Submit Node A
-    ed::NodeId nodeA_Id = uniqueId++;
-    ed::PinId nodeA_InputPinId = uniqueId++;
-    ed::PinId nodeA_OutputPinId = uniqueId++;
-
-    if (g_FirstFrame) ed::SetNodePosition(nodeA_Id, ImVec2(10, 10));
-    ed::BeginNode(nodeA_Id);
-    ImGui::Text("Node A");
-    ed::BeginPin(nodeA_InputPinId, ed::PinKind::Input);
-    ImGui::Text("-> In");
-    ed::EndPin();
-    ImGui::SameLine();
-    ed::BeginPin(nodeA_OutputPinId, ed::PinKind::Output);
-    ImGui::Text("Out ->");
-    ed::EndPin();
-    ed::EndNode();
-
-    // Submit Node B
-    ed::NodeId nodeB_Id = uniqueId++;
-    ed::PinId nodeB_InputPinId1 = uniqueId++;
-    ed::PinId nodeB_InputPinId2 = uniqueId++;
-    ed::PinId nodeB_OutputPinId = uniqueId++;
-
-    if (g_FirstFrame) ed::SetNodePosition(nodeB_Id, ImVec2(210, 60));
-    ed::BeginNode(nodeB_Id);
-    ImGui::Text("Node B");
-    ImGuiEx_BeginColumn();
-    ed::BeginPin(nodeB_InputPinId1, ed::PinKind::Input);
-    ImGui::Text("-> In1");
-    ed::EndPin();
-    ed::BeginPin(nodeB_InputPinId2, ed::PinKind::Input);
-    ImGui::Text("-> In2");
-    ed::EndPin();
-    ImGuiEx_NextColumn();
-    ed::BeginPin(nodeB_OutputPinId, ed::PinKind::Output);
-    ImGui::Text("Out ->");
-    ed::EndPin();
-    ImGuiEx_EndColumn();
-    ed::EndNode();
+    for (auto& [ID, node] : mGraph->GetNodes()) {
+        if (g_FirstFrame) ed::SetNodePosition(ID, ImVec2(10 * ID, 10 * ID));
+        ed::BeginNode(ID);
+        ImGui::Text(node.Name.c_str());
+        auto pos = ImGui::GetCursorPos();
+        for (auto& pin : node.Inputs) {
+            ed::BeginPin(pin.ID, ed::PinKind::Input);
+            ImGui::Text(pin.Name.c_str());
+            ed::EndPin();
+        }
+        ImGui::SetCursorPos(pos);
+        ImGui::SameLine();
+        for (auto& pin : node.Outputs) {
+            ed::BeginPin(pin.ID, ed::PinKind::Output);
+            ImGui::Text(pin.Name.c_str());
+            ed::EndPin();
+        }
+        ed::EndNode();
+    }
 
     // Submit Links
-    for (auto& linkInfo : g_Links) ed::Link(linkInfo.Id, linkInfo.InputId, linkInfo.OutputId);
+    for (auto& [ID, link] : mGraph->GetLinks()) {
+        ed::Link(link.ID, link.InputID, link.OutputID);
+    }
 
     //
     // 2) Handle interactions
@@ -128,10 +104,10 @@ void MaterialGraphPanel::OnImGuiRender(bool& isOpen) {
                 // ed::AcceptNewItem() return true when user release mouse button.
                 if (ed::AcceptNewItem()) {
                     // Since we accepted new link, lets add one to our list of links.
-                    g_Links.push_back({ed::LinkId(g_NextLinkId++), inputPinId, outputPinId});
-
+                    auto linkID = GenerateLinkID();
+                    mGraph->AddLink(linkID, (PinID)inputPinId, (PinID)outputPinId);
                     // Draw new link.
-                    ed::Link(g_Links.back().Id, g_Links.back().InputId, g_Links.back().OutputId);
+                    ed::Link(linkID, inputPinId, outputPinId);
                 }
 
                 // You may choose to reject connection between these nodes
@@ -150,12 +126,7 @@ void MaterialGraphPanel::OnImGuiRender(bool& isOpen) {
             // If you agree that link can be deleted, accept deletion.
             if (ed::AcceptDeletedItem()) {
                 // Then remove link from your data.
-                for (auto& link : g_Links) {
-                    if (link.Id == deletedLinkId) {
-                        g_Links.erase(&link);
-                        break;
-                    }
-                }
+                mGraph->RemoveLink((LinkID)deletedLinkId);
             }
 
             // You may reject link deletion by calling:
