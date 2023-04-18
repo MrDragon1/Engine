@@ -32,6 +32,7 @@ class MaterialNode {
 
     MaterialNode& SetID(NodeID id);
     MaterialNode& SetName(std::string_view name);
+    MaterialNode& SetType(NodeType type);
     MaterialNode& Input(PinID id, std::string_view name, MaterialPinType type, MaterialPinType accept);
     MaterialNode& Output(PinID id, std::string_view name, MaterialPinType type);
 
@@ -43,6 +44,11 @@ class MaterialNode {
     std::vector<MaterialPin> Inputs;
     std::vector<MaterialPin> Outputs;
     NodeType Type;
+
+    Vector3 Color;
+    Vector2 Size;
+    std::string State;
+    std::string SavedState;
 };
 
 class MaterialLink {

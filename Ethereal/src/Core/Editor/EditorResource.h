@@ -30,6 +30,11 @@ class EditorResource {
     inline static Ref<Texture> AnimatorIcon = nullptr;
     inline static Ref<Texture> SkeletonIcon = nullptr;
 
+    // Material Graph Editor
+    inline static Ref<Texture> MaterialGraphHeaderBG = nullptr;
+    inline static Ref<Texture> BlueprintSaveIcon = nullptr;
+    inline static Ref<Texture> BlueprintRestoreIcon = nullptr;
+
     static void Init() {
         PlayIcon = LoadTexture("play.png");
         StopIcon = LoadTexture("stop.png");
@@ -57,6 +62,11 @@ class EditorResource {
         AnimationIcon = LoadTexture("ContentBrowser/animation.png");
         AnimatorIcon = LoadTexture("ContentBrowser/animator.png");
         SkeletonIcon = LoadTexture("ContentBrowser/skeleton.png");
+
+        // Material Graph Editor
+        MaterialGraphHeaderBG = LoadTexture("BlueprintBackground.png");
+        BlueprintSaveIcon = LoadTexture("BlueprintSave.png");
+        BlueprintRestoreIcon = LoadTexture("BlueprintRestore.png");
     }
 
     static void Shutdown() {
@@ -85,6 +95,11 @@ class EditorResource {
         AnimationIcon.Reset();
         AnimatorIcon.Reset();
         SkeletonIcon.Reset();
+
+        // Material Graph Editor
+        MaterialGraphHeaderBG.Reset();
+        BlueprintSaveIcon.Reset();
+        BlueprintRestoreIcon.Reset();
     }
 
    private:

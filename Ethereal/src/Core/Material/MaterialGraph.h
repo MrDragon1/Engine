@@ -16,12 +16,17 @@ class MaterialGraph : public Asset {
     void AddLink(LinkID id, PinID src, PinID dst);
     void RemoveLink(LinkID id);
 
-    const MaterialNode& GetNode(NodeID id) const { return mNodes.at(id); }
-    const MaterialNode& GetNode(std::string name) const { return mNodes.at(mNameNodeMap.at(name)); }
+    MaterialPin* GetPin(PinID id);
+    MaterialLink* GetLink(LinkID id);
+
+    bool IsPinLinked(PinID id);
+
+    MaterialNode& GetNode(NodeID id) { return mNodes.at(id); }
+    MaterialNode& GetNode(std::string name) { return mNodes.at(mNameNodeMap.at(name)); }
 
     std::string GetName() const { return mName; }
-    const std::unordered_map<NodeID, MaterialNode>& GetNodes() { return mNodes; }
-    const std::unordered_map<LinkID, MaterialLink>& GetLinks() { return mLinks; }
+    std::unordered_map<NodeID, MaterialNode>& GetNodes() { return mNodes; }
+    std::unordered_map<LinkID, MaterialLink>& GetLinks() { return mLinks; }
 
    private:
     std::string mName;

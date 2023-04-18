@@ -23,6 +23,8 @@ enum class MaterialPinType : uint32_t {
     RGB = BIT(3),
     BSDF = BIT(4),
     Texture = BIT(5),
+    String = BIT(6),
+    Flow = BIT(7),
 };
 enum class PinKind : uint8_t {
     Input,
@@ -30,7 +32,8 @@ enum class PinKind : uint8_t {
 };
 
 enum class NodeType : uint8_t {
-    BluePrint,
+    Blueprint,
+    Simple,
     Comment,
 };
 

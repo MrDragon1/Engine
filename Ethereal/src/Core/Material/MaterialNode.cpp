@@ -10,6 +10,11 @@ MaterialNode& MaterialNode::SetName(std::string_view name) {
     return *this;
 }
 
+MaterialNode& MaterialNode::SetType(NodeType type) {
+    Type = type;
+    return *this;
+}
+
 MaterialNode& MaterialNode::Input(PinID id, std::string_view name, MaterialPinType type, MaterialPinType accept) {
     MaterialPin pin{id, name, type, accept == MaterialPinType::Unknown ? type : accept, PinKind::Input};
     Inputs.emplace_back(pin);

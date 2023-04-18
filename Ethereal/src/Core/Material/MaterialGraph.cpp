@@ -29,4 +29,31 @@ void MaterialGraph::AddLink(LinkID id, PinID src, PinID dst) {
 
 void MaterialGraph::RemoveLink(LinkID id) { mLinks.erase(id); }
 
+MaterialPin* MaterialGraph::GetPin(PinID id) {
+    for (auto& [nodeid, node] : mNodes) {
+        for (auto& pin : node.Inputs)
+            if (pin.ID == id) return &pin;
+
+        for (auto& pin : node.Outputs)
+            if (pin.ID == id) return &pin;
+    }
+    ET_CORE_ASSERT(false, "Pin with {0} does not exist!", id);
+    return nullptr;
+}
+
+MaterialLink* MaterialGraph::GetLink(LinkID id) {
+    for (auto& [linkid, link] : mLinks)
+        if (link.ID == id) return &link;
+
+    ET_CORE_ASSERT(false, "Link with {0} does not exist!", id);
+    return nullptr;
+}
+
+bool MaterialGraph::IsPinLinked(PinID id) {
+    for (auto& link : mLinks) {
+        if (link.second.InputID == id || link.second.OutputID == id) return true;
+    }
+    return false;
+}
+
 }  // namespace Ethereal

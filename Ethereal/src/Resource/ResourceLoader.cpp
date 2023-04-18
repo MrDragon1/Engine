@@ -104,6 +104,9 @@ Ref<Texture> ResourceLoader::LoadTexture(const std::string& path, bool flip) {
             } else if (channels == 3) {
                 textureFormat = TextureFormat::R8G8B8_UNORM;
                 dataFormat = PixelDataFormat::RGB;
+            } else if (channels == 2) {
+                textureFormat = TextureFormat::R32G32_FLOAT;
+                dataFormat = PixelDataFormat::RG;
             } else if (channels == 1) {
                 textureFormat = TextureFormat::R8;
                 dataFormat = PixelDataFormat::R;

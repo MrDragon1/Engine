@@ -17,6 +17,9 @@ Assets:
   - Handle: 554127229296508018
     FilePath: buildin\Editor\cube.png
     Type: Texture
+  - Handle: 612894494114519021
+    FilePath: buildin\Editor\BlueprintSave.png
+    Type: Texture
   - Handle: 751545592448281237
     FilePath: meshes\vampire\Vampire_MAT.EMaterial
     Type: Material
@@ -259,6 +262,9 @@ Assets:
     Type: Scene
   - Handle: 7714422435788874728
     FilePath: textures\humanskin\human-skin1_preview.jpg
+    Type: Texture
+  - Handle: 7824529714757959614
+    FilePath: buildin\Editor\BlueprintBackground.png
     Type: Texture
   - Handle: 7855740297512081586
     FilePath: meshes\default\monkey.ESMesh
@@ -521,6 +527,9 @@ Assets:
   - Handle: 16976040922641325788
     FilePath: meshes\source\Capsule.gltf
     Type: MeshSource
+  - Handle: 17005318057338468382
+    FilePath: buildin\Editor\BlueprintRestore.png
+    Type: Texture
   - Handle: 17064887943886814018
     FilePath: meshes\vampire\dancing_vampire.EAnimation
     Type: Animation
