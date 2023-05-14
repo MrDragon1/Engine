@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<materialx version="1.36">
+  <nodedef name="ND_surface" nodedef="surface">
+    <input name="in1" type="color3" value="1.0, 1.0, 1.0"/>
+    <input name="in2" type="float3" value="1.0, 1.0, 1.0"/>
+    <output name="out" type="surfaceshader" />
+  </nodedef>
+
+  <implementation name="IM_surface_surfaceshader_genglsl" nodedef="ND_surface" target="genglsl" 
+  file="asset/lib/glsl/surface.glsl" function="surface" />
+
+  <nodedef name="ND_standard_surface_surfaceshader_phong" nodedef="standard_surface" >
+    <input name="base_color" type="color3" value="1.0, 1.0, 1.0"/>
+    <input name="ambient" type="color3" value="1.0, 1.0, 1.0"/>
+    <input name="roughness" type="float" value="0.8" />
+    <input name="metalness" type="float" value="0.5" />
+    <output name="out" type="surfaceshader" />
+  </nodedef>
+
+  <implementation name="IM_standard_surface_surfaceshader_phong" nodedef="ND_standard_surface_surfaceshader_phong" implgraph="NG_standard_surface_surfaceshader_phong"/>
+
+  <nodegraph name="NG_standard_surface_surfaceshader_phong" nodedef="ND_standard_surface_surfaceshader_phong">
+    <multiply name="multiply_diffuse" type="color3"> 
+        <input name="in1" type="color3" connector="base_color"/>
+        <input name="in2" type="float" connector="roughness"/>
+    </multiply>
+
+    <multiply name="multiply_specular" type="color3"> 
+        <input name="in1" type="color3" connector="base_color"/>
+        <input name="in2" type="float" connector="metalness"/>
+    </multiply>
+    
+    <add name="add_diffuse" type="color3">
+        <input name="in1" type="color3" connector="multiply_diffuse" output="out"/>
+        <input name="in2" type="color3" connector="multiply_specular" output="out"/>
+    </add>
+
+    <add name="add_ambient" type="color3">
+        <input name="in1" type="color3" connector="add_diffuse" output="out"/>
+        <input name="in2" type="color3" connector="ambient"/>
+    </add>
+    
+    <surface name="shader_constructor" type="surfaceshader">
+        <input name="in1" type="color3" connector="add_ambient" output="out"/>
+        <input name="in2" type="float3" value="1.0, 1.0, 1.0"/>
+    </surface>
+
+    <output name="out" type="surfaceshader" connector="shader_constructor" output="out"/>
+  </nodegraph>
+
+</materialx>

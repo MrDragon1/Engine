@@ -46,12 +46,12 @@ find_package(yaml-cpp CONFIG REQUIRED) # x64-windows
 find_package(box2d CONFIG REQUIRED) # x64-windows (-static)
 #find_package(imgui CONFIG REQUIRED) # imgui[docking-experimental]:x64-windows
 #find_package(imguizmo CONFIG REQUIRED) # x64-windows
-
+find_package(pugixml CONFIG REQUIRED)
 find_path(STB_INCLUDE_DIRS "stb_c_lexer.h")
 
 target_include_directories(EtherealRuntime PUBLIC ${STB_INCLUDE_DIRS})
 target_link_libraries(EtherealRuntime PUBLIC glad::glad glm::glm glfw
         assimp::assimp EnTT::EnTT glfw
-        spdlog::spdlog spdlog::spdlog_header_only yaml-cpp
+        spdlog::spdlog spdlog::spdlog_header_only yaml-cpp pugixml::pugixml
         imgui-docking-layout box2d::box2d)
 

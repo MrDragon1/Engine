@@ -3,6 +3,8 @@
 namespace Ethereal {
 class TextureNode : public MaterialNode {
    public:
+    TextureNode() { new (this) TextureNode(GenerateNodeID(), "Texture Node"); }
+    TextureNode(std::string_view name) { new (this) TextureNode(GenerateNodeID(), name); }
     TextureNode(NodeID id, std::string_view name) {
         SetID(id)
             .SetName(name)

@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<materialx version="1.38" colorspace="lin_rec709">
+
+  <nodedef name="ND_fractal3d_vector3" nodedef="fractal3d" nodegroup="procedural3d">
+    <input name="amplitude" type="float3" value="1.0, 1.0, 1.0" />
+    <input name="octaves" type="integer" value="3" />
+    <input name="lacunarity" type="float" value="2.0" />
+    <input name="diminish" type="float" value="0.5" />
+    <input name="position" type="float3" value="0.0, 0.0, 0.0"/>
+    <output name="out" type="float" default="0.0, 0.0, 0.0" />
+  </nodedef>
+  <implementation name="IM_fractal3d_vector3_genglsl" nodedef="ND_fractal3d_vector3" file="asset/lib/glsl/mx_fractal3d_vector3.glsl" function="mx_fractal3d_vector3" target="genglsl" />
+  
+  <nodegraph name="NG_marble1">
+    <input name="base_color_1" type="color3" value="0.8, 0.8, 1.8" />
+    <input name="base_color_2" type="color3" value="0.1, 0.1, 3.1" />
+    <input name="noise_scale_1" type="float" value="6.8" />
+    <input name="noise_scale_2" type="float" value="4.0" />
+    <input name="noise_power" type="float" value="3.3" />
+    <input name="noise_octaves" type="integer" value="3" />
+
+    <dotproduct name="add_xyz" type="float">
+      <input name="in1" type="float3" value="1, 1, 1" />
+      <input name="in2" type="float3" value="1, 1, 1" />
+    </dotproduct>
+    <multiply name="scale_xyz" type="float">
+      <input name="in1" type="float" connector="add_xyz" output="out"/>
+      <input name="in2" type="float" connector="noise_scale_1" value="6.8" />
+    </multiply>
+    <multiply name="scale_pos" type="float3">
+      <input name="in1" type="float3" value="1, 1, 1"/>
+      <input name="in2" type="float" connector="noise_scale_2" />
+    </multiply>
+    <fractal3d name="noise" type="float">
+      <input name="octaves" type="integer" connector="noise_octaves" />
+      <input name="position" type="float3" connector="scale_pos" output="out"/>
+    </fractal3d>
+    <multiply name="scale_noise" type="float">
+      <input name="in1" type="float" connector="noise" output="out"/>
+      <input name="in2" type="float" value="3.0" />
+    </multiply>
+    <add name="sum" type="float">
+      <input name="in1" type="float" connector="scale_xyz" output="out"/>
+      <input name="in2" type="float" connector="scale_noise" output="out"/>
+    </add>
+    <sin name="sin" type="float">
+      <input name="in" type="float" connector="sum" output="out"/>
+    </sin>
+    <multiply name="scale" type="float">
+      <input name="in1" type="float" connector="sin" output="out"/>
+      <input name="in2" type="float" value="0.5" />
+    </multiply>
+    <add name="bias" type="float">
+      <input name="in1" type="float" connector="scale" output="out"/>
+      <input name="in2" type="float" value="0.5" />
+    </add>
+    <power name="power" type="float">
+      <input name="in1" type="float" connector="bias" output="out"/>
+      <input name="in2" type="float" connector="noise_power" value="3.3" />
+    </power>
+    <mix name="color_mix" type="color3">
+      <input name="bg" type="color3" connector="base_color_1" value="0.8, 0.8, 1.8" />
+      <input name="fg" type="color3" connector="base_color_2" value="0.1, 0.1, 3.1" />
+      <input name="mix" type="float" connector="power" output="out"/>
+    </mix>
+    <output name="out" type="color3" connector="color_mix" output="out"/>
+  </nodegraph>
+
+  <standard_surface name="SR_marble1" type="surfaceshader">
+    <input name="base_color" type="color3" connector="NG_marble1" output="out"/>
+    <input name="ambient" type="color3" value="1.0, 1.0, 1.0"/>
+    <input name="roughness" type="float" value="0.2" />
+  </standard_surface>
+  <surfacematerial name="Marble_3D" type="material">
+    <input name="surfaceshader" type="surfaceshader" connector="SR_marble1"  output="out"/>
+  </surfacematerial>
+</materialx>

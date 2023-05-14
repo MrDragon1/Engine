@@ -20,12 +20,12 @@
             ET_ERROR("Assertion Failed: {0}" __VA_ARGS__); \
         }                                                  \
     }
-#define ET_CORE_ASSERT(x, ...)                                  \
-    {                                                           \
-        if (!(x)) {                                             \
-            ET_CORE_ERROR("Assertion Failed: {0}" __VA_ARGS__); \
-            ET_DEBUGBREAK();                                    \
-        }                                                       \
+#define ET_CORE_ASSERT(x, ...)                                                                 \
+    {                                                                                          \
+        if (!(x)) {                                                                            \
+            ET_CORE_ERROR(std::format("Assertion Failed:{0}", std::format(" "##__VA_ARGS__))); \
+            ET_DEBUGBREAK();                                                                   \
+        }                                                                                      \
     }
 #else
 #define ET_ASSERT(x, ...)
