@@ -1,6 +1,7 @@
 #pragma once
 #include "Core/Editor/EditorPanel.h"
 #include "Core/Material/MaterialGraph.h"
+#include <stack>
 namespace ed = ax::NodeEditor;
 
 namespace Ethereal {
@@ -11,10 +12,13 @@ class MaterialGraphPanel : public EditorPanel {
 
     void OnImGuiRender(bool& isOpen) override;
     void OnEvent(Event& event) override;
-    void SetGraph(Ref<MaterialGraph> graph) { mGraph = graph; }
+    void SetGraph(MaterialGraphPtr graph);
+    void PopGraph();
 
    private:
-    Ref<MaterialGraph> mGraph;
+    DocumentPtr mDocument;
+    MaterialGraphPtr mCurrentGraph = nullptr;
+    std::stack<MaterialGraphPtr> mGraphStack;
 
    private:
     // Resource for blueprint
@@ -32,11 +36,11 @@ class MaterialGraphPanel : public EditorPanel {
     void TouchNode(NodeID id);
     float GetTouchProgress(NodeID id);
     void UpdateTouch();
-    bool Splitter(bool split_vertically, float thickness, float* size1, float* size2, float min_size1, float min_size2,
-                  float splitter_long_axis_size = -1.0f);
-    void DrawPinIcon(const MaterialPin& pin, bool connected, int alpha);
+    bool Splitter(bool split_vertically, float thickness, float* size1, float* size2,
+                  float min_size1, float min_size2, float splitter_long_axis_size = -1.0f);
+    void DrawPinIcon(MaterialPinPtr pin, bool connected, int alpha);
     ImColor GetIconColor(MaterialPinType type);
-    void ShowLeftPane(float paneWidth);
+    void ShowLeftPanel(float paneWidth);
 };
 
 }  // namespace Ethereal

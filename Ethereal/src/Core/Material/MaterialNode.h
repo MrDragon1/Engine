@@ -1,65 +1,82 @@
 #pragma once
 #include "Core/Editor/GraphEditor.h"
+#include "Core/Material/MaterialBase/Document.h"
 
 #include <imgui_node_editor/imgui_node_editor.h>
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include <imgui_internal.h>
 
 namespace Ethereal {
-static size_t gNextId = 1;  // should use common id generator, or it will cause conflicts
-static PinID GeneratePinID() { return gNextId++; }
-static NodeID GenerateNodeID() { return gNextId++; }
-static LinkID GenerateLinkID() { return gNextId++; }
+using MaterialGraphPtr = Ref<class MaterialGraph>;
 
-class MaterialNode;
+using MaterialPinPtr = Ref<class MaterialPin>;
+using MaterialNodePtr = Ref<class MaterialNode>;
+using MaterialLinkPtr = Ref<class MaterialLink>;
 
-class MaterialPin {
+class MaterialPin : public RefCounted {
    public:
-    PinID ID;
-    std::string Name;
-    MaterialPinType Type;
-    MaterialPinType AcceptType;
-    PinKind Kind;
-    MaterialNode* ParentNode;
+    PinID mID;
+    string mName;
+    MaterialPinType mType;
+    MaterialPinType mAcceptType;
+    PinKind mKind;
 
-    MaterialPin(PinID id, std::string_view name, MaterialPinType type, MaterialPinType acceptType, PinKind kind)
-        : ID(id), ParentNode(nullptr), Name(name), Type(type), AcceptType(acceptType), Kind(kind) {}
+    MaterialNodePtr mParent;
+    ElementPtr mSource;
+
+    MaterialPin(PinID id, ElementPtr source, MaterialNodePtr parent);
+
+   private:
+    void Initalize();
 };
-class MaterialNode {
+class MaterialNode : public RefCounted {
    public:
     MaterialNode() = default;
     ~MaterialNode() = default;
 
-    MaterialNode& SetID(NodeID id);
-    MaterialNode& SetName(std::string_view name);
-    MaterialNode& SetType(NodeType type);
-    MaterialNode& Input(PinID id, std::string_view name, MaterialPinType type, MaterialPinType accept);
-    MaterialNode& Output(PinID id, std::string_view name, MaterialPinType type);
+    MaterialNode(ElementPtr source, MaterialGraphPtr graph);
 
-    virtual void Render(){};
+    MaterialPinPtr AddInput(PinID id, ElementPtr source);
+    MaterialPinPtr AddOutput(PinID id, ElementPtr source);
+
+    unordered_map<string, MaterialPinPtr> GetInputs() { return mInputs; }
+    unordered_map<string, MaterialPinPtr> GetOutputs() { return mOutputs; }
+    MaterialPinPtr GetInput(const string& id) { return mInputs[id]; }
+    MaterialPinPtr GetOutput(const string& id) { return mOutputs[id]; }
+
+   private:
+    void Initalize();
 
    public:
-    NodeID ID;
-    std::string Name;
-    std::vector<MaterialPin> Inputs;
-    std::vector<MaterialPin> Outputs;
-    NodeType Type;
+    NodeID mID;
+    std::string mName;
+    unordered_map<string, MaterialPinPtr> mInputs;
+    unordered_map<string, MaterialPinPtr> mOutputs;
+    NodeType mType;
 
-    Vector3 Color;
-    Vector2 Size;
-    std::string State;
-    std::string SavedState;
+    ElementPtr mSource;
+    MaterialGraphPtr mGraph;
+
+    Vector3 mColor;
+    Vector2 mSize;
+    std::string mState;
+    std::string mSavedState;
 };
 
-class MaterialLink {
+class MaterialLink : public RefCounted {
    public:
     MaterialLink() = default;
     ~MaterialLink() = default;
-    LinkID ID;
+    LinkID mID;
 
-    PinID InputID;
-    PinID OutputID;
-    MaterialLink(LinkID id, PinID input, PinID output) : ID(id), InputID(input), OutputID(output) {}
+    PinID mInputID;
+    PinID mOutputID;
+
+    ElementPtr mSourceInput;
+    ElementPtr mSourceOutput;
+
+    MaterialLink(LinkID id, PinID input, PinID output)
+        : mID(id), mInputID(input), mOutputID(output) {}
 };
 
 }  // namespace Ethereal

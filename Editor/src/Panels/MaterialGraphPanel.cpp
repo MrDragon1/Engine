@@ -16,22 +16,13 @@ MaterialGraphPanel::MaterialGraphPanel() {
 
     ed::NavigateToContent();
 
-    mGraph = Ref<MaterialGraph>::Create();
-    mGraph->SetName("Test Material");
-
-    mGraph->AddNode(TextureNode(GenerateNodeID(), "Texture 1"));
-
-    mGraph->AddNode(TextureNode(GenerateNodeID(), "Texture 2"));
-
-    // mGraph->AddLink(GenerateLinkID(), mGraph->GetNode("Texture 1").Outputs[0].ID,
-    // mGraph->GetNode("Texture 2").Inputs[0].ID);
-
-    DocumentPtr doc = DocumentPtr::Create(nullptr, "doc1");
-    Xml::LoadDocument(doc, "assets/materials/material.mtlx");
-    Xml::LoadLibraries(doc);
-    doc->Validate();
-    auto ni = doc->GetChild("SR_marble1").As<NodeInstance>();
-    auto ng = doc->GetChildren(MaterialElementType::NODEGRAPH);
+    mDocument = DocumentPtr::Create(nullptr, "doc1");
+    Xml::LoadDocument(mDocument, "assets/materials/material.mtlx");
+    Xml::LoadLibraries(mDocument);
+    mDocument->Validate();
+    auto ni = mDocument->GetChild("SR_marble1").As<NodeInstance>();
+    auto ng = mDocument->GetChildren(MaterialElementType::NODEGRAPH);
+    SetGraph(mDocument->GenerateUIGraph());
 }
 
 MaterialGraphPanel::~MaterialGraphPanel() {
@@ -58,14 +49,14 @@ void MaterialGraphPanel::OnImGuiRender(bool& isOpen) {
     static ed::LinkId contextLinkId = 0;
     static ed::PinId contextPinId = 0;
     static bool createNewNode = false;
-    static MaterialPin* newNodeLinkPin = nullptr;
-    static MaterialPin* newLinkPin = nullptr;
+    static MaterialPinPtr newNodeLinkPin = nullptr;
+    static MaterialPinPtr newLinkPin = nullptr;
 
     static float leftPaneWidth = 400.0f;
     static float rightPaneWidth = 800.0f;
     Splitter(true, 4.0f, &leftPaneWidth, &rightPaneWidth, 50.0f, 50.0f);
 
-    ShowLeftPane(leftPaneWidth - 4.0f);
+    ShowLeftPanel(leftPaneWidth - 4.0f);
 
     ImGui::SameLine(0.0f, 12.0f);
     ed::Begin("Node editor");
@@ -75,36 +66,32 @@ void MaterialGraphPanel::OnImGuiRender(bool& isOpen) {
         auto bg = EditorResource::MaterialGraphHeaderBG;
         BlueprintNodeBuilder builder((ImTextureID)api->GetTextueID(bg), bg->width, bg->height);
 
-        for (auto& [id, node] : mGraph->GetNodes()) {
-            if (node.Type != NodeType::Blueprint && node.Type != NodeType::Simple) continue;
+        for (auto& [id, node] : mCurrentGraph->GetNodes()) {
+            if (node->mType != NodeType::Blueprint && node->mType != NodeType::Simple) continue;
 
-            const auto isSimple = node.Type == NodeType::Simple;
+            const auto isSimple = node->mType == NodeType::Simple;
 
-            builder.Begin(node.ID);
+            builder.Begin(node->mID);
             if (!isSimple) {
-                builder.Header(ImVec4(node.Color.x, node.Color.y, node.Color.z, 1.0));
+                builder.Header(ImVec4(node->mColor.x, node->mColor.y, node->mColor.z, 1.0));
                 ImGui::Spring(0);
-                ImGui::TextUnformatted(node.Name.c_str());
+                ImGui::TextUnformatted(node->mName.c_str());
                 ImGui::Spring(1);
                 ImGui::Dummy(ImVec2(0, 28));
                 ImGui::Spring(0);
                 builder.EndHeader();
             }
 
-            for (auto& input : node.Inputs) {
+            for (auto& [_, input] : node->mInputs) {
                 auto alpha = ImGui::GetStyle().Alpha;
-                if (newLinkPin && false && &input != newLinkPin) alpha = alpha * (48.0f / 255.0f);
+                if (newLinkPin && false && input != newLinkPin) alpha = alpha * (48.0f / 255.0f);
 
-                builder.Input(input.ID);
+                builder.Input(input->mID);
                 ImGui::PushStyleVar(ImGuiStyleVar_Alpha, alpha);
-                DrawPinIcon(input, mGraph->IsPinLinked(input.ID), (int)(alpha * 255));
+                DrawPinIcon(input, mCurrentGraph->IsPinLinked(input->mID), (int)(alpha * 255));
                 ImGui::Spring(0);
-                if (!input.Name.empty()) {
-                    ImGui::TextUnformatted(input.Name.c_str());
-                    ImGui::Spring(0);
-                }
-                if (input.Type == MaterialPinType::Bool) {
-                    ImGui::Button("Hello");
+                if (!input->mName.empty()) {
+                    ImGui::TextUnformatted(input->mName.c_str());
                     ImGui::Spring(0);
                 }
                 ImGui::PopStyleVar();
@@ -115,20 +102,20 @@ void MaterialGraphPanel::OnImGuiRender(bool& isOpen) {
                 builder.Middle();
 
                 ImGui::Spring(1, 0);
-                ImGui::TextUnformatted(node.Name.c_str());
+                ImGui::TextUnformatted(node->mName.c_str());
                 ImGui::Spring(1, 0);
             }
 
-            for (auto& output : node.Outputs) {
+            for (auto& [_, output] : node->mOutputs) {
                 if (!isSimple && false) continue;
 
                 auto alpha = ImGui::GetStyle().Alpha;
-                if (newLinkPin && !true && &output != newLinkPin) alpha = alpha * (48.0f / 255.0f);
+                if (newLinkPin && !true && output != newLinkPin) alpha = alpha * (48.0f / 255.0f);
 
                 ImGui::PushStyleVar(ImGuiStyleVar_Alpha, alpha);
-                builder.Output(output.ID);
+                builder.Output(output->mID);
 
-                if (output.Type == MaterialPinType::String) {
+                if (output->mType == MaterialPinType::String) {
                     static char buffer[128] = "Edit Me\nMultiline!";
                     static bool wasActive = false;
 
@@ -145,12 +132,12 @@ void MaterialGraphPanel::OnImGuiRender(bool& isOpen) {
                     ImGui::Spring(0);
                 }
 
-                if (!output.Name.empty()) {
+                if (!output->mName.empty()) {
                     ImGui::Spring(0);
-                    ImGui::TextUnformatted(output.Name.c_str());
+                    ImGui::TextUnformatted(output->mName.c_str());
                 }
                 ImGui::Spring(0);
-                DrawPinIcon(output, mGraph->IsPinLinked(output.ID), (int)(alpha * 255));
+                DrawPinIcon(output, mCurrentGraph->IsPinLinked(output->mID), (int)(alpha * 255));
 
                 ImGui::PopStyleVar();
                 builder.EndOutput();
@@ -159,7 +146,8 @@ void MaterialGraphPanel::OnImGuiRender(bool& isOpen) {
             builder.End();
         }
 
-        for (auto& [id, link] : mGraph->GetLinks()) ed::Link(link.ID, link.InputID, link.OutputID);
+        for (auto& [id, link] : mCurrentGraph->GetLinks())
+            ed::Link(link->mID, link->mInputID, link->mOutputID);
 
         if (!createNewNode) {
             if (ed::BeginCreate(ImColor(255, 255, 255), 2.0f)) {
@@ -182,12 +170,12 @@ void MaterialGraphPanel::OnImGuiRender(bool& isOpen) {
 
                 ed::PinId startPinId = 0, endPinId = 0;
                 if (ed::QueryNewLink(&startPinId, &endPinId)) {
-                    auto startPin = mGraph->GetPin((PinID)startPinId);
-                    auto endPin = mGraph->GetPin((PinID)endPinId);
+                    auto startPin = mCurrentGraph->GetPin((PinID)startPinId);
+                    auto endPin = mCurrentGraph->GetPin((PinID)endPinId);
 
                     newLinkPin = startPin ? startPin : endPin;
 
-                    if (startPin->Kind == PinKind::Input) {
+                    if (startPin->mKind == PinKind::Input) {
                         std::swap(startPin, endPin);
                         std::swap(startPinId, endPinId);
                     }
@@ -195,7 +183,7 @@ void MaterialGraphPanel::OnImGuiRender(bool& isOpen) {
                     if (startPin && endPin) {
                         if (endPin == startPin) {
                             ed::RejectNewItem(ImColor(255, 0, 0), 2.0f);
-                        } else if (endPin->Kind == startPin->Kind) {
+                        } else if (endPin->mKind == startPin->mKind) {
                             showLabel("x Incompatible Pin Kind", ImColor(45, 32, 32, 180));
                             ed::RejectNewItem(ImColor(255, 0, 0), 2.0f);
                         }
@@ -204,14 +192,14 @@ void MaterialGraphPanel::OnImGuiRender(bool& isOpen) {
                         //     showLabel("x Cannot connect to self", ImColor(45, 32, 32, 180));
                         //     ed::RejectNewItem(ImColor(255, 0, 0), 1.0f);
                         // }
-                        else if (endPin->Type != startPin->Type) {
+                        else if (endPin->mType != startPin->mType) {
                             showLabel("x Incompatible Pin Type", ImColor(45, 32, 32, 180));
                             ed::RejectNewItem(ImColor(255, 128, 128), 1.0f);
                         } else {
                             showLabel("+ Create Link", ImColor(32, 45, 32, 180));
                             if (ed::AcceptNewItem(ImColor(128, 255, 128), 4.0f)) {
-                                mGraph->AddLink(GenerateLinkID(), (PinID)startPinId,
-                                                (PinID)endPinId);
+                                mCurrentGraph->AddLink(mCurrentGraph->GenerateID(),
+                                                       (PinID)startPinId, (PinID)endPinId);
                                 // s_Links.back().Color = GetIconColor(startPin->Type);
                             }
                         }
@@ -220,12 +208,12 @@ void MaterialGraphPanel::OnImGuiRender(bool& isOpen) {
 
                 ed::PinId pinId = 0;
                 if (ed::QueryNewNode(&pinId)) {
-                    newLinkPin = mGraph->GetPin((PinID)pinId);
+                    newLinkPin = mCurrentGraph->GetPin((PinID)pinId);
                     if (newLinkPin) showLabel("+ Create Node", ImColor(32, 45, 32, 180));
 
                     if (ed::AcceptNewItem()) {
                         createNewNode = true;
-                        newNodeLinkPin = mGraph->GetPin((PinID)pinId);
+                        newNodeLinkPin = mCurrentGraph->GetPin((PinID)pinId);
                         newLinkPin = nullptr;
                         ed::Suspend();
                         ImGui::OpenPopup("Create New Node");
@@ -241,14 +229,14 @@ void MaterialGraphPanel::OnImGuiRender(bool& isOpen) {
                 ed::LinkId linkId = 0;
                 while (ed::QueryDeletedLink(&linkId)) {
                     if (ed::AcceptDeletedItem()) {
-                        mGraph->RemoveLink((LinkID)linkId);
+                        mCurrentGraph->RemoveLink((LinkID)linkId);
                     }
                 }
 
                 ed::NodeId nodeId = 0;
                 while (ed::QueryDeletedNode(&nodeId)) {
                     if (ed::AcceptDeletedItem()) {
-                        mGraph->RemoveNode((NodeID)nodeId);
+                        mCurrentGraph->RemoveNode((NodeID)nodeId);
                     }
                 }
             }
@@ -256,6 +244,25 @@ void MaterialGraphPanel::OnImGuiRender(bool& isOpen) {
         }
 
         ImGui::SetCursorScreenPos(cursorTopLeft);
+    }
+
+    ed::NodeId doubleClickNodeId = ed::GetDoubleClickedNode();
+    MaterialNodePtr doubleClickNode = mCurrentGraph->GetNode((size_t)doubleClickNodeId);
+    if (doubleClickNode) {
+        ElementPtr source = doubleClickNode->mSource;
+        if (source && source->Is(MaterialElementType::NODEGRAPH)) {
+            SetGraph(mDocument->GenerateUIGraphFromNodeGraph(source.As<NodeGraph>()));
+        } else if (source && source->Is(MaterialElementType::NODEINSTANCE)) {
+            NodeInstancePtr ni = source.As<NodeInstance>();
+            NodeImplPtr impl = ni->GetNodeImpl();
+
+            // if the node is implement by a shader file, we will not show the subgraph
+            if (impl && impl->IsNodeGraph()) {
+                SetGraph(mDocument->GenerateUIGraphFromNodeGraph(impl->GetNodeGraph()));
+            }
+        } else {
+            std::cout << "empty subgraph select" << std::endl;
+        }
     }
 
     // deal with popup
@@ -270,26 +277,27 @@ void MaterialGraphPanel::OnImGuiRender(bool& isOpen) {
         // auto drawList = ImGui::GetWindowDrawList();
         // drawList->AddCircleFilled(ImGui::GetMousePosOnOpeningCurrentPopup(), 10.0f, 0xFFFF00FF);
 
-        MaterialNode* node = nullptr;
-        if (ImGui::MenuItem("Input Action")) node = new TextureNode();
+        MaterialNodePtr node = nullptr;
+        if (ImGui::MenuItem("Input Action")) node = nullptr;
         ImGui::Separator();
-        if (ImGui::MenuItem("Input Action")) node = new TextureNode();
+        if (ImGui::MenuItem("Input Action")) node = nullptr;
         ImGui::Separator();
 
         if (node) {
-            mGraph->AddNode(*node);
+            mCurrentGraph->AddNode(node);
             createNewNode = false;
 
-            ed::SetNodePosition(node->ID, newNodePostion);
+            ed::SetNodePosition(node->mID, newNodePostion);
 
             if (auto startPin = newNodeLinkPin) {
-                auto& pins = startPin->Kind == PinKind::Input ? node->Outputs : node->Inputs;
+                auto& pins = startPin->mKind == PinKind::Input ? node->mOutputs : node->mInputs;
 
-                for (auto& pin : pins) {
-                    if (startPin->Type == pin.Type) {  // CanCreateLink(startPin, &pin)
-                        auto endPin = &pin;
-                        if (startPin->Kind == PinKind::Input) std::swap(startPin, endPin);
-                        mGraph->AddLink(GenerateLinkID(), startPin->ID, endPin->ID);
+                for (auto& [_, pin] : pins) {
+                    if (startPin->mType == pin->mType) {  // CanCreateLink(startPin, &pin)
+                        auto endPin = pin;
+                        if (startPin->mKind == PinKind::Input) std::swap(startPin, endPin);
+                        mCurrentGraph->AddLink(mCurrentGraph->GenerateID(), startPin->mID,
+                                               endPin->mID);
                         break;
                     }
                 }
@@ -308,6 +316,22 @@ void MaterialGraphPanel::OnImGuiRender(bool& isOpen) {
 }
 
 void MaterialGraphPanel::OnEvent(Event& event) {}
+
+void MaterialGraphPanel::SetGraph(MaterialGraphPtr graph) {
+    if (mCurrentGraph) {
+        mGraphStack.push(mCurrentGraph);
+    }
+    mCurrentGraph = graph;
+}
+
+void MaterialGraphPanel::PopGraph() {
+    if (mGraphStack.empty()) {
+        ET_CORE_WARN("Graph stack is empty!");
+        return;
+    }
+    mCurrentGraph = mGraphStack.top();
+    mGraphStack.pop();
+}
 
 void MaterialGraphPanel::TouchNode(NodeID id) { mNodeTouchTime[id] = mTouchTime; }
 
@@ -346,50 +370,62 @@ bool MaterialGraphPanel::Splitter(bool split_vertically, float thickness, float*
 ImColor MaterialGraphPanel::GetIconColor(MaterialPinType type) {
     switch (type) {
         default:
-        case MaterialPinType::Unknown:
+        case MaterialPinType::Flow:
             return ImColor(255, 255, 255);
         case MaterialPinType::Bool:
-            return ImColor(220, 48, 48);
-        case MaterialPinType::RGB:
-            return ImColor(68, 201, 156);
+            return ImColor(255, 0, 255);
+        case MaterialPinType::Int:
+            return ImColor(50, 100, 255);
         case MaterialPinType::Float:
-            return ImColor(147, 226, 74);
+            return ImColor(178, 34, 34);
+        case MaterialPinType::Float2:
+            return ImColor(0, 10, 255);
+        case MaterialPinType::Float3:
+            return ImColor(100, 255, 100);
+        case MaterialPinType::Float4:
+            return ImColor(0, 255, 0);
+        case MaterialPinType::Color3:
+            return ImColor(100, 0, 100);
+        case MaterialPinType::Color4:
+            return ImColor(0, 100, 100);
         case MaterialPinType::String:
-            return ImColor(124, 21, 153);
-        case MaterialPinType::BSDF:
-            return ImColor(51, 150, 215);
-        case MaterialPinType::Texture:
-            return ImColor(218, 0, 183);
-        case MaterialPinType::Flow:
-            return ImColor(255, 48, 48);
+            return ImColor(100, 100, 50);
+        case MaterialPinType::Object:
+            return ImColor(255, 184, 28);
     }
 };
 
-void MaterialGraphPanel::DrawPinIcon(const MaterialPin& pin, bool connected, int alpha) {
+void MaterialGraphPanel::DrawPinIcon(MaterialPinPtr pin, bool connected, int alpha) {
     IconType iconType;
-    ImColor color = GetIconColor(pin.Type);
+    ImColor color = GetIconColor(pin->mType);
     color.Value.w = alpha / 255.0f;
-    switch (pin.Type) {
+    switch (pin->mType) {
         case MaterialPinType::Flow:
             iconType = IconType::Flow;
             break;
         case MaterialPinType::Bool:
+        case MaterialPinType::Int:
         case MaterialPinType::Float:
+        case MaterialPinType::Float2:
+        case MaterialPinType::Float3:
+        case MaterialPinType::Float4:
+        case MaterialPinType::Color3:
+        case MaterialPinType::Color4:
         case MaterialPinType::String:
-        case MaterialPinType::RGB:
-        case MaterialPinType::BSDF:
-        case MaterialPinType::Texture:
             iconType = IconType::Circle;
             break;
+        case MaterialPinType::Object:
+            iconType = IconType::Diamond;
+            break;
         default:
-            return;
+            iconType = IconType::RoundSquare;
     }
 
     BlueprintNodeBuilder::Icon(ImVec2(mPinIconSize, mPinIconSize), iconType, connected, color,
                                ImColor(32, 32, 32, alpha));
 };
 
-void MaterialGraphPanel::ShowLeftPane(float paneWidth) {
+void MaterialGraphPanel::ShowLeftPanel(float paneWidth) {
     auto api = GlobalContext::GetDriverApi();
 
     auto& io = ImGui::GetIO();
@@ -404,10 +440,11 @@ void MaterialGraphPanel::ShowLeftPane(float paneWidth) {
     if (ImGui::Button("Zoom to Content")) ed::NavigateToContent();
     ImGui::Spring(0.0f);
     if (ImGui::Button("Show Flow")) {
-        for (auto& [linkid, link] : mGraph->GetLinks()) ed::Flow(link.ID);
+        for (auto& [linkid, link] : mCurrentGraph->GetLinks()) ed::Flow(link->mID);
     }
     ImGui::Spring();
     if (ImGui::Button("Edit Style")) showStyleEditor = true;
+    if (ImGui::Button("Back")) PopGraph();
     ImGui::EndHorizontal();
 
     // if (showStyleEditor) ShowStyleEditor(&showStyleEditor);
@@ -439,33 +476,34 @@ void MaterialGraphPanel::ShowLeftPane(float paneWidth) {
     ImGui::SameLine();
     ImGui::TextUnformatted("Nodes");
     ImGui::Indent();
-    for (auto& [nodeid, node] : mGraph->GetNodes()) {
-        ImGui::PushID(node.ID);
+    for (auto& [nodeid, node] : mCurrentGraph->GetNodes()) {
+        ImGui::PushID(node->mID);
         auto start = ImGui::GetCursorScreenPos();
 
-        if (const auto progress = GetTouchProgress(node.ID)) {
+        if (const auto progress = GetTouchProgress(node->mID)) {
             ImGui::GetWindowDrawList()->AddLine(
                 start + ImVec2(-8, 0), start + ImVec2(-8, ImGui::GetTextLineHeight()),
                 IM_COL32(255, 0, 0, 255 - (int)(255 * progress)), 4.0f);
         }
 
         bool isSelected = std::find(selectedNodes.begin(), selectedNodes.end(),
-                                    (ed::NodeId)node.ID) != selectedNodes.end();
-        if (ImGui::Selectable((node.Name + "##" + std::to_string(node.ID)).c_str(), &isSelected)) {
+                                    (ed::NodeId)node->mID) != selectedNodes.end();
+        if (ImGui::Selectable((node->mName + "##" + std::to_string(node->mID)).c_str(),
+                              &isSelected)) {
             if (io.KeyCtrl) {
                 if (isSelected)
-                    ed::SelectNode(node.ID, true);
+                    ed::SelectNode(node->mID, true);
                 else
-                    ed::DeselectNode(node.ID);
+                    ed::DeselectNode(node->mID);
             } else
-                ed::SelectNode(node.ID, false);
+                ed::SelectNode(node->mID, false);
 
             ed::NavigateToSelection();
         }
-        if (ImGui::IsItemHovered() && !node.State.empty())
-            ImGui::SetTooltip("State: %s", node.State.c_str());
+        if (ImGui::IsItemHovered() && !node->mState.empty())
+            ImGui::SetTooltip("State: %s", node->mState.c_str());
 
-        auto id = std::string("(") + std::to_string(node.ID) + ")";
+        auto id = std::string("(") + std::to_string(node->mID) + ")";
         auto textSize = ImGui::CalcTextSize(id.c_str(), nullptr);
         auto iconPanelPos =
             start +
@@ -479,9 +517,9 @@ void MaterialGraphPanel::ShowLeftPane(float paneWidth) {
         auto drawList = ImGui::GetWindowDrawList();
         ImGui::SetCursorScreenPos(iconPanelPos);
         ImGui::SetItemAllowOverlap();
-        if (node.SavedState.empty()) {
+        if (node->mSavedState.empty()) {
             if (ImGui::InvisibleButton("save", ImVec2((float)saveIconWidth, (float)saveIconHeight)))
-                node.SavedState = node.State;
+                node->mSavedState = node->mState;
 
             if (ImGui::IsItemActive())
                 drawList->AddImage((ImTextureID)api->GetTextueID(EditorResource::BlueprintSaveIcon),
@@ -504,12 +542,12 @@ void MaterialGraphPanel::ShowLeftPane(float paneWidth) {
 
         ImGui::SameLine(0, ImGui::GetStyle().ItemInnerSpacing.x);
         ImGui::SetItemAllowOverlap();
-        if (!node.SavedState.empty()) {
+        if (!node->mSavedState.empty()) {
             if (ImGui::InvisibleButton("restore",
                                        ImVec2((float)restoreIconWidth, (float)restoreIconHeight))) {
-                node.State = node.SavedState;
-                ed::RestoreNodeState(node.ID);
-                node.SavedState.clear();
+                node->mState = node->mSavedState;
+                ed::RestoreNodeState(node->mID);
+                node->mSavedState.clear();
             }
 
             if (ImGui::IsItemActive())
@@ -564,7 +602,7 @@ void MaterialGraphPanel::ShowLeftPane(float paneWidth) {
     ImGui::Unindent();
 
     if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Z)))
-        for (auto& [linkid, link] : mGraph->GetLinks()) ed::Flow(link.ID);
+        for (auto& [linkid, link] : mCurrentGraph->GetLinks()) ed::Flow(link->mID);
 
     if (ed::HasSelectionChanged()) ++changeCount;
 

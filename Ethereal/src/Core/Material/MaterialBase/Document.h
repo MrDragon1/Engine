@@ -1,6 +1,8 @@
 #pragma once
 #include "Core/Material/MaterialBase/Element.h"
 namespace Ethereal {
+using MaterialGraphPtr = Ref<class MaterialGraph>;
+
 using DocumentPtr = Ref<class Document>;
 using NodeGraphPtr = Ref<class NodeGraph>;
 using NodeInstancePtr = Ref<class NodeInstance>;
@@ -27,11 +29,18 @@ class Document : public Element {
 
     void Validate() override;
 
+    void TopologicalSort();
+
+    MaterialGraphPtr GenerateUIGraph();
+    MaterialGraphPtr GenerateUIGraphFromNodeGraph(NodeGraphPtr ng);
+
    private:
     unordered_map<string, vector<NodeDefinePtr>> mNodeDefines;
     unordered_map<string, NodeImplPtr> mNodeImpls;
     unordered_map<string, NodeInstancePtr> mNodeInstances;
     unordered_map<string, NodeGraphPtr> mNodeGraphs;
+
+    vector<ElementPtr> mSortedElements;
 };
 
 class NodeGraph : public Element {
@@ -43,9 +52,17 @@ class NodeGraph : public Element {
     NodeInstancePtr GetNodeInstance(const string& node) { return mNodeInstances[node]; }
 
     void Validate() override;
+    bool IsImpl() { return mIsImplementation; }
+    void SetNodeImpl(NodeImplPtr impl) {
+        mNodeImpl = impl;
+        mIsImplementation = true;
+    }
+    NodeImplPtr GetNodeImpl() { return mNodeImpl; }
 
    private:
     unordered_map<string, NodeInstancePtr> mNodeInstances;
+    bool mIsImplementation = false;
+    NodeImplPtr mNodeImpl;
 };
 
 class NodeInstance : public Element {
@@ -55,6 +72,8 @@ class NodeInstance : public Element {
 
     void SetNodeDefine(NodeDefinePtr nd) { mNodeDefine = nd; }
     NodeDefinePtr GetNodeDefine() { return mNodeDefine; }
+
+    NodeImplPtr GetNodeImpl();
 
     void Validate() override;
 
@@ -86,11 +105,16 @@ class NodeImpl : public Element {
         FILE,
         NODEGRAPH,
     };
+    bool IsInline() { return mImplType == NodeImplType::INLINE; }
+    bool IsFile() { return mImplType == NodeImplType::FILE; }
+    bool IsNodeGraph() { return mImplType == NodeImplType::NODEGRAPH; }
 
     void SetNodeDefine(NodeDefinePtr nd) { mNodeDefine = nd; }
     NodeDefinePtr GetNodeDefine() { return mNodeDefine; }
 
     void Validate() override;
+
+    NodeGraphPtr GetNodeGraph();
 
    private:
     NodeDefinePtr mNodeDefine;

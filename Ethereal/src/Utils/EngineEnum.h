@@ -17,14 +17,17 @@ enum class ETHEREAL_BASIC_3DOBJECT : uint8_t {
 };
 
 enum class MaterialPinType : uint32_t {
-    Unknown = BIT(0),
-    Bool = BIT(1),
-    Float = BIT(2),
-    RGB = BIT(3),
-    BSDF = BIT(4),
-    Texture = BIT(5),
-    String = BIT(6),
-    Flow = BIT(7),
+    Flow,  // default
+    Bool,
+    Int,
+    Float,
+    Float2,
+    Float3,
+    Float4,
+    Color3,
+    Color4,
+    String,
+    Object,
 };
 enum class PinKind : uint8_t {
     Input,

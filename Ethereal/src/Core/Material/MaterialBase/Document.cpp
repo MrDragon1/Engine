@@ -1,5 +1,6 @@
 #include "Document.h"
 
+#include "Core/Material/MaterialGraph.h"
 namespace Ethereal {
 
 void Document::ImportLibrary(DocumentPtr lib) {
@@ -64,6 +65,14 @@ void Document::Validate() {
                 childCopy->CopyContentFrom(input);
             }
         }
+
+        for (auto output : nd->GetOutputs()) {
+            ElementPtr child = ni->GetChild(output->GetName());
+            if (!child || !child->Is(MaterialElementType::OUTPUT)) {
+                auto childCopy = ni->AddChildOfType(MaterialElementType::OUTPUT, output->GetName());
+                childCopy->CopyContentFrom(output);
+            }
+        }
     }
 
     /// Set node define in node impl
@@ -91,23 +100,110 @@ void Document::Validate() {
     for (auto& input : GetInputs()) {
         string conn = input->GetAttribute(MaterialAttribute::CONNECTOR);
         string port = input->GetAttribute(MaterialAttribute::PORT);
-        ElementPtr node = GetChild(conn);
-        ElementPtr output = node->GetChild(port);
-        input->SetConnector(output ? output : node);
+        if (conn.empty()) continue;
+        ElementPtr child = GetChild(conn);
+        ElementPtr output = child->GetChild(port);
+        input->SetConnector(output);
     }
-    for (auto& [_, node] : GetNodeImpls()) {
+    for (auto& [_, node] : GetNodeInstances()) {
         for (auto input : node->GetInputs()) {
             string conn = input->GetAttribute(MaterialAttribute::CONNECTOR);
+            if (conn.empty()) continue;
             string port = input->GetAttribute(MaterialAttribute::PORT);
-            ElementPtr node = GetChild(conn);
-            ElementPtr output = node->GetChild(port);
+            ElementPtr child = GetChild(conn);
+            ElementPtr output = child->GetChild(port);
             input->SetConnector(output);
         }
     }
 
-    for (auto node : GetChildren()) {
+    // Order matters
+    for (auto& [_, defines] : mNodeDefines) {
+        for (auto& node : defines) {
+            node->Validate();
+        }
+    }
+    for (auto& [_, node] : GetNodeImpls()) {
         node->Validate();
     }
+    for (auto& [_, node] : GetNodeGraphs()) {
+        node->Validate();
+    }
+    for (auto& [_, node] : GetNodeInstances()) {
+        node->Validate();
+    }
+    for (auto& node : GetInputs()) {
+        node->Validate();
+    }
+    for (auto& node : GetOutputs()) {
+        node->Validate();
+    }
+}
+
+void Document::TopologicalSort() { mSortedElements.clear(); }
+
+MaterialGraphPtr Document::GenerateUIGraph() {
+    MaterialGraphPtr uiGraph = MaterialGraphPtr::Create();
+
+    /// Create UINode with UIPin
+    for (auto& [_, node] : GetNodeInstances()) {
+        MaterialNodePtr uiNode = MaterialNodePtr::Create(node, uiGraph);
+        uiGraph->AddNode(uiNode);
+    }
+
+    for (auto& [_, node] : GetNodeGraphs()) {
+        if (node->IsImpl()) continue;
+        MaterialNodePtr uiNode = MaterialNodePtr::Create(node, uiGraph);
+        uiGraph->AddNode(uiNode);
+    }
+
+    /// Create Links
+    uiGraph->UpdateLink();
+
+    return uiGraph;
+}
+
+MaterialGraphPtr Document::GenerateUIGraphFromNodeGraph(NodeGraphPtr ng) {
+    MaterialGraphPtr uiGraph = MaterialGraphPtr::Create();
+    if (ng->IsImpl()) {
+        NodeDefinePtr nodeDefine = ng->GetNodeImpl()->GetNodeDefine();
+        for (auto& input : nodeDefine->GetInputs()) {
+            MaterialNodePtr uiNode = MaterialNodePtr::Create(input, uiGraph);
+            uiGraph->AddNode(uiNode);
+        }
+
+        for (auto& output : nodeDefine->GetOutputs()) {
+            MaterialNodePtr uiNode = MaterialNodePtr::Create(output, uiGraph);
+            uiGraph->AddNode(uiNode);
+        }
+
+        for (auto& [_, node] : ng->GetNodeInstances()) {
+            MaterialNodePtr uiNode = MaterialNodePtr::Create(node, uiGraph);
+            uiGraph->AddNode(uiNode);
+        }
+
+        // We think there no nodegraph in nodegraph for now
+
+    } else {
+        for (auto& input : ng->GetInputs()) {
+            MaterialNodePtr uiNode = MaterialNodePtr::Create(input, uiGraph);
+            uiGraph->AddNode(uiNode);
+        }
+
+        for (auto& output : ng->GetOutputs()) {
+            MaterialNodePtr uiNode = MaterialNodePtr::Create(output, uiGraph);
+            uiGraph->AddNode(uiNode);
+        }
+
+        for (auto& [_, node] : ng->GetNodeInstances()) {
+            MaterialNodePtr uiNode = MaterialNodePtr::Create(node, uiGraph);
+            uiGraph->AddNode(uiNode);
+        }
+
+        // We think there no nodegraph in nodegraph for now
+    }
+    uiGraph->UpdateLink();
+
+    return uiGraph;
 }
 
 void NodeInput::SetConnector(ElementPtr conn) {
@@ -157,7 +253,7 @@ vector<NodeImplPtr> NodeDefine::GetNodeImpls() {
 
 void NodeDefine::Validate() {
     Element::Validate();
-    ET_CORE_ASSERT(!mNodeImpls.empty(), "Node {0} has no implementation!", GetName());
+    ET_CORE_ASSERT(!mNodeImpls.empty(), "NodeDefine {0} has no implementation!", GetName());
     for (auto node : GetChildren()) {
         node->Validate();
     }
@@ -165,6 +261,7 @@ void NodeDefine::Validate() {
 
 void NodeGraph::Validate() {
     Element::Validate();
+
     for (auto& ni : GetChildren<NodeInstance>(MaterialElementType::NODEINSTANCE)) {
         mNodeInstances[ni->GetName()] = ni;
     }
@@ -199,11 +296,45 @@ void NodeGraph::Validate() {
                 childCopy->CopyContentFrom(input);
             }
         }
+
+        for (auto output : nd->GetOutputs()) {
+            ElementPtr child = ni->GetChild(output->GetName());
+            if (!child || !child->Is(MaterialElementType::OUTPUT)) {
+                auto childCopy = ni->AddChildOfType(MaterialElementType::OUTPUT, output->GetName());
+                childCopy->CopyContentFrom(output);
+            }
+        }
+    }
+
+    /// Connect all inputs with CONNECTOR attributes
+    for (auto& input : GetInputs()) {
+        string conn = input->GetAttribute(MaterialAttribute::CONNECTOR);
+        string port = input->GetAttribute(MaterialAttribute::PORT);
+        if (conn.empty()) continue;
+        ElementPtr child = GetChild(conn);
+        ElementPtr output = child->GetChild(port);
+        input->SetConnector(output);
+    }
+    for (auto& [_, node] : GetNodeInstances()) {
+        for (auto input : node->GetInputs()) {
+            string conn = input->GetAttribute(MaterialAttribute::CONNECTOR);
+            if (conn.empty()) continue;
+            string port = input->GetAttribute(MaterialAttribute::PORT);
+            if (IsImpl() && port.empty()) continue;  // connect input port in impl_nodegraph,
+            ElementPtr child = GetChild(conn);
+            ElementPtr output = child->GetChild(port);
+            input->SetConnector(output);
+        }
     }
 
     for (auto node : GetChildren()) {
         node->Validate();
     }
+}
+
+NodeImplPtr NodeInstance::GetNodeImpl() {
+    // TODO: match the input&output type between node impl & node instance
+    return GetNodeDefine()->GetNodeImpls()[0];
 }
 
 void NodeInstance::Validate() {
@@ -224,9 +355,10 @@ void NodeImpl::Validate() {
     string code = GetAttribute(MaterialAttribute::SOURCECODE);
     if (!file.empty())
         mImplType = NodeImplType::FILE;
-    else if (!graph.empty())
+    else if (!graph.empty()) {
         mImplType = NodeImplType::NODEGRAPH;
-    else if (!code.empty())
+        GetNodeGraph()->SetNodeImpl(this);
+    } else if (!code.empty())
         mImplType = NodeImplType::INLINE;
     else
         ET_CORE_ASSERT(false, "Implementation {0} is incomplete!", GetName());
@@ -235,6 +367,17 @@ void NodeImpl::Validate() {
     for (auto node : GetChildren()) {
         node->Validate();
     }
+}
+
+NodeGraphPtr NodeImpl::GetNodeGraph() {
+    if (mImplType != NodeImplType::NODEGRAPH) return nullptr;
+    string graph = GetAttribute(MaterialAttribute::IMPLGRAPH);
+
+    auto elem = GetRoot().As<Document>()->GetChild(graph);
+    if (!elem || !elem->Is(MaterialElementType::NODEGRAPH)) {
+        ET_CORE_ASSERT(false, "Missing nodegraph {}", graph);
+    }
+    return elem.As<NodeGraph>();
 }
 
 }  // namespace Ethereal
