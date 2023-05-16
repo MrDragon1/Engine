@@ -48,12 +48,12 @@ void MaterialNode::Initalize() {
         for (auto& output : node->GetOutputs()) {
             AddOutput(mGraph->GenerateID(), output);
         }
-    } else if (mSource->Is(MaterialElementType::INPUT)) {
-        NodeInputPtr input = mSource.As<NodeInput>();
-        AddInput(mGraph->GenerateID(), input);
     } else if (mSource->Is(MaterialElementType::OUTPUT)) {
-        NodeOutputPtr output = mSource.As<NodeOutput>();
-        AddOutput(mGraph->GenerateID(), output);
+        InputSocketPtr input = mSource.As<InputSocket>();
+        AddOutput(mGraph->GenerateID(), input);
+    } else if (mSource->Is(MaterialElementType::INPUT)) {
+        OutputSocketPtr output = mSource.As<OutputSocket>();
+        AddInput(mGraph->GenerateID(), output);
     }
 }
 

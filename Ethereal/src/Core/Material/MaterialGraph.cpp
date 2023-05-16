@@ -1,8 +1,6 @@
 #include "MaterialGraph.h"
 
 namespace Ethereal {
-MaterialGraph::MaterialGraph() {}
-
 MaterialGraph::~MaterialGraph() {}
 
 void MaterialGraph::AddNode(MaterialNodePtr node) {
@@ -72,22 +70,25 @@ void MaterialGraph::UpdateLink() {
 
     for (auto& [_, node] : mNodes) {
         for (auto& [_, input] : node->GetInputs()) {
-            NodeInputPtr sinput = input->mSource.As<NodeInput>();
-            PinID upsteamID;
-            if (sinput->GetConnector() && sinput->GetConnector()->Is(MaterialElementType::OUTPUT)) {
-                NodeOutputPtr connector = sinput->GetConnector().As<NodeOutput>();
-                MaterialNodePtr upstreamUINode = GetNode(connector->GetParent()->GetName());
-                upsteamID = upstreamUINode->GetOutput(connector->GetName())->mID;
+            if (input->mSource->Is(MaterialElementType::INPUT)) {
+                NodeInputPtr sinput = input->mSource.As<NodeInput>();
+                PinID upsteamID;
+                if (sinput->GetConnector() &&
+                    sinput->GetConnector()->Is(MaterialElementType::OUTPUT)) {
+                    // input socket or the output of node instance
+                    NodeOutputPtr connector = sinput->GetConnector().As<NodeOutput>();
+                    string upNodeName = connector->GetParent()->GetName();
+                    MaterialNodePtr upstreamUINode;
+                    if (upNodeName == GetName())  // upstream node connect to input socket
+                    {
+                        upstreamUINode = GetNode(connector->GetName());
+                    } else {
+                        upstreamUINode = GetNode(upNodeName);
+                    }
+                    upsteamID = upstreamUINode->GetOutput(connector->GetName())->mID;
 
-                AddLink(GenerateID(), upsteamID, input->mID);
-            } else if (sinput->GetConnector() &&
-                       sinput->GetConnector()->Is(MaterialElementType::INPUT)) {
-                NodeInputPtr connector = sinput->GetConnector().As<NodeInput>();
-                MaterialNodePtr upstreamUINode = GetNode(connector->GetName());
-                upsteamID = upstreamUINode->GetInput(connector->GetName())->mID;
-                // should use GetOutput when impl socket
-
-                AddLink(GenerateID(), upsteamID, input->mID);
+                    AddLink(GenerateID(), upsteamID, input->mID);
+                }
             }
         }
     }

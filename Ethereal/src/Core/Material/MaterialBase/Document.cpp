@@ -35,6 +35,16 @@ void Document::Validate() {
     for (auto& ni : GetChildren<NodeInstance>(MaterialElementType::NODEINSTANCE)) {
         mNodeInstances[ni->GetName()] = ni;
     }
+    for (auto& ni : GetInputs()) {
+        auto socket = InputSocketPtr::Create(ni->GetParent(), ni->GetName());
+        socket->CopyContentFrom(ni);
+        mInputSockets[ni->GetName()] = socket;
+    }
+    for (auto& ni : GetOutputs()) {
+        auto socket = OutputSocketPtr::Create(ni->GetParent(), ni->GetName());
+        socket->CopyContentFrom(ni);
+        mOutputSockets[ni->GetName()] = socket;
+    }
 
     /// Set node define in node instance
     for (auto& [_, ni] : GetNodeInstances()) {
@@ -97,24 +107,20 @@ void Document::Validate() {
     }
 
     /// Connect all inputs with CONNECTOR attributes
-    for (auto& input : GetInputs()) {
-        string conn = input->GetAttribute(MaterialAttribute::CONNECTOR);
-        string port = input->GetAttribute(MaterialAttribute::PORT);
-        if (conn.empty()) continue;
-        ElementPtr child = GetChild(conn);
-        ElementPtr output = child->GetChild(port);
-        input->SetConnector(output);
-    }
     for (auto& [_, node] : GetNodeInstances()) {
         for (auto input : node->GetInputs()) {
             string conn = input->GetAttribute(MaterialAttribute::CONNECTOR);
             if (conn.empty()) continue;
-            string port = input->GetAttribute(MaterialAttribute::PORT);
             ElementPtr child = GetChild(conn);
+            string port = input->GetAttribute(MaterialAttribute::PORT);
             ElementPtr output = child->GetChild(port);
             input->SetConnector(output);
         }
     }
+
+    /// We think there are no standalone output node in document,
+    /// otherwise, will connect the output with CONNECTOR attributes
+    /// like we did in NodeGraph::Validate()
 
     // Order matters
     for (auto& [_, defines] : mNodeDefines) {
@@ -142,7 +148,7 @@ void Document::Validate() {
 void Document::TopologicalSort() { mSortedElements.clear(); }
 
 MaterialGraphPtr Document::GenerateUIGraph() {
-    MaterialGraphPtr uiGraph = MaterialGraphPtr::Create();
+    MaterialGraphPtr uiGraph = MaterialGraphPtr::Create(GetName());
 
     /// Create UINode with UIPin
     for (auto& [_, node] : GetNodeInstances()) {
@@ -163,15 +169,15 @@ MaterialGraphPtr Document::GenerateUIGraph() {
 }
 
 MaterialGraphPtr Document::GenerateUIGraphFromNodeGraph(NodeGraphPtr ng) {
-    MaterialGraphPtr uiGraph = MaterialGraphPtr::Create();
+    MaterialGraphPtr uiGraph = MaterialGraphPtr::Create(ng->GetName());
     if (ng->IsImpl()) {
         NodeDefinePtr nodeDefine = ng->GetNodeImpl()->GetNodeDefine();
-        for (auto& input : nodeDefine->GetInputs()) {
+        for (auto& [name, input] : ng->GetInputSockets()) {
             MaterialNodePtr uiNode = MaterialNodePtr::Create(input, uiGraph);
             uiGraph->AddNode(uiNode);
         }
 
-        for (auto& output : nodeDefine->GetOutputs()) {
+        for (auto& [name, output] : ng->GetOutputSockets()) {
             MaterialNodePtr uiNode = MaterialNodePtr::Create(output, uiGraph);
             uiGraph->AddNode(uiNode);
         }
@@ -184,12 +190,12 @@ MaterialGraphPtr Document::GenerateUIGraphFromNodeGraph(NodeGraphPtr ng) {
         // We think there no nodegraph in nodegraph for now
 
     } else {
-        for (auto& input : ng->GetInputs()) {
+        for (auto& [name, input] : ng->GetInputSockets()) {
             MaterialNodePtr uiNode = MaterialNodePtr::Create(input, uiGraph);
             uiGraph->AddNode(uiNode);
         }
 
-        for (auto& output : ng->GetOutputs()) {
+        for (auto& [name, output] : ng->GetOutputSockets()) {
             MaterialNodePtr uiNode = MaterialNodePtr::Create(output, uiGraph);
             uiGraph->AddNode(uiNode);
         }
@@ -265,6 +271,16 @@ void NodeGraph::Validate() {
     for (auto& ni : GetChildren<NodeInstance>(MaterialElementType::NODEINSTANCE)) {
         mNodeInstances[ni->GetName()] = ni;
     }
+    for (auto& ni : GetInputs()) {
+        auto socket = InputSocketPtr::Create(ni->GetParent(), ni->GetName());
+        socket->CopyContentFrom(ni);
+        mInputSockets[ni->GetName()] = socket;
+    }
+    for (auto& ni : GetOutputs()) {
+        auto socket = OutputSocketPtr::Create(ni->GetParent(), ni->GetName());
+        socket->CopyContentFrom(ni);
+        mOutputSockets[ni->GetName()] = socket;
+    }
 
     DocumentPtr root = GetRoot().As<Document>();
     /// Set node define in node instance
@@ -307,24 +323,41 @@ void NodeGraph::Validate() {
     }
 
     /// Connect all inputs with CONNECTOR attributes
-    for (auto& input : GetInputs()) {
-        string conn = input->GetAttribute(MaterialAttribute::CONNECTOR);
-        string port = input->GetAttribute(MaterialAttribute::PORT);
-        if (conn.empty()) continue;
-        ElementPtr child = GetChild(conn);
-        ElementPtr output = child->GetChild(port);
-        input->SetConnector(output);
-    }
     for (auto& [_, node] : GetNodeInstances()) {
         for (auto input : node->GetInputs()) {
             string conn = input->GetAttribute(MaterialAttribute::CONNECTOR);
             if (conn.empty()) continue;
             string port = input->GetAttribute(MaterialAttribute::PORT);
             if (IsImpl() && port.empty()) continue;  // connect input port in impl_nodegraph,
-            ElementPtr child = GetChild(conn);
-            ElementPtr output = child->GetChild(port);
+
+            ElementPtr output;
+            if (port.empty()) {
+                output = GetInputSocket(conn);
+            } else {
+                ElementPtr child = GetChild(conn);
+                output = child->GetChild(port);
+            }
             input->SetConnector(output);
         }
+    }
+
+    for (auto& [_, socket] : GetOutputSockets()) {
+        string conn = socket->GetAttribute(MaterialAttribute::CONNECTOR);
+        if (conn.empty()) {
+            ET_CORE_WARN("Graph {0}'s output {1} is not connected!", GetName(), socket->GetName());
+            continue;
+        }
+        string port = socket->GetAttribute(MaterialAttribute::PORT);
+        if (IsImpl() && port.empty()) continue;  // connect input port in impl_nodegraph,
+
+        ElementPtr output;
+        if (port.empty()) {
+            output = GetInputSocket(conn);
+        } else {
+            ElementPtr child = GetChild(conn);
+            output = child->GetChild(port);
+        }
+        socket->SetConnector(output);
     }
 
     for (auto node : GetChildren()) {

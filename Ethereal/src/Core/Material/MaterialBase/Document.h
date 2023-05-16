@@ -11,15 +11,20 @@ using NodeImplPtr = Ref<class NodeImpl>;
 using NodeInputPtr = Ref<class NodeInput>;
 using NodeOutputPtr = Ref<class NodeOutput>;
 
+using InputSocket = NodeOutput;
+using OutputSocket = NodeInput;
+using InputSocketPtr = NodeOutputPtr;
+using OutputSocketPtr = NodeInputPtr;
+
 class Document : public Element {
    public:
     Document(ElementPtr parent, const string& name)
         : Element(parent, name, MaterialElementType::DOCUMENT){};
 
     vector<NodeDefinePtr> GetNodeDefines(const string& node) { return mNodeDefines[node]; }
-    unordered_map<string, NodeImplPtr> GetNodeImpls() { return mNodeImpls; }
-    unordered_map<string, NodeInstancePtr> GetNodeInstances() { return mNodeInstances; }
-    unordered_map<string, NodeGraphPtr> GetNodeGraphs() { return mNodeGraphs; }
+    unordered_map<string, NodeImplPtr>& GetNodeImpls() { return mNodeImpls; }
+    unordered_map<string, NodeInstancePtr>& GetNodeInstances() { return mNodeInstances; }
+    unordered_map<string, NodeGraphPtr>& GetNodeGraphs() { return mNodeGraphs; }
 
     NodeImplPtr GetNodeImpl(const string& node) { return mNodeImpls[node]; }
     NodeInstancePtr GetNodeInstance(const string& node) { return mNodeInstances[node]; }
@@ -34,11 +39,20 @@ class Document : public Element {
     MaterialGraphPtr GenerateUIGraph();
     MaterialGraphPtr GenerateUIGraphFromNodeGraph(NodeGraphPtr ng);
 
+    unordered_map<string, InputSocketPtr>& GetInputSockets() { return mInputSockets; }
+    unordered_map<string, OutputSocketPtr>& GetOutputSockets() { return mOutputSockets; }
+
+    InputSocketPtr GetInputSocket(const string& name) { return mInputSockets[name]; }
+    OutputSocketPtr GetOutputSocket(const string& name) { return mOutputSockets[name]; }
+
    private:
     unordered_map<string, vector<NodeDefinePtr>> mNodeDefines;
     unordered_map<string, NodeImplPtr> mNodeImpls;
     unordered_map<string, NodeInstancePtr> mNodeInstances;
     unordered_map<string, NodeGraphPtr> mNodeGraphs;
+
+    unordered_map<string, InputSocketPtr> mInputSockets;
+    unordered_map<string, OutputSocketPtr> mOutputSockets;
 
     vector<ElementPtr> mSortedElements;
 };
@@ -59,10 +73,19 @@ class NodeGraph : public Element {
     }
     NodeImplPtr GetNodeImpl() { return mNodeImpl; }
 
+    unordered_map<string, InputSocketPtr>& GetInputSockets() { return mInputSockets; }
+    unordered_map<string, OutputSocketPtr>& GetOutputSockets() { return mOutputSockets; }
+
+    InputSocketPtr GetInputSocket(const string& name) { return mInputSockets[name]; }
+    OutputSocketPtr GetOutputSocket(const string& name) { return mOutputSockets[name]; }
+
    private:
     unordered_map<string, NodeInstancePtr> mNodeInstances;
     bool mIsImplementation = false;
     NodeImplPtr mNodeImpl;
+
+    unordered_map<string, InputSocketPtr> mInputSockets;
+    unordered_map<string, OutputSocketPtr> mOutputSockets;
 };
 
 class NodeInstance : public Element {

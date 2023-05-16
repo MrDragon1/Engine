@@ -7,7 +7,7 @@ using MaterialGraphPtr = Ref<class MaterialGraph>;
 
 class MaterialGraph : public Asset {
    public:
-    MaterialGraph();
+    MaterialGraph(const string& name) : mName(name){};
     ~MaterialGraph();
 
     void AddNode(MaterialNodePtr node);
