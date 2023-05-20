@@ -44,6 +44,7 @@ const string PORT = "output";
 const string NODEDEF = "nodedef";
 const string TYPE = "type";
 const string VALUE = "value";
+const string NODEGROUP = "nodegroup";
 
 const string IMPLGRAPH = "implgraph";
 const string SOURCECODE = "sourcecode";

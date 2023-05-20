@@ -23,6 +23,7 @@ class Document : public Element {
         : Element(parent, name, MaterialElementType::DOCUMENT){};
 
     vector<NodeDefinePtr> GetNodeDefines(const string& node) { return mNodeDefines[node]; }
+    unordered_map<string, vector<NodeDefinePtr>> GetAllNodeDefines() { return mNodeDefines; }
     unordered_map<string, NodeImplPtr>& GetNodeImpls() { return mNodeImpls; }
     unordered_map<string, NodeInstancePtr>& GetNodeInstances() { return mNodeInstances; }
     unordered_map<string, NodeGraphPtr>& GetNodeGraphs() { return mNodeGraphs; }
@@ -112,7 +113,8 @@ class NodeDefine : public Element {
 
     void AddNodeImpl(NodeImplPtr impl);
     std::vector<NodeImplPtr> GetNodeImpls();
-
+    string GetNodeGroup();
+    string GetNodeDefineString();
     void Validate() override;
 
    private:

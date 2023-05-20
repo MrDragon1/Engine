@@ -19,6 +19,7 @@ class MaterialGraphPanel : public EditorPanel {
     DocumentPtr mDocument;
     MaterialGraphPtr mCurrentGraph = nullptr;
     std::stack<MaterialGraphPtr> mGraphStack;
+    std::unordered_map<std::string, std::vector<NodeDefinePtr>> mBuildinNodeDef;
     bool mAutoLayout = false;
     /// UI stuff
     ed::EditorContext* mEditor = nullptr;
@@ -34,6 +35,8 @@ class MaterialGraphPanel : public EditorPanel {
     void ShowLeftPanel(float paneWidth);
     void ShowUINodeInspectorPanel(float panelWidth, float panelHeight);
     void ShowPreviewPanel(float panelWidth, float panelHeight);
+    MaterialNodePtr CreateNodeMenu();
+    void PrepareNodeMenuInfo();
     void DrawPinController(MaterialPinPtr pin);
     void Compile();
     void ResetLayout();

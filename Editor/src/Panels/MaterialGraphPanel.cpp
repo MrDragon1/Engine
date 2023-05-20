@@ -20,6 +20,8 @@ MaterialGraphPanel::MaterialGraphPanel() {
     Xml::LoadDocument(mDocument, "assets/materials/material.mtlx");
     Xml::LoadLibraries(mDocument);
     mDocument->Validate();
+    PrepareNodeMenuInfo();
+
     auto ni = mDocument->GetChild("SR_marble1").As<NodeInstance>();
     auto ng = mDocument->GetChildren(MaterialElementType::NODEGRAPH);
     SetGraph(mDocument->GenerateUIGraph());
@@ -278,23 +280,19 @@ void MaterialGraphPanel::OnImGuiRender(bool& isOpen) {
     ed::Suspend();
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8, 8));
     if (ImGui::BeginPopup("Create New Node")) {
-        auto newNodePostion = openPopupPosition;
+        auto newNodePosition = openPopupPosition;
         // ImGui::SetCursorScreenPos(ImGui::GetMousePosOnOpeningCurrentPopup());
 
         // auto drawList = ImGui::GetWindowDrawList();
         // drawList->AddCircleFilled(ImGui::GetMousePosOnOpeningCurrentPopup(), 10.0f, 0xFFFF00FF);
 
-        MaterialNodePtr node = nullptr;
-        if (ImGui::MenuItem("Input Action")) node = nullptr;
-        ImGui::Separator();
-        if (ImGui::MenuItem("Input Action")) node = nullptr;
-        ImGui::Separator();
+        MaterialNodePtr node = CreateNodeMenu();
 
         if (node) {
             mCurrentGraph->AddNode(node);
             createNewNode = false;
-
-            ed::SetNodePosition(node->mID, newNodePostion);
+            node->mPosition = Vector2(newNodePosition.x, newNodePosition.y);
+            ed::SetNodePosition(node->mID, newNodePosition);
 
             if (auto startPin = newNodeLinkPin) {
                 auto& pins = startPin->mKind == PinKind::Input ? node->mOutputs : node->mInputs;
@@ -454,6 +452,47 @@ void MaterialGraphPanel::ShowPreviewPanel(float panelWidth, float panelHeight) {
     ImGui::EndHorizontal();
 }
 
+MaterialNodePtr MaterialGraphPanel::CreateNodeMenu() {
+    MaterialNodePtr nodeUI = nullptr;
+    if (!mDocument) return nodeUI;
+
+    for (auto trunk : mBuildinNodeDef) {
+        ImGui::SetNextWindowSizeConstraints(ImVec2(100, 10), ImVec2(250, 300));
+        if (ImGui::BeginMenu(trunk.first.c_str())) {
+            for (auto& nodeDef : trunk.second) {
+                std::string name = nodeDef->GetName();
+                if (ImGui::MenuItem(name.substr(3, name.length()).c_str())) {
+                    NodeInstancePtr node = mCurrentGraph->GetSource()->AddChildOfType(
+                        nodeDef->GetNodeDefineString(), name.substr(3, name.length()));
+                    node->SetNodeDefine(nodeDef);
+                    node->Validate();
+                    nodeUI = MaterialNodePtr::Create(node, mCurrentGraph);
+                }
+                ImGui::Separator();
+            }
+            ImGui::EndMenu();
+        }
+    }
+    return nodeUI;
+}
+
+void MaterialGraphPanel::PrepareNodeMenuInfo() {
+    mBuildinNodeDef.clear();
+    const std::string EXTRA_GROUP_NAME = "extra";
+    for (auto& [name, nodeDefs] : mDocument->GetAllNodeDefines()) {
+        for (auto& nodeDef : nodeDefs) {
+            std::string group = nodeDef->GetNodeGroup();
+            if (group.empty()) {
+                group = EXTRA_GROUP_NAME;
+            }
+            if (mBuildinNodeDef.find(group) == mBuildinNodeDef.end()) {
+                mBuildinNodeDef[group] = std::vector<NodeDefinePtr>();
+            }
+            mBuildinNodeDef[group].push_back(nodeDef);
+        }
+    }
+}
+
 void MaterialGraphPanel::DrawPinController(MaterialPinPtr pin) {
 #define BEGIN_UPDATE() {
 #define ENG_UPDATE() \
@@ -591,7 +630,7 @@ ImColor MaterialGraphPanel::GetIconColor(MaterialPinType type) {
         case MaterialPinType::Float:
             return ImColor(178, 34, 34);
         case MaterialPinType::Float2:
-            return ImColor(0, 10, 255);
+            return ImColor(255, 10, 28);
         case MaterialPinType::Float3:
             return ImColor(100, 255, 100);
         case MaterialPinType::Float4:

@@ -7,7 +7,7 @@ using MaterialGraphPtr = Ref<class MaterialGraph>;
 
 class MaterialGraph : public Asset {
    public:
-    MaterialGraph(const string& name) : mName(name){};
+    MaterialGraph(const string& name, ElementPtr source) : mName(name), mSource(source){};
     ~MaterialGraph();
 
     void AddNode(MaterialNodePtr node);
@@ -24,6 +24,8 @@ class MaterialGraph : public Asset {
     MaterialNodePtr GetNode(string name);
 
     std::string GetName() const { return mName; }
+    ElementPtr GetSource() { return mSource; }
+
     std::unordered_map<NodeID, MaterialNodePtr>& GetNodes() { return mNodes; }
     std::unordered_map<LinkID, MaterialLinkPtr>& GetLinks() { return mLinks; }
 
@@ -36,6 +38,7 @@ class MaterialGraph : public Asset {
     std::unordered_map<NodeID, MaterialNodePtr> mNodes;
     std::unordered_map<std::string, NodeID> mNameNodeMap;
     std::unordered_map<LinkID, MaterialLinkPtr> mLinks;
+    ElementPtr mSource;
 
    private:
     size_t mNextId = 1;

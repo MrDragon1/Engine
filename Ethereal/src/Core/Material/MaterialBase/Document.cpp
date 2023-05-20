@@ -66,23 +66,7 @@ void Document::Validate() {
         }
         ET_CORE_ASSERT(nd, "Instance {0} has no Node Define.", ni->GetName());
         ni->SetNodeDefine(nd);
-
-        /// Copy all input&output to node instance from node define
-        for (auto input : nd->GetInputs()) {
-            ElementPtr child = ni->GetChild(input->GetName());
-            if (!child || !child->Is(MaterialElementType::INPUT)) {
-                auto childCopy = ni->AddChildOfType(MaterialElementType::INPUT, input->GetName());
-                childCopy->CopyContentFrom(input);
-            }
-        }
-
-        for (auto output : nd->GetOutputs()) {
-            ElementPtr child = ni->GetChild(output->GetName());
-            if (!child || !child->Is(MaterialElementType::OUTPUT)) {
-                auto childCopy = ni->AddChildOfType(MaterialElementType::OUTPUT, output->GetName());
-                childCopy->CopyContentFrom(output);
-            }
-        }
+        ni->Validate();
     }
 
     /// Set node define in node impl
@@ -148,7 +132,7 @@ void Document::Validate() {
 void Document::TopologicalSort() { mSortedElements.clear(); }
 
 MaterialGraphPtr Document::GenerateUIGraph() {
-    MaterialGraphPtr uiGraph = MaterialGraphPtr::Create(GetName());
+    MaterialGraphPtr uiGraph = MaterialGraphPtr::Create(GetName(), this);
 
     /// Create UINode with UIPin
     for (auto& [_, node] : GetNodeInstances()) {
@@ -169,7 +153,7 @@ MaterialGraphPtr Document::GenerateUIGraph() {
 }
 
 MaterialGraphPtr Document::GenerateUIGraphFromNodeGraph(NodeGraphPtr ng) {
-    MaterialGraphPtr uiGraph = MaterialGraphPtr::Create(ng->GetName());
+    MaterialGraphPtr uiGraph = MaterialGraphPtr::Create(ng->GetName(), ng);
     if (ng->IsImpl()) {
         NodeDefinePtr nodeDefine = ng->GetNodeImpl()->GetNodeDefine();
         for (auto& [name, input] : ng->GetInputSockets()) {
@@ -265,6 +249,10 @@ vector<NodeImplPtr> NodeDefine::GetNodeImpls() {
     return res;
 }
 
+string NodeDefine::GetNodeGroup() { return GetAttribute(MaterialAttribute::NODEGROUP); }
+
+string NodeDefine::GetNodeDefineString() { return GetAttribute(MaterialAttribute::NODEDEF); }
+
 void NodeDefine::Validate() {
     Element::Validate();
     ET_CORE_ASSERT(!mNodeImpls.empty(), "NodeDefine {0} has no implementation!", GetName());
@@ -311,23 +299,7 @@ void NodeGraph::Validate() {
         }
         ET_CORE_ASSERT(nd, "Instance {0} has no Node Define.", ni->GetName());
         ni->SetNodeDefine(nd);
-
-        /// Copy all input&output to node instance from node define
-        for (auto input : nd->GetInputs()) {
-            ElementPtr child = ni->GetChild(input->GetName());
-            if (!child || !child->Is(MaterialElementType::INPUT)) {
-                auto childCopy = ni->AddChildOfType(MaterialElementType::INPUT, input->GetName());
-                childCopy->CopyContentFrom(input);
-            }
-        }
-
-        for (auto output : nd->GetOutputs()) {
-            ElementPtr child = ni->GetChild(output->GetName());
-            if (!child || !child->Is(MaterialElementType::OUTPUT)) {
-                auto childCopy = ni->AddChildOfType(MaterialElementType::OUTPUT, output->GetName());
-                childCopy->CopyContentFrom(output);
-            }
-        }
+        ni->Validate();
     }
 
     /// Connect all inputs with CONNECTOR attributes
@@ -384,6 +356,24 @@ void NodeInstance::Validate() {
                    "Instance {0} has no \"nodedef\" attribute!", GetName());
 
     ET_CORE_ASSERT(mNodeDefine, "Instance {0} has no define!", GetName());
+
+    /// Copy all input&output to node instance from node define
+    for (auto input : mNodeDefine->GetInputs()) {
+        ElementPtr child = GetChild(input->GetName());
+        if (!child || !child->Is(MaterialElementType::INPUT)) {
+            auto childCopy = AddChildOfType(MaterialElementType::INPUT, input->GetName());
+            childCopy->CopyContentFrom(input);
+        }
+    }
+
+    for (auto output : mNodeDefine->GetOutputs()) {
+        ElementPtr child = GetChild(output->GetName());
+        if (!child || !child->Is(MaterialElementType::OUTPUT)) {
+            auto childCopy = AddChildOfType(MaterialElementType::OUTPUT, output->GetName());
+            childCopy->CopyContentFrom(output);
+        }
+    }
+
     for (auto node : GetChildren()) {
         node->Validate();
     }
