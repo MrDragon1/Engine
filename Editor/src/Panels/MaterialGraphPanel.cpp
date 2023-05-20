@@ -16,8 +16,6 @@ MaterialGraphPanel::MaterialGraphPanel() {
     mEditor = ed::CreateEditor();
     ed::SetCurrentEditor(mEditor);
 
-    ed::NavigateToContent();
-
     mDocument = DocumentPtr::Create(nullptr, "doc1");
     Xml::LoadDocument(mDocument, "assets/materials/material.mtlx");
     Xml::LoadLibraries(mDocument);
@@ -37,8 +35,6 @@ MaterialGraphPanel::~MaterialGraphPanel() {
 void MaterialGraphPanel::OnImGuiRender(bool& isOpen) {
     ImGui::SetNextWindowSize(ImVec2(200.0f, 300.0f), ImGuiCond_Appearing);
     ImGui::Begin("Material Graph Editor", nullptr);
-
-    UpdateTouch();
 
     auto& io = ImGui::GetIO();
 
@@ -248,6 +244,8 @@ void MaterialGraphPanel::OnImGuiRender(bool& isOpen) {
         ImGui::SetCursorScreenPos(cursorTopLeft);
     }
 
+    if (mAutoLayout) ResetLayout();
+
     ed::NodeId doubleClickNodeId = ed::GetDoubleClickedNode();
     MaterialNodePtr doubleClickNode = mCurrentGraph->GetNode((size_t)doubleClickNodeId);
     if (doubleClickNode) {
@@ -331,6 +329,7 @@ void MaterialGraphPanel::SetGraph(MaterialGraphPtr graph) {
         mGraphStack.push(mCurrentGraph);
     }
     mCurrentGraph = graph;
+    mAutoLayout = true;
 }
 
 void MaterialGraphPanel::PopGraph() {
@@ -340,6 +339,7 @@ void MaterialGraphPanel::PopGraph() {
     }
     mCurrentGraph = mGraphStack.top();
     mGraphStack.pop();
+    mAutoLayout = true;
 }
 
 void MaterialGraphPanel::ShowLeftPanel(float width) {
@@ -517,6 +517,21 @@ void MaterialGraphPanel::DrawPinController(MaterialPinPtr pin) {
 
 void MaterialGraphPanel::Compile() {}
 
+void MaterialGraphPanel::ResetLayout() {
+    mAutoLayout = false;
+    for (auto& [id, node] : mCurrentGraph->GetNodes()) {
+        node->mSize.x = ed::GetNodeSize(node->mID).x;
+        node->mSize.y = ed::GetNodeSize(node->mID).y;
+    }
+
+    mCurrentGraph->UpdateLayout();
+
+    for (auto& [id, node] : mCurrentGraph->GetNodes()) {
+        ed::SetNodePosition(node->mID, ImVec2(node->mPosition.x, node->mPosition.y));
+    }
+    ed::NavigateToContent();
+}
+
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////      Utils      ///////////////////////////////
 //////////////////////////////////////////////////////////////////////////
@@ -545,23 +560,6 @@ const string MaterialGraphPanel::PinTypeToString(MaterialPinType type) {
     if (type == MaterialPinType::Color4) return "color4";
     if (type == MaterialPinType::String) return "string";
     return "none";
-}
-
-void MaterialGraphPanel::TouchNode(NodeID id) { mNodeTouchTime[id] = mTouchTime; }
-
-float MaterialGraphPanel::GetTouchProgress(NodeID id) {
-    auto it = mNodeTouchTime.find(id);
-    if (it != mNodeTouchTime.end() && it->second > 0.0f)
-        return (mTouchTime - it->second) / mTouchTime;
-    else
-        return 0.0f;
-}
-
-void MaterialGraphPanel::UpdateTouch() {
-    const auto deltaTime = ImGui::GetIO().DeltaTime;
-    for (auto& entry : mNodeTouchTime) {
-        if (entry.second > 0.0f) entry.second -= deltaTime;
-    }
 }
 
 bool MaterialGraphPanel::Splitter(bool split_vertically, float thickness, float* size1,

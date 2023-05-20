@@ -19,12 +19,8 @@ class MaterialGraphPanel : public EditorPanel {
     DocumentPtr mDocument;
     MaterialGraphPtr mCurrentGraph = nullptr;
     std::stack<MaterialGraphPtr> mGraphStack;
-
     bool mAutoLayout = false;
-
     /// UI stuff
-   private:
-    // Resource for blueprint
     ed::EditorContext* mEditor = nullptr;
 
     struct NodeIdLess {
@@ -32,8 +28,6 @@ class MaterialGraphPanel : public EditorPanel {
     };
 
     const int mPinIconSize = 24;
-    const float mTouchTime = 1.0f;
-    std::map<NodeID, float, NodeIdLess> mNodeTouchTime;
 
    private:
     ///
@@ -42,11 +36,8 @@ class MaterialGraphPanel : public EditorPanel {
     void ShowPreviewPanel(float panelWidth, float panelHeight);
     void DrawPinController(MaterialPinPtr pin);
     void Compile();
-
+    void ResetLayout();
     /// Utils
-    void TouchNode(NodeID id);
-    float GetTouchProgress(NodeID id);
-    void UpdateTouch();
     bool Splitter(bool split_vertically, float thickness, float* size1, float* size2,
                   float min_size1, float min_size2, float splitter_long_axis_size = -1.0f);
     void DrawPinIcon(MaterialPinPtr pin, bool connected, int alpha);

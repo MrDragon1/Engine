@@ -57,8 +57,10 @@ class MaterialNode : public RefCounted {
     ElementPtr mSource;
     MaterialGraphPtr mGraph;
 
+    size_t mLevel = 0;
     Vector3 mColor;
     Vector2 mSize;
+    Vector2 mPosition;
     std::string mState;
     std::string mSavedState;
 };

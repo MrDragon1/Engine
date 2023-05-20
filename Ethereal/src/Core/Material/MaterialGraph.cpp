@@ -35,6 +35,9 @@ void MaterialGraph::RemoveNode(NodeID id) {
 
 void MaterialGraph::AddLink(LinkID id, PinID src, PinID dst) {
     if (mLinks.find(id) == mLinks.end()) {
+        if (GetPin(src)->mSource->Is(MaterialElementType::INPUT)) {
+            std::swap(src, dst);
+        }
         mLinks[id] = MaterialLinkPtr::Create(id, src, dst, GetPin(dst)->mSource.As<NodeInput>(),
                                              GetPin(src)->mSource.As<NodeOutput>());
     } else
@@ -78,6 +81,15 @@ bool MaterialGraph::IsPinLinked(PinID id) {
     return false;
 }
 
+MaterialPinPtr MaterialGraph::GetConnectPin(PinID id) {
+    if (!IsPinLinked(id)) return nullptr;
+    for (auto& link : mLinks) {
+        if (link.second->mSrcID == id) return GetPin(link.second->mDstID);
+        if (link.second->mDstID == id) return GetPin(link.second->mSrcID);
+    }
+    return nullptr;
+}
+
 MaterialNodePtr MaterialGraph::GetNode(NodeID id) {
     auto it = mNodes.find(id);
     if (it != mNodes.end()) {
@@ -119,6 +131,64 @@ void MaterialGraph::UpdateLink() {
                     AddLink(GenerateID(), upsteamID, input->mID);
                 }
             }
+        }
+    }
+}
+
+void MaterialGraph::UpdateLayout() {
+    vector<NodeID> sortedNodes;
+
+    std::queue<NodeID> q;
+    std::map<size_t, int> outdegrees;
+
+    for (auto& [id, link] : mLinks) {
+        outdegrees[GetPin(link->mSrcID)->mParent->mID]++;
+    }
+
+    for (auto& [id, node] : mNodes) {
+        node->mLevel = 0;
+        if (outdegrees[id] == 0) {
+            q.push(id);
+        }
+    }
+
+    while (!q.empty()) {
+        int nodeId = q.front();
+        q.pop();
+        sortedNodes.push_back(nodeId);
+
+        MaterialNodePtr node = GetNode(nodeId);
+
+        for (auto& [name, input] : node->GetInputs()) {
+            MaterialPinPtr pin = GetConnectPin(input->mID);
+            if (!pin) continue;
+            MaterialNodePtr startUI = pin->mParent;
+            if (!startUI) continue;
+
+            startUI->mLevel = std::max(startUI->mLevel, node->mLevel + 1);
+
+            if (--outdegrees[startUI->mID] == 0) {
+                q.push(startUI->mID);
+            }
+        }
+    }
+
+    std::unordered_map<int, float> width;
+    std::unordered_map<int, std::vector<MaterialNodePtr>> levelMap;
+    for (auto& [id, node] : mNodes) {
+        width[node->mLevel] = std::max(width[node->mLevel], node->mSize.x);
+        levelMap[node->mLevel].push_back(node);
+    }
+
+    // TODO: consider the pin order to set y position
+    float currPosx = 0.0f;
+    for (int level = 0; level < levelMap.size(); level++) {
+        float currPosy = 0.0f;
+        currPosx -= width[level] + 60;
+        for (MaterialNodePtr node : levelMap[level]) {
+            node->mPosition.x = currPosx;
+            node->mPosition.y = currPosy;
+            currPosy += node->mSize.y + 40;
         }
     }
 }

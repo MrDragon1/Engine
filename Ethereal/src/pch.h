@@ -11,6 +11,8 @@
 #include <map>
 #include <unordered_map>
 #include <unordered_set>
+#include <queue>
+#include <map>
 
 #include "Base/Log.h"
 #include "Base/Ref.h"

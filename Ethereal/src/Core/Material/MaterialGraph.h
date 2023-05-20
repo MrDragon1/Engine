@@ -19,7 +19,7 @@ class MaterialGraph : public Asset {
     MaterialLinkPtr GetLink(LinkID id);
 
     bool IsPinLinked(PinID id);
-
+    MaterialPinPtr GetConnectPin(PinID id);
     MaterialNodePtr GetNode(NodeID id);
     MaterialNodePtr GetNode(string name);
 
@@ -29,6 +29,7 @@ class MaterialGraph : public Asset {
 
     size_t GenerateID() { return mNextId++; }
     void UpdateLink();
+    void UpdateLayout();
 
    private:
     std::string mName;
