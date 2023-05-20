@@ -206,6 +206,26 @@ Ref<RenderTarget> OpenGLDriverApi::CreateRenderTarget(TargetBufferFlags targets,
     return rt;
 }
 
+void OpenGLDriverApi::DestroyTexture(Ref<Texture> handle) {
+    if (handle) {
+        Ref<GLTexture> t = handle.As<GLTexture>();
+        if (any(t->usage & TextureUsage::SAMPLEABLE)) {
+            glBindTexture(t->gl.target, 0);
+            glDeleteTextures(1, &t->gl.id);
+        } else {
+            glDeleteRenderbuffers(1, &t->gl.id);
+        }
+    }
+}
+
+void OpenGLDriverApi::DestroyRenderTarget(Ref<RenderTarget> handle) {
+    if (handle) {
+        Ref<GLRenderTarget> rt = handle.As<GLRenderTarget>();
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glDeleteFramebuffers(1, &rt->gl.id);
+    }
+}
+
 void OpenGLDriverApi::Draw(Ref<RenderPrimitive> rph, PipelineState pipeline) {
     Ref<GLRenderPrimitive> rp = rph.As<GLRenderPrimitive>();
     Ref<GLProgram> p = pipeline.program.As<GLProgram>();
@@ -632,7 +652,8 @@ void OpenGLDriverApi::UpdateFrameBufferTexture(Ref<GLRenderTarget> rt, TargetBuf
 void OpenGLDriverApi::SetRasterState(RasterState state) {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
+    // for seamless skybox
+    glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
     if (state.EnableDepthTest)
         glEnable(GL_DEPTH_TEST);
     else

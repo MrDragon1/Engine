@@ -4,20 +4,26 @@
 #include "Core/Renderer/RenderResource.h"
 namespace Ethereal {
 void UniformManager::Init() {
-    mViewUB = mApi->CreateBufferObject(mViewUib.GetSize(), BufferObjectBinding::UNIFORM, BufferUsage::STATIC);
+    mViewUB = mApi->CreateBufferObject(mViewUib.GetSize(), BufferObjectBinding::UNIFORM,
+                                       BufferUsage::STATIC);
     mApi->UpdateBufferObject(mViewUB, mViewUib.ToBufferDescriptor(), 0);
 
-    mShadowUB = mApi->CreateBufferObject(mShadowUib.GetSize(), BufferObjectBinding::UNIFORM, BufferUsage::STATIC);
+    mShadowUB = mApi->CreateBufferObject(mShadowUib.GetSize(), BufferObjectBinding::UNIFORM,
+                                         BufferUsage::STATIC);
     mApi->UpdateBufferObject(mShadowUB, mShadowUib.ToBufferDescriptor(), 0);
 
-    mLightUB = mApi->CreateBufferObject(mLightUib.GetSize(), BufferObjectBinding::UNIFORM, BufferUsage::STATIC);
+    mLightUB = mApi->CreateBufferObject(mLightUib.GetSize(), BufferObjectBinding::UNIFORM,
+                                        BufferUsage::STATIC);
     mApi->UpdateBufferObject(mLightUB, mLightUib.ToBufferDescriptor(), 0);
 
-    mRenderPrimitiveUB = mApi->CreateBufferObject(mRenderPrimitiveUib.GetSize(), BufferObjectBinding::UNIFORM, BufferUsage::STATIC);
+    mRenderPrimitiveUB = mApi->CreateBufferObject(
+        mRenderPrimitiveUib.GetSize(), BufferObjectBinding::UNIFORM, BufferUsage::STATIC);
     mApi->UpdateBufferObject(mRenderPrimitiveUB, mRenderPrimitiveUib.ToBufferDescriptor(), 0);
 
-    mRenderPrimitiveBoneUB = mApi->CreateBufferObject(mRenderPrimitiveBoneUib.GetSize(), BufferObjectBinding::UNIFORM, BufferUsage::STATIC);
-    mApi->UpdateBufferObject(mRenderPrimitiveBoneUB, mRenderPrimitiveBoneUib.ToBufferDescriptor(), 0);
+    mRenderPrimitiveBoneUB = mApi->CreateBufferObject(
+        mRenderPrimitiveBoneUib.GetSize(), BufferObjectBinding::UNIFORM, BufferUsage::STATIC);
+    mApi->UpdateBufferObject(mRenderPrimitiveBoneUB, mRenderPrimitiveBoneUib.ToBufferDescriptor(),
+                             0);
 
     // TODO: should be max supported texture amount
     mSamplerGroup = mApi->CreateSamplerGroup(20);
@@ -112,7 +118,7 @@ void UniformManager::UpdateMaterial(Ref<MaterialAsset> mat) {
     auto& s = mRenderPrimitiveUib.Edit();
     s.Albedo = Vector4(mat->GetAlbedoColor(), 1);
     s.Emisstion = mat->GetEmission();
-    s.Metallic = mat->GetEmission();
+    s.Metallic = mat->GetMetalness();
     s.Occlusion = 0;
     s.Roughness = mat->GetRoughness();
 
@@ -164,10 +170,14 @@ void UniformManager::UpdateBone() {
 
 void UniformManager::Commit() {
     if (mViewUib.IsDirty()) mApi->UpdateBufferObject(mViewUB, mViewUib.ToBufferDescriptor(), 0);
-    if (mShadowUib.IsDirty()) mApi->UpdateBufferObject(mShadowUB, mShadowUib.ToBufferDescriptor(), 0);
+    if (mShadowUib.IsDirty())
+        mApi->UpdateBufferObject(mShadowUB, mShadowUib.ToBufferDescriptor(), 0);
     if (mLightUib.IsDirty()) mApi->UpdateBufferObject(mLightUB, mLightUib.ToBufferDescriptor(), 0);
-    if (mRenderPrimitiveUib.IsDirty()) mApi->UpdateBufferObject(mRenderPrimitiveUB, mRenderPrimitiveUib.ToBufferDescriptor(), 0);
-    if (mRenderPrimitiveBoneUib.IsDirty()) mApi->UpdateBufferObject(mRenderPrimitiveBoneUB, mRenderPrimitiveBoneUib.ToBufferDescriptor(), 0);
+    if (mRenderPrimitiveUib.IsDirty())
+        mApi->UpdateBufferObject(mRenderPrimitiveUB, mRenderPrimitiveUib.ToBufferDescriptor(), 0);
+    if (mRenderPrimitiveBoneUib.IsDirty())
+        mApi->UpdateBufferObject(mRenderPrimitiveBoneUB,
+                                 mRenderPrimitiveBoneUib.ToBufferDescriptor(), 0);
 
     mApi->UpdateSamplerGroup(mSamplerGroup, mSamplerGroupDesc);
 }

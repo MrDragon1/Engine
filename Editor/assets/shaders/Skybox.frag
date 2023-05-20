@@ -4,7 +4,7 @@ layout(location = 0) out vec4 FragColor;
 layout(location = 1) out int EntityID;
 
 layout(location = 0) in vec3 v_LocalPos;
-layout(binding = 0) uniform samplerCube u_SkyboxTexture;
+layout(binding = 16) uniform samplerCube u_SkyboxTexture;
 
 void main()
 {

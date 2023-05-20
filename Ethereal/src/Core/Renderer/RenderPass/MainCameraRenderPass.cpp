@@ -20,14 +20,18 @@ void MainCameraRenderPass::Init(uint32_t width, uint32_t height) {
     mSkyboxPipeline.rasterState.depthFunc = RasterState::DepthFunc::LE;
 
     auto usage = TextureUsage::COLOR_ATTACHMENT | TextureUsage::SAMPLEABLE;
-    auto hdrTex = api->CreateTexture(1, width, height, 1, TextureFormat::R16G16B16A16_HDR, usage, TextureType::TEXTURE_2D);
-    auto entityIdTex = api->CreateTexture(1, width, height, 1, TextureFormat::R32_INTEGER, usage, TextureType::TEXTURE_2D);
-    auto depthTex = api->CreateTexture(1, width, height, 1, TextureFormat::DEPTH, TextureUsage::DEPTH_ATTACHMENT, TextureType::TEXTURE_2D);
+    auto hdrTex = api->CreateTexture(1, width, height, 1, TextureFormat::R16G16B16A16_HDR, usage,
+                                     TextureType::TEXTURE_2D);
+    auto entityIdTex = api->CreateTexture(1, width, height, 1, TextureFormat::R32_INTEGER, usage,
+                                          TextureType::TEXTURE_2D);
+    auto depthTex = api->CreateTexture(1, width, height, 1, TextureFormat::DEPTH,
+                                       TextureUsage::DEPTH_ATTACHMENT, TextureType::TEXTURE_2D);
     MRT mrt;
     mrt[0] = {hdrTex};
     mrt[1] = {entityIdTex};
-    mRenderTarget =
-        api->CreateRenderTarget(TargetBufferFlags::COLOR0 | TargetBufferFlags::COLOR1 | TargetBufferFlags::DEPTH, width, height, mrt, {depthTex}, {});
+    mRenderTarget = api->CreateRenderTarget(
+        TargetBufferFlags::COLOR0 | TargetBufferFlags::COLOR1 | TargetBufferFlags::DEPTH, width,
+        height, mrt, {depthTex}, {});
 }
 
 void MainCameraRenderPass::Draw() {
@@ -60,19 +64,23 @@ void MainCameraRenderPass::Draw() {
                 Submesh& submesh = ms->GetSubmeshes()[dc.SubmeshIndex];
                 auto materialIndex = submesh.MaterialIndex;
 
-                Ref<MaterialAsset> material =
-                    mt->HasMaterial(materialIndex) ? mt->GetMaterial(materialIndex) : meshMaterialTable->GetMaterial(materialIndex);
+                Ref<MaterialAsset> material = mt->HasMaterial(materialIndex)
+                                                  ? mt->GetMaterial(materialIndex)
+                                                  : meshMaterialTable->GetMaterial(materialIndex);
 
-                Project::GetConfigManager().sUniformManagerConfig.EditorParam.EntityID = mk.EntityID;
+                Project::GetConfigManager().sUniformManagerConfig.EditorParam.EntityID =
+                    mk.EntityID;
 
                 uniformManager->UpdateMaterial(material);
                 uniformManager->UpdateEditor();
-                uniformManager->UpdateRenderPrimitive({.ModelMatrix = meshTransformMap.at(mk).Transforms[0].Transform});
+                uniformManager->UpdateRenderPrimitive(
+                    {.ModelMatrix = meshTransformMap.at(mk).Transforms[0].Transform});
                 // TODO: should not update ViewUib here ( UpdateEditor() will cause this problem )
                 uniformManager->Commit();
                 uniformManager->Bind();
 
-                // RenderCommand::DrawIndexed(ms->GetVertexArray(), submesh.IndexCount, reinterpret_cast<void*>(submesh.BaseIndex * sizeof(uint32_t)),
+                // RenderCommand::DrawIndexed(ms->GetVertexArray(), submesh.IndexCount,
+                // reinterpret_cast<void*>(submesh.BaseIndex * sizeof(uint32_t)),
                 //                            submesh.BaseVertex);
 
                 api->Draw(ms->GetSubMeshRenderPrimitive(dc.SubmeshIndex), mStaticMeshPipeline);
@@ -106,34 +114,57 @@ void MainCameraRenderPass::Draw() {
                 Submesh& submesh = ms->GetSubmeshes()[dc.SubmeshIndex];
                 auto materialIndex = submesh.MaterialIndex;
 
-                Ref<MaterialAsset> material =
-                    mt->HasMaterial(materialIndex) ? mt->GetMaterial(materialIndex) : meshMaterialTable->GetMaterial(materialIndex);
+                Ref<MaterialAsset> material = mt->HasMaterial(materialIndex)
+                                                  ? mt->GetMaterial(materialIndex)
+                                                  : meshMaterialTable->GetMaterial(materialIndex);
 
-                Project::GetConfigManager().sUniformManagerConfig.EditorParam.EntityID = mk.EntityID;
+                Project::GetConfigManager().sUniformManagerConfig.EditorParam.EntityID =
+                    mk.EntityID;
 
                 uniformManager->UpdateBone();
                 uniformManager->UpdateMaterial(material);
                 uniformManager->UpdateEditor();
-                uniformManager->UpdateRenderPrimitive({.ModelMatrix = meshTransformMap.at(mk).Transforms[0].Transform});
+                uniformManager->UpdateRenderPrimitive(
+                    {.ModelMatrix = meshTransformMap.at(mk).Transforms[0].Transform});
                 // TODO: should not update ViewUib here ( UpdateEditor() will cause this problem )
                 uniformManager->Commit();
                 uniformManager->Bind();
 
                 api->Draw(ms->GetSubMeshRenderPrimitive(dc.SubmeshIndex), mMeshPipeline);
 
-                // RenderCommand::DrawIndexed(ms->GetVertexArray(), submesh.IndexCount, reinterpret_cast<void*>(submesh.BaseIndex * sizeof(uint32_t)),
+                // RenderCommand::DrawIndexed(ms->GetVertexArray(), submesh.IndexCount,
+                // reinterpret_cast<void*>(submesh.BaseIndex * sizeof(uint32_t)),
                 //                            submesh.BaseVertex);
             }
         }
     }
 
     // Draw Skybox
+    uniformManager->Bind();
     api->Draw(RenderResource::Cube->GetMeshSource()->GetRenderPrimitive(), mSkyboxPipeline);
 
     api->EndRenderPass();
 }
 
-void MainCameraRenderPass::OnResize(uint32_t width, uint32_t height) {}
+void MainCameraRenderPass::OnResize(uint32_t width, uint32_t height) {
+    auto api = GlobalContext::GetDriverApi();
+    // TODO: move this stuff to api
+    api->DestroyRenderTarget(mRenderTarget);
+
+    auto usage = TextureUsage::COLOR_ATTACHMENT | TextureUsage::SAMPLEABLE;
+    auto hdrTex = api->CreateTexture(1, width, height, 1, TextureFormat::R16G16B16A16_HDR, usage,
+                                     TextureType::TEXTURE_2D);
+    auto entityIdTex = api->CreateTexture(1, width, height, 1, TextureFormat::R32_INTEGER, usage,
+                                          TextureType::TEXTURE_2D);
+    auto depthTex = api->CreateTexture(1, width, height, 1, TextureFormat::DEPTH,
+                                       TextureUsage::DEPTH_ATTACHMENT, TextureType::TEXTURE_2D);
+    MRT mrt;
+    mrt[0] = {hdrTex};
+    mrt[1] = {entityIdTex};
+    mRenderTarget = api->CreateRenderTarget(
+        TargetBufferFlags::COLOR0 | TargetBufferFlags::COLOR1 | TargetBufferFlags::DEPTH, width,
+        height, mrt, {depthTex}, {});
+}
 
 int MainCameraRenderPass::GetMousePicking(int x, int y) {
     auto api = GlobalContext::GetDriverApi();

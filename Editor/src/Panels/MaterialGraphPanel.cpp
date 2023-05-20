@@ -8,6 +8,7 @@
 
 #include "Utils/XmlParser.h"
 #include "Core/Material/MaterialBase/Document.h"
+#include "Core/Material/MaterialBase/Value.h"
 namespace Ethereal {
 
 MaterialGraphPanel::MaterialGraphPanel() {

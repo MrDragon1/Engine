@@ -93,17 +93,23 @@ void RenderSystem::Draw(TimeStamp ts) {
 void RenderSystem::OnResize() {
     mHeight = GlobalContext::GetViewportSize().y;
     mWidth = GlobalContext::GetViewportSize().x;
-    mShadowMapRenderPass->OnResize(mWidth, mHeight);
     mMainCameraRenderPass->OnResize(mWidth, mHeight);
 }
 
-uint64_t RenderSystem::GetMainImage() { return GlobalContext::GetDriverApi()->GetTextueID(mMainImage); }
+uint64_t RenderSystem::GetMainImage() {
+    return GlobalContext::GetDriverApi()->GetTextueID(mMainImage);
+}
 
-uint64_t RenderSystem::GetSkyboxImage() { return GlobalContext::GetDriverApi()->GetTextueID(mEnvironmentMapRenderPass->mInputTexture); };
+uint64_t RenderSystem::GetSkyboxImage() {
+    return GlobalContext::GetDriverApi()->GetTextueID(mEnvironmentMapRenderPass->mInputTexture);
+};
 
-int RenderSystem::GetMousePicking(int x, int y) { return mMainCameraRenderPass->GetMousePicking(x, y); }
+int RenderSystem::GetMousePicking(int x, int y) {
+    return mMainCameraRenderPass->GetMousePicking(x, y);
+}
 
-void RenderSystem::SubmitStaticMesh(Ref<StaticMesh> staticMesh, Ref<MaterialTable> materialTable, uint32_t EntityID, const Matrix4& transform) {
+void RenderSystem::SubmitStaticMesh(Ref<StaticMesh> staticMesh, Ref<MaterialTable> materialTable,
+                                    uint32_t EntityID, const Matrix4& transform) {
     Ref<MeshSource> meshSource = staticMesh->GetMeshSource();
     const auto& submeshData = meshSource->GetSubmeshes();
     for (uint32_t submeshIndex : staticMesh->GetSubmeshes()) {
@@ -131,7 +137,8 @@ void RenderSystem::SubmitStaticMesh(Ref<StaticMesh> staticMesh, Ref<MaterialTabl
     }
 }
 
-void RenderSystem::SubmitMesh(Ref<Mesh> mesh, Ref<MaterialTable> materialTable, uint32_t EntityID, const Matrix4& transform) {
+void RenderSystem::SubmitMesh(Ref<Mesh> mesh, Ref<MaterialTable> materialTable, uint32_t EntityID,
+                              const Matrix4& transform) {
     Ref<MeshSource> meshSource = mesh->GetMeshSource();
     const auto& submeshData = meshSource->GetSubmeshes();
     for (uint32_t submeshIndex : mesh->GetSubmeshes()) {
@@ -166,7 +173,8 @@ std::pair<Ref<Texture>, Ref<Texture>> RenderSystem::CreateEnvironmentMap(const s
 
     mEnvironmentMapRenderPass->Draw();
     // TODO: Copy the Ref<TextureCube> otherwise every Environment will point to the same Ref
-    return {mEnvironmentMapRenderPass->mEnvironmentCubeMap, mEnvironmentMapRenderPass->mReflectionCubeMap};
+    return {mEnvironmentMapRenderPass->mEnvironmentCubeMap,
+            mEnvironmentMapRenderPass->mReflectionCubeMap};
 }
 
 void RenderSystem::LoadProjectSettings() {}
