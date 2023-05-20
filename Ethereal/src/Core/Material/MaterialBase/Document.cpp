@@ -244,6 +244,12 @@ void NodeOutput::RemoveConnector(ElementPtr conn) {
     }
 }
 
+void NodeOutput::Disconnect() {
+    for (auto& [_, conn] : mConnectors) {
+        conn.As<NodeInput>()->Disconnect();
+    }
+}
+
 void NodeOutput::Validate() {
     Element::Validate();
     ET_CORE_ASSERT(GetChildren().empty(), "Output port should not have child!");

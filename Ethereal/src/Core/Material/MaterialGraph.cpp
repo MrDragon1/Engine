@@ -11,16 +11,45 @@ void MaterialGraph::AddNode(MaterialNodePtr node) {
         ET_CORE_WARN("Node with {0} already exists!", node->mID);
 }
 
-void MaterialGraph::RemoveNode(NodeID id) { mNodes.erase(id); }
+void MaterialGraph::RemoveNode(NodeID id) {
+    if (mNodes.find(id) != mNodes.end()) {
+        auto& node = mNodes[id];
+        if (node->mSource->Is(MaterialElementType::INPUT)) {
+            node->mSource.As<NodeInput>()->Disconnect();
+        } else if (node->mSource->Is(MaterialElementType::OUTPUT)) {
+            node->mSource.As<NodeOutput>()->Disconnect();
+        } else if (!node->mSource->Is(MaterialElementType::DOCUMENT)) {
+            for (auto& input : node->mSource->GetInputs()) {
+                input->Disconnect();
+            }
+            for (auto& output : node->mSource->GetOutputs()) {
+                output->Disconnect();
+            }
+        }
+
+        mNameNodeMap.erase(node->mName);
+        mNodes.erase(id);
+    } else
+        ET_CORE_WARN("Node with {0} not found!", id);
+}
 
 void MaterialGraph::AddLink(LinkID id, PinID src, PinID dst) {
     if (mLinks.find(id) == mLinks.end()) {
-        mLinks[id] = MaterialLinkPtr::Create(id, src, dst);
+        mLinks[id] = MaterialLinkPtr::Create(id, src, dst, GetPin(dst)->mSource.As<NodeInput>(),
+                                             GetPin(src)->mSource.As<NodeOutput>());
     } else
         ET_CORE_WARN("Link with {0} already exists!", id);
 }
 
-void MaterialGraph::RemoveLink(LinkID id) { mLinks.erase(id); }
+void MaterialGraph::RemoveLink(LinkID id) {
+    if (mLinks.find(id) != mLinks.end()) {
+        auto& link = mLinks[id];
+        link->mSourceInput.As<NodeInput>()->Disconnect();
+        // we needn't disconnect output, since it's already disconnected.
+        mLinks.erase(id);
+    } else
+        ET_CORE_WARN("Link with {0} already exists!", id);
+}
 
 MaterialPinPtr MaterialGraph::GetPin(PinID id) {
     for (auto& [nodeid, node] : mNodes) {
@@ -44,7 +73,7 @@ MaterialLinkPtr MaterialGraph::GetLink(LinkID id) {
 
 bool MaterialGraph::IsPinLinked(PinID id) {
     for (auto& link : mLinks) {
-        if (link.second->mInputID == id || link.second->mOutputID == id) return true;
+        if (link.second->mSrcID == id || link.second->mDstID == id) return true;
     }
     return false;
 }

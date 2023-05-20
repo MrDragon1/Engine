@@ -152,6 +152,7 @@ class NodeInput : public Element {
 
     ElementPtr GetConnector() { return mConnector; }
     void SetConnector(ElementPtr conn);
+    void Disconnect() { SetConnector(nullptr); }
 
     string GetTypeAttribute() { return GetAttribute(MaterialAttribute::TYPE); }
 
@@ -172,6 +173,8 @@ class NodeOutput : public Element {
     std::vector<ElementPtr> GetConnectors();
     void AddConnector(ElementPtr conn);
     void RemoveConnector(ElementPtr conn);
+
+    void Disconnect();
 
     string GetTypeAttribute() { return GetAttribute(MaterialAttribute::TYPE); }
 

@@ -69,14 +69,13 @@ class MaterialLink : public RefCounted {
     ~MaterialLink() = default;
     LinkID mID;
 
-    PinID mInputID;
-    PinID mOutputID;
+    PinID mSrcID;
+    PinID mDstID;
 
-    ElementPtr mSourceInput;
-    ElementPtr mSourceOutput;
+    NodeInputPtr mSourceInput;
+    NodeOutputPtr mSourceOutput;
 
-    MaterialLink(LinkID id, PinID input, PinID output)
-        : mID(id), mInputID(input), mOutputID(output) {}
+    MaterialLink(LinkID id, PinID src, PinID dst, NodeInputPtr sinput, NodeOutputPtr soutput);
 };
 
 }  // namespace Ethereal

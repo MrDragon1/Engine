@@ -149,7 +149,7 @@ void MaterialGraphPanel::OnImGuiRender(bool& isOpen) {
         }
 
         for (auto& [id, link] : mCurrentGraph->GetLinks())
-            ed::Link(link->mID, link->mInputID, link->mOutputID);
+            ed::Link(link->mID, link->mSrcID, link->mDstID);
 
         if (!createNewNode) {
             if (ed::BeginCreate(ImColor(255, 255, 255), 2.0f)) {

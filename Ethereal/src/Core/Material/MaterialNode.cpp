@@ -93,4 +93,10 @@ void MaterialPin::Initalize() {
     mAcceptType = mType;
 }
 
+MaterialLink::MaterialLink(LinkID id, PinID src, PinID dst, NodeInputPtr sinput,
+                           NodeOutputPtr soutput)
+    : mID(id), mSrcID(src), mDstID(dst), mSourceInput(sinput), mSourceOutput(soutput) {
+    mSourceInput->SetConnector(mSourceOutput);
+}
+
 }  // namespace Ethereal
