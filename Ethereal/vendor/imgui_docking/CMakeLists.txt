@@ -12,6 +12,8 @@ set(_imgui_Sources
     imstb_textedit.h
     imstb_truetype.h
     imgui_tables.cpp
+    misc/cpp/imgui_stdlib.h
+    misc/cpp/imgui_stdlib.cpp
     LICENSE.txt
 )
 

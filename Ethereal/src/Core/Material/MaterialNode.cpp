@@ -83,9 +83,9 @@ void MaterialPin::Initalize() {
     else if (typestring == "float4")
         mType = MaterialPinType::Float4;
     else if (typestring == "color3")
-        mType = MaterialPinType::Float3;
+        mType = MaterialPinType::Color3;
     else if (typestring == "color4")
-        mType = MaterialPinType::Float4;
+        mType = MaterialPinType::Color4;
     else if (typestring == "surfaceshader" || typestring == "material")
         mType = MaterialPinType::Flow;
     else

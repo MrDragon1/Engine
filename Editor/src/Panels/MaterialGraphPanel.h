@@ -20,6 +20,9 @@ class MaterialGraphPanel : public EditorPanel {
     MaterialGraphPtr mCurrentGraph = nullptr;
     std::stack<MaterialGraphPtr> mGraphStack;
 
+    bool mAutoLayout = false;
+
+    /// UI stuff
    private:
     // Resource for blueprint
     ed::EditorContext* mEditor = nullptr;
@@ -33,6 +36,14 @@ class MaterialGraphPanel : public EditorPanel {
     std::map<NodeID, float, NodeIdLess> mNodeTouchTime;
 
    private:
+    ///
+    void ShowLeftPanel(float paneWidth);
+    void ShowUINodeInspectorPanel(float panelWidth, float panelHeight);
+    void ShowPreviewPanel(float panelWidth, float panelHeight);
+    void DrawPinController(MaterialPinPtr pin);
+    void Compile();
+
+    /// Utils
     void TouchNode(NodeID id);
     float GetTouchProgress(NodeID id);
     void UpdateTouch();
@@ -40,7 +51,8 @@ class MaterialGraphPanel : public EditorPanel {
                   float min_size1, float min_size2, float splitter_long_axis_size = -1.0f);
     void DrawPinIcon(MaterialPinPtr pin, bool connected, int alpha);
     ImColor GetIconColor(MaterialPinType type);
-    void ShowLeftPanel(float paneWidth);
+    const string PinTypeToString(MaterialPinType type);
+    MaterialPinType GetPinType(const string& type);
 };
 
 }  // namespace Ethereal

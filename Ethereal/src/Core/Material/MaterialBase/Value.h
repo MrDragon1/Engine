@@ -68,31 +68,32 @@ bool ValueBase::Is() const {
 template <class T>
 class Value : public ValueBase {
    public:
-    Value() : data{} {}
+    Value() : mData{} {}
 
-    explicit Value(const T& value) : data(value) {}
+    explicit Value(const T& value) : mData(value) {}
 
     virtual ~Value() {}
 
-    ValueBasePtr Copy() const override { return ValueBase::CreateValue<T>(data); }
+    ValueBasePtr Copy() const override { return ValueBase::CreateValue<T>(mData); }
 
-    void SetData(const T& value) { data = value; }
+    void SetData(const T& value) { mData = value; }
 
-    void SetData(const Value<T>& value) { data = value.data; }
+    void SetData(const Value<T>& value) { mData = value.data; }
 
-    T GetData() const { return data; }
+    T GetData() const { return mData; }
 
-    T* GetDataPtr() { return &data; }
+    T* GetDataPtr() { return &mData; }
 
     static ValueBasePtr CreateFromString(const string& value);
 
     string GetValueString() const override;
 
    public:
-    static const string TYPE;
+    static const string sType;
+    static const string sDefaultValue;
 
    private:
-    T data;
+    T mData;
 };
 
 template <class T>

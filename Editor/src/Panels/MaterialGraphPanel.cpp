@@ -1,5 +1,6 @@
 #include "MaterialGraphPanel.h"
 #include "imgui.h"
+#include "misc/cpp/imgui_stdlib.h"
 #include <imgui_node_editor/imgui_node_editor.h>
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include <imgui_internal.h>
@@ -268,6 +269,13 @@ void MaterialGraphPanel::OnImGuiRender(bool& isOpen) {
 
     // deal with popup
     auto openPopupPosition = ImGui::GetMousePos();
+    ed::Suspend();
+
+    if (ed::ShowBackgroundContextMenu()) {
+        ImGui::OpenPopup("Create New Node");
+        newNodeLinkPin = nullptr;
+    }
+    ed::Resume();
 
     ed::Suspend();
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8, 8));
@@ -332,6 +340,211 @@ void MaterialGraphPanel::PopGraph() {
     }
     mCurrentGraph = mGraphStack.top();
     mGraphStack.pop();
+}
+
+void MaterialGraphPanel::ShowLeftPanel(float width) {
+    static float previewPanelHeight = 200.0f;
+    static float inspectorPanelHeight = 200.0f;
+    ImGui::BeginChild("left panel", ImVec2(width, 0));
+
+    Splitter(false, 4.0f, &previewPanelHeight, &inspectorPanelHeight, 50.0f, 50.0f);
+
+    width = ImGui::GetContentRegionAvail().x;
+    ImVec2 windowPos = ImGui::GetWindowPos();
+    ShowPreviewPanel(width, previewPanelHeight);
+    ShowUINodeInspectorPanel(width, inspectorPanelHeight);
+
+    ImGui::EndChild();
+
+    ImVec2 screenSize = ImVec2(width, previewPanelHeight);
+    // HandleInputs(windowPos, screenSize[0], screenSize[1]);
+}
+
+void MaterialGraphPanel::ShowUINodeInspectorPanel(float panelWidth, float panelHeight) {
+    std::vector<ed::NodeId> selectedNodeIds;
+    std::vector<ed::LinkId> selectedLinkIds;
+    selectedNodeIds.resize(ed::GetSelectedObjectCount());
+    selectedLinkIds.resize(ed::GetSelectedObjectCount());
+
+    int nodeCount =
+        ed::GetSelectedNodes(selectedNodeIds.data(), static_cast<int>(selectedNodeIds.size()));
+    int linkCount =
+        ed::GetSelectedLinks(selectedLinkIds.data(), static_cast<int>(selectedLinkIds.size()));
+
+    selectedNodeIds.resize(nodeCount);
+    selectedLinkIds.resize(linkCount);
+
+    std::vector<MaterialNodePtr> selectedNodes;
+    std::vector<MaterialLinkPtr> selectedLinks;
+    for (auto& nodeid : selectedNodeIds) {
+        for (auto& [id, node] : mCurrentGraph->GetNodes()) {
+            if (node->mID == (NodeID)nodeid) {
+                selectedNodes.push_back(node);
+                break;
+            }
+        }
+    }
+    for (auto& linkid : selectedLinkIds) {
+        for (auto& [id, link] : mCurrentGraph->GetLinks()) {
+            if (link->mID == (NodeID)linkid) {
+                selectedLinks.push_back(link);
+                break;
+            }
+        }
+    }
+
+    ImGui::BeginHorizontal("Style Editor", ImVec2(panelWidth, 0));
+    ImGui::Spring(0.0f, 0.0f);
+    if (ImGui::Button("Zoom to Content")) ed::NavigateToContent();
+    if (ImGui::Button("Back")) {
+        PopGraph();
+    }
+    if (ImGui::Button("Reset Layout")) mAutoLayout = true;
+    if (ImGui::Button("Compile")) Compile();
+
+    ImGui::EndHorizontal();
+
+    ImGui::GetWindowDrawList()->AddRectFilled(
+        ImGui::GetCursorScreenPos(),
+        ImGui::GetCursorScreenPos() + ImVec2(panelWidth, ImGui::GetTextLineHeight()),
+        ImColor(ImGui::GetStyle().Colors[ImGuiCol_HeaderActive]),
+        ImGui::GetTextLineHeight() * 0.25f);
+    ImGui::Spacing();
+    ImGui::SameLine();
+    ImGui::TextUnformatted("Inspector");
+
+    for (auto& node : selectedNodes) {
+        ImGui::Text("Name: %s", node->mName.c_str());
+        ImGui::Text("Type: %s", node->mSource->GetType().c_str());
+        ImGui::Separator();
+        ImGui::Text("Inputs:");
+        ImGui::Indent();
+        for (auto& [name, input] : node->GetInputs()) {
+            float prevpos = ImGui::GetCursorScreenPos().x;
+            ImGui::Text("%s: [%s] ", input->mName.c_str(), PinTypeToString(input->mType).c_str());
+            ImGui::SameLine(panelWidth / 2, 0);
+            ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - 5);
+            DrawPinController(input);
+            ImGui::PopItemWidth();
+        }
+        ImGui::Unindent();
+
+        ImGui::Text("Outputs:");
+        ImGui::Indent();
+        for (auto& [name, output] : node->GetOutputs()) {
+            ImGui::Text("%s: [%s] ", output->mName.c_str(), PinTypeToString(output->mType).c_str());
+        }
+        ImGui::Unindent();
+        ImGui::Separator();
+    }
+}
+
+void MaterialGraphPanel::ShowPreviewPanel(float panelWidth, float panelHeight) {
+    ImGui::BeginHorizontal("Preview", ImVec2(panelWidth, panelHeight));
+    // mRenderer.Resize((size_t)panelWidth, (size_t)panelHeight);
+    // ImGui::Spring(0.0f, 0.0f);
+    // auto& io = ImGui::GetIO();
+
+    // mRenderer.RenderMaterial(mMaterial, mContext);
+
+    // ImGui::Image(reinterpret_cast<void*>(mRenderer.mAttachment), ImVec2{panelWidth, panelHeight},
+    //              ImVec2{0, 1}, ImVec2{1, 0});
+    ImGui::Text("Preview Image Here");
+
+    ImGui::EndHorizontal();
+}
+
+void MaterialGraphPanel::DrawPinController(MaterialPinPtr pin) {
+#define BEGIN_UPDATE() {
+#define ENG_UPDATE() \
+    break;           \
+    }
+    if (!pin->mSource || !pin->mSource->Is(MaterialElementType::INPUT)) {
+        ImGui::Text("");
+        return;
+    }
+    NodeInputPtr input = pin->mSource.As<NodeInput>();
+    if (input->GetConnector()) {
+        ImGui::Text("");
+        return;
+    }
+
+    std::string dummyname = ("##" + pin->mName);
+    switch (pin->mType) {
+        case MaterialPinType::Bool:
+            BEGIN_UPDATE();
+            ImGui::Checkbox(dummyname.c_str(), input->GetValue()->GetPtr<bool>());
+            ENG_UPDATE();
+        case MaterialPinType::Int:
+            BEGIN_UPDATE();
+            ImGui::DragInt(dummyname.c_str(), input->GetValue()->GetPtr<int>(), 1.0f);
+            ENG_UPDATE();
+        case MaterialPinType::Float:
+            BEGIN_UPDATE();
+            ImGui::DragFloat(dummyname.c_str(), input->GetValue()->GetPtr<float>(), 0.01f);
+            ENG_UPDATE();
+        case MaterialPinType::Float2:
+            BEGIN_UPDATE();
+            ImGui::DragFloat2(dummyname.c_str(), (float*)input->GetValue()->GetPtr<Vector2>(),
+                              0.01f);
+            ENG_UPDATE();
+        case MaterialPinType::Float3:
+            BEGIN_UPDATE();
+            ImGui::DragFloat3(dummyname.c_str(), (float*)input->GetValue()->GetPtr<Vector3>(),
+                              0.01f);
+            ENG_UPDATE();
+        case MaterialPinType::Float4:
+            BEGIN_UPDATE();
+            ImGui::DragFloat4(dummyname.c_str(), (float*)input->GetValue()->GetPtr<Vector4>(),
+                              0.01f);
+            ENG_UPDATE();
+        case MaterialPinType::Color3:
+            BEGIN_UPDATE();
+            ImGui::ColorEdit3(dummyname.c_str(), (float*)input->GetValue()->GetPtr<Color3>());
+            ENG_UPDATE();
+        case MaterialPinType::Color4:
+            BEGIN_UPDATE();
+            ImGui::ColorEdit4(dummyname.c_str(), (float*)input->GetValue()->GetPtr<Color4>());
+            ENG_UPDATE();
+        case MaterialPinType::String:
+            BEGIN_UPDATE();
+            ImGui::InputText(dummyname.c_str(), input->GetValue()->GetPtr<string>());
+            ENG_UPDATE();
+        default:
+            ImGui::Text("Unknown Controller");
+    }
+}
+
+void MaterialGraphPanel::Compile() {}
+
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////      Utils      ///////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+
+MaterialPinType MaterialGraphPanel::GetPinType(const string& type) {
+    if (type == "boolean") return MaterialPinType::Bool;
+    if (type == "integer") return MaterialPinType::Int;
+    if (type == "float") return MaterialPinType::Float;
+    if (type == "float2") return MaterialPinType::Float2;
+    if (type == "float3") return MaterialPinType::Float3;
+    if (type == "float4") return MaterialPinType::Float4;
+    if (type == "color3") return MaterialPinType::Color3;
+    if (type == "color4") return MaterialPinType::Color4;
+    if (type == "string") return MaterialPinType::String;
+    return MaterialPinType::Flow;
+}
+
+const string MaterialGraphPanel::PinTypeToString(MaterialPinType type) {
+    if (type == MaterialPinType::Bool) return "boolean";
+    if (type == MaterialPinType::Int) return "integer";
+    if (type == MaterialPinType::Float) return "float";
+    if (type == MaterialPinType::Float2) return "float2";
+    if (type == MaterialPinType::Float3) return "float3";
+    if (type == MaterialPinType::Float4) return "float4";
+    if (type == MaterialPinType::Color3) return "color3";
+    if (type == MaterialPinType::Color4) return "color4";
+    if (type == MaterialPinType::String) return "string";
+    return "none";
 }
 
 void MaterialGraphPanel::TouchNode(NodeID id) { mNodeTouchTime[id] = mTouchTime; }
@@ -425,189 +638,5 @@ void MaterialGraphPanel::DrawPinIcon(MaterialPinPtr pin, bool connected, int alp
     BlueprintNodeBuilder::Icon(ImVec2(mPinIconSize, mPinIconSize), iconType, connected, color,
                                ImColor(32, 32, 32, alpha));
 };
-
-void MaterialGraphPanel::ShowLeftPanel(float paneWidth) {
-    auto api = GlobalContext::GetDriverApi();
-
-    auto& io = ImGui::GetIO();
-
-    ImGui::BeginChild("Selection", ImVec2(paneWidth, 0));
-
-    paneWidth = ImGui::GetContentRegionAvail().x;
-
-    static bool showStyleEditor = false;
-    ImGui::BeginHorizontal("Style Editor", ImVec2(paneWidth, 0));
-    ImGui::Spring(0.0f, 0.0f);
-    if (ImGui::Button("Zoom to Content")) ed::NavigateToContent();
-    ImGui::Spring(0.0f);
-    if (ImGui::Button("Show Flow")) {
-        for (auto& [linkid, link] : mCurrentGraph->GetLinks()) ed::Flow(link->mID);
-    }
-    ImGui::Spring();
-    if (ImGui::Button("Edit Style")) showStyleEditor = true;
-    if (ImGui::Button("Back")) PopGraph();
-    ImGui::EndHorizontal();
-
-    // if (showStyleEditor) ShowStyleEditor(&showStyleEditor);
-
-    std::vector<ed::NodeId> selectedNodes;
-    std::vector<ed::LinkId> selectedLinks;
-    selectedNodes.resize(ed::GetSelectedObjectCount());
-    selectedLinks.resize(ed::GetSelectedObjectCount());
-
-    int nodeCount =
-        ed::GetSelectedNodes(selectedNodes.data(), static_cast<int>(selectedNodes.size()));
-    int linkCount =
-        ed::GetSelectedLinks(selectedLinks.data(), static_cast<int>(selectedLinks.size()));
-
-    selectedNodes.resize(nodeCount);
-    selectedLinks.resize(linkCount);
-
-    int saveIconWidth = EditorResource::BlueprintSaveIcon->width;
-    int saveIconHeight = EditorResource::BlueprintSaveIcon->height;
-    int restoreIconWidth = EditorResource::BlueprintRestoreIcon->width;
-    int restoreIconHeight = EditorResource::BlueprintRestoreIcon->height;
-
-    ImGui::GetWindowDrawList()->AddRectFilled(
-        ImGui::GetCursorScreenPos(),
-        ImGui::GetCursorScreenPos() + ImVec2(paneWidth, ImGui::GetTextLineHeight()),
-        ImColor(ImGui::GetStyle().Colors[ImGuiCol_HeaderActive]),
-        ImGui::GetTextLineHeight() * 0.25f);
-    ImGui::Spacing();
-    ImGui::SameLine();
-    ImGui::TextUnformatted("Nodes");
-    ImGui::Indent();
-    for (auto& [nodeid, node] : mCurrentGraph->GetNodes()) {
-        ImGui::PushID(node->mID);
-        auto start = ImGui::GetCursorScreenPos();
-
-        if (const auto progress = GetTouchProgress(node->mID)) {
-            ImGui::GetWindowDrawList()->AddLine(
-                start + ImVec2(-8, 0), start + ImVec2(-8, ImGui::GetTextLineHeight()),
-                IM_COL32(255, 0, 0, 255 - (int)(255 * progress)), 4.0f);
-        }
-
-        bool isSelected = std::find(selectedNodes.begin(), selectedNodes.end(),
-                                    (ed::NodeId)node->mID) != selectedNodes.end();
-        if (ImGui::Selectable((node->mName + "##" + std::to_string(node->mID)).c_str(),
-                              &isSelected)) {
-            if (io.KeyCtrl) {
-                if (isSelected)
-                    ed::SelectNode(node->mID, true);
-                else
-                    ed::DeselectNode(node->mID);
-            } else
-                ed::SelectNode(node->mID, false);
-
-            ed::NavigateToSelection();
-        }
-        if (ImGui::IsItemHovered() && !node->mState.empty())
-            ImGui::SetTooltip("State: %s", node->mState.c_str());
-
-        auto id = std::string("(") + std::to_string(node->mID) + ")";
-        auto textSize = ImGui::CalcTextSize(id.c_str(), nullptr);
-        auto iconPanelPos =
-            start +
-            ImVec2(paneWidth - ImGui::GetStyle().FramePadding.x - ImGui::GetStyle().IndentSpacing -
-                       saveIconWidth - restoreIconWidth - ImGui::GetStyle().ItemInnerSpacing.x * 1,
-                   (ImGui::GetTextLineHeight() - saveIconHeight) / 2);
-        ImGui::GetWindowDrawList()->AddText(
-            ImVec2(iconPanelPos.x - textSize.x - ImGui::GetStyle().ItemInnerSpacing.x, start.y),
-            IM_COL32(255, 255, 255, 255), id.c_str(), nullptr);
-
-        auto drawList = ImGui::GetWindowDrawList();
-        ImGui::SetCursorScreenPos(iconPanelPos);
-        ImGui::SetItemAllowOverlap();
-        if (node->mSavedState.empty()) {
-            if (ImGui::InvisibleButton("save", ImVec2((float)saveIconWidth, (float)saveIconHeight)))
-                node->mSavedState = node->mState;
-
-            if (ImGui::IsItemActive())
-                drawList->AddImage((ImTextureID)api->GetTextueID(EditorResource::BlueprintSaveIcon),
-                                   ImGui::GetItemRectMin(), ImGui::GetItemRectMax(), ImVec2(0, 0),
-                                   ImVec2(1, 1), IM_COL32(255, 255, 255, 96));
-            else if (ImGui::IsItemHovered())
-                drawList->AddImage((ImTextureID)api->GetTextueID(EditorResource::BlueprintSaveIcon),
-                                   ImGui::GetItemRectMin(), ImGui::GetItemRectMax(), ImVec2(0, 0),
-                                   ImVec2(1, 1), IM_COL32(255, 255, 255, 255));
-            else
-                drawList->AddImage((ImTextureID)api->GetTextueID(EditorResource::BlueprintSaveIcon),
-                                   ImGui::GetItemRectMin(), ImGui::GetItemRectMax(), ImVec2(0, 0),
-                                   ImVec2(1, 1), IM_COL32(255, 255, 255, 160));
-        } else {
-            ImGui::Dummy(ImVec2((float)saveIconWidth, (float)saveIconHeight));
-            drawList->AddImage((ImTextureID)api->GetTextueID(EditorResource::BlueprintSaveIcon),
-                               ImGui::GetItemRectMin(), ImGui::GetItemRectMax(), ImVec2(0, 0),
-                               ImVec2(1, 1), IM_COL32(255, 255, 255, 32));
-        }
-
-        ImGui::SameLine(0, ImGui::GetStyle().ItemInnerSpacing.x);
-        ImGui::SetItemAllowOverlap();
-        if (!node->mSavedState.empty()) {
-            if (ImGui::InvisibleButton("restore",
-                                       ImVec2((float)restoreIconWidth, (float)restoreIconHeight))) {
-                node->mState = node->mSavedState;
-                ed::RestoreNodeState(node->mID);
-                node->mSavedState.clear();
-            }
-
-            if (ImGui::IsItemActive())
-                drawList->AddImage(
-                    (ImTextureID)api->GetTextueID(EditorResource::BlueprintRestoreIcon),
-                    ImGui::GetItemRectMin(), ImGui::GetItemRectMax(), ImVec2(0, 0), ImVec2(1, 1),
-                    IM_COL32(255, 255, 255, 96));
-            else if (ImGui::IsItemHovered())
-                drawList->AddImage(
-                    (ImTextureID)api->GetTextueID(EditorResource::BlueprintRestoreIcon),
-                    ImGui::GetItemRectMin(), ImGui::GetItemRectMax(), ImVec2(0, 0), ImVec2(1, 1),
-                    IM_COL32(255, 255, 255, 255));
-            else
-                drawList->AddImage(
-                    (ImTextureID)api->GetTextueID(EditorResource::BlueprintRestoreIcon),
-                    ImGui::GetItemRectMin(), ImGui::GetItemRectMax(), ImVec2(0, 0), ImVec2(1, 1),
-                    IM_COL32(255, 255, 255, 160));
-        } else {
-            ImGui::Dummy(ImVec2((float)restoreIconWidth, (float)restoreIconHeight));
-            drawList->AddImage((ImTextureID)api->GetTextueID(EditorResource::BlueprintRestoreIcon),
-                               ImGui::GetItemRectMin(), ImGui::GetItemRectMax(), ImVec2(0, 0),
-                               ImVec2(1, 1), IM_COL32(255, 255, 255, 32));
-        }
-
-        ImGui::SameLine(0, 0);
-        ImGui::SetItemAllowOverlap();
-        ImGui::Dummy(ImVec2(0, (float)restoreIconHeight));
-
-        ImGui::PopID();
-    }
-    ImGui::Unindent();
-
-    static int changeCount = 0;
-
-    ImGui::GetWindowDrawList()->AddRectFilled(
-        ImGui::GetCursorScreenPos(),
-        ImGui::GetCursorScreenPos() + ImVec2(paneWidth, ImGui::GetTextLineHeight()),
-        ImColor(ImGui::GetStyle().Colors[ImGuiCol_HeaderActive]),
-        ImGui::GetTextLineHeight() * 0.25f);
-    ImGui::Spacing();
-    ImGui::SameLine();
-    ImGui::TextUnformatted("Selection");
-
-    ImGui::BeginHorizontal("Selection Stats", ImVec2(paneWidth, 0));
-    ImGui::Text("Changed %d time%s", changeCount, changeCount > 1 ? "s" : "");
-    ImGui::Spring();
-    if (ImGui::Button("Deselect All")) ed::ClearSelection();
-    ImGui::EndHorizontal();
-    ImGui::Indent();
-    for (int i = 0; i < nodeCount; ++i) ImGui::Text("Node (%p)", selectedNodes[i].AsPointer());
-    for (int i = 0; i < linkCount; ++i) ImGui::Text("Link (%p)", selectedLinks[i].AsPointer());
-    ImGui::Unindent();
-
-    if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Z)))
-        for (auto& [linkid, link] : mCurrentGraph->GetLinks()) ed::Flow(link->mID);
-
-    if (ed::HasSelectionChanged()) ++changeCount;
-
-    ImGui::EndChild();
-}
 
 }  // namespace Ethereal

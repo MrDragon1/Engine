@@ -1,5 +1,6 @@
 #pragma once
 #include "Core/Material/MaterialBase/Element.h"
+#include "Core/Material/MaterialBase/Value.h"
 namespace Ethereal {
 using MaterialGraphPtr = Ref<class MaterialGraph>;
 
@@ -156,8 +157,11 @@ class NodeInput : public Element {
 
     void Validate() override;
 
+    ValueBasePtr GetValue() { return mValue; }
+
    private:
     ElementPtr mConnector;
+    ValueBasePtr mValue = nullptr;
 };
 
 class NodeOutput : public Element {

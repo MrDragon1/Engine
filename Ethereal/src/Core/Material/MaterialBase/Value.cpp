@@ -81,6 +81,24 @@ void Load<Vector4>(const string& value, Vector4& data) {
     sscanf(value.c_str(), "%f, %f, %f, %f", &data.x, &data.y, &data.z, &data.w);
 }
 
+template <>
+void Save<Color3>(const Color3& data, string& value) {
+    value = std::to_string(data.x) + ", " + std::to_string(data.y) + ", " + std::to_string(data.z);
+}
+template <>
+void Load<Color3>(const string& value, Color3& data) {
+    sscanf(value.c_str(), "%f, %f, %f", &data.x, &data.y, &data.z);
+}
+
+template <>
+void Save<Color4>(const Color4& data, string& value) {
+    value = std::to_string(data.x) + ", " + std::to_string(data.y) + ", " + std::to_string(data.z) +
+            ", " + std::to_string(data.w);
+}
+template <>
+void Load<Color4>(const string& value, Color4& data) {
+    sscanf(value.c_str(), "%f, %f, %f, %f", &data.x, &data.y, &data.z, &data.w);
+}
 ValueBasePtr ValueBase::CreateValueFromString(const string& value, const string& type) {
     CreatorMap::iterator it = sCreatorMap.find(type);
     if (it != sCreatorMap.end()) return it->second(value);
@@ -90,7 +108,7 @@ ValueBasePtr ValueBase::CreateValueFromString(const string& value, const string&
 
 template <class T>
 const string& GetTypeString() {
-    return Value<T>::TYPE;
+    return Value<T>::sType;
 }
 
 template <class T>
@@ -103,7 +121,10 @@ string ToValueString(const T& data) {
 template <class T>
 T FromValueString(const string& value) {
     T data;
-    Load<T>(value, data);
+    if (value.empty())
+        Load<T>(Value<T>::sDefaultValue, data);
+    else
+        Load<T>(value, data);
     return data;
 }
 
@@ -111,8 +132,8 @@ template <class T>
 class ValueRegistry {
    public:
     ValueRegistry() {
-        if (!ValueBase::sCreatorMap.count(Value<T>::TYPE)) {
-            ValueBase::sCreatorMap[Value<T>::TYPE] = Value<T>::CreateFromString;
+        if (!ValueBase::sCreatorMap.count(Value<T>::sType)) {
+            ValueBase::sCreatorMap[Value<T>::sType] = Value<T>::CreateFromString;
         }
     }
     ~ValueRegistry() {}
@@ -122,12 +143,13 @@ class ValueRegistry {
 // Template instantiations
 //
 
-#define INSTANTIATE_TYPE(T, name)                        \
+#define INSTANTIATE_TYPE(T, name, dv)                    \
     template <>                                          \
-    const string Value<T>::TYPE = name;                  \
+    const string Value<T>::sType = name;                 \
+    const string Value<T>::sDefaultValue = dv;           \
     template <>                                          \
     string Value<T>::GetValueString() const {            \
-        return ToValueString<T>(data);                   \
+        return ToValueString<T>(mData);                  \
     }                                                    \
     template bool ValueBase::Is<T>() const;              \
     template T* ValueBase::GetPtr<T>();                  \
@@ -139,15 +161,17 @@ class ValueRegistry {
     ValueRegistry<T> registry##T;
 
 // Base types
-INSTANTIATE_TYPE(int, "integer")
-INSTANTIATE_TYPE(bool, "boolean")
-INSTANTIATE_TYPE(float, "float")
-INSTANTIATE_TYPE(Vector2, "float2")
-INSTANTIATE_TYPE(Vector3, "float3")
-INSTANTIATE_TYPE(Vector4, "float4")
-INSTANTIATE_TYPE(string, "string")
+INSTANTIATE_TYPE(int, "integer", "0")
+INSTANTIATE_TYPE(bool, "boolean", "false")
+INSTANTIATE_TYPE(float, "float", "0.0")
+INSTANTIATE_TYPE(Vector2, "float2", "0.0, 0.0")
+INSTANTIATE_TYPE(Vector3, "float3", "0.0, 0.0, 0.0")
+INSTANTIATE_TYPE(Vector4, "float4", "0.0, 0.0, 0.0, 0.0")
+INSTANTIATE_TYPE(Color3, "color3", "1.0, 1.0, 1.0")
+INSTANTIATE_TYPE(Color4, "color4", "1.0, 1.0, 1.0, 1.0")
+INSTANTIATE_TYPE(string, "string", "")
 
 // Alias types
-INSTANTIATE_TYPE(long, "integer")
-INSTANTIATE_TYPE(double, "float")
+INSTANTIATE_TYPE(long, "integer", "0")
+INSTANTIATE_TYPE(double, "float", "0.0")
 }  // namespace Ethereal

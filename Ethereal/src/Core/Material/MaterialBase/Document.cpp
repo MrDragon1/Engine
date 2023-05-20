@@ -223,6 +223,8 @@ void NodeInput::SetConnector(ElementPtr conn) {
 void NodeInput::Validate() {
     Element::Validate();
     ET_CORE_ASSERT(GetChildren().empty(), "Input port should not have child!");
+    string value = GetAttribute(MaterialAttribute::VALUE);
+    mValue = ValueBase::CreateValueFromString(value, GetTypeAttribute());
 }
 
 std::vector<ElementPtr> NodeOutput::GetConnectors() {
