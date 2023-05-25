@@ -3,18 +3,6 @@
 #include "pch.h"
 namespace Ethereal {
 
-using std::map;
-using std::string;
-using std::unordered_map;
-using std::vector;
-
-using StringMap = std::unordered_map<string, string>;
-
-using IntVec = vector<int>;
-using BoolVec = vector<bool>;
-using FloatVec = vector<float>;
-using StringVec = vector<string>;
-
 const string EMPTY_STRING = "";
 
 const StringVec LibraryPath = {

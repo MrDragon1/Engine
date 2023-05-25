@@ -33,4 +33,16 @@
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtx/matrix_decompose.hpp>
 
+using std::map;
+using std::string;
+using std::unordered_map;
+using std::vector;
+
+using StringMap = std::unordered_map<string, string>;
+
+using IntVec = vector<int>;
+using BoolVec = vector<bool>;
+using FloatVec = vector<float>;
+using StringVec = vector<string>;
+
 #define STRING(classname) #classname

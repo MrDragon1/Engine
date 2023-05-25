@@ -3,6 +3,7 @@
 #include "Core/Material/MaterialBase/MaterialDefine.h"
 
 namespace Ethereal {
+using DocumentPtr = Ref<class Document>;
 using ElementPtr = Ref<class Element>;
 using NodeInputPtr = Ref<class NodeInput>;
 using NodeOutputPtr = Ref<class NodeOutput>;
@@ -34,6 +35,7 @@ class Element : public RefCounted {
     UUID GetID() { return mId; }
     ElementPtr GetParent() { return mParent; }
     ElementPtr GetRoot();
+    DocumentPtr GetDocument() { return GetRoot().As<Document>(); }
     const string& GetName() { return mName; }
     const string& GetType() { return mType; }
 

@@ -1,8 +1,10 @@
 #pragma once
 #include "Core/Material/MaterialBase/Element.h"
 #include "Core/Material/MaterialBase/Value.h"
+
 namespace Ethereal {
 using MaterialGraphPtr = Ref<class MaterialGraph>;
+using ShaderGraphPtr = Ref<class ShaderGraph>;
 
 using DocumentPtr = Ref<class Document>;
 using NodeGraphPtr = Ref<class NodeGraph>;
@@ -36,10 +38,11 @@ class Document : public Element {
 
     void Validate() override;
 
-    void TopologicalSort();
-
     MaterialGraphPtr GenerateUIGraph();
     MaterialGraphPtr GenerateUIGraphFromNodeGraph(NodeGraphPtr ng);
+
+    ShaderGraphPtr GenerateShaderGraph();
+    ShaderGraphPtr GenerateShaderGraphFromNodeGraph(NodeGraphPtr ng);
 
     unordered_map<string, InputSocketPtr>& GetInputSockets() { return mInputSockets; }
     unordered_map<string, OutputSocketPtr>& GetOutputSockets() { return mOutputSockets; }
@@ -55,8 +58,6 @@ class Document : public Element {
 
     unordered_map<string, InputSocketPtr> mInputSockets;
     unordered_map<string, OutputSocketPtr> mOutputSockets;
-
-    vector<ElementPtr> mSortedElements;
 };
 
 class NodeGraph : public Element {

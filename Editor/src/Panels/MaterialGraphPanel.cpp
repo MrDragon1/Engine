@@ -554,7 +554,10 @@ void MaterialGraphPanel::DrawPinController(MaterialPinPtr pin) {
     }
 }
 
-void MaterialGraphPanel::Compile() {}
+void MaterialGraphPanel::Compile() {
+    ShaderGraphPtr shaderGraph = mDocument->GenerateShaderGraph();
+    shaderGraph->EmitString();
+}
 
 void MaterialGraphPanel::ResetLayout() {
     mAutoLayout = false;

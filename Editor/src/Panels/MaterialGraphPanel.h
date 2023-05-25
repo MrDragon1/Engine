@@ -1,6 +1,7 @@
 #pragma once
 #include "Core/Editor/EditorPanel.h"
 #include "Core/Material/MaterialGraph.h"
+#include "Core/Material/ShaderGenerater/ShaderGraph.h"
 #include <stack>
 namespace ed = ax::NodeEditor;
 

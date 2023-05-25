@@ -1,6 +1,7 @@
 #include "Document.h"
 
 #include "Core/Material/MaterialGraph.h"
+#include "Core/Material/ShaderGenerater/ShaderGraph.h"
 namespace Ethereal {
 
 void Document::ImportLibrary(DocumentPtr lib) {
@@ -129,8 +130,6 @@ void Document::Validate() {
     }
 }
 
-void Document::TopologicalSort() { mSortedElements.clear(); }
-
 MaterialGraphPtr Document::GenerateUIGraph() {
     MaterialGraphPtr uiGraph = MaterialGraphPtr::Create(GetName(), this);
 
@@ -196,6 +195,77 @@ MaterialGraphPtr Document::GenerateUIGraphFromNodeGraph(NodeGraphPtr ng) {
     return uiGraph;
 }
 
+ShaderGraphPtr Document::GenerateShaderGraph() {
+    ShaderGraphPtr shaderGraph = ShaderGraphPtr::Create(GetName(), this);
+
+    /// Create ShaderNode
+    for (auto& [_, node] : GetNodeInstances()) {
+        ShaderNodePtr shaderNode = ShaderNodePtr::Create(node, shaderGraph);
+        shaderGraph->AddNode(shaderNode);
+    }
+
+    for (auto& [_, node] : GetNodeGraphs()) {
+        if (node->IsImpl()) continue;
+        ShaderNodePtr shaderNode = ShaderNodePtr::Create(node, shaderGraph);
+        shaderGraph->AddNode(shaderNode);
+    }
+
+    /// Create Links
+    shaderGraph->UpdateLink();
+
+    shaderGraph->UpdateVariable();
+
+    shaderGraph->TopologicalSort();
+    return shaderGraph;
+}
+
+ShaderGraphPtr Document::GenerateShaderGraphFromNodeGraph(NodeGraphPtr ng) {
+    ShaderGraphPtr shaderGraph = ShaderGraphPtr::Create(ng->GetName(), this);
+
+    /// Create ShaderNode
+    for (auto& [_, node] : ng->GetNodeInstances()) {
+        ShaderNodePtr shaderNode = ShaderNodePtr::Create(node, shaderGraph);
+        shaderGraph->AddNode(shaderNode);
+    }
+
+    // There are no NodeGraph in NodeGraph
+
+    if (ng->IsImpl())  // Compound Node
+    {
+        NodeDefinePtr nodeDefine = ng->GetNodeImpl()->GetNodeDefine();
+        for (auto& input : nodeDefine->GetInputs()) {
+            ShaderInputSocketPtr shaderInput = ShaderInputSocketPtr::Create(nullptr, input, true);
+            shaderGraph->AddInputSocket(shaderInput);
+        }
+
+        for (auto& output : nodeDefine->GetOutputs()) {
+            ShaderOutputSocketPtr shaderOutput =
+                ShaderOutputSocketPtr::Create(nullptr, output, true);
+            shaderGraph->AddOutputSocket(shaderOutput);
+        }
+    } else {  // Aggregation Node
+        for (auto& input : ng->GetInputs()) {
+            ShaderInputSocketPtr shaderInput = ShaderInputSocketPtr::Create(nullptr, input, true);
+            shaderGraph->AddInputSocket(shaderInput);
+        }
+
+        for (auto& output : ng->GetOutputs()) {
+            ShaderOutputSocketPtr shaderOutput =
+                ShaderOutputSocketPtr::Create(nullptr, output, true);
+            shaderGraph->AddOutputSocket(shaderOutput);
+        }
+    }
+
+    /// Create Links
+    shaderGraph->UpdateLink();
+
+    shaderGraph->UpdateVariable();
+
+    shaderGraph->TopologicalSort();
+
+    return shaderGraph;
+}
+
 void NodeInput::SetConnector(ElementPtr conn) {
     if (mConnector && conn != mConnector) {
         mConnector.As<NodeOutput>()->RemoveConnector(this);
@@ -211,7 +281,7 @@ void NodeInput::Validate() {
     mValue = ValueBase::CreateValueFromString(value, GetTypeAttribute());
 }
 
-std::vector<ElementPtr> NodeOutput::GetConnectors() {
+vector<ElementPtr> NodeOutput::GetConnectors() {
     std::vector<ElementPtr> res;
     for (auto& [id, elem] : mConnectors) {
         res.push_back(elem);
