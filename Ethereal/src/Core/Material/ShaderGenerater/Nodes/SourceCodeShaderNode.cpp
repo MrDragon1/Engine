@@ -20,7 +20,8 @@ void SourceCodeShaderNode::EmitFunctionCall(ShaderNodePtr node) {
     if (mInlined) {
         string sourcecode = mFunctionSource;
         StringMap map;
-        for (auto& [name, input] : node->GetInputs()) {
+        for (auto& name : node->GetInputOrder()) {
+            auto input = node->GetInput(name);
             auto output = input->GetConnector();
             if (output) {
                 map[name] = output->GetVariable();
@@ -36,7 +37,8 @@ void SourceCodeShaderNode::EmitFunctionCall(ShaderNodePtr node) {
     } else {
         string expression = mFunctionName + "(";
         string split = "";
-        for (auto& [name, input] : node->GetInputs()) {
+        for (auto& name : node->GetInputOrder()) {
+            auto input = node->GetInput(name);
             if (input->GetConnector()) {
                 expression += split + input->GetConnector()->GetVariable();
             } else {
@@ -44,7 +46,8 @@ void SourceCodeShaderNode::EmitFunctionCall(ShaderNodePtr node) {
             }
             split = ", ";
         }
-        for (auto& [name, output] : node->GetOutputs()) {
+        for (auto& name : node->GetOutputOrder()) {
+            auto output = node->GetOutput(name);
             expression += split + output->GetVariable();
         }
         expression += ");";

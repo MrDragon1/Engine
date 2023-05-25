@@ -84,6 +84,9 @@ class ShaderNode : public RefCounted {
     unordered_map<string, ShaderInputPtr> GetInputs() { return mInputs; }
     unordered_map<string, ShaderOutputPtr> GetOutputs() { return mOutputs; }
 
+    vector<string> GetInputOrder() { return mInputOrder; }
+    vector<string> GetOutputOrder() { return mOutputOrder; }
+
     void Emit() { mImpl->EmitFunctionCall(this); }
 
     void Initalize();
@@ -94,6 +97,9 @@ class ShaderNode : public RefCounted {
     unordered_map<string, ShaderInputPtr> mInputs;
     unordered_map<string, ShaderOutputPtr> mOutputs;
     ShaderNodeImplPtr mImpl;
+
+    vector<string> mOutputOrder;
+    vector<string> mInputOrder;
 
     ElementPtr mSource;
     ShaderGraphPtr mGraph;

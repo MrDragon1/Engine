@@ -48,14 +48,14 @@ class Element : public RefCounted {
     string mName;
     string mType;
     std::unordered_map<string, string> mAttributes;
-    std::map<UUID, ElementPtr> mChildren;
+    vector<ElementPtr> mChildren;
     ElementPtr mParent;
 };
 
 template <typename T>
 std::vector<Ref<T>> Element::GetChildren(string type) {
     std::vector<Ref<T>> children;
-    for (auto& [_, child] : mChildren) {
+    for (auto& child : mChildren) {
         if (child->Is(type)) children.push_back(child.As<T>());
     }
     return children;

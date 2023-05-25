@@ -11,7 +11,8 @@ void AggregationShaderNode::EmitFunctionCall(ShaderNodePtr node) {
     mGraph->EmitString();
 
     string expression = "";
-    for (auto& [name, output] : node->GetOutputs()) {
+    for (auto& name : node->GetOutputOrder()) {
+        auto output = node->GetOutput(name);
         expression += output->GetVariable() + " = " +
                       output->GetConnectorSocket()->GetConnector()->GetVariable() + ";";
     }

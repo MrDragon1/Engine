@@ -27,8 +27,10 @@ string Element::GetAttribute(const string& attr) {
 
 void Element::AddChild(ElementPtr child) {
     if (!child) ET_CORE_ASSERT("Try to add an ampty child!");
-    if (GetChild(child->GetID())) ET_CORE_WARN("Child " + child->GetName() + " already exists");
-    mChildren[child->GetID()] = child;
+    if (GetChild(child->GetID()))
+        ET_CORE_WARN("Child " + child->GetName() + " already exists");
+    else
+        mChildren.push_back(child);
 }
 
 ElementPtr Element::AddChildOfType(const string& type, const string& name) {
@@ -55,16 +57,15 @@ ElementPtr Element::AddChildOfType(const string& type, const string& name) {
 }
 
 ElementPtr Element::GetChild(UUID id) {
-    auto it = mChildren.find(id);
-    if (it != mChildren.end()) {
-        return (*it).second;
+    for (auto it = mChildren.begin(); it != mChildren.end(); it++) {
+        if ((*it)->GetID() == id) return (*it);
     }
     return nullptr;
 }
 
 ElementPtr Element::GetChild(const string& name) {
-    for (auto& [_, child] : mChildren) {
-        if (child->GetName() == name) return child;
+    for (auto it = mChildren.begin(); it != mChildren.end(); it++) {
+        if ((*it)->GetName() == name) return (*it);
     }
     return nullptr;
 }

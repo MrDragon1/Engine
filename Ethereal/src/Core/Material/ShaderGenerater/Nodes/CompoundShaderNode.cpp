@@ -12,7 +12,8 @@ void CompoundShaderNode::EmitFunctionCall(ShaderNodePtr node) {
     expression += node->GetName() + "(";
 
     string split = "";
-    for (auto& [name, input] : node->GetInputs()) {
+    for (auto& name : node->GetInputOrder()) {
+        auto input = node->GetInput(name);
         if (input->GetConnector()) {
             expression += split + input->GetConnector()->GetVariable();
         } else {
@@ -20,7 +21,8 @@ void CompoundShaderNode::EmitFunctionCall(ShaderNodePtr node) {
         }
         split = ", ";
     }
-    for (auto& [name, output] : node->GetOutputs()) {
+    for (auto& name : node->GetOutputOrder()) {
+        auto output = node->GetOutput(name);
         expression += split + output->GetVariable();
     }
     expression += ");";

@@ -51,6 +51,14 @@ void ShaderNode::Initalize() {
     } else if (mSource->Is(MaterialElementType::OUTPUT)) {
     } else if (mSource->Is(MaterialElementType::NODEINSTANCE)) {
         NodeInstancePtr instance = mSource.As<NodeInstance>();
+        NodeDefinePtr nodeDefine = instance->GetNodeDefine();
+        for (auto& input : nodeDefine->GetInputs()) {
+            mInputOrder.push_back(input->GetName());
+        }
+        for (auto& output : nodeDefine->GetOutputs()) {
+            mOutputOrder.push_back(output->GetName());
+        }
+
         for (auto& input : instance->GetInputs()) {
             AddInput(input);
         }
@@ -79,10 +87,12 @@ void ShaderNode::Initalize() {
         NodeGraphPtr nodeGraph = mSource.As<NodeGraph>();
         for (auto& input : nodeGraph->GetInputs()) {
             AddInput(input);
+            mInputOrder.push_back(input->GetName());
         }
 
         for (auto& output : nodeGraph->GetOutputs()) {
             AddOutput(output);
+            mOutputOrder.push_back(output->GetName());
         }
 
         mImpl = AggregationShaderNodePtr::Create(nodeGraph);
