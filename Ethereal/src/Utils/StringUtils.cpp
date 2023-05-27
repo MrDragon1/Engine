@@ -181,11 +181,12 @@ std::string ReadFileAndSkipBOM(const std::filesystem::path& filepath) {
 
         fileSize -= skippedChars - 1;
         result.resize(fileSize);
-        in.read(result.data() + 1, fileSize);
+        in.read(result.data(), fileSize);
         // Add a dummy tab to beginning of file.
-        result[0] = '\t';
+        // result[0] = '\t';
     }
     in.close();
+    if (result.empty()) ET_CORE_WARN("Unable to load file {0}!", filepath.string());
     return result;
 }
 

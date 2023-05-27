@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <materialx version="1.36">
 
-  <implementation name="IM_surfacematerial_glsl" nodedef="ND_surfacematerial" file="asset/lib/glsl/surfacematerial.glsl" function="surfacematerial" language="glsl"/>
+  <implementation name="IM_surfacematerial_glsl" nodedef="ND_surfacematerial" file="assets/materials/lib/glsl/surfacematerial.glsl" function="surfacematerial" language="glsl"/>
 
   <!-- ======================================================================== -->
   <!-- Math nodes                                                               -->

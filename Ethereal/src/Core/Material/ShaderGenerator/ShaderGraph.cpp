@@ -1,9 +1,9 @@
 #include "ShaderGraph.h"
-
+#include "Core/Material/ShaderGenerator/ShaderContext.h"
 namespace Ethereal {
 
-ShaderGraph::ShaderGraph(const string& name, DocumentPtr document)
-    : mName(name), mDocument(document) {}
+ShaderGraph::ShaderGraph(const string& name, DocumentPtr document, bool impl)
+    : mName(name), mDocument(document), mIsImpl(impl) {}
 
 void ShaderGraph::AddNode(ShaderNodePtr node) {
     auto it = mNodes.find(node->GetName());
@@ -107,12 +107,6 @@ void ShaderGraph::UpdateVariable() {
     }
     for (auto& [_, output] : GetOutputSockets()) {
         output->SetVariable(prefix + output->GetName());
-    }
-}
-
-void ShaderGraph::EmitString() {
-    for (auto& node : mSortedNodes) {
-        node->Emit();
     }
 }
 

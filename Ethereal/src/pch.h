@@ -13,6 +13,7 @@
 #include <unordered_set>
 #include <queue>
 #include <map>
+#include <stack>
 
 #include "Base/Log.h"
 #include "Base/Ref.h"
@@ -34,6 +35,7 @@
 #include <glm/gtx/matrix_decompose.hpp>
 
 using std::map;
+using std::stack;
 using std::string;
 using std::unordered_map;
 using std::vector;

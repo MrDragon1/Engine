@@ -7,7 +7,7 @@
   </nodedef>
 
   <implementation name="IM_surface_surfaceshader_genglsl" nodedef="ND_surface" target="genglsl" 
-  file="asset/lib/glsl/surface.glsl" function="surface" />
+  file="assets/materials/lib/glsl/surface.glsl" function="surface" />
 
   <nodedef name="ND_standard_surface_surfaceshader_phong" nodedef="standard_surface" >
     <input name="base_color" type="color3" value="1.0, 1.0, 1.0"/>

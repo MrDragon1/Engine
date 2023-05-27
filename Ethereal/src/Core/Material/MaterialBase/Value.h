@@ -3,11 +3,19 @@
 #include "Core/Material/MaterialBase/MaterialDefine.h"
 
 namespace Ethereal {
+using ShaderContextPtr = Ref<class ShaderContext>;
+using ShaderStagePtr = Ref<class ShaderStage>;
 
 using ValueBasePtr = Ref<class ValueBase>;
 
 template <class T>
 class Value;
+struct ValueProperty {
+    string DefaultValue;
+    string Syntax;
+    string SyntaxInitilize;
+    string Definition;
+};
 
 class ValueBase : public RefCounted {
    public:
@@ -20,10 +28,17 @@ class ValueBase : public RefCounted {
     }
 
     static ValueBasePtr CreateValueFromString(const string& value, const string& type);
+    static ValueBasePtr CreateValueWithType(const string& type);
+    static void EmitTypeDefine(ShaderContextPtr context, ShaderStagePtr stage);
 
     virtual ValueBasePtr Copy() const = 0;
 
     virtual string GetValueString() const = 0;
+
+    virtual string GetDefaultValueString() const = 0;
+    virtual string GetSyntaxString() const = 0;
+    virtual string GetSyntaxInitilizeString() const = 0;
+    virtual string GetDefinitionString() const = 0;
 
     template <class T>
     bool Is() const;
@@ -52,6 +67,7 @@ class ValueBase : public RefCounted {
 
    private:
     static CreatorMap sCreatorMap;
+    static std::unordered_map<string, ValueProperty> sValueMap;
 };
 
 template <class T>
@@ -88,9 +104,17 @@ class Value : public ValueBase {
 
     string GetValueString() const override;
 
+    string GetDefaultValueString() const override;
+    string GetSyntaxString() const override;
+    string GetSyntaxInitilizeString() const override;
+    string GetDefinitionString() const override;
+
    public:
     static const string sType;
     static const string sDefaultValue;
+    static const string sSyntax;
+    static const string sSyntaxInitilize;
+    static const string sDefinition;
 
    private:
     T mData;

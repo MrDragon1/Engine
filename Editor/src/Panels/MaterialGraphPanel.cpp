@@ -10,6 +10,7 @@
 #include "Utils/XmlParser.h"
 #include "Core/Material/MaterialBase/Document.h"
 #include "Core/Material/MaterialBase/Value.h"
+#include "Core/Material/ShaderGenerator/ShaderContext.h"
 namespace Ethereal {
 
 MaterialGraphPanel::MaterialGraphPanel() {
@@ -555,8 +556,50 @@ void MaterialGraphPanel::DrawPinController(MaterialPinPtr pin) {
 }
 
 void MaterialGraphPanel::Compile() {
-    ShaderGraphPtr shaderGraph = mDocument->GenerateShaderGraph();
-    shaderGraph->EmitString();
+    ShaderContextPtr shaderContext = ShaderContextPtr::Create();
+    ShaderGenerator& shaderGen = shaderContext->GetShaderGenerator();
+    shaderContext->mShaderGraph = mDocument->GenerateShaderGraph();
+
+    shaderContext->PushScope(shaderContext->mShaderGraph->GetName());
+
+    auto shaderGraph = shaderContext->GetShaderGraph();
+    shaderContext->mShader = ShaderPtr::Create("shader", shaderGraph);
+    auto shader = shaderContext->GetShader();
+
+    ShaderStagePtr vs = shader->CreateStage(Stage::VERTEX);
+    VariableBlockPtr vsInputs = vs->CreateInputBlock(ShaderBuildInVariable::INPUT);
+    vsInputs->Add(nullptr, "float3", ShaderBuildInVariable::IN_POSITION);
+    vsInputs->Add(nullptr, "float3", ShaderBuildInVariable::IN_NORMAL);
+    VariableBlockPtr vsPublicUniforms = vs->CreateUniformBlock(ShaderBuildInVariable::PUBUNIFORM);
+    vsPublicUniforms->Add(nullptr, "matrix4", ShaderBuildInVariable::MODEL_MATRIX);
+    vsPublicUniforms->Add(nullptr, "matrix4", ShaderBuildInVariable::VIEW_MATRIX);
+    vsPublicUniforms->Add(nullptr, "matrix4", ShaderBuildInVariable::PROJ_MATRIX);
+
+    ShaderStagePtr ps = shader->CreateStage(Stage::PIXEL);
+    VariableBlockPtr psPublicUniforms = ps->CreateUniformBlock(ShaderBuildInVariable::PUBUNIFORM);
+    VariableBlockPtr psOutputs = ps->CreateOutputBlock(ShaderBuildInVariable::OUTPUT);
+
+    for (auto& [name, inputSocket] : shaderGraph->GetInputSockets()) {
+        psPublicUniforms->Add(inputSocket);
+    }
+
+    auto outputSocket = shaderGraph->GetOutputSockets().begin()->second;
+    ShaderPortPtr output = psOutputs->Add(nullptr, "color4", outputSocket->GetName());
+    output->SetVariable(outputSocket->GetVariable(shaderContext->GetScope()));
+
+    // connect between vs & ps
+    shaderGen.AddConnectorBlock("vertexData", "vd", vs, ps);
+    shaderGen.AddConnectorVariable("vertexData", "float3", ShaderBuildInVariable::POSITION_WORLD,
+                                   vs, ps);
+    shaderGen.AddConnectorVariable("vertexData", "float3", ShaderBuildInVariable::NORMAL_OBJECT, vs,
+                                   ps);
+
+    shaderGen.CreateVariables(shaderGraph, shaderContext, shader);
+
+    shaderGen.EmitVertexStage(shaderGraph, shaderContext, vs);
+    shaderGen.EmitPixelStage(shaderGraph, shaderContext, ps);
+    std::cout << vs->GetSourceCode();
+    std::cout << ps->GetSourceCode();
 }
 
 void MaterialGraphPanel::ResetLayout() {

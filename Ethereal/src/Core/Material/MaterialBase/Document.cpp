@@ -1,7 +1,8 @@
 #include "Document.h"
 
 #include "Core/Material/MaterialGraph.h"
-#include "Core/Material/ShaderGenerater/ShaderGraph.h"
+#include "Core/Material/ShaderGenerator/ShaderGraph.h"
+#include "Core/Material/ShaderGenerator/ShaderContext.h"
 namespace Ethereal {
 
 void Document::ImportLibrary(DocumentPtr lib) {
@@ -198,6 +199,11 @@ MaterialGraphPtr Document::GenerateUIGraphFromNodeGraph(NodeGraphPtr ng) {
 ShaderGraphPtr Document::GenerateShaderGraph() {
     ShaderGraphPtr shaderGraph = ShaderGraphPtr::Create(GetName(), this);
 
+    for (auto& input : GetInputs()) {
+        ShaderInputSocketPtr shaderInput = ShaderInputSocketPtr::Create(nullptr, input, true);
+        shaderGraph->AddInputSocket(shaderInput);
+    }
+
     /// Create ShaderNode
     for (auto& [_, node] : GetNodeInstances()) {
         ShaderNodePtr shaderNode = ShaderNodePtr::Create(node, shaderGraph);
@@ -213,14 +219,24 @@ ShaderGraphPtr Document::GenerateShaderGraph() {
     /// Create Links
     shaderGraph->UpdateLink();
 
+    shaderGraph->TopologicalSort();
+
+    ShaderNodePtr& lastNode = shaderGraph->GetSortedNodes().back();
+
+    for (auto& [name, output] : lastNode->GetOutputs()) {
+        ShaderOutputSocketPtr shaderOutput =
+            ShaderOutputSocketPtr::Create(nullptr, output->GetSource().As<NodeOutput>(), true);
+        shaderGraph->AddOutputSocket(shaderOutput);
+        shaderOutput->SetConnector(output);
+    }
+
     shaderGraph->UpdateVariable();
 
-    shaderGraph->TopologicalSort();
     return shaderGraph;
 }
 
 ShaderGraphPtr Document::GenerateShaderGraphFromNodeGraph(NodeGraphPtr ng) {
-    ShaderGraphPtr shaderGraph = ShaderGraphPtr::Create(ng->GetName(), this);
+    ShaderGraphPtr shaderGraph = ShaderGraphPtr::Create(ng->GetName(), this, ng->IsImpl());
 
     /// Create ShaderNode
     for (auto& [_, node] : ng->GetNodeInstances()) {
@@ -233,12 +249,13 @@ ShaderGraphPtr Document::GenerateShaderGraphFromNodeGraph(NodeGraphPtr ng) {
     if (ng->IsImpl())  // Compound Node
     {
         NodeDefinePtr nodeDefine = ng->GetNodeImpl()->GetNodeDefine();
+        // there are no input in impl.nodegraph, so we look for it in node define
         for (auto& input : nodeDefine->GetInputs()) {
             ShaderInputSocketPtr shaderInput = ShaderInputSocketPtr::Create(nullptr, input, true);
             shaderGraph->AddInputSocket(shaderInput);
         }
 
-        for (auto& output : nodeDefine->GetOutputs()) {
+        for (auto& output : ng->GetOutputs()) {
             ShaderOutputSocketPtr shaderOutput =
                 ShaderOutputSocketPtr::Create(nullptr, output, true);
             shaderGraph->AddOutputSocket(shaderOutput);

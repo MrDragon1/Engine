@@ -1,8 +1,8 @@
 #include "ShaderNode.h"
-#include "Core/Material/ShaderGenerater/ShaderGraph.h"
-#include "Core/Material/ShaderGenerater/Nodes/SourceCodeShaderNode.h"
-#include "Core/Material/ShaderGenerater/Nodes/AggregationShaderNode.h"
-#include "Core/Material/ShaderGenerater/Nodes/CompoundShaderNode.h"
+#include "Core/Material/ShaderGenerator/ShaderContext.h"
+#include "Core/Material/ShaderGenerator/Nodes/SourceCodeShaderNode.h"
+#include "Core/Material/ShaderGenerator/Nodes/AggregationShaderNode.h"
+#include "Core/Material/ShaderGenerator/Nodes/CompoundShaderNode.h"
 
 namespace Ethereal {
 ShaderNode::ShaderNode(ElementPtr node, ShaderGraphPtr graph) : mSource(node), mGraph(graph) {
@@ -71,13 +71,6 @@ void ShaderNode::Initalize() {
         if (impl && impl->IsNodeGraph()) {
             mImpl = CompoundShaderNodePtr::Create(impl);
             ShaderGraphPtr graph = mImpl.As<CompoundShaderNode>()->GetGraph();
-            for (auto& [name, input] : GetInputs()) {
-                input->SetConnector(graph->GetInputSocket(name));
-            }
-
-            for (auto& [name, output] : GetOutputs()) {
-                output->AddConnector(graph->GetOutputSocket(name));  // this is one-way link
-            }
         } else {
             mImpl = SourceCodeShaderNodePtr::Create(impl);
         }
@@ -97,28 +90,15 @@ void ShaderNode::Initalize() {
 
         mImpl = AggregationShaderNodePtr::Create(nodeGraph);
         ET_CORE_ASSERT(!mOutputs.empty(), "Must specify the output of NodeInstance!");
-
-        // connect the input&output to socket in impl.mGraph
         ShaderGraphPtr graph = mImpl.As<AggregationShaderNode>()->GetGraph();
-        for (auto& [name, input] : GetInputs()) {
-            input->SetConnector(graph->GetInputSocket(name));
-        }
-
-        for (auto& [name, output] : GetOutputs()) {
-            output->AddConnector(graph->GetOutputSocket(name));  // this is one-way link
-        }
     }
 }
 
 ShaderInput::ShaderInput(ShaderNodePtr parent, NodeInputPtr input, bool socket)
-    : mSource(input), mParent(parent), mIsSocket(socket) {
-    mName = mSource->GetName();
-}
+    : ShaderPort(parent, input, socket) {}
 
 ShaderInput::ShaderInput(ShaderNodePtr parent, NodeOutputPtr inputSocket, bool socket)
-    : mSource(inputSocket), mParent(parent), mIsSocket(socket) {
-    mName = mSource->GetName();
-}
+    : ShaderPort(parent, inputSocket, socket) {}
 
 void ShaderInput::SetConnector(ShaderOutputPtr conn) {
     if (mConnector && conn != mConnector) {
@@ -129,14 +109,10 @@ void ShaderInput::SetConnector(ShaderOutputPtr conn) {
 }
 
 ShaderOutput::ShaderOutput(ShaderNodePtr parent, NodeOutputPtr output, bool socket)
-    : mSource(output), mParent(parent), mIsSocket(socket) {
-    mName = mSource->GetName();
-}
+    : ShaderPort(parent, output, socket) {}
 
 ShaderOutput::ShaderOutput(ShaderNodePtr parent, NodeInputPtr outputSocket, bool socket)
-    : mSource(outputSocket), mParent(parent), mIsSocket(socket) {
-    mName = mSource->GetName();
-}
+    : ShaderPort(parent, outputSocket, socket) {}
 
 ShaderOutputSocketPtr ShaderOutput::GetConnectorSocket() {
     for (auto iter = mConnectors.begin(); iter != mConnectors.end(); iter++) {
@@ -159,6 +135,26 @@ void ShaderOutput::RemoveConnector(ShaderInputPtr conn) {
         } else
             iter++;
     }
+}
+
+ShaderPort::ShaderPort(ShaderNodePtr parent, ElementPtr source, bool socket /*= false*/)
+    : mParent(parent), mSource(source), mIsSocket(socket) {
+    mName = source->GetName();
+    if (source->Is(MaterialElementType::INPUT)) {
+        SetValue(source.As<NodeInput>()->GetValue());
+    } else if (source->Is(MaterialElementType::OUTPUT)) {
+        SetValue(ValueBase::CreateValueWithType(
+            source.As<NodeOutput>()->GetAttribute(MaterialAttribute::TYPE)));
+    }
+};
+
+ShaderPort::ShaderPort(ShaderNodePtr parent, const string& type, const string& name) {
+    mIsSocket = false;
+    mName = name;
+    mValue = ValueBase::CreateValueWithType(type);
+    mSource = nullptr;
+    mParent = parent;
+    mVariable = name;
 }
 
 }  // namespace Ethereal

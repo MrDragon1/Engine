@@ -1,4 +1,4 @@
-add_subdirectory(ShaderGenerater)
+add_subdirectory(ShaderGenerator)
 add_subdirectory(MaterialBase)
 set(HFILES "")
 set(CPPFILES "")
