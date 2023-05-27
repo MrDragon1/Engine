@@ -2,7 +2,7 @@
 <materialx version="1.36">
   <nodedef name="ND_surfacematerial" nodedef="surfacematerial" nodegroup="material">
     <input name="surfaceshader" type="surfaceshader" value="" />
-    <output name="out" type="material" />
+    <output name="out1" type="material" />
   </nodedef>
 
   <!-- ======================================================================== -->
@@ -16,57 +16,57 @@
   <nodedef name="ND_add_float" nodedef="add" nodegroup="math">
     <input name="in1" type="float" value="0.0" />
     <input name="in2" type="float" value="0.0" />
-    <output name="out" type="float" defaultinput="in1" />
+    <output name="out1" type="float" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_add_color3" nodedef="add" nodegroup="math">
     <input name="in1" type="color3" value="0.0, 0.0, 0.0" />
     <input name="in2" type="color3" value="0.0, 0.0, 0.0" />
-    <output name="out" type="color3" defaultinput="in1" />
+    <output name="out1" type="color3" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_add_color4" nodedef="add" nodegroup="math">
     <input name="in1" type="color4" value="0.0, 0.0, 0.0, 0.0" />
     <input name="in2" type="color4" value="0.0, 0.0, 0.0, 0.0" />
-    <output name="out" type="color4" defaultinput="in1" />
+    <output name="out1" type="color4" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_add_float2" nodedef="add" nodegroup="math">
     <input name="in1" type="float2" value="0.0, 0.0" />
     <input name="in2" type="float2" value="0.0, 0.0" />
-    <output name="out" type="float2" defaultinput="in1" />
+    <output name="out1" type="float2" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_add_float3" nodedef="add" nodegroup="math">
     <input name="in1" type="float3" value="0.0, 0.0, 0.0" />
     <input name="in2" type="float3" value="0.0, 0.0, 0.0" />
-    <output name="out" type="float3" defaultinput="in1" />
+    <output name="out1" type="float3" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_add_float4" nodedef="add" nodegroup="math">
     <input name="in1" type="float4" value="0.0, 0.0, 0.0, 0.0" />
     <input name="in2" type="float4" value="0.0, 0.0, 0.0, 0.0" />
-    <output name="out" type="float4" defaultinput="in1" />
+    <output name="out1" type="float4" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_add_color3FA" nodedef="add" nodegroup="math">
     <input name="in1" type="color3" value="0.0, 0.0, 0.0" />
     <input name="in2" type="float" value="0.0" />
-    <output name="out" type="color3" defaultinput="in1" />
+    <output name="out1" type="color3" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_add_color4FA" nodedef="add" nodegroup="math">
     <input name="in1" type="color4" value="0.0, 0.0, 0.0, 0.0" />
     <input name="in2" type="float" value="0.0" />
-    <output name="out" type="color4" defaultinput="in1" />
+    <output name="out1" type="color4" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_add_float2FA" nodedef="add" nodegroup="math">
     <input name="in1" type="float2" value="0.0, 0.0" />
     <input name="in2" type="float" value="0.0" />
-    <output name="out" type="float2" defaultinput="in1" />
+    <output name="out1" type="float2" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_add_float3FA" nodedef="add" nodegroup="math">
     <input name="in1" type="float3" value="0.0, 0.0, 0.0" />
     <input name="in2" type="float" value="0.0" />
-    <output name="out" type="float3" defaultinput="in1" />
+    <output name="out1" type="float3" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_add_float4FA" nodedef="add" nodegroup="math">
     <input name="in1" type="float4" value="0.0, 0.0, 0.0, 0.0" />
     <input name="in2" type="float" value="0.0" />
-    <output name="out" type="float4" defaultinput="in1" />
+    <output name="out1" type="float4" defaultinput="in1" />
   </nodedef>
 
   <!--
@@ -76,57 +76,57 @@
   <nodedef name="ND_subtract_float" nodedef="subtract" nodegroup="math">
     <input name="in1" type="float" value="0.0" />
     <input name="in2" type="float" value="0.0" />
-    <output name="out" type="float" defaultinput="in1" />
+    <output name="out1" type="float" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_subtract_color3" nodedef="subtract" nodegroup="math">
     <input name="in1" type="color3" value="0.0, 0.0, 0.0" />
     <input name="in2" type="color3" value="0.0, 0.0, 0.0" />
-    <output name="out" type="color3" defaultinput="in1" />
+    <output name="out1" type="color3" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_subtract_color4" nodedef="subtract" nodegroup="math">
     <input name="in1" type="color4" value="0.0, 0.0, 0.0, 0.0" />
     <input name="in2" type="color4" value="0.0, 0.0, 0.0, 0.0" />
-    <output name="out" type="color4" defaultinput="in1" />
+    <output name="out1" type="color4" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_subtract_float2" nodedef="subtract" nodegroup="math">
     <input name="in1" type="float2" value="0.0, 0.0" />
     <input name="in2" type="float2" value="0.0, 0.0" />
-    <output name="out" type="float2" defaultinput="in1" />
+    <output name="out1" type="float2" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_subtract_float3" nodedef="subtract" nodegroup="math">
     <input name="in1" type="float3" value="0.0, 0.0, 0.0" />
     <input name="in2" type="float3" value="0.0, 0.0, 0.0" />
-    <output name="out" type="float3" defaultinput="in1" />
+    <output name="out1" type="float3" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_subtract_float4" nodedef="subtract" nodegroup="math">
     <input name="in1" type="float4" value="0.0, 0.0, 0.0, 0.0" />
     <input name="in2" type="float4" value="0.0, 0.0, 0.0, 0.0" />
-    <output name="out" type="float4" defaultinput="in1" />
+    <output name="out1" type="float4" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_subtract_color3FA" nodedef="subtract" nodegroup="math">
     <input name="in1" type="color3" value="0.0, 0.0, 0.0" />
     <input name="in2" type="float" value="0.0" />
-    <output name="out" type="color3" defaultinput="in1" />
+    <output name="out1" type="color3" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_subtract_color4FA" nodedef="subtract" nodegroup="math">
     <input name="in1" type="color4" value="0.0, 0.0, 0.0, 0.0" />
     <input name="in2" type="float" value="0.0" />
-    <output name="out" type="color4" defaultinput="in1" />
+    <output name="out1" type="color4" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_subtract_float2FA" nodedef="subtract" nodegroup="math">
     <input name="in1" type="float2" value="0.0, 0.0" />
     <input name="in2" type="float" value="0.0" />
-    <output name="out" type="float2" defaultinput="in1" />
+    <output name="out1" type="float2" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_subtract_float3FA" nodedef="subtract" nodegroup="math">
     <input name="in1" type="float3" value="0.0, 0.0, 0.0" />
     <input name="in2" type="float" value="0.0" />
-    <output name="out" type="float3" defaultinput="in1" />
+    <output name="out1" type="float3" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_subtract_float4FA" nodedef="subtract" nodegroup="math">
     <input name="in1" type="float4" value="0.0, 0.0, 0.0, 0.0" />
     <input name="in2" type="float" value="0.0" />
-    <output name="out" type="float4" defaultinput="in1" />
+    <output name="out1" type="float4" defaultinput="in1" />
   </nodedef>
 
   <!--
@@ -137,57 +137,57 @@
   <nodedef name="ND_multiply_float" nodedef="multiply" nodegroup="math">
     <input name="in1" type="float" value="0.0" />
     <input name="in2" type="float" value="1.0" />
-    <output name="out" type="float" defaultinput="in1" />
+    <output name="out1" type="float" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_multiply_color3" nodedef="multiply" nodegroup="math">
     <input name="in1" type="color3" value="0.0, 0.0, 0.0" />
     <input name="in2" type="color3" value="1.0, 1.0, 1.0" />
-    <output name="out" type="color3" defaultinput="in1" />
+    <output name="out1" type="color3" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_multiply_color4" nodedef="multiply" nodegroup="math">
     <input name="in1" type="color4" value="0.0, 0.0, 0.0, 0.0" />
     <input name="in2" type="color4" value="1.0, 1.0, 1.0, 1.0" />
-    <output name="out" type="color4" defaultinput="in1" />
+    <output name="out1" type="color4" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_multiply_float2" nodedef="multiply" nodegroup="math">
     <input name="in1" type="float2" value="0.0, 0.0" />
     <input name="in2" type="float2" value="1.0, 1.0" />
-    <output name="out" type="float2" defaultinput="in1" />
+    <output name="out1" type="float2" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_multiply_float3" nodedef="multiply" nodegroup="math">
     <input name="in1" type="float3" value="0.0, 0.0, 0.0" />
     <input name="in2" type="float3" value="1.0, 1.0, 1.0" />
-    <output name="out" type="float3" defaultinput="in1" />
+    <output name="out1" type="float3" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_multiply_float4" nodedef="multiply" nodegroup="math">
     <input name="in1" type="float4" value="0.0, 0.0, 0.0, 0.0" />
     <input name="in2" type="float4" value="1.0, 1.0, 1.0, 1.0" />
-    <output name="out" type="float4" defaultinput="in1" />
+    <output name="out1" type="float4" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_multiply_color3FA" nodedef="multiply" nodegroup="math">
     <input name="in1" type="color3" value="0.0, 0.0, 0.0" />
     <input name="in2" type="float" value="1.0" />
-    <output name="out" type="color3" defaultinput="in1" />
+    <output name="out1" type="color3" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_multiply_color4FA" nodedef="multiply" nodegroup="math">
     <input name="in1" type="color4" value="0.0, 0.0, 0.0, 0.0" />
     <input name="in2" type="float" value="1.0" />
-    <output name="out" type="color4" defaultinput="in1" />
+    <output name="out1" type="color4" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_multiply_float2FA" nodedef="multiply" nodegroup="math">
     <input name="in1" type="float2" value="0.0, 0.0" />
     <input name="in2" type="float" value="1.0" />
-    <output name="out" type="float2" defaultinput="in1" />
+    <output name="out1" type="float2" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_multiply_float3FA" nodedef="multiply" nodegroup="math">
     <input name="in1" type="float3" value="0.0, 0.0, 0.0" />
     <input name="in2" type="float" value="1.0" />
-    <output name="out" type="float3" defaultinput="in1" />
+    <output name="out1" type="float3" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_multiply_float4FA" nodedef="multiply" nodegroup="math">
     <input name="in1" type="float4" value="0.0, 0.0, 0.0, 0.0" />
     <input name="in2" type="float" value="1.0" />
-    <output name="out" type="float4" defaultinput="in1" />
+    <output name="out1" type="float4" defaultinput="in1" />
   </nodedef>
 
   <!--
@@ -199,57 +199,57 @@
   <nodedef name="ND_divide_float" nodedef="divide" nodegroup="math">
     <input name="in1" type="float" value="0.0" />
     <input name="in2" type="float" value="1.0" />
-    <output name="out" type="float" defaultinput="in1" />
+    <output name="out1" type="float" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_divide_color3" nodedef="divide" nodegroup="math">
     <input name="in1" type="color3" value="0.0, 0.0, 0.0" />
     <input name="in2" type="color3" value="1.0, 1.0, 1.0" />
-    <output name="out" type="color3" defaultinput="in1" />
+    <output name="out1" type="color3" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_divide_color4" nodedef="divide" nodegroup="math">
     <input name="in1" type="color4" value="0.0, 0.0, 0.0, 0.0" />
     <input name="in2" type="color4" value="1.0, 1.0, 1.0, 1.0" />
-    <output name="out" type="color4" defaultinput="in1" />
+    <output name="out1" type="color4" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_divide_float2" nodedef="divide" nodegroup="math">
     <input name="in1" type="float2" value="0.0, 0.0" />
     <input name="in2" type="float2" value="1.0, 1.0" />
-    <output name="out" type="float2" defaultinput="in1" />
+    <output name="out1" type="float2" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_divide_float3" nodedef="divide" nodegroup="math">
     <input name="in1" type="float3" value="0.0, 0.0, 0.0" />
     <input name="in2" type="float3" value="1.0, 1.0, 1.0" />
-    <output name="out" type="float3" defaultinput="in1" />
+    <output name="out1" type="float3" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_divide_float4" nodedef="divide" nodegroup="math">
     <input name="in1" type="float4" value="0.0, 0.0, 0.0, 0.0" />
     <input name="in2" type="float4" value="1.0, 1.0, 1.0, 1.0" />
-    <output name="out" type="float4" defaultinput="in1" />
+    <output name="out1" type="float4" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_divide_color3FA" nodedef="divide" nodegroup="math">
     <input name="in1" type="color3" value="0.0, 0.0, 0.0" />
     <input name="in2" type="float" value="1.0" />
-    <output name="out" type="color3" defaultinput="in1" />
+    <output name="out1" type="color3" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_divide_color4FA" nodedef="divide" nodegroup="math">
     <input name="in1" type="color4" value="0.0, 0.0, 0.0, 0.0" />
     <input name="in2" type="float" value="1.0" />
-    <output name="out" type="color4" defaultinput="in1" />
+    <output name="out1" type="color4" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_divide_float2FA" nodedef="divide" nodegroup="math">
     <input name="in1" type="float2" value="0.0, 0.0" />
     <input name="in2" type="float" value="1.0" />
-    <output name="out" type="float2" defaultinput="in1" />
+    <output name="out1" type="float2" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_divide_float3FA" nodedef="divide" nodegroup="math">
     <input name="in1" type="float3" value="0.0, 0.0, 0.0" />
     <input name="in2" type="float" value="1.0" />
-    <output name="out" type="float3" defaultinput="in1" />
+    <output name="out1" type="float3" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_divide_float4FA" nodedef="divide" nodegroup="math">
     <input name="in1" type="float4" value="0.0, 0.0, 0.0, 0.0" />
     <input name="in2" type="float" value="1.0" />
-    <output name="out" type="float4" defaultinput="in1" />
+    <output name="out1" type="float4" defaultinput="in1" />
   </nodedef>
 
   <!--
@@ -260,57 +260,57 @@
   <nodedef name="ND_modulo_float" nodedef="modulo" nodegroup="math">
     <input name="in1" type="float" value="0.0" />
     <input name="in2" type="float" value="1.0" />
-    <output name="out" type="float" defaultinput="in1" />
+    <output name="out1" type="float" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_modulo_color3" nodedef="modulo" nodegroup="math">
     <input name="in1" type="color3" value="0.0, 0.0, 0.0" />
     <input name="in2" type="color3" value="1.0, 1.0, 1.0" />
-    <output name="out" type="color3" defaultinput="in1" />
+    <output name="out1" type="color3" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_modulo_color4" nodedef="modulo" nodegroup="math">
     <input name="in1" type="color4" value="0.0, 0.0, 0.0, 0.0" />
     <input name="in2" type="color4" value="1.0, 1.0, 1.0, 1.0" />
-    <output name="out" type="color4" defaultinput="in1" />
+    <output name="out1" type="color4" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_modulo_float2" nodedef="modulo" nodegroup="math">
     <input name="in1" type="float2" value="0.0, 0.0" />
     <input name="in2" type="float2" value="1.0, 1.0" />
-    <output name="out" type="float2" defaultinput="in1" />
+    <output name="out1" type="float2" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_modulo_float3" nodedef="modulo" nodegroup="math">
     <input name="in1" type="float3" value="0.0, 0.0, 0.0" />
     <input name="in2" type="float3" value="1.0, 1.0, 1.0" />
-    <output name="out" type="float3" defaultinput="in1" />
+    <output name="out1" type="float3" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_modulo_float4" nodedef="modulo" nodegroup="math">
     <input name="in1" type="float4" value="0.0, 0.0, 0.0, 0.0" />
     <input name="in2" type="float4" value="1.0, 1.0, 1.0, 1.0" />
-    <output name="out" type="float4" defaultinput="in1" />
+    <output name="out1" type="float4" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_modulo_color3FA" nodedef="modulo" nodegroup="math">
     <input name="in1" type="color3" value="0.0, 0.0, 0.0" />
     <input name="in2" type="float" value="1.0" />
-    <output name="out" type="color3" defaultinput="in1" />
+    <output name="out1" type="color3" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_modulo_color4FA" nodedef="modulo" nodegroup="math">
     <input name="in1" type="color4" value="0.0, 0.0, 0.0, 0.0" />
     <input name="in2" type="float" value="1.0" />
-    <output name="out" type="color4" defaultinput="in1" />
+    <output name="out1" type="color4" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_modulo_float2FA" nodedef="modulo" nodegroup="math">
     <input name="in1" type="float2" value="0.0, 0.0" />
     <input name="in2" type="float" value="1.0" />
-    <output name="out" type="float2" defaultinput="in1" />
+    <output name="out1" type="float2" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_modulo_float3FA" nodedef="modulo" nodegroup="math">
     <input name="in1" type="float3" value="0.0, 0.0, 0.0" />
     <input name="in2" type="float" value="1.0" />
-    <output name="out" type="float3" defaultinput="in1" />
+    <output name="out1" type="float3" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_modulo_float4FA" nodedef="modulo" nodegroup="math">
     <input name="in1" type="float4" value="0.0, 0.0, 0.0, 0.0" />
     <input name="in2" type="float" value="1.0" />
-    <output name="out" type="float4" defaultinput="in1" />
+    <output name="out1" type="float4" defaultinput="in1" />
   </nodedef>
 
   <!--
@@ -321,57 +321,57 @@
   <nodedef name="ND_invert_float" nodedef="invert" nodegroup="math">
     <input name="in" type="float" value="0.0" />
     <input name="amount" type="float" value="1.0" />
-    <output name="out" type="float" defaultinput="in" />
+    <output name="out1" type="float" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_invert_color3" nodedef="invert" nodegroup="math">
     <input name="in" type="color3" value="0.0, 0.0, 0.0" />
     <input name="amount" type="color3" value="1.0, 1.0, 1.0" />
-    <output name="out" type="color3" defaultinput="in" />
+    <output name="out1" type="color3" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_invert_color4" nodedef="invert" nodegroup="math">
     <input name="in" type="color4" value="0.0, 0.0, 0.0, 0.0" />
     <input name="amount" type="color4" value="1.0, 1.0, 1.0, 1.0" />
-    <output name="out" type="color4" defaultinput="in" />
+    <output name="out1" type="color4" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_invert_float2" nodedef="invert" nodegroup="math">
     <input name="in" type="float2" value="0.0, 0.0" />
     <input name="amount" type="float2" value="1.0, 1.0" />
-    <output name="out" type="float2" defaultinput="in" />
+    <output name="out1" type="float2" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_invert_float3" nodedef="invert" nodegroup="math">
     <input name="in" type="float3" value="0.0, 0.0, 0.0" />
     <input name="amount" type="float3" value="1.0, 1.0, 1.0" />
-    <output name="out" type="float3" defaultinput="in" />
+    <output name="out1" type="float3" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_invert_float4" nodedef="invert" nodegroup="math">
     <input name="in" type="float4" value="0.0, 0.0, 0.0, 0.0" />
     <input name="amount" type="float4" value="1.0, 1.0, 1.0, 1.0" />
-    <output name="out" type="float4" defaultinput="in" />
+    <output name="out1" type="float4" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_invert_color3FA" nodedef="invert" nodegroup="math">
     <input name="in" type="color3" value="0.0, 0.0, 0.0" />
     <input name="amount" type="float" value="1.0" />
-    <output name="out" type="color3" defaultinput="in" />
+    <output name="out1" type="color3" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_invert_color4FA" nodedef="invert" nodegroup="math">
     <input name="in" type="color4" value="0.0, 0.0, 0.0, 0.0" />
     <input name="amount" type="float" value="1.0" />
-    <output name="out" type="color4" defaultinput="in" />
+    <output name="out1" type="color4" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_invert_float2FA" nodedef="invert" nodegroup="math">
     <input name="in" type="float2" value="0.0, 0.0" />
     <input name="amount" type="float" value="1.0" />
-    <output name="out" type="float2" defaultinput="in" />
+    <output name="out1" type="float2" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_invert_float3FA" nodedef="invert" nodegroup="math">
     <input name="in" type="float3" value="0.0, 0.0, 0.0" />
     <input name="amount" type="float" value="1.0" />
-    <output name="out" type="float3" defaultinput="in" />
+    <output name="out1" type="float3" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_invert_float4FA" nodedef="invert" nodegroup="math">
     <input name="in" type="float4" value="0.0, 0.0, 0.0, 0.0" />
     <input name="amount" type="float" value="1.0" />
-    <output name="out" type="float4" defaultinput="in" />
+    <output name="out1" type="float4" defaultinput="in" />
   </nodedef>
 
   <!--
@@ -380,27 +380,27 @@
   -->
   <nodedef name="ND_absval_float" nodedef="absval" nodegroup="math">
     <input name="in" type="float" value="0.0" />
-    <output name="out" type="float" defaultinput="in" />
+    <output name="out1" type="float" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_absval_color3" nodedef="absval" nodegroup="math">
     <input name="in" type="color3" value="0.0, 0.0, 0.0" />
-    <output name="out" type="color3" defaultinput="in" />
+    <output name="out1" type="color3" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_absval_color4" nodedef="absval" nodegroup="math">
     <input name="in" type="color4" value="0.0, 0.0, 0.0, 0.0" />
-    <output name="out" type="color4" defaultinput="in" />
+    <output name="out1" type="color4" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_absval_float2" nodedef="absval" nodegroup="math">
     <input name="in" type="float2" value="0.0, 0.0" />
-    <output name="out" type="float2" defaultinput="in" />
+    <output name="out1" type="float2" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_absval_float3" nodedef="absval" nodegroup="math">
     <input name="in" type="float3" value="0.0, 0.0, 0.0" />
-    <output name="out" type="float3" defaultinput="in" />
+    <output name="out1" type="float3" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_absval_float4" nodedef="absval" nodegroup="math">
     <input name="in" type="float4" value="0.0, 0.0, 0.0, 0.0" />
-    <output name="out" type="float4" defaultinput="in" />
+    <output name="out1" type="float4" defaultinput="in" />
   </nodedef>
 
   <!--
@@ -409,27 +409,27 @@
   -->
   <nodedef name="ND_floor_float" nodedef="floor" nodegroup="math">
     <input name="in" type="float" value="0.0" />
-    <output name="out" type="float" defaultinput="in" />
+    <output name="out1" type="float" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_floor_color3" nodedef="floor" nodegroup="math">
     <input name="in" type="color3" value="0.0, 0.0, 0.0" />
-    <output name="out" type="color3" defaultinput="in" />
+    <output name="out1" type="color3" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_floor_color4" nodedef="floor" nodegroup="math">
     <input name="in" type="color4" value="0.0, 0.0, 0.0, 0.0" />
-    <output name="out" type="color4" defaultinput="in" />
+    <output name="out1" type="color4" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_floor_float2" nodedef="floor" nodegroup="math">
     <input name="in" type="float2" value="0.0, 0.0" />
-    <output name="out" type="float2" defaultinput="in" />
+    <output name="out1" type="float2" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_floor_float3" nodedef="floor" nodegroup="math">
     <input name="in" type="float3" value="0.0, 0.0, 0.0" />
-    <output name="out" type="float3" defaultinput="in" />
+    <output name="out1" type="float3" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_floor_float4" nodedef="floor" nodegroup="math">
     <input name="in" type="float4" value="0.0, 0.0, 0.0, 0.0" />
-    <output name="out" type="float4" defaultinput="in" />
+    <output name="out1" type="float4" defaultinput="in" />
   </nodedef>
 
   <!--
@@ -438,27 +438,27 @@
   -->
   <nodedef name="ND_ceil_float" nodedef="ceil" nodegroup="math">
     <input name="in" type="float" value="0.0" />
-    <output name="out" type="float" defaultinput="in" />
+    <output name="out1" type="float" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_ceil_color3" nodedef="ceil" nodegroup="math">
     <input name="in" type="color3" value="0.0, 0.0, 0.0" />
-    <output name="out" type="color3" defaultinput="in" />
+    <output name="out1" type="color3" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_ceil_color4" nodedef="ceil" nodegroup="math">
     <input name="in" type="color4" value="0.0, 0.0, 0.0, 0.0" />
-    <output name="out" type="color4" defaultinput="in" />
+    <output name="out1" type="color4" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_ceil_float2" nodedef="ceil" nodegroup="math">
     <input name="in" type="float2" value="0.0, 0.0" />
-    <output name="out" type="float2" defaultinput="in" />
+    <output name="out1" type="float2" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_ceil_float3" nodedef="ceil" nodegroup="math">
     <input name="in" type="float3" value="0.0, 0.0, 0.0" />
-    <output name="out" type="float3" defaultinput="in" />
+    <output name="out1" type="float3" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_ceil_float4" nodedef="ceil" nodegroup="math">
     <input name="in" type="float4" value="0.0, 0.0, 0.0, 0.0" />
-    <output name="out" type="float4" defaultinput="in" />
+    <output name="out1" type="float4" defaultinput="in" />
   </nodedef>
 
   <!--
@@ -468,57 +468,57 @@
   <nodedef name="ND_power_float" nodedef="power" nodegroup="math">
     <input name="in1" type="float" value="0.0" />
     <input name="in2" type="float" value="1.0" />
-    <output name="out" type="float" defaultinput="in1" />
+    <output name="out1" type="float" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_power_color3" nodedef="power" nodegroup="math">
     <input name="in1" type="color3" value="0.0, 0.0, 0.0" />
     <input name="in2" type="color3" value="1.0, 1.0, 1.0" />
-    <output name="out" type="color3" defaultinput="in1" />
+    <output name="out1" type="color3" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_power_color4" nodedef="power" nodegroup="math">
     <input name="in1" type="color4" value="0.0, 0.0, 0.0, 0.0" />
     <input name="in2" type="color4" value="1.0, 1.0, 1.0, 1.0" />
-    <output name="out" type="color4" defaultinput="in1" />
+    <output name="out1" type="color4" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_power_float2" nodedef="power" nodegroup="math">
     <input name="in1" type="float2" value="0.0, 0.0" />
     <input name="in2" type="float2" value="1.0, 1.0" />
-    <output name="out" type="float2" defaultinput="in1" />
+    <output name="out1" type="float2" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_power_float3" nodedef="power" nodegroup="math">
     <input name="in1" type="float3" value="0.0, 0.0, 0.0" />
     <input name="in2" type="float3" value="1.0, 1.0, 1.0" />
-    <output name="out" type="float3" defaultinput="in1" />
+    <output name="out1" type="float3" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_power_float4" nodedef="power" nodegroup="math">
     <input name="in1" type="float4" value="0.0, 0.0, 0.0, 0.0" />
     <input name="in2" type="float4" value="1.0, 1.0, 1.0, 1.0" />
-    <output name="out" type="float4" defaultinput="in1" />
+    <output name="out1" type="float4" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_power_color3FA" nodedef="power" nodegroup="math">
     <input name="in1" type="color3" value="0.0, 0.0, 0.0" />
     <input name="in2" type="float" value="1.0" />
-    <output name="out" type="color3" defaultinput="in1" />
+    <output name="out1" type="color3" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_power_color4FA" nodedef="power" nodegroup="math">
     <input name="in1" type="color4" value="0.0, 0.0, 0.0, 0.0" />
     <input name="in2" type="float" value="1.0" />
-    <output name="out" type="color4" defaultinput="in1" />
+    <output name="out1" type="color4" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_power_float2FA" nodedef="power" nodegroup="math">
     <input name="in1" type="float2" value="0.0, 0.0" />
     <input name="in2" type="float" value="1.0" />
-    <output name="out" type="float2" defaultinput="in1" />
+    <output name="out1" type="float2" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_power_float3FA" nodedef="power" nodegroup="math">
     <input name="in1" type="float3" value="0.0, 0.0, 0.0" />
     <input name="in2" type="float" value="1.0" />
-    <output name="out" type="float3" defaultinput="in1" />
+    <output name="out1" type="float3" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_power_float4FA" nodedef="power" nodegroup="math">
     <input name="in1" type="float4" value="0.0, 0.0, 0.0, 0.0" />
     <input name="in2" type="float" value="1.0" />
-    <output name="out" type="float4" defaultinput="in1" />
+    <output name="out1" type="float4" defaultinput="in1" />
   </nodedef>
 
   <!--
@@ -527,103 +527,103 @@
   -->
   <nodedef name="ND_sin_float" nodedef="sin" nodegroup="math">
     <input name="in" type="float" value="0.0" />
-    <output name="out" type="float" defaultinput="in" />
+    <output name="out1" type="float" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_cos_float" nodedef="cos" nodegroup="math">
     <input name="in" type="float" value="0.0" />
-    <output name="out" type="float" defaultinput="in" />
+    <output name="out1" type="float" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_tan_float" nodedef="tan" nodegroup="math">
     <input name="in" type="float" value="0.0" />
-    <output name="out" type="float" defaultinput="in" />
+    <output name="out1" type="float" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_asin_float" nodedef="asin" nodegroup="math">
     <input name="in" type="float" value="0.0" />
-    <output name="out" type="float" defaultinput="in" />
+    <output name="out1" type="float" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_acos_float" nodedef="acos" nodegroup="math">
     <input name="in" type="float" value="0.0" />
-    <output name="out" type="float" defaultinput="in" />
+    <output name="out1" type="float" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_atan2_float" nodedef="atan2" nodegroup="math">
     <input name="in1" type="float" value="0.0" />
     <input name="in2" type="float" value="1.0" />
-    <output name="out" type="float" defaultinput="in1" />
+    <output name="out1" type="float" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_sin_float2" nodedef="sin" nodegroup="math">
     <input name="in" type="float2" value="0.0, 0.0" />
-    <output name="out" type="float2" defaultinput="in" />
+    <output name="out1" type="float2" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_cos_float2" nodedef="cos" nodegroup="math">
     <input name="in" type="float2" value="0.0, 0.0" />
-    <output name="out" type="float2" defaultinput="in" />
+    <output name="out1" type="float2" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_tan_float2" nodedef="tan" nodegroup="math">
     <input name="in" type="float2" value="0.0, 0.0" />
-    <output name="out" type="float2" defaultinput="in" />
+    <output name="out1" type="float2" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_asin_float2" nodedef="asin" nodegroup="math">
     <input name="in" type="float2" value="0.0, 0.0" />
-    <output name="out" type="float2" defaultinput="in" />
+    <output name="out1" type="float2" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_acos_float2" nodedef="acos" nodegroup="math">
     <input name="in" type="float2" value="0.0, 0.0" />
-    <output name="out" type="float2" defaultinput="in" />
+    <output name="out1" type="float2" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_atan2_float2" nodedef="atan2" nodegroup="math">
     <input name="in1" type="float2" value="1.0, 1.0" />
     <input name="in2" type="float2" value="0.0, 0.0" />
-    <output name="out" type="float2" defaultinput="in1" />
+    <output name="out1" type="float2" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_sin_float3" nodedef="sin" nodegroup="math">
     <input name="in" type="float3" value="0.0, 0.0, 0.0" />
-    <output name="out" type="float3" defaultinput="in" />
+    <output name="out1" type="float3" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_cos_float3" nodedef="cos" nodegroup="math">
     <input name="in" type="float3" value="0.0, 0.0, 0.0" />
-    <output name="out" type="float3" defaultinput="in" />
+    <output name="out1" type="float3" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_tan_float3" nodedef="tan" nodegroup="math">
     <input name="in" type="float3" value="0.0, 0.0, 0.0" />
-    <output name="out" type="float3" defaultinput="in" />
+    <output name="out1" type="float3" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_asin_float3" nodedef="asin" nodegroup="math">
     <input name="in" type="float3" value="0.0, 0.0, 0.0" />
-    <output name="out" type="float3" defaultinput="in" />
+    <output name="out1" type="float3" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_acos_float3" nodedef="acos" nodegroup="math">
     <input name="in" type="float3" value="0.0, 0.0, 0.0" />
-    <output name="out" type="float3" defaultinput="in" />
+    <output name="out1" type="float3" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_atan2_float3" nodedef="atan2" nodegroup="math">
     <input name="in1" type="float3" value="1.0, 1.0, 1.0" />
     <input name="in2" type="float3" value="0.0, 0.0, 0.0" />
-    <output name="out" type="float3" defaultinput="in1" />
+    <output name="out1" type="float3" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_sin_float4" nodedef="sin" nodegroup="math">
     <input name="in" type="float4" value="0.0, 0.0, 0.0, 0.0" />
-    <output name="out" type="float4" defaultinput="in" />
+    <output name="out1" type="float4" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_cos_float4" nodedef="cos" nodegroup="math">
     <input name="in" type="float4" value="0.0, 0.0, 0.0, 0.0" />
-    <output name="out" type="float4" defaultinput="in" />
+    <output name="out1" type="float4" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_tan_float4" nodedef="tan" nodegroup="math">
     <input name="in" type="float4" value="0.0, 0.0, 0.0, 0.0" />
-    <output name="out" type="float4" defaultinput="in" />
+    <output name="out1" type="float4" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_asin_float4" nodedef="asin" nodegroup="math">
     <input name="in" type="float4" value="0.0, 0.0, 0.0, 0.0" />
-    <output name="out" type="float4" defaultinput="in" />
+    <output name="out1" type="float4" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_acos_float4" nodedef="acos" nodegroup="math">
     <input name="in" type="float4" value="0.0, 0.0, 0.0, 0.0" />
-    <output name="out" type="float4" defaultinput="in" />
+    <output name="out1" type="float4" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_atan2_float4" nodedef="atan2" nodegroup="math">
     <input name="in1" type="float4" value="1.0, 1.0, 1.0, 1.0" />
     <input name="in2" type="float4" value="0.0, 0.0, 0.0, 0.0" />
-    <output name="out" type="float4" defaultinput="in1" />
+    <output name="out1" type="float4" defaultinput="in1" />
   </nodedef>
 
   <!--
@@ -632,51 +632,51 @@
   -->
   <nodedef name="ND_sqrt_float" nodedef="sqrt" nodegroup="math">
     <input name="in" type="float" value="0.0" />
-    <output name="out" type="float" defaultinput="in" />
+    <output name="out1" type="float" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_ln_float" nodedef="ln" nodegroup="math">
     <input name="in" type="float" value="1.0" />
-    <output name="out" type="float" defaultinput="in" />
+    <output name="out1" type="float" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_exp_float" nodedef="exp" nodegroup="math">
     <input name="in" type="float" value="0.0" />
-    <output name="out" type="float" defaultinput="in" />
+    <output name="out1" type="float" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_sqrt_float2" nodedef="sqrt" nodegroup="math">
     <input name="in" type="float2" value="0.0, 0.0" />
-    <output name="out" type="float2" defaultinput="in" />
+    <output name="out1" type="float2" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_ln_float2" nodedef="ln" nodegroup="math">
     <input name="in" type="float2" value="1.0, 1.0" />
-    <output name="out" type="float2" defaultinput="in" />
+    <output name="out1" type="float2" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_exp_float2" nodedef="exp" nodegroup="math">
     <input name="in" type="float2" value="0.0, 0.0" />
-    <output name="out" type="float2" defaultinput="in" />
+    <output name="out1" type="float2" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_sqrt_float3" nodedef="sqrt" nodegroup="math">
     <input name="in" type="float3" value="0.0, 0.0, 0.0" />
-    <output name="out" type="float3" defaultinput="in" />
+    <output name="out1" type="float3" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_ln_float3" nodedef="ln" nodegroup="math">
     <input name="in" type="float3" value="1.0, 1.0, 1.0" />
-    <output name="out" type="float3" defaultinput="in" />
+    <output name="out1" type="float3" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_exp_float3" nodedef="exp" nodegroup="math">
     <input name="in" type="float3" value="0.0, 0.0, 0.0" />
-    <output name="out" type="float3" defaultinput="in" />
+    <output name="out1" type="float3" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_sqrt_float4" nodedef="sqrt" nodegroup="math">
     <input name="in" type="float4" value="0.0, 0.0, 0.0, 0.0" />
-    <output name="out" type="float4" defaultinput="in" />
+    <output name="out1" type="float4" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_ln_float4" nodedef="ln" nodegroup="math">
     <input name="in" type="float4" value="1.0, 1.0, 1.0, 1.0" />
-    <output name="out" type="float4" defaultinput="in" />
+    <output name="out1" type="float4" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_exp_float4" nodedef="exp" nodegroup="math">
     <input name="in" type="float4" value="0.0, 0.0, 0.0, 0.0" />
-    <output name="out" type="float4" defaultinput="in" />
+    <output name="out1" type="float4" defaultinput="in" />
   </nodedef>
 
   <!--
@@ -685,27 +685,27 @@
   -->
   <nodedef name="ND_sign_float" nodedef="sign" nodegroup="math">
     <input name="in" type="float" value="0.0" />
-    <output name="out" type="float" defaultinput="in" />
+    <output name="out1" type="float" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_sign_color3" nodedef="sign" nodegroup="math">
     <input name="in" type="color3" value="0.0, 0.0, 0.0" />
-    <output name="out" type="color3" defaultinput="in" />
+    <output name="out1" type="color3" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_sign_color4" nodedef="sign" nodegroup="math">
     <input name="in" type="color4" value="0.0, 0.0, 0.0, 0.0" />
-    <output name="out" type="color4" defaultinput="in" />
+    <output name="out1" type="color4" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_sign_float2" nodedef="sign" nodegroup="math">
     <input name="in" type="float2" value="0.0, 0.0" />
-    <output name="out" type="float2" defaultinput="in" />
+    <output name="out1" type="float2" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_sign_float3" nodedef="sign" nodegroup="math">
     <input name="in" type="float3" value="0.0, 0.0, 0.0" />
-    <output name="out" type="float3" defaultinput="in" />
+    <output name="out1" type="float3" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_sign_float4" nodedef="sign" nodegroup="math">
     <input name="in" type="float4" value="0.0, 0.0, 0.0, 0.0" />
-    <output name="out" type="float4" defaultinput="in" />
+    <output name="out1" type="float4" defaultinput="in" />
   </nodedef>
 
   <!--
@@ -716,67 +716,67 @@
     <input name="in" type="float" value="0.0" />
     <input name="low" type="float" value="0.0" />
     <input name="high" type="float" value="1.0" />
-    <output name="out" type="float" defaultinput="in" />
+    <output name="out1" type="float" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_clamp_color3" nodedef="clamp" nodegroup="math">
     <input name="in" type="color3" value="0.0, 0.0, 0.0" />
     <input name="low" type="color3" value="0.0, 0.0, 0.0" />
     <input name="high" type="color3" value="1.0, 1.0, 1.0" />
-    <output name="out" type="color3" defaultinput="in" />
+    <output name="out1" type="color3" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_clamp_color4" nodedef="clamp" nodegroup="math">
     <input name="in" type="color4" value="0.0, 0.0, 0.0, 0.0" />
     <input name="low" type="color4" value="0.0, 0.0, 0.0, 0.0" />
     <input name="high" type="color4" value="1.0, 1.0, 1.0, 1.0" />
-    <output name="out" type="color4" defaultinput="in" />
+    <output name="out1" type="color4" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_clamp_float2" nodedef="clamp" nodegroup="math">
     <input name="in" type="float2" value="0.0, 0.0" />
     <input name="low" type="float2" value="0.0, 0.0" />
     <input name="high" type="float2" value="1.0, 1.0" />
-    <output name="out" type="float2" defaultinput="in" />
+    <output name="out1" type="float2" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_clamp_float3" nodedef="clamp" nodegroup="math">
     <input name="in" type="float3" value="0.0, 0.0, 0.0" />
     <input name="low" type="float3" value="0.0, 0.0, 0.0" />
     <input name="high" type="float3" value="1.0, 1.0, 1.0" />
-    <output name="out" type="float3" defaultinput="in" />
+    <output name="out1" type="float3" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_clamp_float4" nodedef="clamp" nodegroup="math">
     <input name="in" type="float4" value="0.0, 0.0, 0.0, 0.0" />
     <input name="low" type="float4" value="0.0, 0.0, 0.0, 0.0" />
     <input name="high" type="float4" value="1.0, 1.0, 1.0, 1.0" />
-    <output name="out" type="float4" defaultinput="in" />
+    <output name="out1" type="float4" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_clamp_color3FA" nodedef="clamp" nodegroup="math">
     <input name="in" type="color3" value="0.0, 0.0, 0.0" />
     <input name="low" type="float" value="0.0" />
     <input name="high" type="float" value="1.0" />
-    <output name="out" type="color3" defaultinput="in" />
+    <output name="out1" type="color3" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_clamp_color4FA" nodedef="clamp" nodegroup="math">
     <input name="in" type="color4" value="0.0, 0.0, 0.0, 0.0" />
     <input name="low" type="float" value="0.0" />
     <input name="high" type="float" value="1.0" />
-    <output name="out" type="color4" defaultinput="in" />
+    <output name="out1" type="color4" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_clamp_float2FA" nodedef="clamp" nodegroup="math">
     <input name="in" type="float2" value="0.0, 0.0" />
     <input name="low" type="float" value="0.0" />
     <input name="high" type="float" value="1.0" />
-    <output name="out" type="float2" defaultinput="in" />
+    <output name="out1" type="float2" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_clamp_float3FA" nodedef="clamp" nodegroup="math">
     <input name="in" type="float3" value="0.0, 0.0, 0.0" />
     <input name="low" type="float" value="0.0" />
     <input name="high" type="float" value="1.0" />
-    <output name="out" type="float3" defaultinput="in" />
+    <output name="out1" type="float3" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_clamp_float4FA" nodedef="clamp" nodegroup="math">
     <input name="in" type="float4" value="0.0, 0.0, 0.0, 0.0" />
     <input name="low" type="float" value="0.0" />
     <input name="high" type="float" value="1.0" />
-    <output name="out" type="float4" defaultinput="in" />
+    <output name="out1" type="float4" defaultinput="in" />
   </nodedef>
 
   <!--
@@ -786,57 +786,57 @@
   <nodedef name="ND_min_float" nodedef="min" nodegroup="math">
     <input name="in1" type="float" value="0.0" />
     <input name="in2" type="float" value="0.0" />
-    <output name="out" type="float" defaultinput="in1" />
+    <output name="out1" type="float" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_min_color3" nodedef="min" nodegroup="math">
     <input name="in1" type="color3" value="0.0, 0.0, 0.0" />
     <input name="in2" type="color3" value="0.0, 0.0, 0.0" />
-    <output name="out" type="color3" defaultinput="in1" />
+    <output name="out1" type="color3" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_min_color4" nodedef="min" nodegroup="math">
     <input name="in1" type="color4" value="0.0, 0.0, 0.0, 0.0" />
     <input name="in2" type="color4" value="0.0, 0.0, 0.0, 0.0" />
-    <output name="out" type="color4" defaultinput="in1" />
+    <output name="out1" type="color4" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_min_float2" nodedef="min" nodegroup="math">
     <input name="in1" type="float2" value="0.0, 0.0" />
     <input name="in2" type="float2" value="0.0, 0.0" />
-    <output name="out" type="float2" defaultinput="in1" />
+    <output name="out1" type="float2" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_min_float3" nodedef="min" nodegroup="math">
     <input name="in1" type="float3" value="0.0, 0.0, 0.0" />
     <input name="in2" type="float3" value="0.0, 0.0, 0.0" />
-    <output name="out" type="float3" defaultinput="in1" />
+    <output name="out1" type="float3" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_min_float4" nodedef="min" nodegroup="math">
     <input name="in1" type="float4" value="0.0, 0.0, 0.0, 0.0" />
     <input name="in2" type="float4" value="0.0, 0.0, 0.0, 0.0" />
-    <output name="out" type="float4" defaultinput="in1" />
+    <output name="out1" type="float4" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_min_color3FA" nodedef="min" nodegroup="math">
     <input name="in1" type="color3" value="0.0, 0.0, 0.0" />
     <input name="in2" type="float" value="0.0" />
-    <output name="out" type="color3" defaultinput="in1" />
+    <output name="out1" type="color3" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_min_color4FA" nodedef="min" nodegroup="math">
     <input name="in1" type="color4" value="0.0, 0.0, 0.0, 0.0" />
     <input name="in2" type="float" value="0.0" />
-    <output name="out" type="color4" defaultinput="in1" />
+    <output name="out1" type="color4" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_min_float2FA" nodedef="min" nodegroup="math">
     <input name="in1" type="float2" value="0.0, 0.0" />
     <input name="in2" type="float" value="0.0" />
-    <output name="out" type="float2" defaultinput="in1" />
+    <output name="out1" type="float2" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_min_float3FA" nodedef="min" nodegroup="math">
     <input name="in1" type="float3" value="0.0, 0.0, 0.0" />
     <input name="in2" type="float" value="0.0" />
-    <output name="out" type="float3" defaultinput="in1" />
+    <output name="out1" type="float3" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_min_float4FA" nodedef="min" nodegroup="math">
     <input name="in1" type="float4" value="0.0, 0.0, 0.0, 0.0" />
     <input name="in2" type="float" value="0.0" />
-    <output name="out" type="float4" defaultinput="in1" />
+    <output name="out1" type="float4" defaultinput="in1" />
   </nodedef>
 
   <!--
@@ -846,57 +846,57 @@
   <nodedef name="ND_max_float" nodedef="max" nodegroup="math">
     <input name="in1" type="float" value="0.0" />
     <input name="in2" type="float" value="0.0" />
-    <output name="out" type="float" defaultinput="in1" />
+    <output name="out1" type="float" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_max_color3" nodedef="max" nodegroup="math">
     <input name="in1" type="color3" value="0.0, 0.0, 0.0" />
     <input name="in2" type="color3" value="0.0, 0.0, 0.0" />
-    <output name="out" type="color3" defaultinput="in1" />
+    <output name="out1" type="color3" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_max_color4" nodedef="max" nodegroup="math">
     <input name="in1" type="color4" value="0.0, 0.0, 0.0, 0.0" />
     <input name="in2" type="color4" value="0.0, 0.0, 0.0, 0.0" />
-    <output name="out" type="color4" defaultinput="in1" />
+    <output name="out1" type="color4" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_max_float2" nodedef="max" nodegroup="math">
     <input name="in1" type="float2" value="0.0, 0.0" />
     <input name="in2" type="float2" value="0.0, 0.0" />
-    <output name="out" type="float2" defaultinput="in1" />
+    <output name="out1" type="float2" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_max_float3" nodedef="max" nodegroup="math">
     <input name="in1" type="float3" value="0.0, 0.0, 0.0" />
     <input name="in2" type="float3" value="0.0, 0.0, 0.0" />
-    <output name="out" type="float3" defaultinput="in1" />
+    <output name="out1" type="float3" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_max_float4" nodedef="max" nodegroup="math">
     <input name="in1" type="float4" value="0.0, 0.0, 0.0, 0.0" />
     <input name="in2" type="float4" value="0.0, 0.0, 0.0, 0.0" />
-    <output name="out" type="float4" defaultinput="in1" />
+    <output name="out1" type="float4" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_max_color3FA" nodedef="max" nodegroup="math">
     <input name="in1" type="color3" value="0.0, 0.0, 0.0" />
     <input name="in2" type="float" value="0.0" />
-    <output name="out" type="color3" defaultinput="in1" />
+    <output name="out1" type="color3" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_max_color4FA" nodedef="max" nodegroup="math">
     <input name="in1" type="color4" value="0.0, 0.0, 0.0, 0.0" />
     <input name="in2" type="float" value="0.0" />
-    <output name="out" type="color4" defaultinput="in1" />
+    <output name="out1" type="color4" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_max_float2FA" nodedef="max" nodegroup="math">
     <input name="in1" type="float2" value="0.0, 0.0" />
     <input name="in2" type="float" value="0.0" />
-    <output name="out" type="float2" defaultinput="in1" />
+    <output name="out1" type="float2" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_max_float3FA" nodedef="max" nodegroup="math">
     <input name="in1" type="float3" value="0.0, 0.0, 0.0" />
     <input name="in2" type="float" value="0.0" />
-    <output name="out" type="float3" defaultinput="in1" />
+    <output name="out1" type="float3" defaultinput="in1" />
   </nodedef>
   <nodedef name="ND_max_float4FA" nodedef="max" nodegroup="math">
     <input name="in1" type="float4" value="0.0, 0.0, 0.0, 0.0" />
     <input name="in2" type="float" value="0.0" />
-    <output name="out" type="float4" defaultinput="in1" />
+    <output name="out1" type="float4" defaultinput="in1" />
   </nodedef>
 
   <!--
@@ -905,15 +905,15 @@
   -->
   <nodedef name="ND_normalize_float2" nodedef="normalize" nodegroup="math">
     <input name="in" type="float2" value="0.0, 0.0" />
-    <output name="out" type="float2" defaultinput="in" />
+    <output name="out1" type="float2" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_normalize_float3" nodedef="normalize" nodegroup="math">
     <input name="in" type="float3" value="0.0, 0.0, 0.0" />
-    <output name="out" type="float3" defaultinput="in" />
+    <output name="out1" type="float3" defaultinput="in" />
   </nodedef>
   <nodedef name="ND_normalize_float4" nodedef="normalize" nodegroup="math">
     <input name="in" type="float4" value="0.0, 0.0, 0.0, 0.0" />
-    <output name="out" type="float4" defaultinput="in" />
+    <output name="out1" type="float4" defaultinput="in" />
   </nodedef>
 
   <!--
@@ -922,15 +922,15 @@
   -->
   <nodedef name="ND_magnitude_float2" nodedef="magnitude" nodegroup="math">
     <input name="in" type="float2" value="0.0, 0.0" />
-    <output name="out" type="float" default="0.0" />
+    <output name="out1" type="float" default="0.0" />
   </nodedef>
   <nodedef name="ND_magnitude_float3" nodedef="magnitude" nodegroup="math">
     <input name="in" type="float3" value="0.0, 0.0, 0.0" />
-    <output name="out" type="float" default="0.0" />
+    <output name="out1" type="float" default="0.0" />
   </nodedef>
   <nodedef name="ND_magnitude_float4" nodedef="magnitude" nodegroup="math">
     <input name="in" type="float4" value="0.0, 0.0, 0.0, 0.0" />
-    <output name="out" type="float" default="0.0" />
+    <output name="out1" type="float" default="0.0" />
   </nodedef>
 
   <!--
@@ -940,17 +940,17 @@
   <nodedef name="ND_dotproduct_float2" nodedef="dotproduct" nodegroup="math">
     <input name="in1" type="float2" value="0.0, 0.0" />
     <input name="in2" type="float2" value="0.0, 0.0" />
-    <output name="out" type="float" default="0.0" />
+    <output name="out1" type="float" default="0.0" />
   </nodedef>
   <nodedef name="ND_dotproduct_float3" nodedef="dotproduct" nodegroup="math">
     <input name="in1" type="float3" value="0.0, 0.0, 0.0" />
     <input name="in2" type="float3" value="0.0, 0.0, 0.0" />
-    <output name="out" type="float" default="0.0" />
+    <output name="out1" type="float" default="0.0" />
   </nodedef>
   <nodedef name="ND_dotproduct_float4" nodedef="dotproduct" nodegroup="math">
     <input name="in1" type="float4" value="0.0, 0.0, 0.0, 0.0" />
     <input name="in2" type="float4" value="0.0, 0.0, 0.0, 0.0" />
-    <output name="out" type="float" default="0.0" />
+    <output name="out1" type="float" default="0.0" />
   </nodedef>
 
   <!--
@@ -960,7 +960,7 @@
   <nodedef name="ND_crossproduct_float3" nodedef="crossproduct" nodegroup="math">
     <input name="in1" type="float3" value="0.0, 0.0, 0.0" />
     <input name="in2" type="float3" value="0.0, 0.0, 0.0" />
-    <output name="out" type="float3" defaultinput="in1" />
+    <output name="out1" type="float3" defaultinput="in1" />
   </nodedef>
 
 
@@ -973,39 +973,39 @@
   <!-- Constant -->
   <nodedef name="ND_constant_float" nodedef="constant" nodegroup="procedural">
     <input name="value" type="float" value="0.0" />
-    <output name="out" type="float" default="0.0" />
+    <output name="out1" type="float" default="0.0" />
   </nodedef>
   <nodedef name="ND_constant_color3" nodedef="constant" nodegroup="procedural">
     <input name="value" type="color3" value="0.0, 0.0, 0.0" />
-    <output name="out" type="color3" default="0.0, 0.0, 0.0" />
+    <output name="out1" type="color3" default="0.0, 0.0, 0.0" />
   </nodedef>
   <nodedef name="ND_constant_color4" nodedef="constant" nodegroup="procedural">
     <input name="value" type="color4" value="0.0, 0.0, 0.0, 0.0" />
-    <output name="out" type="color4" default="0.0, 0.0, 0.0, 0.0" />
+    <output name="out1" type="color4" default="0.0, 0.0, 0.0, 0.0" />
   </nodedef>
   <nodedef name="ND_constant_float2" nodedef="constant" nodegroup="procedural">
     <input name="value" type="float2" value="0.0, 0.0" />
-    <output name="out" type="float2" default="0.0, 0.0" />
+    <output name="out1" type="float2" default="0.0, 0.0" />
   </nodedef>
   <nodedef name="ND_constant_float3" nodedef="constant" nodegroup="procedural">
     <input name="value" type="float3" value="0.0, 0.0, 0.0" />
-    <output name="out" type="float3" default="0.0, 0.0, 0.0" />
+    <output name="out1" type="float3" default="0.0, 0.0, 0.0" />
   </nodedef>
   <nodedef name="ND_constant_float4" nodedef="constant" nodegroup="procedural">
     <input name="value" type="float4" value="0.0, 0.0, 0.0, 0.0" />
-    <output name="out" type="float4" default="0.0, 0.0, 0.0, 0.0" />
+    <output name="out1" type="float4" default="0.0, 0.0, 0.0, 0.0" />
   </nodedef>
   <nodedef name="ND_constant_boolean" nodedef="constant" nodegroup="procedural">
     <input name="value" type="boolean" value="false" />
-    <output name="out" type="boolean" default="false" />
+    <output name="out1" type="boolean" default="false" />
   </nodedef>
   <nodedef name="ND_constant_integer" nodedef="constant" nodegroup="procedural">
     <input name="value" type="integer" value="0" />
-    <output name="out" type="integer" default="0" />
+    <output name="out1" type="integer" default="0" />
   </nodedef>
   <nodedef name="ND_constant_string" nodedef="constant" nodegroup="procedural">
     <input name="value" type="string" value="" uniform="true" />
-    <output name="out" type="string" default="" />
+    <output name="out1" type="string" default="" />
   </nodedef>
 
 
@@ -1017,73 +1017,73 @@
     <input name="fg" type="float" value="0.0" />
     <input name="bg" type="float" value="0.0" />
     <input name="mix" type="float" value="0.0" uisoftmin="0.0" uisoftmax="1.0" />
-    <output name="out" type="float" defaultinput="bg" />
+    <output name="out1" type="float" defaultinput="bg" />
   </nodedef>
   <nodedef name="ND_mix_color3" nodedef="mix" nodegroup="compositing">
     <input name="fg" type="color3" value="0.0, 0.0, 0.0" />
     <input name="bg" type="color3" value="0.0, 0.0, 0.0" />
     <input name="mix" type="float" value="0.0" uisoftmin="0.0" uisoftmax="1.0" />
-    <output name="out" type="color3" defaultinput="bg" />
+    <output name="out1" type="color3" defaultinput="bg" />
   </nodedef>
   <nodedef name="ND_mix_color3_color3" nodedef="mix" nodegroup="compositing">
     <input name="fg" type="color3" value="0.0, 0.0, 0.0" />
     <input name="bg" type="color3" value="0.0, 0.0, 0.0" />
     <input name="mix" type="color3" value="0.0, 0.0, 0.0" uisoftmin="0,0,0" uisoftmax="1,1,1" />
-    <output name="out" type="color3" defaultinput="bg" />
+    <output name="out1" type="color3" defaultinput="bg" />
   </nodedef>
   <nodedef name="ND_mix_color4" nodedef="mix" nodegroup="compositing">
     <input name="fg" type="color4" value="0.0, 0.0, 0.0, 0.0" />
     <input name="bg" type="color4" value="0.0, 0.0, 0.0, 0.0" />
     <input name="mix" type="float" value="0.0" uisoftmin="0.0" uisoftmax="1.0" />
-    <output name="out" type="color4" defaultinput="bg" />
+    <output name="out1" type="color4" defaultinput="bg" />
   </nodedef>
   <nodedef name="ND_mix_color4_color4" nodedef="mix" nodegroup="compositing">
     <input name="fg" type="color4" value="0.0, 0.0, 0.0, 0.0" />
     <input name="bg" type="color4" value="0.0, 0.0, 0.0, 0.0" />
     <input name="mix" type="color4" value="0.0, 0.0, 0.0, 0.0" uisoftmin="0,0,0,0" uisoftmax="1,1,1,1" />
-    <output name="out" type="color4" defaultinput="bg" />
+    <output name="out1" type="color4" defaultinput="bg" />
   </nodedef>
   <nodedef name="ND_mix_float2" nodedef="mix" nodegroup="compositing">
     <input name="fg" type="float2" value="0.0, 0.0" />
     <input name="bg" type="float2" value="0.0, 0.0" />
     <input name="mix" type="float" value="0.0" uisoftmin="0.0" uisoftmax="1.0" />
-    <output name="out" type="float2" defaultinput="bg" />
+    <output name="out1" type="float2" defaultinput="bg" />
   </nodedef>
   <nodedef name="ND_mix_float2_float2" nodedef="mix" nodegroup="compositing">
     <input name="fg" type="float2" value="0.0, 0.0" />
     <input name="bg" type="float2" value="0.0, 0.0" />
     <input name="mix" type="float2" value="0.0, 0.0" uisoftmin="0,0" uisoftmax="1,1" />
-    <output name="out" type="float2" defaultinput="bg" />
+    <output name="out1" type="float2" defaultinput="bg" />
   </nodedef>
   <nodedef name="ND_mix_float3" nodedef="mix" nodegroup="compositing">
     <input name="fg" type="float3" value="0.0, 0.0, 0.0" />
     <input name="bg" type="float3" value="0.0, 0.0, 0.0" />
     <input name="mix" type="float" value="0.0" uisoftmin="0.0" uisoftmax="1.0" />
-    <output name="out" type="float3" defaultinput="bg" />
+    <output name="out1" type="float3" defaultinput="bg" />
   </nodedef>
   <nodedef name="ND_mix_float3_float3" nodedef="mix" nodegroup="compositing">
     <input name="fg" type="float3" value="0.0, 0.0, 0.0" />
     <input name="bg" type="float3" value="0.0, 0.0, 0.0" />
     <input name="mix" type="float3" value="0.0, 0.0, 0.0" uisoftmin="0,0,0" uisoftmax="1,1,1" />
-    <output name="out" type="float3" defaultinput="bg" />
+    <output name="out1" type="float3" defaultinput="bg" />
   </nodedef>
   <nodedef name="ND_mix_float4" nodedef="mix" nodegroup="compositing">
     <input name="fg" type="float4" value="0.0, 0.0, 0.0, 0.0" />
     <input name="bg" type="float4" value="0.0, 0.0, 0.0, 0.0" />
     <input name="mix" type="float" value="0.0" uisoftmin="0.0" uisoftmax="1.0" />
-    <output name="out" type="float4" defaultinput="bg" />
+    <output name="out1" type="float4" defaultinput="bg" />
   </nodedef>
   <nodedef name="ND_mix_float4_float4" nodedef="mix" nodegroup="compositing">
     <input name="fg" type="float4" value="0.0, 0.0, 0.0, 0.0" />
     <input name="bg" type="float4" value="0.0, 0.0, 0.0, 0.0" />
     <input name="mix" type="float4" value="0.0, 0.0, 0.0, 0.0" uisoftmin="0,0,0,0" uisoftmax="1,1,1,1" />
-    <output name="out" type="float4" defaultinput="bg" />
+    <output name="out1" type="float4" defaultinput="bg" />
   </nodedef>
   <nodedef name="ND_mix_surfaceshader" nodedef="mix" nodegroup="compositing">
     <input name="fg" type="surfaceshader" value="" />
     <input name="bg" type="surfaceshader" value="" />
     <input name="mix" type="float" value="0.0" uisoftmin="0.0" uisoftmax="1.0" />
-    <output name="out" type="surfaceshader" defaultinput="bg" />
+    <output name="out1" type="surfaceshader" defaultinput="bg" />
   </nodedef>
 
 </materialx>

@@ -96,17 +96,17 @@ void ShaderGraph::UpdateVariable() {
     string prefix = GetName() + "_";
     for (auto& [_, node] : mNodes) {
         for (auto& [_, input] : node->GetInputs()) {
-            input->SetVariable(prefix + node->GetName() + "_" + input->GetName());
+            input->SetVariable(prefix + input->GetFullName());
         }
         for (auto& [_, output] : node->GetOutputs()) {
-            output->SetVariable(prefix + node->GetName() + "_" + output->GetName());
+            output->SetVariable(prefix + output->GetFullName());
         }
     }
     for (auto& [_, input] : GetInputSockets()) {
-        input->SetVariable(prefix + input->GetName());
+        input->SetVariable(prefix + input->GetFullName());
     }
     for (auto& [_, output] : GetOutputSockets()) {
-        output->SetVariable(prefix + output->GetName());
+        output->SetVariable(prefix + output->GetFullName());
     }
 }
 

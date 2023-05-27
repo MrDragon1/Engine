@@ -22,7 +22,7 @@ void AggregationShaderNode::EmitFunctionCall(ShaderNodePtr node, ShaderContextPt
     if (stage->GetName() == Stage::VERTEX) {
     }
     if (stage->GetName() == Stage::PIXEL) {
-        stage->BeginScope();
+        // stage->BeginScope();
         for (auto& snode : mGraph->GetSortedNodes()) {
             stage->AddFunctionCall(snode, context);
         }
@@ -37,7 +37,7 @@ void AggregationShaderNode::EmitFunctionCall(ShaderNodePtr node, ShaderContextPt
             stage->EmitVariableDeclaration(output, context, EMPTY_STRING, true);
         }
         stage->EmitLine(expression);
-        stage->EndScope();
+        // stage->EndScope();
         stage->EmitLine("");
     }
 }
@@ -46,7 +46,7 @@ void AggregationShaderNode::CreateVariables(ShaderNodePtr node, ShaderContextPtr
                                             ShaderPtr shader) {
     auto& uniformBlock = context->GetShader()
                              ->GetStage(Stage::PIXEL)
-                             ->GetUniformBlock(ShaderBuildInVariable::PUBUNIFORM);
+                             ->GetUniformBlock(ShaderBuildInVariable::PSPUBUNIFORM);
     for (auto& [name, socket] : mGraph->GetInputSockets()) {
         uniformBlock.Add(socket);
     }

@@ -38,11 +38,16 @@ void ShaderGenerator::EmitVertexStage(ShaderGraphPtr graph, ShaderContextPtr con
 
     stage->EmitLine("void main()");
     stage->BeginScope();
+    auto& block = stage->GetUniformBlock(ShaderBuildInVariable::VSPUBUNIFORM);
 
-    stage->EmitLine("vec4 hPositionWorld = " + ShaderBuildInVariable::MODEL_MATRIX +
+    stage->EmitLine("vec4 hPositionWorld = " +
+                    block[ShaderBuildInVariable::MODEL_MATRIX]->GetVariable(context->GetScope()) +
                     " * vec4(i_position, 1.0);");
-    stage->EmitLine("gl_Position = " + ShaderBuildInVariable::PROJ_MATRIX + " * " +
-                    ShaderBuildInVariable::VIEW_MATRIX + " * hPositionWorld;");
+    stage->EmitLine("gl_Position = " +
+                    block[ShaderBuildInVariable::PROJ_MATRIX]->GetVariable(context->GetScope()) +
+                    " * " +
+                    block[ShaderBuildInVariable::VIEW_MATRIX]->GetVariable(context->GetScope()) +
+                    " * hPositionWorld;");
 
     for (auto node : graph->GetSortedNodes()) {
         stage->AddFunctionCall(node, context);
@@ -105,18 +110,30 @@ void ShaderGenerator::EmitUniforms(ShaderContextPtr context, ShaderStagePtr stag
     if (stage->GetName() == Stage::VERTEX) {
         for (auto& it : stage->GetUniformBlocks()) {
             VariableBlock& uniforms = *it.second;
-            for (auto uniform : uniforms.GetVariables()) {
-                stage->EmitVariableDeclaration(uniform, context, "uniform");
+            string instance = it.second->GetInstance();
+            stage->EmitLine("layout(std140, binding = 0) uniform " + uniforms.GetName());
+            stage->BeginScope();
+            for (auto& uniform : uniforms.GetVariables()) {
+                stage->EmitVariableDeclaration(uniform, context);
+                uniform->SetVariable(instance + "." + uniform->GetVariable(context->GetScope()));
             }
+            stage->EndScope(" " + instance + ";");
         }
         stage->EmitLine();
     }
     if (stage->GetName() == Stage::PIXEL) {
         for (auto& it : stage->GetUniformBlocks()) {
             VariableBlock& uniforms = *it.second;
-            for (auto uniform : uniforms.GetVariables()) {
-                stage->EmitVariableDeclaration(uniform, context, "uniform", true);
+            string instance = it.second->GetInstance();
+            stage->EmitLine("layout(std140, binding = " + std::to_string(uniforms.GetBinding()) +
+                            ") uniform " + uniforms.GetName());
+            stage->BeginScope();
+            for (auto& uniform : uniforms.GetVariables()) {
+                stage->EmitVariableDeclaration(uniform, context);
+                stage->EmitLine("Value: " + uniform->GetValue()->GetValueString());
+                uniform->SetVariable(instance + "." + uniform->GetVariable(context->GetScope()));
             }
+            stage->EndScope(" " + instance + ";");
         }
         stage->EmitLine();
     }
@@ -125,13 +142,15 @@ void ShaderGenerator::EmitUniforms(ShaderContextPtr context, ShaderStagePtr stag
 void ShaderGenerator::EmitOutputs(ShaderContextPtr context, ShaderStagePtr stage) {
     if (stage->GetName() == Stage::VERTEX) {
         for (auto& it : stage->GetOutputBlocks()) {
-            stage->EmitLine("out " + it.second->GetName());
+            stage->EmitLine("out layout(location = 0) " + it.second->GetName());
             stage->BeginScope();
             VariableBlock& outputs = *it.second;
+            string instance = it.second->GetInstance();
             for (auto& output : outputs.GetVariables()) {
                 stage->EmitVariableDeclaration(output, context);
+                output->SetVariable(instance + "." + output->GetVariable(context->GetScope()));
             }
-            stage->EndScope(" " + it.second->GetInstance() + ";");
+            stage->EndScope(" " + instance + ";");
         }
         stage->EmitLine();
     }
@@ -139,8 +158,10 @@ void ShaderGenerator::EmitOutputs(ShaderContextPtr context, ShaderStagePtr stage
         stage->EmitComment("Pixel Shader Output");
         for (auto& it : stage->GetOutputBlocks()) {
             VariableBlock& outputs = *it.second;
+            size_t location = 0;
             for (auto& output : outputs.GetVariables()) {
-                stage->EmitVariableDeclaration(output, context, "out");
+                stage->EmitVariableDeclaration(
+                    output, context, "layout(location = " + std::to_string(location++) + ") out");
             }
         }
         stage->EmitLine();
@@ -151,21 +172,26 @@ void ShaderGenerator::EmitInputs(ShaderContextPtr context, ShaderStagePtr stage)
     if (stage->GetName() == Stage::VERTEX) {
         for (auto& it : stage->GetInputBlocks()) {
             VariableBlock& inputs = *it.second;
+            size_t location = 0;
             for (auto input : inputs.GetVariables()) {
-                stage->EmitVariableDeclaration(input, context, "in", false);
+                stage->EmitVariableDeclaration(
+                    input, context, "layout(location = " + std::to_string(location++) + " ) in",
+                    false);
             }
         }
         stage->EmitLine();
     }
     if (stage->GetName() == Stage::PIXEL) {
         for (auto& it : stage->GetInputBlocks()) {
-            stage->EmitLine("in " + it.second->GetName());
+            stage->EmitLine("in layout(location = 0) " + it.second->GetName());
             stage->BeginScope();
             VariableBlock& inputs = *it.second;
+            string instance = it.second->GetInstance();
             for (auto input : inputs.GetVariables()) {
                 stage->EmitVariableDeclaration(input, context);
+                input->SetVariable(instance + "." + input->GetVariable(context->GetScope()));
             }
-            stage->EndScope(" " + it.second->GetInstance() + ";");
+            stage->EndScope(" " + instance + ";");
         }
         stage->EmitLine();
     }

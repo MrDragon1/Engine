@@ -35,8 +35,7 @@ void SourceCodeShaderNode::EmitFunctionCall(ShaderNodePtr node, ShaderContextPtr
         auto worldPos = vertexData[ShaderBuildInVariable::POSITION_WORLD];
         if (!worldPos->IsEmitted()) {
             worldPos->SetEmitted();
-            stage->EmitLine(vertexData.GetInstance() + "." +
-                            worldPos->GetVariable(context->GetScope()) + " = hPositionWorld.xyz;");
+            stage->EmitLine(worldPos->GetVariable(context->GetScope()) + " = hPositionWorld.xyz;");
         }
     }
     if (stage->GetName() == Stage::PIXEL) {

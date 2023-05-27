@@ -8,13 +8,20 @@ using ShaderStagePtr = Ref<class ShaderStage>;
 
 class VariableBlock : public RefCounted {
    public:
-    VariableBlock(const string& name, const string& instance) : mName(name), mInstance(instance) {}
+    VariableBlock(const string& name, const string& instance, size_t binding = -1)
+        : mName(name), mBinding(binding) {
+        if (instance.empty())
+            mInstance = "VB" + name;
+        else
+            mInstance = instance;
+    }
+    static size_t GenerateBinding() { return sBinding++; }
+    size_t GetBinding() { return mBinding; }
+    string GetName() { return mName; }
 
-    const string& GetName() { return mName; }
+    string GetInstance() { return mInstance; }
 
-    const string& GetInstance() { return mInstance; }
-
-    const vector<ShaderPortPtr> GetVariables() const { return mVariablesOrder; }
+    vector<ShaderPortPtr> GetVariables() { return mVariablesOrder; }
 
     ShaderPortPtr operator[](const string& name) { return mVariables[name]; }
 
@@ -29,8 +36,10 @@ class VariableBlock : public RefCounted {
    public:
     string mName;
     string mInstance;
+    size_t mBinding = -1;
     unordered_map<string, ShaderPortPtr> mVariables;
     vector<ShaderPortPtr> mVariablesOrder;
+    static size_t sBinding;
 };
 
 class ShaderStage : public RefCounted {

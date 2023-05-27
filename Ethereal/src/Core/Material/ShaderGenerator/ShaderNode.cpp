@@ -143,8 +143,12 @@ ShaderPort::ShaderPort(ShaderNodePtr parent, ElementPtr source, bool socket /*= 
     if (source->Is(MaterialElementType::INPUT)) {
         SetValue(source.As<NodeInput>()->GetValue());
     } else if (source->Is(MaterialElementType::OUTPUT)) {
-        SetValue(ValueBase::CreateValueWithType(
-            source.As<NodeOutput>()->GetAttribute(MaterialAttribute::TYPE)));
+        if (source.As<NodeOutput>()->GetValue()) {
+            SetValue(source.As<NodeOutput>()->GetValue());
+        } else {
+            SetValue(ValueBase::CreateValueWithType(
+                source.As<NodeOutput>()->GetAttribute(MaterialAttribute::TYPE)));
+        }
     }
 };
 
@@ -155,6 +159,15 @@ ShaderPort::ShaderPort(ShaderNodePtr parent, const string& type, const string& n
     mSource = nullptr;
     mParent = parent;
     mVariable = name;
+}
+
+string ShaderPort::GetFullName() {
+    string res = mName;
+    if (mParent) {
+        res = mParent->GetName() + "_" + res;
+        // if (mParent->GetGraph()) res = mParent->GetGraph()->GetName() + "_" + res;
+    }
+    return res;
 }
 
 }  // namespace Ethereal

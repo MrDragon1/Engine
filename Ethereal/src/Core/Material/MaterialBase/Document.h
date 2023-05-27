@@ -162,6 +162,7 @@ class NodeInput : public Element {
     void Validate() override;
 
     ValueBasePtr GetValue() { return mValue; }
+    void SetValue(ValueBasePtr value) { mValue = value; }
 
    private:
     ElementPtr mConnector;
@@ -179,12 +180,16 @@ class NodeOutput : public Element {
 
     void Disconnect();
 
+    ValueBasePtr GetValue() { return mValue; }
+    void SetValue(ValueBasePtr value) { mValue = value; }
+
     string GetTypeAttribute() { return GetAttribute(MaterialAttribute::TYPE); }
 
     void Validate() override;
 
    private:
     std::unordered_map<UUID, ElementPtr> mConnectors;
+    ValueBasePtr mValue = nullptr;
 };
 
 }  // namespace Ethereal

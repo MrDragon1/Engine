@@ -3,7 +3,7 @@
   <nodedef name="ND_surface" nodedef="surface">
     <input name="in1" type="color3" value="1.0, 1.0, 1.0"/>
     <input name="in2" type="float3" value="1.0, 1.0, 1.0"/>
-    <output name="out" type="surfaceshader" />
+    <output name="out1" type="surfaceshader" />
   </nodedef>
 
   <implementation name="IM_surface_surfaceshader_genglsl" nodedef="ND_surface" target="genglsl" 
@@ -14,7 +14,8 @@
     <input name="ambient" type="color3" value="1.0, 1.0, 1.0"/>
     <input name="roughness" type="float" value="0.8" />
     <input name="metalness" type="float" value="0.5" />
-    <output name="out" type="surfaceshader" />
+    <input name="trans" type="float3" value="0.5, 0.5, 0.5" />
+    <output name="out1" type="surfaceshader" />
   </nodedef>
 
   <implementation name="IM_standard_surface_surfaceshader_phong" nodedef="ND_standard_surface_surfaceshader_phong" implgraph="NG_standard_surface_surfaceshader_phong"/>
@@ -31,21 +32,21 @@
     </multiply>
     
     <add name="add_diffuse" type="color3">
-        <input name="in1" type="color3" connector="multiply_diffuse" output="out"/>
-        <input name="in2" type="color3" connector="multiply_specular" output="out"/>
+        <input name="in1" type="color3" connector="multiply_diffuse" output="out1"/>
+        <input name="in2" type="color3" connector="multiply_specular" output="out1"/>
     </add>
 
     <add name="add_ambient" type="color3">
-        <input name="in1" type="color3" connector="add_diffuse" output="out"/>
+        <input name="in1" type="color3" connector="add_diffuse" output="out1"/>
         <input name="in2" type="color3" connector="ambient"/>
     </add>
     
     <surface name="shader_constructor" type="surfaceshader">
-        <input name="in1" type="color3" connector="add_ambient" output="out"/>
-        <input name="in2" type="float3" value="1.0, 1.0, 1.0"/>
+        <input name="in1" type="color3" connector="add_ambient" output="out1"/>
+        <input name="in2" type="float3" connector="trans"/>
     </surface>
 
-    <output name="out" type="surfaceshader" connector="shader_constructor" output="out"/>
+    <output name="out1" type="surfaceshader" connector="shader_constructor" output="out1"/>
   </nodegraph>
 
 </materialx>

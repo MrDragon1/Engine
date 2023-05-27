@@ -29,13 +29,16 @@ class ShaderPort : public RefCounted {
     ElementPtr GetSource() { return mSource; }
     ShaderNodePtr GetParent() { return mParent; }
     string GetName() { return mName; }
+    string GetFullName();
     void SetValue(ValueBasePtr value) { mValue = value; }
     ValueBasePtr GetValue() { return mValue; }
     void SetVariable(const string& var) { mVariable = var; }
     string GetVariable(const string& scope) {
         string var = mVariable;
-        if (!scope.empty() && var.substr(0, scope.size()) == scope)
-            return mVariable.substr(scope.size() + 1);
+        auto startpos = var.find_last_of('.');
+        if (startpos == std::string::npos) startpos = -1;  // skip the '.' indexing
+        if (!scope.empty() && var.substr(startpos + 1, scope.size()) == scope)
+            return mVariable.substr(startpos + 1 + scope.size() + 1);
         else
             return mVariable;
     }
@@ -111,6 +114,7 @@ class ShaderNode : public RefCounted {
 
     void Initalize();
     string GetName() { return mName; }
+    ShaderGraphPtr GetGraph() { return mGraph; }
     ShaderNodeImplPtr GetImpl() { return mImpl; }
 
     void EmitFunctionDefinition(ShaderContextPtr context, ShaderStagePtr stage) {

@@ -21,12 +21,14 @@ void CompoundShaderNode::EmitFunctionDefinition(ShaderNodePtr node, ShaderContex
         context->PushScope(mGraph->GetName());
         string expression = "void " + mGraph->GetName() + "(";
         string split = "";
-        for (auto& [name, input] : mGraph->GetInputSockets()) {
+        for (auto& sinput : node->GetInputOrder()) {
+            auto input = mGraph->GetInputSocket(sinput);
             expression += split + input->GetValue()->GetSyntaxString() + " " +
                           input->GetVariable(context->GetScope());
             split = ", ";
         }
-        for (auto& [name, output] : mGraph->GetOutputSockets()) {
+        for (auto& soutput : node->GetOutputOrder()) {
+            auto output = mGraph->GetOutputSocket(soutput);
             expression += split + "out " + output->GetValue()->GetSyntaxString() + " " +
                           output->GetVariable(context->GetScope());
         }
@@ -85,7 +87,7 @@ void CompoundShaderNode::CreateVariables(ShaderNodePtr node, ShaderContextPtr co
                                          ShaderPtr shader) {
     auto& uniformBlock = context->GetShader()
                              ->GetStage(Stage::PIXEL)
-                             ->GetUniformBlock(ShaderBuildInVariable::PUBUNIFORM);
+                             ->GetUniformBlock(ShaderBuildInVariable::PSPUBUNIFORM);
     for (auto& name : node->GetInputOrder()) {
         auto input = node->GetInput(name);
         if (!input->GetConnector()) {

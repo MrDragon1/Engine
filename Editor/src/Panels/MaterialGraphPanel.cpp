@@ -556,6 +556,7 @@ void MaterialGraphPanel::DrawPinController(MaterialPinPtr pin) {
 }
 
 void MaterialGraphPanel::Compile() {
+    VariableBlock::sBinding = 0;
     ShaderContextPtr shaderContext = ShaderContextPtr::Create();
     ShaderGenerator& shaderGen = shaderContext->GetShaderGenerator();
     shaderContext->mShaderGraph = mDocument->GenerateShaderGraph();
@@ -570,13 +571,13 @@ void MaterialGraphPanel::Compile() {
     VariableBlockPtr vsInputs = vs->CreateInputBlock(ShaderBuildInVariable::INPUT);
     vsInputs->Add(nullptr, "float3", ShaderBuildInVariable::IN_POSITION);
     vsInputs->Add(nullptr, "float3", ShaderBuildInVariable::IN_NORMAL);
-    VariableBlockPtr vsPublicUniforms = vs->CreateUniformBlock(ShaderBuildInVariable::PUBUNIFORM);
+    VariableBlockPtr vsPublicUniforms = vs->CreateUniformBlock(ShaderBuildInVariable::VSPUBUNIFORM);
     vsPublicUniforms->Add(nullptr, "matrix4", ShaderBuildInVariable::MODEL_MATRIX);
     vsPublicUniforms->Add(nullptr, "matrix4", ShaderBuildInVariable::VIEW_MATRIX);
     vsPublicUniforms->Add(nullptr, "matrix4", ShaderBuildInVariable::PROJ_MATRIX);
 
     ShaderStagePtr ps = shader->CreateStage(Stage::PIXEL);
-    VariableBlockPtr psPublicUniforms = ps->CreateUniformBlock(ShaderBuildInVariable::PUBUNIFORM);
+    VariableBlockPtr psPublicUniforms = ps->CreateUniformBlock(ShaderBuildInVariable::PSPUBUNIFORM);
     VariableBlockPtr psOutputs = ps->CreateOutputBlock(ShaderBuildInVariable::OUTPUT);
 
     for (auto& [name, inputSocket] : shaderGraph->GetInputSockets()) {
@@ -591,8 +592,6 @@ void MaterialGraphPanel::Compile() {
     shaderGen.AddConnectorBlock("vertexData", "vd", vs, ps);
     shaderGen.AddConnectorVariable("vertexData", "float3", ShaderBuildInVariable::POSITION_WORLD,
                                    vs, ps);
-    shaderGen.AddConnectorVariable("vertexData", "float3", ShaderBuildInVariable::NORMAL_OBJECT, vs,
-                                   ps);
 
     shaderGen.CreateVariables(shaderGraph, shaderContext, shader);
 

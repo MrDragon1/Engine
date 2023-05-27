@@ -33,7 +33,8 @@ namespace ShaderBuildInVariable {
 // variable block name
 const string OUTPUT = "output";
 const string INPUT = "input";
-const string PUBUNIFORM = "pubuniform";
+const string VSPUBUNIFORM = "vspubuniform";
+const string PSPUBUNIFORM = "pspubuniform";
 const string PRVUNIFORM = "prvuniform";
 
 /// Shader build in variable

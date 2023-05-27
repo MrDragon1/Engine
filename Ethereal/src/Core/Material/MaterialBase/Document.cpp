@@ -40,11 +40,13 @@ void Document::Validate() {
     for (auto& ni : GetInputs()) {
         auto socket = InputSocketPtr::Create(ni->GetParent(), ni->GetName());
         socket->CopyContentFrom(ni);
+        socket->SetValue(ni->GetValue());
         mInputSockets[ni->GetName()] = socket;
     }
     for (auto& ni : GetOutputs()) {
         auto socket = OutputSocketPtr::Create(ni->GetParent(), ni->GetName());
         socket->CopyContentFrom(ni);
+        socket->SetValue(ni->GetValue());
         mOutputSockets[ni->GetName()] = socket;
     }
 
@@ -94,13 +96,18 @@ void Document::Validate() {
 
     /// Connect all inputs with CONNECTOR attributes
     for (auto& [_, node] : GetNodeInstances()) {
-        for (auto input : node->GetInputs()) {
+        for (auto& input : node->GetInputs()) {
             string conn = input->GetAttribute(MaterialAttribute::CONNECTOR);
             if (conn.empty()) continue;
-            ElementPtr child = GetChild(conn);
             string port = input->GetAttribute(MaterialAttribute::PORT);
-            ElementPtr output = child->GetChild(port);
-            input->SetConnector(output);
+            if (port.empty()) {
+                auto output = GetInputSocket(conn);
+                output->SetValue(input->GetValue());
+            } else {
+                ElementPtr child = GetChild(conn);
+                auto output = child->GetChild(port);
+                input->SetConnector(output);
+            }
         }
     }
 
@@ -199,7 +206,7 @@ MaterialGraphPtr Document::GenerateUIGraphFromNodeGraph(NodeGraphPtr ng) {
 ShaderGraphPtr Document::GenerateShaderGraph() {
     ShaderGraphPtr shaderGraph = ShaderGraphPtr::Create(GetName(), this);
 
-    for (auto& input : GetInputs()) {
+    for (auto& [name, input] : GetInputSockets()) {
         ShaderInputSocketPtr shaderInput = ShaderInputSocketPtr::Create(nullptr, input, true);
         shaderGraph->AddInputSocket(shaderInput);
     }
@@ -242,6 +249,17 @@ ShaderGraphPtr Document::GenerateShaderGraphFromNodeGraph(NodeGraphPtr ng) {
     for (auto& [_, node] : ng->GetNodeInstances()) {
         ShaderNodePtr shaderNode = ShaderNodePtr::Create(node, shaderGraph);
         shaderGraph->AddNode(shaderNode);
+
+        // Emit unconnected node input to uniform variable
+        if (!ng->IsImpl()) {
+            for (auto& input : node->GetInputs()) {
+                if (input->GetConnector()) continue;
+                ShaderInputSocketPtr shaderInput =
+                    ShaderInputSocketPtr::Create(shaderNode, input, true);
+                shaderGraph->AddInputSocket(shaderInput);
+                shaderNode->GetInput(input->GetName())->SetConnector(shaderInput);
+            }
+        }
     }
 
     // There are no NodeGraph in NodeGraph
@@ -295,7 +313,7 @@ void NodeInput::Validate() {
     Element::Validate();
     ET_CORE_ASSERT(GetChildren().empty(), "Input port should not have child!");
     string value = GetAttribute(MaterialAttribute::VALUE);
-    mValue = ValueBase::CreateValueFromString(value, GetTypeAttribute());
+    if (!mValue) mValue = ValueBase::CreateValueFromString(value, GetTypeAttribute());
 }
 
 vector<ElementPtr> NodeOutput::GetConnectors() {
@@ -445,23 +463,29 @@ void NodeInstance::Validate() {
     ET_CORE_ASSERT(mNodeDefine, "Instance {0} has no define!", GetName());
 
     /// Copy all input&output to node instance from node define
-    for (auto input : mNodeDefine->GetInputs()) {
+    for (auto& input : mNodeDefine->GetInputs()) {
         ElementPtr child = GetChild(input->GetName());
         if (!child || !child->Is(MaterialElementType::INPUT)) {
-            auto childCopy = AddChildOfType(MaterialElementType::INPUT, input->GetName());
+            input->Validate();
+            auto childCopy =
+                AddChildOfType(MaterialElementType::INPUT, input->GetName()).As<NodeInput>();
             childCopy->CopyContentFrom(input);
+            childCopy->SetValue(input->GetValue());
         }
     }
 
-    for (auto output : mNodeDefine->GetOutputs()) {
+    for (auto& output : mNodeDefine->GetOutputs()) {
         ElementPtr child = GetChild(output->GetName());
         if (!child || !child->Is(MaterialElementType::OUTPUT)) {
-            auto childCopy = AddChildOfType(MaterialElementType::OUTPUT, output->GetName());
+            output->Validate();
+            auto childCopy =
+                AddChildOfType(MaterialElementType::OUTPUT, output->GetName()).As<NodeOutput>();
             childCopy->CopyContentFrom(output);
+            childCopy->SetValue(output->GetValue());
         }
     }
 
-    for (auto node : GetChildren()) {
+    for (auto& node : GetChildren()) {
         node->Validate();
     }
 }

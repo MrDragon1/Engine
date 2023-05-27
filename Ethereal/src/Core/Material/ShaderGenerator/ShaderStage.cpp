@@ -1,6 +1,7 @@
 #include "ShaderStage.h"
 #include "Core/Material/ShaderGenerator/ShaderContext.h"
 namespace Ethereal {
+size_t VariableBlock::sBinding = 0;
 
 void VariableBlock::Add(ShaderPortPtr port) {
     if (!mVariables.count(port->GetName())) {
@@ -24,7 +25,8 @@ ShaderPortPtr VariableBlock::Add(ShaderNode* parent, const string& type, const s
 VariableBlockPtr ShaderStage::CreateUniformBlock(const string& name, const string& instance) {
     auto it = mUniforms.find(name);
     if (it == mUniforms.end()) {
-        VariableBlockPtr b = VariableBlockPtr::Create(name, instance);
+        VariableBlockPtr b =
+            VariableBlockPtr::Create(name, instance, VariableBlock::GenerateBinding());
         mUniforms[name] = b;
         return b;
     }
