@@ -3,6 +3,9 @@
 #include <gl/glcorearb.h>
 
 #include "GLUtils.h"
+
+#include "Core/Material/MaterialBase/Value.h"
+
 namespace Ethereal {
 namespace Backend {
 
@@ -501,6 +504,46 @@ int OpenGLDriverApi::ReadPixel(RenderTargetHandle rth, uint32_t attachmentIndex,
 }
 
 void OpenGLDriverApi::Clear() { glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); }
+
+uint32_t OpenGLDriverApi::UseProgram(ProgramHandle program) {
+    Ref<GLProgram> prog = program.As<GLProgram>();
+    glUseProgram(prog->gl.id);
+    return prog->gl.id;
+}
+
+void OpenGLDriverApi::BindUniform(ProgramHandle program, const string& name, ValueBasePtr value) {
+    Ref<GLProgram> prog = program.As<GLProgram>();
+    glUseProgram(prog->gl.id);
+    auto location = glGetUniformLocation(prog->gl.id, name.c_str());
+    if (location >= 0 && value->GetValueString() != EMPTY_STRING) {
+        if (value->GetTypeString() == "float") {
+            float v = value->GetData<float>();
+            glUniform1f(location, v);
+        } else if (value->GetTypeString() == "integer") {
+            int v = value->GetData<int>();
+            glUniform1i(location, v);
+        } else if (value->GetTypeString() == "boolean") {
+            bool v = value->GetData<bool>();
+            glUniform1i(location, v ? 1 : 0);
+        } else if (value->GetTypeString() == "color3") {
+            glUniform3fv(location, 1, (float*)value->GetPtr<Color3>());
+        } else if (value->GetTypeString() == "color4") {
+            glUniform4fv(location, 1, (float*)value->GetPtr<Color4>());
+        } else if (value->GetTypeString() == "vector2") {
+            glUniform2fv(location, 1, (float*)value->GetPtr<Vector2>());
+        } else if (value->GetTypeString() == "vector3") {
+            glUniform3fv(location, 1, (float*)value->GetPtr<Vector3>());
+        } else if (value->GetTypeString() == "vector4") {
+            glUniform4fv(location, 1, (float*)value->GetPtr<Vector4>());
+        } else if (value->GetTypeString() == "matrix3") {
+            glUniformMatrix3fv(location, 1, GL_FALSE, (float*)value->GetPtr<Matrix3>());
+        } else if (value->GetTypeString() == "matrix4") {
+            glUniformMatrix4fv(location, 1, GL_FALSE, (float*)value->GetPtr<Matrix4>());
+        } else {
+            ET_CORE_WARN("Unsupported uniform type {0}!", value->GetTypeString());
+        }
+    }
+}
 
 void OpenGLDriverApi::GenerateMipmaps(TextureHandle th) {
     Ref<GLTexture> t = th.As<GLTexture>();

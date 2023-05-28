@@ -3,6 +3,7 @@ namespace Ethereal {
 
 class BufferInterfaceBlock;
 
+// Not used for now
 class UibGenerator {
    public:
     static BufferInterfaceBlock const& GetViewUib() noexcept;

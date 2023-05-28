@@ -5,6 +5,7 @@
 #include "DriverEnum.h"
 #include "UniformBuffer.h"
 namespace Ethereal {
+using ValueBasePtr = Ref<class ValueBase>;
 namespace Backend {
 /*
  * DriverApi aggregates the hardware operations that support by OpenGL & Vulkan. Only this class can
@@ -74,6 +75,8 @@ class DriverApi : public RefCounted {
                           uint32_t yoffset) = 0;
 
     virtual void Clear() = 0;
+    virtual uint32_t UseProgram(ProgramHandle program) = 0;
+    virtual void BindUniform(ProgramHandle program, const string& name, ValueBasePtr value) = 0;
 
    private:
     /*

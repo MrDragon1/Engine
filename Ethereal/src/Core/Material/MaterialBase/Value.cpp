@@ -228,6 +228,10 @@ class ValueRegistry {
     const string Value<T>::sSyntaxInitilize = syntaxinit;      \
     const string Value<T>::sDefinition = def;                  \
     template <>                                                \
+    string Value<T>::GetTypeString() const {                   \
+        return sType;                                          \
+    }                                                          \
+    template <>                                                \
     string Value<T>::GetValueString() const {                  \
         return ToValueString<T>(mData);                        \
     }                                                          \

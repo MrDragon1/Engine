@@ -5,7 +5,7 @@ namespace Ethereal {
 void MaterialPreviewRenderPass::Init(uint32_t width, uint32_t height) {
     auto api = GlobalContext::GetDriverApi();
 
-    mObject = RenderResource::Cube;
+    mObject = RenderResource::Sphere;
 
     ShaderSource source;
     source[ShaderType::VERTEX] = SKYBOX_VERT;
@@ -37,8 +37,32 @@ void MaterialPreviewRenderPass::Draw() {
     api->BeginRenderPass(mRenderTarget, mParams);
 
     // Draw Static Mesh
+    auto& param = Project::GetConfigManager().sUniformManagerConfig.CameraParam;
+    Matrix4 model = Matrix4::IDENTITY;
+    Math::Translate(model, Vector3(0, 0, -1));
 
-    // api->Draw(mObject->GetMeshSource()->GetRenderPrimitive(), mPipeline);
+    auto& vsblocks = mMaterial->GetUniforms(Stage::VERTEX);
+    auto& psblocks = mMaterial->GetUniforms(Stage::PIXEL);
+    auto& vsblock = vsblocks[ShaderBuildInVariable::VSPUBUNIFORM];
+    vsblock->GetVariable(ShaderBuildInVariable::MODEL_MATRIX)->GetValue()->SetData<Matrix4>(model);
+    vsblock->GetVariable(ShaderBuildInVariable::VIEW_MATRIX)
+        ->GetValue()
+        ->SetData<Matrix4>(param.ViewMatrix);
+    vsblock->GetVariable(ShaderBuildInVariable::PROJ_MATRIX)
+        ->GetValue()
+        ->SetData<Matrix4>(param.ProjectionMatrix);
+
+    for (auto& [name, var] : vsblock->GetRawVariables()) {
+        if (!var->GetValue()) ET_CORE_WARN("uniform {0} has no value", name);
+        api->BindUniform(mPipeline.program, var->GetVariable(), var->GetValue());
+    }
+
+    for (auto& [name, var] : psblocks[ShaderBuildInVariable::PSPUBUNIFORM]->GetRawVariables()) {
+        if (!var->GetValue()) ET_CORE_WARN("uniform {0} has no value", name);
+        api->BindUniform(mPipeline.program, var->GetVariable(), var->GetValue());
+    }
+
+    api->Draw(mObject->GetMeshSource()->GetRenderPrimitive(), mPipeline);
 
     // Draw Skybox
     uniformManager->Bind();
@@ -68,6 +92,7 @@ void MaterialPreviewRenderPass::OnResize(uint32_t width, uint32_t height) {
 }
 
 void MaterialPreviewRenderPass::SetMaterial(MaterialCorePtr mat) {
+    mMaterial = mat;
     mPipeline.program = mat->GetProgram();
 }
 

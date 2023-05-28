@@ -17,6 +17,7 @@ class RenderResource {
 
     inline static Ref<StaticMesh> Cube;
     inline static Ref<StaticMesh> Quad;
+    inline static Ref<StaticMesh> Sphere;
 
     inline static MaterialDesc DefaultMaterialDesc;
 
@@ -37,6 +38,10 @@ class RenderResource {
         Quad = Ref<StaticMesh>::Create();
         Quad->Load(desc);
 
+        AssetManager::LoadAsset_Ref("assets/meshes/default/sphere.ESMesh", desc);
+        Sphere = Ref<StaticMesh>::Create();
+        Sphere->Load(desc);
+
         {
             DefaultMaterialDesc.Name = "DefaultMaterial";
             DefaultMaterialDesc.AlbedoMap = WhiteTexture->Handle;
@@ -56,14 +61,17 @@ class RenderResource {
 
         Cube.Reset();
         Quad.Reset();
+        Sphere.Reset();
     }
 
    private:
     static Ref<Texture> LoadTexture(const std::filesystem::path& relativePath) {
-        std::filesystem::path path = std::filesystem::path("assets") / "buildin" / "Editor" / relativePath;
+        std::filesystem::path path =
+            std::filesystem::path("assets") / "buildin" / "Editor" / relativePath;
 
         if (!FileSystem::Exists(path)) {
-            ET_CORE_ASSERT(false, "Failed to load icon {0}! The file doesn't exist.", path.string());
+            ET_CORE_ASSERT(false, "Failed to load icon {0}! The file doesn't exist.",
+                           path.string());
             return nullptr;
         }
         return ResourceLoader::LoadTexture(path.string());

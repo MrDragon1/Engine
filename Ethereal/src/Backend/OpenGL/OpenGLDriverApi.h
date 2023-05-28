@@ -154,6 +154,9 @@ class OpenGLDriverApi : public DriverApi {
                   uint32_t yoffset) override;
     void Clear() override;
 
+    uint32_t UseProgram(ProgramHandle program) override;
+    void BindUniform(ProgramHandle program, const string& name, ValueBasePtr value) override;
+
    private:
     std::array<Ref<GLSamplerGroup>, 4> mSamplerGroupBindings;
     RenderTargetHandle mRenderPassTarget;

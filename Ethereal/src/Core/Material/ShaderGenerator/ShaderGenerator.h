@@ -11,7 +11,7 @@ class Shader : public RefCounted {
     ShaderStagePtr CreateStage(const string& name);
 
     ShaderStagePtr GetStage(const string& name);
-
+    unordered_map<string, ShaderStagePtr> GetStages() { return mStages; }
     void Compile();
 
     ProgramHandle GetProgram() { return mProgram; }
@@ -19,7 +19,7 @@ class Shader : public RefCounted {
    protected:
     string mName;
     ShaderGraphPtr mGraph;
-    std::unordered_map<string, ShaderStagePtr> mStages;
+    unordered_map<string, ShaderStagePtr> mStages;
 
     ProgramHandle mProgram;
     friend class ShaderGenerator;

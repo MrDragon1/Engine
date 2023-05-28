@@ -22,6 +22,8 @@ class VariableBlock : public RefCounted {
     string GetInstance() { return mInstance; }
 
     vector<ShaderPortPtr> GetVariables() { return mVariablesOrder; }
+    ShaderPortPtr GetVariable(const string& name) { return mVariables[name]; }
+    unordered_map<string, ShaderPortPtr> GetRawVariables() { return mVariables; }
 
     ShaderPortPtr operator[](const string& name) { return mVariables[name]; }
 

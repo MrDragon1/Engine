@@ -121,13 +121,14 @@ void ShaderGenerator::EmitUniforms(ShaderContextPtr context, ShaderStagePtr stag
         for (auto& it : stage->GetUniformBlocks()) {
             VariableBlock& uniforms = *it.second;
             string instance = it.second->GetInstance();
-            stage->EmitLine("layout(std140, binding = 0) uniform " + uniforms.GetName());
-            stage->BeginScope();
+            /// glGetUniformLocation not support structure in glsl
+            // stage->EmitLine("uniform " + uniforms.GetName());
+            // stage->BeginScope();
             for (auto& uniform : uniforms.GetVariables()) {
-                stage->EmitVariableDeclaration(uniform, context);
-                uniform->SetVariable(instance + "." + uniform->GetVariable(context->GetScope()));
+                stage->EmitVariableDeclaration(uniform, context, "uniform");
+                // uniform->SetVariable(instance + "." + uniform->GetVariable(context->GetScope()));
             }
-            stage->EndScope(" " + instance + ";");
+            // stage->EndScope(" " + instance + ";");
         }
         stage->EmitLine();
     }
@@ -135,14 +136,13 @@ void ShaderGenerator::EmitUniforms(ShaderContextPtr context, ShaderStagePtr stag
         for (auto& it : stage->GetUniformBlocks()) {
             VariableBlock& uniforms = *it.second;
             string instance = it.second->GetInstance();
-            stage->EmitLine("layout(std140, binding = " + std::to_string(uniforms.GetBinding()) +
-                            ") uniform " + uniforms.GetName());
-            stage->BeginScope();
+            // stage->EmitLine("uniform " + uniforms.GetName());
+            // stage->BeginScope();
             for (auto& uniform : uniforms.GetVariables()) {
-                stage->EmitVariableDeclaration(uniform, context);
-                uniform->SetVariable(instance + "." + uniform->GetVariable(context->GetScope()));
+                stage->EmitVariableDeclaration(uniform, context, "uniform");
+                // uniform->SetVariable(instance + "." + uniform->GetVariable(context->GetScope()));
             }
-            stage->EndScope(" " + instance + ";");
+            // stage->EndScope(" " + instance + ";");
         }
         stage->EmitLine();
     }

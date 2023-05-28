@@ -14,11 +14,13 @@ class MaterialCore : public Asset {
     void Compile();
 
     ProgramHandle GetProgram() {
-        if (mIsCompile)
-            return mShaderContext->GetShader()->GetProgram();
-        else
-            return nullptr;
+        return mIsCompile ? mShaderContext->GetShader()->GetProgram() : nullptr;
     }
+
+    VariableBlockMap& GetUniforms(const string& stage) {
+        return mShaderContext->GetShader()->GetStage(stage)->GetUniformBlocks();
+    }
+
     MaterialGraphPtr GenerateUIGraph() { return mDocument->GenerateUIGraph(); }
 
    private:

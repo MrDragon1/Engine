@@ -16,6 +16,7 @@ class MaterialPreviewRenderPass : public RenderPass {
    private:
     friend class RenderSystem;
     Ref<StaticMesh> mObject;
+    MaterialCorePtr mMaterial;
 
     RenderPassParams mParams = {};
     PipelineState mPipeline;

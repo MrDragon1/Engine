@@ -33,7 +33,7 @@ class ShaderPort : public RefCounted {
     void SetValue(ValueBasePtr value) { mValue = value; }
     ValueBasePtr GetValue() { return mValue; }
     void SetVariable(const string& var) { mVariable = var; }
-    string GetVariable(const string& scope) {
+    string GetVariable(const string& scope = EMPTY_STRING) {
         string var = mVariable;
         auto startpos = var.find_last_of('.');
         if (startpos == std::string::npos) startpos = -1;  // skip the '.' indexing

@@ -34,6 +34,7 @@ class ValueBase : public RefCounted {
     virtual ValueBasePtr Copy() const = 0;
 
     virtual string GetValueString() const = 0;
+    virtual string GetTypeString() const = 0;
 
     virtual string GetDefaultValueString() const = 0;
     virtual string GetSyntaxString() const = 0;
@@ -102,6 +103,7 @@ class Value : public ValueBase {
 
     static ValueBasePtr CreateFromString(const string& value);
 
+    string GetTypeString() const override;
     string GetValueString() const override;
 
     string GetDefaultValueString() const override;
