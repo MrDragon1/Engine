@@ -1,8 +1,14 @@
 #include "AggregationShaderNode.h"
 #include "Core/Material/ShaderGenerator/ShaderContext.h"
 namespace Ethereal {
-AggregationShaderNode::AggregationShaderNode(NodeGraphPtr graph) : ShaderNodeImpl(graph) {
-    mGraph = graph->GetDocument()->GenerateShaderGraphFromNodeGraph(graph);
+AggregationShaderNode::AggregationShaderNode() {}
+
+ShaderNodeImplPtr AggregationShaderNode::Create() { return AggregationShaderNodePtr::Create(); }
+
+void AggregationShaderNode::Initilize(ElementPtr elem, ShaderContextPtr context) {
+    auto graph = elem.As<NodeGraph>();
+    ShaderNodeImpl::Initilize(graph, context);
+    mGraph = graph->GetDocument()->GenerateShaderGraphFromNodeGraph(graph, context);
 }
 
 void AggregationShaderNode::EmitFunctionDefinition(ShaderNodePtr node, ShaderContextPtr context,

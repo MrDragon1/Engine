@@ -5,7 +5,9 @@ namespace Ethereal {
 using SourceCodeShaderNodePtr = Ref<class SourceCodeShaderNode>;
 class SourceCodeShaderNode : public ShaderNodeImpl {
    public:
-    SourceCodeShaderNode(NodeImplPtr impl);
+    SourceCodeShaderNode();
+    static ShaderNodeImplPtr Create();
+    void Initilize(ElementPtr elem, ShaderContextPtr context) override;
     void EmitFunctionDefinition(ShaderNodePtr node, ShaderContextPtr context,
                                 ShaderStagePtr stage) override;
     void EmitFunctionCall(ShaderNodePtr node, ShaderContextPtr context,

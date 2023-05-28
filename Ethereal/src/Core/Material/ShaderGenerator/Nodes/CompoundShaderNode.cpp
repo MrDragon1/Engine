@@ -1,10 +1,16 @@
 #include "CompoundShaderNode.h"
 #include "Core/Material/ShaderGenerator/ShaderContext.h"
 namespace Ethereal {
-CompoundShaderNode::CompoundShaderNode(NodeImplPtr impl) : ShaderNodeImpl(impl) {
+CompoundShaderNode::CompoundShaderNode() {}
+
+ShaderNodeImplPtr CompoundShaderNode::Create() { return CompoundShaderNodePtr::Create(); }
+
+void CompoundShaderNode::Initilize(ElementPtr elem, ShaderContextPtr context) {
+    auto impl = elem.As<NodeImpl>();
+    ShaderNodeImpl::Initilize(impl, context);
     NodeGraphPtr graph = impl->GetNodeGraph();
 
-    mGraph = graph->GetDocument()->GenerateShaderGraphFromNodeGraph(graph);
+    mGraph = graph->GetDocument()->GenerateShaderGraphFromNodeGraph(graph, context);
 }
 
 void CompoundShaderNode::EmitFunctionDefinition(ShaderNodePtr node, ShaderContextPtr context,

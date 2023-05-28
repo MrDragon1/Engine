@@ -5,7 +5,9 @@ namespace Ethereal {
 using AggregationShaderNodePtr = Ref<class AggregationShaderNode>;
 class AggregationShaderNode : public ShaderNodeImpl {
    public:
-    AggregationShaderNode(NodeGraphPtr graph);
+    AggregationShaderNode();
+    static ShaderNodeImplPtr Create();
+    void Initilize(ElementPtr elem, ShaderContextPtr context) override;
     void EmitFunctionDefinition(ShaderNodePtr node, ShaderContextPtr context,
                                 ShaderStagePtr stage) override;
     void EmitFunctionCall(ShaderNodePtr node, ShaderContextPtr context,

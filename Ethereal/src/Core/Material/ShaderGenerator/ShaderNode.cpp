@@ -1,13 +1,12 @@
 #include "ShaderNode.h"
 #include "Core/Material/ShaderGenerator/ShaderContext.h"
-#include "Core/Material/ShaderGenerator/Nodes/SourceCodeShaderNode.h"
 #include "Core/Material/ShaderGenerator/Nodes/AggregationShaderNode.h"
-#include "Core/Material/ShaderGenerator/Nodes/CompoundShaderNode.h"
 
 namespace Ethereal {
-ShaderNode::ShaderNode(ElementPtr node, ShaderGraphPtr graph) : mSource(node), mGraph(graph) {
+ShaderNode::ShaderNode(ElementPtr node, ShaderGraphPtr graph, ShaderContextPtr context)
+    : mSource(node), mGraph(graph) {
     mName = node->GetName();
-    Initalize();
+    Initalize(context);
 }
 
 void ShaderNode::AddInput(NodeInputPtr input) {
@@ -45,7 +44,7 @@ ShaderOutputPtr ShaderNode::GetOutput(const string& name) {
     return nullptr;
 }
 
-void ShaderNode::Initalize() {
+void ShaderNode::Initalize(ShaderContextPtr context) {
     ET_CORE_ASSERT(mSource, "Empty source node!");
     if (mSource->Is(MaterialElementType::INPUT)) {
     } else if (mSource->Is(MaterialElementType::OUTPUT)) {
@@ -67,14 +66,7 @@ void ShaderNode::Initalize() {
             AddOutput(output);
         }
 
-        NodeImplPtr impl = instance->GetNodeImpl();
-        if (impl && impl->IsNodeGraph()) {
-            mImpl = CompoundShaderNodePtr::Create(impl);
-            ShaderGraphPtr graph = mImpl.As<CompoundShaderNode>()->GetGraph();
-        } else {
-            mImpl = SourceCodeShaderNodePtr::Create(impl);
-        }
-
+        mImpl = context->GetShaderGenerator().GetImpl(instance, context);
         ET_CORE_ASSERT(!mOutputs.empty(), "Must specify the output of NodeInstance!");
     } else if (mSource->Is(MaterialElementType::NODEGRAPH)) {
         NodeGraphPtr nodeGraph = mSource.As<NodeGraph>();
@@ -88,9 +80,9 @@ void ShaderNode::Initalize() {
             mOutputOrder.push_back(output->GetName());
         }
 
-        mImpl = AggregationShaderNodePtr::Create(nodeGraph);
+        mImpl = AggregationShaderNode::Create();
+        mImpl->Initilize(nodeGraph, context);
         ET_CORE_ASSERT(!mOutputs.empty(), "Must specify the output of NodeInstance!");
-        ShaderGraphPtr graph = mImpl.As<AggregationShaderNode>()->GetGraph();
     }
 }
 

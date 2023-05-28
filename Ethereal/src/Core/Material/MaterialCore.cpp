@@ -6,12 +6,11 @@ void MaterialCore::Compile() {
     VariableBlock::sBinding = 0;
     mShaderContext = ShaderContextPtr::Create();
     ShaderGenerator& shaderGen = mShaderContext->GetShaderGenerator();
-    mShaderContext->mShaderGraph = mDocument->GenerateShaderGraph();
+    mShaderContext->mShaderGraph = mDocument->GenerateShaderGraph(mShaderContext);
 
     mShaderContext->PushScope(mShaderContext->mShaderGraph->GetName());
 
-    auto shaderGraph = mShaderContext->GetShaderGraph();
-    mShaderContext->mShader = ShaderPtr::Create("shader", shaderGraph);
+    mShaderContext->mShader = ShaderPtr::Create("shader");
     auto shader = mShaderContext->GetShader();
 
     ShaderStagePtr vs = shader->CreateStage(Stage::VERTEX);
@@ -27,6 +26,8 @@ void MaterialCore::Compile() {
     VariableBlockPtr psPublicUniforms = ps->CreateUniformBlock(ShaderBuildInVariable::PSPUBUNIFORM);
     VariableBlockPtr psOutputs = ps->CreateOutputBlock(ShaderBuildInVariable::OUTPUT);
 
+    auto shaderGraph = mShaderContext->GetShaderGraph();
+
     for (auto& [name, inputSocket] : shaderGraph->GetInputSockets()) {
         psPublicUniforms->Add(inputSocket);
     }
@@ -36,9 +37,7 @@ void MaterialCore::Compile() {
     output->SetVariable(outputSocket->GetVariable(mShaderContext->GetScope()));
 
     // connect between vs & ps
-    shaderGen.AddConnectorBlock("vertexData", "vd", vs, ps);
-    shaderGen.AddConnectorVariable("vertexData", "float3", ShaderBuildInVariable::POSITION_WORLD,
-                                   vs, ps);
+    shaderGen.AddConnectorBlock(ShaderBuildInVariable::VERTEXDATA, "vd", vs, ps);
 
     shaderGen.CreateVariables(shaderGraph, mShaderContext, shader);
 

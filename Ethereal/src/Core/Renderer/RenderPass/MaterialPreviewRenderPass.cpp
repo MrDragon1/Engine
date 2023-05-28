@@ -54,12 +54,14 @@ void MaterialPreviewRenderPass::Draw() {
 
     for (auto& [name, var] : vsblock->GetRawVariables()) {
         if (!var->GetValue()) ET_CORE_WARN("uniform {0} has no value", name);
-        api->BindUniform(mPipeline.program, var->GetVariable(), var->GetValue());
+        api->BindUniform(mPipeline.program, var->GetVariable(mMaterial->GetContext()->GetScope()),
+                         var->GetValue());
     }
 
     for (auto& [name, var] : psblocks[ShaderBuildInVariable::PSPUBUNIFORM]->GetRawVariables()) {
         if (!var->GetValue()) ET_CORE_WARN("uniform {0} has no value", name);
-        api->BindUniform(mPipeline.program, var->GetVariable(), var->GetValue());
+        api->BindUniform(mPipeline.program, var->GetVariable(mMaterial->GetContext()->GetScope()),
+                         var->GetValue());
     }
 
     api->Draw(mObject->GetMeshSource()->GetRenderPrimitive(), mPipeline);

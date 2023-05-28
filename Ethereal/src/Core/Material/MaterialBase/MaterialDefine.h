@@ -22,6 +22,7 @@ const StringVec LibraryPath = {
     "assets/materials/lib/def.mtlx",
     "assets/materials/lib/impl.mtlx",
     "assets/materials/lib/pbrdef.mtlx",
+    "assets/materials/lib/impl_dynamic.mtlx",
 };
 
 namespace Stage {
@@ -33,6 +34,7 @@ namespace ShaderBuildInVariable {
 // variable block name
 const string OUTPUT = "output";
 const string INPUT = "input";
+const string VERTEXDATA = "vertexData";
 const string VSPUBUNIFORM = "vspubuniform";
 const string PSPUBUNIFORM = "pspubuniform";
 const string PRVUNIFORM = "prvuniform";

@@ -2,7 +2,13 @@
 #include "Core/Material/ShaderGenerator/ShaderContext.h"
 #include "Utils/StringUtils.h"
 namespace Ethereal {
-SourceCodeShaderNode::SourceCodeShaderNode(NodeImplPtr impl) : ShaderNodeImpl(impl) {
+SourceCodeShaderNode::SourceCodeShaderNode() {}
+
+ShaderNodeImplPtr SourceCodeShaderNode::Create() { return SourceCodeShaderNodePtr::Create(); }
+
+void SourceCodeShaderNode::Initilize(ElementPtr elem, ShaderContextPtr context) {
+    auto impl = elem.As<NodeImpl>();
+    ShaderNodeImpl::Initilize(impl, context);
     mFunctionSource = impl->GetAttribute(MaterialAttribute::SOURCECODE);
 
     if (mFunctionSource.empty()) {
@@ -32,12 +38,6 @@ void SourceCodeShaderNode::EmitFunctionCall(ShaderNodePtr node, ShaderContextPtr
     auto& shaderGen = context->GetShaderGenerator();
 
     if (stage->GetName() == Stage::VERTEX) {
-        VariableBlock& vertexData = stage->GetOutputBlock("vertexData");
-        auto worldPos = vertexData[ShaderBuildInVariable::POSITION_WORLD];
-        if (!worldPos->IsEmitted()) {
-            worldPos->SetEmitted();
-            stage->EmitLine(worldPos->GetVariable(context->GetScope()) + " = hPositionWorld.xyz;");
-        }
     }
     if (stage->GetName() == Stage::PIXEL) {
         if (mInlined) {
@@ -49,7 +49,8 @@ void SourceCodeShaderNode::EmitFunctionCall(ShaderNodePtr node, ShaderContextPtr
                 if (output) {
                     map[name] = output->GetVariable(context->GetScope());
                 } else {
-                    map[name] = "Unknown value";
+                    map[name] = input->GetValue()->GetSyntaxString() + "(" +
+                                input->GetValue()->GetValueString() + ")";
                 }
             }
             Utils::ReplaceIdentifier(sourcecode, map);
@@ -84,13 +85,6 @@ void SourceCodeShaderNode::EmitFunctionCall(ShaderNodePtr node, ShaderContextPtr
 }
 
 void SourceCodeShaderNode::CreateVariables(ShaderNodePtr node, ShaderContextPtr context,
-                                           ShaderPtr shader) {
-    auto& shaderGen = context->GetShaderGenerator();
-
-    ShaderStagePtr vs = shader->GetStage(Stage::VERTEX);
-    ShaderStagePtr ps = shader->GetStage(Stage::PIXEL);
-    shaderGen.AddConnectorVariable("vertexData", "float3", ShaderBuildInVariable::POSITION_WORLD,
-                                   vs, ps);
-}
+                                           ShaderPtr shader) {}
 
 }  // namespace Ethereal

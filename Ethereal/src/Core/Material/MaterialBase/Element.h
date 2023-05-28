@@ -16,6 +16,7 @@ class Element : public RefCounted {
     void CopyContentFrom(ElementPtr source);
 
     void SetAttribute(const string& attr, const string& value);
+    void RemoveAttribute(const string& attr);
     string GetAttribute(const string& attr);
 
     void AddChild(ElementPtr child);

@@ -126,8 +126,12 @@ Ref<Program> OpenGLDriverApi::CreateProgram(std::string_view name, ShaderSource 
         GLint isCompiled = 0;
         glGetShaderiv(shader, GL_COMPILE_STATUS, &isCompiled);
         if (isCompiled == GL_FALSE) {
+            GLint success;
+            GLchar infoLog[1024];
+            glGetShaderInfoLog(shader, 1024, NULL, infoLog);
+
             glDeleteShader(shader);
-            ET_CORE_ASSERT(false, "Shader compilation failure!")
+            ET_CORE_ASSERT(false, "Shader compilation failure! {}", infoLog)
             break;
         }
 
@@ -181,8 +185,12 @@ Ref<Program> OpenGLDriverApi::CreateProgram(std::string_view name, ShaderSourceS
         GLint isCompiled = 0;
         glGetShaderiv(shader, GL_COMPILE_STATUS, &isCompiled);
         if (isCompiled == GL_FALSE) {
+            GLint success;
+            GLchar infoLog[1024];
+            glGetShaderInfoLog(shader, 1024, NULL, infoLog);
+
             glDeleteShader(shader);
-            ET_CORE_ASSERT(false, "Shader compilation failure!")
+            ET_CORE_ASSERT(false, "Shader compilation failure! {}", infoLog)
             break;
         }
 
@@ -529,11 +537,11 @@ void OpenGLDriverApi::BindUniform(ProgramHandle program, const string& name, Val
             glUniform3fv(location, 1, (float*)value->GetPtr<Color3>());
         } else if (value->GetTypeString() == "color4") {
             glUniform4fv(location, 1, (float*)value->GetPtr<Color4>());
-        } else if (value->GetTypeString() == "vector2") {
+        } else if (value->GetTypeString() == "float2") {
             glUniform2fv(location, 1, (float*)value->GetPtr<Vector2>());
-        } else if (value->GetTypeString() == "vector3") {
+        } else if (value->GetTypeString() == "float3") {
             glUniform3fv(location, 1, (float*)value->GetPtr<Vector3>());
-        } else if (value->GetTypeString() == "vector4") {
+        } else if (value->GetTypeString() == "float4") {
             glUniform4fv(location, 1, (float*)value->GetPtr<Vector4>());
         } else if (value->GetTypeString() == "matrix3") {
             glUniformMatrix3fv(location, 1, GL_FALSE, (float*)value->GetPtr<Matrix3>());

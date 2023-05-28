@@ -18,6 +18,13 @@ void Element::CopyContentFrom(ElementPtr source) {
 
 void Element::SetAttribute(const string& attr, const string& value) { mAttributes[attr] = value; }
 
+void Element::RemoveAttribute(const string& attr) {
+    auto it = mAttributes.find(attr);
+    if (it != mAttributes.end()) {
+        mAttributes.erase(it);
+    }
+}
+
 string Element::GetAttribute(const string& attr) {
     auto it = mAttributes.find(attr);
     if (it != mAttributes.end()) {

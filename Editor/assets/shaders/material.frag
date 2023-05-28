@@ -45,7 +45,7 @@ vec3 mx_fractal_noise_vec3(vec3 p, int octaves, float lacunarity, float diminish
     return result;
 }
 
-void mx_fractal3d_vector3(vec3 amplitude, int octaves, float lacunarity, float diminish, vec3 position, out float result)
+void mx_fractal3d_float3(vec3 amplitude, int octaves, float lacunarity, float diminish, vec3 position, out float result)
 {
     vec3 value = mx_fractal_noise_vec3(position, octaves, lacunarity, diminish);
     result = value.x + amplitude.x;
@@ -79,7 +79,7 @@ void main()
     vec3 NG_marble1_scale_pos_out1 = VBpspubuniform.NG_marble1_param_2 * VBpspubuniform.NG_marble1_noise_scale_2;
     float NG_marble1_scale_xyz_out1 = NG_marble1_add_xyz_out1 * VBpspubuniform.NG_marble1_noise_scale_1;
     float NG_marble1_noise_out1 = float(0.0);
-    mx_fractal3d_vector3(VBpspubuniform.NG_marble1_noise_amplitude, VBpspubuniform.NG_marble1_param_noise_octaves, VBpspubuniform.NG_marble1_noise_lacunarity, VBpspubuniform.NG_marble1_noise_diminish, NG_marble1_scale_pos_out1, NG_marble1_noise_out1);
+    mx_fractal3d_float3(VBpspubuniform.NG_marble1_noise_amplitude, VBpspubuniform.NG_marble1_param_noise_octaves, VBpspubuniform.NG_marble1_noise_lacunarity, VBpspubuniform.NG_marble1_noise_diminish, NG_marble1_scale_pos_out1, NG_marble1_noise_out1);
     float NG_marble1_scale_noise_out1 = NG_marble1_noise_out1 * VBpspubuniform.NG_marble1_param_3;
     float NG_marble1_sum_out1 = NG_marble1_scale_xyz_out1 + NG_marble1_scale_noise_out1;
     float NG_marble1_sin_out1 = sin(NG_marble1_sum_out1);

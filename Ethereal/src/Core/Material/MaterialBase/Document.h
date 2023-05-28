@@ -5,6 +5,7 @@
 namespace Ethereal {
 using MaterialGraphPtr = Ref<class MaterialGraph>;
 using ShaderGraphPtr = Ref<class ShaderGraph>;
+using ShaderContextPtr = Ref<class ShaderContext>;
 
 using DocumentPtr = Ref<class Document>;
 using NodeGraphPtr = Ref<class NodeGraph>;
@@ -41,8 +42,8 @@ class Document : public Element {
     MaterialGraphPtr GenerateUIGraph();
     MaterialGraphPtr GenerateUIGraphFromNodeGraph(NodeGraphPtr ng);
 
-    ShaderGraphPtr GenerateShaderGraph();
-    ShaderGraphPtr GenerateShaderGraphFromNodeGraph(NodeGraphPtr ng);
+    ShaderGraphPtr GenerateShaderGraph(ShaderContextPtr context);
+    ShaderGraphPtr GenerateShaderGraphFromNodeGraph(NodeGraphPtr ng, ShaderContextPtr context);
 
     unordered_map<string, InputSocketPtr>& GetInputSockets() { return mInputSockets; }
     unordered_map<string, OutputSocketPtr>& GetOutputSockets() { return mOutputSockets; }
@@ -131,10 +132,12 @@ class NodeImpl : public Element {
         INLINE,
         FILE,
         NODEGRAPH,
+        DYNAMIC,
     };
     bool IsInline() { return mImplType == NodeImplType::INLINE; }
     bool IsFile() { return mImplType == NodeImplType::FILE; }
     bool IsNodeGraph() { return mImplType == NodeImplType::NODEGRAPH; }
+    bool IsDynamic() { return mImplType == NodeImplType::DYNAMIC; }
 
     void SetNodeDefine(NodeDefinePtr nd) { mNodeDefine = nd; }
     NodeDefinePtr GetNodeDefine() { return mNodeDefine; }
@@ -155,7 +158,11 @@ class NodeInput : public Element {
 
     ElementPtr GetConnector() { return mConnector; }
     void SetConnector(ElementPtr conn);
-    void Disconnect() { SetConnector(nullptr); }
+    void Disconnect() {
+        RemoveAttribute(MaterialAttribute::CONNECTOR);
+        RemoveAttribute(MaterialAttribute::PORT);
+        SetConnector(nullptr);
+    }
 
     string GetTypeAttribute() { return GetAttribute(MaterialAttribute::TYPE); }
 

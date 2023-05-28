@@ -1,249 +1,249 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <materialx version="1.36">
 
-  <implementation name="IM_surfacematerial_glsl" nodedef="ND_surfacematerial" file="assets/materials/lib/glsl/surfacematerial.glsl" function="surfacematerial" language="glsl"/>
+  <implementation name="IM_surfacematerial" nodedef="ND_surfacematerial" file="assets/materials/lib/glsl/surfacematerial.glsl" function="surfacematerial" language="glsl"/>
 
   <!-- ======================================================================== -->
   <!-- Math nodes                                                               -->
   <!-- ======================================================================== -->
 
   <!-- <add> -->
-  <implementation name="IM_add_float_glsl" nodedef="ND_add_float" target="glsl" sourcecode="{{in1}} + {{in2}}" />
-  <implementation name="IM_add_color3_glsl" nodedef="ND_add_color3" target="glsl" sourcecode="{{in1}} + {{in2}}" />
-  <implementation name="IM_add_color3FA_glsl" nodedef="ND_add_color3FA" target="glsl" sourcecode="{{in1}} + {{in2}}" />
-  <implementation name="IM_add_color4_glsl" nodedef="ND_add_color4" target="glsl" sourcecode="{{in1}} + {{in2}}" />
-  <implementation name="IM_add_color4FA_glsl" nodedef="ND_add_color4FA" target="glsl" sourcecode="{{in1}} + {{in2}}" />
-  <implementation name="IM_add_float2_glsl" nodedef="ND_add_float2" target="glsl" sourcecode="{{in1}} + {{in2}}" />
-  <implementation name="IM_add_float2FA_glsl" nodedef="ND_add_float2FA" target="glsl" sourcecode="{{in1}} + {{in2}}" />
-  <implementation name="IM_add_float3_glsl" nodedef="ND_add_float3" target="glsl" sourcecode="{{in1}} + {{in2}}" />
-  <implementation name="IM_add_float3FA_glsl" nodedef="ND_add_float3FA" target="glsl" sourcecode="{{in1}} + {{in2}}" />
-  <implementation name="IM_add_float4_glsl" nodedef="ND_add_float4" target="glsl" sourcecode="{{in1}} + {{in2}}" />
-  <implementation name="IM_add_float4FA_glsl" nodedef="ND_add_float4FA" target="glsl" sourcecode="{{in1}} + {{in2}}" />
+  <implementation name="IM_add_float" nodedef="ND_add_float"  sourcecode="{{in1}} + {{in2}}" />
+  <implementation name="IM_add_color3" nodedef="ND_add_color3"  sourcecode="{{in1}} + {{in2}}" />
+  <implementation name="IM_add_color3FA" nodedef="ND_add_color3FA"  sourcecode="{{in1}} + {{in2}}" />
+  <implementation name="IM_add_color4" nodedef="ND_add_color4"  sourcecode="{{in1}} + {{in2}}" />
+  <implementation name="IM_add_color4FA" nodedef="ND_add_color4FA"  sourcecode="{{in1}} + {{in2}}" />
+  <implementation name="IM_add_float2" nodedef="ND_add_float2"  sourcecode="{{in1}} + {{in2}}" />
+  <implementation name="IM_add_float2FA" nodedef="ND_add_float2FA"  sourcecode="{{in1}} + {{in2}}" />
+  <implementation name="IM_add_float3" nodedef="ND_add_float3"  sourcecode="{{in1}} + {{in2}}" />
+  <implementation name="IM_add_float3FA" nodedef="ND_add_float3FA"  sourcecode="{{in1}} + {{in2}}" />
+  <implementation name="IM_add_float4" nodedef="ND_add_float4"  sourcecode="{{in1}} + {{in2}}" />
+  <implementation name="IM_add_float4FA" nodedef="ND_add_float4FA"  sourcecode="{{in1}} + {{in2}}" />
 
   <!-- <subtract> -->
-  <implementation name="IM_subtract_float_glsl" nodedef="ND_subtract_float" target="glsl" sourcecode="{{in1}} - {{in2}}" />
-  <implementation name="IM_subtract_color3_glsl" nodedef="ND_subtract_color3" target="glsl" sourcecode="{{in1}} - {{in2}}" />
-  <implementation name="IM_subtract_color3FA_glsl" nodedef="ND_subtract_color3FA" target="glsl" sourcecode="{{in1}} - {{in2}}" />
-  <implementation name="IM_subtract_color4_glsl" nodedef="ND_subtract_color4" target="glsl" sourcecode="{{in1}} - {{in2}}" />
-  <implementation name="IM_subtract_color4FA_glsl" nodedef="ND_subtract_color4FA" target="glsl" sourcecode="{{in1}} - {{in2}}" />
-  <implementation name="IM_subtract_float2_glsl" nodedef="ND_subtract_float2" target="glsl" sourcecode="{{in1}} - {{in2}}" />
-  <implementation name="IM_subtract_float2FA_glsl" nodedef="ND_subtract_float2FA" target="glsl" sourcecode="{{in1}} - {{in2}}" />
-  <implementation name="IM_subtract_float3_glsl" nodedef="ND_subtract_float3" target="glsl" sourcecode="{{in1}} - {{in2}}" />
-  <implementation name="IM_subtract_float3FA_glsl" nodedef="ND_subtract_float3FA" target="glsl" sourcecode="{{in1}} - {{in2}}" />
-  <implementation name="IM_subtract_float4_glsl" nodedef="ND_subtract_float4" target="glsl" sourcecode="{{in1}} - {{in2}}" />
-  <implementation name="IM_subtract_float4FA_glsl" nodedef="ND_subtract_float4FA" target="glsl" sourcecode="{{in1}} - {{in2}}" />
+  <implementation name="IM_subtract_float" nodedef="ND_subtract_float"  sourcecode="{{in1}} - {{in2}}" />
+  <implementation name="IM_subtract_color3" nodedef="ND_subtract_color3"  sourcecode="{{in1}} - {{in2}}" />
+  <implementation name="IM_subtract_color3FA" nodedef="ND_subtract_color3FA"  sourcecode="{{in1}} - {{in2}}" />
+  <implementation name="IM_subtract_color4" nodedef="ND_subtract_color4"  sourcecode="{{in1}} - {{in2}}" />
+  <implementation name="IM_subtract_color4FA" nodedef="ND_subtract_color4FA"  sourcecode="{{in1}} - {{in2}}" />
+  <implementation name="IM_subtract_float2" nodedef="ND_subtract_float2"  sourcecode="{{in1}} - {{in2}}" />
+  <implementation name="IM_subtract_float2FA" nodedef="ND_subtract_float2FA"  sourcecode="{{in1}} - {{in2}}" />
+  <implementation name="IM_subtract_float3" nodedef="ND_subtract_float3"  sourcecode="{{in1}} - {{in2}}" />
+  <implementation name="IM_subtract_float3FA" nodedef="ND_subtract_float3FA"  sourcecode="{{in1}} - {{in2}}" />
+  <implementation name="IM_subtract_float4" nodedef="ND_subtract_float4"  sourcecode="{{in1}} - {{in2}}" />
+  <implementation name="IM_subtract_float4FA" nodedef="ND_subtract_float4FA"  sourcecode="{{in1}} - {{in2}}" />
 
   <!-- <multiply> -->
-  <implementation name="IM_multiply_float_glsl" nodedef="ND_multiply_float" target="glsl" sourcecode="{{in1}} * {{in2}}" />
-  <implementation name="IM_multiply_color3_glsl" nodedef="ND_multiply_color3" target="glsl" sourcecode="{{in1}} * {{in2}}" />
-  <implementation name="IM_multiply_color3FA_glsl" nodedef="ND_multiply_color3FA" target="glsl" sourcecode="{{in1}} * {{in2}}" />
-  <implementation name="IM_multiply_color4_glsl" nodedef="ND_multiply_color4" target="glsl" sourcecode="{{in1}} * {{in2}}" />
-  <implementation name="IM_multiply_color4FA_glsl" nodedef="ND_multiply_color4FA" target="glsl" sourcecode="{{in1}} * {{in2}}" />
-  <implementation name="IM_multiply_float2_glsl" nodedef="ND_multiply_float2" target="glsl" sourcecode="{{in1}} * {{in2}}" />
-  <implementation name="IM_multiply_float2FA_glsl" nodedef="ND_multiply_float2FA" target="glsl" sourcecode="{{in1}} * {{in2}}" />
-  <implementation name="IM_multiply_float3_glsl" nodedef="ND_multiply_float3" target="glsl" sourcecode="{{in1}} * {{in2}}" />
-  <implementation name="IM_multiply_float3FA_glsl" nodedef="ND_multiply_float3FA" target="glsl" sourcecode="{{in1}} * {{in2}}" />
-  <implementation name="IM_multiply_float4_glsl" nodedef="ND_multiply_float4" target="glsl" sourcecode="{{in1}} * {{in2}}" />
-  <implementation name="IM_multiply_float4FA_glsl" nodedef="ND_multiply_float4FA" target="glsl" sourcecode="{{in1}} * {{in2}}" />
+  <implementation name="IM_multiply_float" nodedef="ND_multiply_float"  sourcecode="{{in1}} * {{in2}}" />
+  <implementation name="IM_multiply_color3" nodedef="ND_multiply_color3"  sourcecode="{{in1}} * {{in2}}" />
+  <implementation name="IM_multiply_color3FA" nodedef="ND_multiply_color3FA"  sourcecode="{{in1}} * {{in2}}" />
+  <implementation name="IM_multiply_color4" nodedef="ND_multiply_color4"  sourcecode="{{in1}} * {{in2}}" />
+  <implementation name="IM_multiply_color4FA" nodedef="ND_multiply_color4FA"  sourcecode="{{in1}} * {{in2}}" />
+  <implementation name="IM_multiply_float2" nodedef="ND_multiply_float2"  sourcecode="{{in1}} * {{in2}}" />
+  <implementation name="IM_multiply_float2FA" nodedef="ND_multiply_float2FA"  sourcecode="{{in1}} * {{in2}}" />
+  <implementation name="IM_multiply_float3" nodedef="ND_multiply_float3"  sourcecode="{{in1}} * {{in2}}" />
+  <implementation name="IM_multiply_float3FA" nodedef="ND_multiply_float3FA"  sourcecode="{{in1}} * {{in2}}" />
+  <implementation name="IM_multiply_float4" nodedef="ND_multiply_float4"  sourcecode="{{in1}} * {{in2}}" />
+  <implementation name="IM_multiply_float4FA" nodedef="ND_multiply_float4FA"  sourcecode="{{in1}} * {{in2}}" />
 
   <!-- <divide> -->
-  <implementation name="IM_divide_float_glsl" nodedef="ND_divide_float" target="glsl" sourcecode="{{in1}} / {{in2}}" />
-  <implementation name="IM_divide_color3_glsl" nodedef="ND_divide_color3" target="glsl" sourcecode="{{in1}} / {{in2}}" />
-  <implementation name="IM_divide_color3FA_glsl" nodedef="ND_divide_color3FA" target="glsl" sourcecode="{{in1}} / {{in2}}" />
-  <implementation name="IM_divide_color4_glsl" nodedef="ND_divide_color4" target="glsl" sourcecode="{{in1}} / {{in2}}" />
-  <implementation name="IM_divide_color4FA_glsl" nodedef="ND_divide_color4FA" target="glsl" sourcecode="{{in1}} / {{in2}}" />
-  <implementation name="IM_divide_float2_glsl" nodedef="ND_divide_float2" target="glsl" sourcecode="{{in1}} / {{in2}}" />
-  <implementation name="IM_divide_float2FA_glsl" nodedef="ND_divide_float2FA" target="glsl" sourcecode="{{in1}} / {{in2}}" />
-  <implementation name="IM_divide_float3_glsl" nodedef="ND_divide_float3" target="glsl" sourcecode="{{in1}} / {{in2}}" />
-  <implementation name="IM_divide_float3FA_glsl" nodedef="ND_divide_float3FA" target="glsl" sourcecode="{{in1}} / {{in2}}" />
-  <implementation name="IM_divide_float4_glsl" nodedef="ND_divide_float4" target="glsl" sourcecode="{{in1}} / {{in2}}" />
-  <implementation name="IM_divide_float4FA_glsl" nodedef="ND_divide_float4FA" target="glsl" sourcecode="{{in1}} / {{in2}}" />
+  <implementation name="IM_divide_float" nodedef="ND_divide_float"  sourcecode="{{in1}} / {{in2}}" />
+  <implementation name="IM_divide_color3" nodedef="ND_divide_color3"  sourcecode="{{in1}} / {{in2}}" />
+  <implementation name="IM_divide_color3FA" nodedef="ND_divide_color3FA"  sourcecode="{{in1}} / {{in2}}" />
+  <implementation name="IM_divide_color4" nodedef="ND_divide_color4"  sourcecode="{{in1}} / {{in2}}" />
+  <implementation name="IM_divide_color4FA" nodedef="ND_divide_color4FA"  sourcecode="{{in1}} / {{in2}}" />
+  <implementation name="IM_divide_float2" nodedef="ND_divide_float2"  sourcecode="{{in1}} / {{in2}}" />
+  <implementation name="IM_divide_float2FA" nodedef="ND_divide_float2FA"  sourcecode="{{in1}} / {{in2}}" />
+  <implementation name="IM_divide_float3" nodedef="ND_divide_float3"  sourcecode="{{in1}} / {{in2}}" />
+  <implementation name="IM_divide_float3FA" nodedef="ND_divide_float3FA"  sourcecode="{{in1}} / {{in2}}" />
+  <implementation name="IM_divide_float4" nodedef="ND_divide_float4"  sourcecode="{{in1}} / {{in2}}" />
+  <implementation name="IM_divide_float4FA" nodedef="ND_divide_float4FA"  sourcecode="{{in1}} / {{in2}}" />
 
   <!-- <modulo> -->
-  <implementation name="IM_modulo_float_glsl" nodedef="ND_modulo_float" target="glsl" sourcecode="mod({{in1}}, {{in2}})" />
-  <implementation name="IM_modulo_color3_glsl" nodedef="ND_modulo_color3" target="glsl" sourcecode="mod({{in1}}, {{in2}})" />
-  <implementation name="IM_modulo_color3FA_glsl" nodedef="ND_modulo_color3FA" target="glsl" sourcecode="mod({{in1}}, {{in2}})" />
-  <implementation name="IM_modulo_color4_glsl" nodedef="ND_modulo_color4" target="glsl" sourcecode="mod({{in1}}, {{in2}})" />
-  <implementation name="IM_modulo_color4FA_glsl" nodedef="ND_modulo_color4FA" target="glsl" sourcecode="mod({{in1}}, {{in2}})" />
-  <implementation name="IM_modulo_float2_glsl" nodedef="ND_modulo_float2" target="glsl" sourcecode="mod({{in1}}, {{in2}})" />
-  <implementation name="IM_modulo_float2FA_glsl" nodedef="ND_modulo_float2FA" target="glsl" sourcecode="mod({{in1}}, {{in2}})" />
-  <implementation name="IM_modulo_float3_glsl" nodedef="ND_modulo_float3" target="glsl" sourcecode="mod({{in1}}, {{in2}})" />
-  <implementation name="IM_modulo_float3FA_glsl" nodedef="ND_modulo_float3FA" target="glsl" sourcecode="mod({{in1}}, {{in2}})" />
-  <implementation name="IM_modulo_float4_glsl" nodedef="ND_modulo_float4" target="glsl" sourcecode="mod({{in1}}, {{in2}})" />
-  <implementation name="IM_modulo_float4FA_glsl" nodedef="ND_modulo_float4FA" target="glsl" sourcecode="mod({{in1}}, {{in2}})" />
+  <implementation name="IM_modulo_float" nodedef="ND_modulo_float"  sourcecode="mod({{in1}}, {{in2}})" />
+  <implementation name="IM_modulo_color3" nodedef="ND_modulo_color3"  sourcecode="mod({{in1}}, {{in2}})" />
+  <implementation name="IM_modulo_color3FA" nodedef="ND_modulo_color3FA"  sourcecode="mod({{in1}}, {{in2}})" />
+  <implementation name="IM_modulo_color4" nodedef="ND_modulo_color4"  sourcecode="mod({{in1}}, {{in2}})" />
+  <implementation name="IM_modulo_color4FA" nodedef="ND_modulo_color4FA"  sourcecode="mod({{in1}}, {{in2}})" />
+  <implementation name="IM_modulo_float2" nodedef="ND_modulo_float2"  sourcecode="mod({{in1}}, {{in2}})" />
+  <implementation name="IM_modulo_float2FA" nodedef="ND_modulo_float2FA"  sourcecode="mod({{in1}}, {{in2}})" />
+  <implementation name="IM_modulo_float3" nodedef="ND_modulo_float3"  sourcecode="mod({{in1}}, {{in2}})" />
+  <implementation name="IM_modulo_float3FA" nodedef="ND_modulo_float3FA"  sourcecode="mod({{in1}}, {{in2}})" />
+  <implementation name="IM_modulo_float4" nodedef="ND_modulo_float4"  sourcecode="mod({{in1}}, {{in2}})" />
+  <implementation name="IM_modulo_float4FA" nodedef="ND_modulo_float4FA"  sourcecode="mod({{in1}}, {{in2}})" />
 
   <!-- <invert> -->
-  <implementation name="IM_invert_float_glsl" nodedef="ND_invert_float" target="glsl" sourcecode="{{amount}} - {{in}}" />
-  <implementation name="IM_invert_color3_glsl" nodedef="ND_invert_color3" target="glsl" sourcecode="{{amount}} - {{in}}" />
-  <implementation name="IM_invert_color3FA_glsl" nodedef="ND_invert_color3FA" target="glsl" sourcecode="{{amount}} - {{in}}" />
-  <implementation name="IM_invert_color4_glsl" nodedef="ND_invert_color4" target="glsl" sourcecode="{{amount}} - {{in}}" />
-  <implementation name="IM_invert_color4FA_glsl" nodedef="ND_invert_color4FA" target="glsl" sourcecode="{{amount}} - {{in}}" />
-  <implementation name="IM_invert_float2_glsl" nodedef="ND_invert_float2" target="glsl" sourcecode="{{amount}} - {{in}}" />
-  <implementation name="IM_invert_float2FA_glsl" nodedef="ND_invert_float2FA" target="glsl" sourcecode="{{amount}} - {{in}}" />
-  <implementation name="IM_invert_float3_glsl" nodedef="ND_invert_float3" target="glsl" sourcecode="{{amount}} - {{in}}" />
-  <implementation name="IM_invert_float3FA_glsl" nodedef="ND_invert_float3FA" target="glsl" sourcecode="{{amount}} - {{in}}" />
-  <implementation name="IM_invert_float4_glsl" nodedef="ND_invert_float4" target="glsl" sourcecode="{{amount}} - {{in}}" />
-  <implementation name="IM_invert_float4FA_glsl" nodedef="ND_invert_float4FA" target="glsl" sourcecode="{{amount}} - {{in}}" />
+  <implementation name="IM_invert_float" nodedef="ND_invert_float"  sourcecode="{{amount}} - {{in}}" />
+  <implementation name="IM_invert_color3" nodedef="ND_invert_color3"  sourcecode="{{amount}} - {{in}}" />
+  <implementation name="IM_invert_color3FA" nodedef="ND_invert_color3FA"  sourcecode="{{amount}} - {{in}}" />
+  <implementation name="IM_invert_color4" nodedef="ND_invert_color4"  sourcecode="{{amount}} - {{in}}" />
+  <implementation name="IM_invert_color4FA" nodedef="ND_invert_color4FA"  sourcecode="{{amount}} - {{in}}" />
+  <implementation name="IM_invert_float2" nodedef="ND_invert_float2"  sourcecode="{{amount}} - {{in}}" />
+  <implementation name="IM_invert_float2FA" nodedef="ND_invert_float2FA"  sourcecode="{{amount}} - {{in}}" />
+  <implementation name="IM_invert_float3" nodedef="ND_invert_float3"  sourcecode="{{amount}} - {{in}}" />
+  <implementation name="IM_invert_float3FA" nodedef="ND_invert_float3FA"  sourcecode="{{amount}} - {{in}}" />
+  <implementation name="IM_invert_float4" nodedef="ND_invert_float4"  sourcecode="{{amount}} - {{in}}" />
+  <implementation name="IM_invert_float4FA" nodedef="ND_invert_float4FA"  sourcecode="{{amount}} - {{in}}" />
 
   <!-- <absval> -->
-  <implementation name="IM_absval_float_glsl" nodedef="ND_absval_float" target="glsl" sourcecode="abs({{in}})" />
-  <implementation name="IM_absval_color3_glsl" nodedef="ND_absval_color3" target="glsl" sourcecode="abs({{in}})" />
-  <implementation name="IM_absval_color4_glsl" nodedef="ND_absval_color4" target="glsl" sourcecode="abs({{in}})" />
-  <implementation name="IM_absval_float2_glsl" nodedef="ND_absval_float2" target="glsl" sourcecode="abs({{in}})" />
-  <implementation name="IM_absval_float3_glsl" nodedef="ND_absval_float3" target="glsl" sourcecode="abs({{in}})" />
-  <implementation name="IM_absval_float4_glsl" nodedef="ND_absval_float4" target="glsl" sourcecode="abs({{in}})" />
+  <implementation name="IM_absval_float" nodedef="ND_absval_float"  sourcecode="abs({{in}})" />
+  <implementation name="IM_absval_color3" nodedef="ND_absval_color3"  sourcecode="abs({{in}})" />
+  <implementation name="IM_absval_color4" nodedef="ND_absval_color4"  sourcecode="abs({{in}})" />
+  <implementation name="IM_absval_float2" nodedef="ND_absval_float2"  sourcecode="abs({{in}})" />
+  <implementation name="IM_absval_float3" nodedef="ND_absval_float3"  sourcecode="abs({{in}})" />
+  <implementation name="IM_absval_float4" nodedef="ND_absval_float4"  sourcecode="abs({{in}})" />
 
   <!-- <floor> -->
-  <implementation name="IM_floor_float_glsl" nodedef="ND_floor_float" target="glsl" sourcecode="floor({{in}})" />
-  <implementation name="IM_floor_color3_glsl" nodedef="ND_floor_color3" target="glsl" sourcecode="floor({{in}})" />
-  <implementation name="IM_floor_color4_glsl" nodedef="ND_floor_color4" target="glsl" sourcecode="floor({{in}})" />
-  <implementation name="IM_floor_float2_glsl" nodedef="ND_floor_float2" target="glsl" sourcecode="floor({{in}})" />
-  <implementation name="IM_floor_float3_glsl" nodedef="ND_floor_float3" target="glsl" sourcecode="floor({{in}})" />
-  <implementation name="IM_floor_float4_glsl" nodedef="ND_floor_float4" target="glsl" sourcecode="floor({{in}})" />
+  <implementation name="IM_floor_float" nodedef="ND_floor_float"  sourcecode="floor({{in}})" />
+  <implementation name="IM_floor_color3" nodedef="ND_floor_color3"  sourcecode="floor({{in}})" />
+  <implementation name="IM_floor_color4" nodedef="ND_floor_color4"  sourcecode="floor({{in}})" />
+  <implementation name="IM_floor_float2" nodedef="ND_floor_float2"  sourcecode="floor({{in}})" />
+  <implementation name="IM_floor_float3" nodedef="ND_floor_float3"  sourcecode="floor({{in}})" />
+  <implementation name="IM_floor_float4" nodedef="ND_floor_float4"  sourcecode="floor({{in}})" />
 
   <!-- <ceil> -->
-  <implementation name="IM_ceil_float_glsl" nodedef="ND_ceil_float" target="glsl" sourcecode="ceil({{in}})" />
-  <implementation name="IM_ceil_color3_glsl" nodedef="ND_ceil_color3" target="glsl" sourcecode="ceil({{in}})" />
-  <implementation name="IM_ceil_color4_glsl" nodedef="ND_ceil_color4" target="glsl" sourcecode="ceil({{in}})" />
-  <implementation name="IM_ceil_float2_glsl" nodedef="ND_ceil_float2" target="glsl" sourcecode="ceil({{in}})" />
-  <implementation name="IM_ceil_float3_glsl" nodedef="ND_ceil_float3" target="glsl" sourcecode="ceil({{in}})" />
-  <implementation name="IM_ceil_float4_glsl" nodedef="ND_ceil_float4" target="glsl" sourcecode="ceil({{in}})" />
+  <implementation name="IM_ceil_float" nodedef="ND_ceil_float"  sourcecode="ceil({{in}})" />
+  <implementation name="IM_ceil_color3" nodedef="ND_ceil_color3"  sourcecode="ceil({{in}})" />
+  <implementation name="IM_ceil_color4" nodedef="ND_ceil_color4"  sourcecode="ceil({{in}})" />
+  <implementation name="IM_ceil_float2" nodedef="ND_ceil_float2"  sourcecode="ceil({{in}})" />
+  <implementation name="IM_ceil_float3" nodedef="ND_ceil_float3"  sourcecode="ceil({{in}})" />
+  <implementation name="IM_ceil_float4" nodedef="ND_ceil_float4"  sourcecode="ceil({{in}})" />
 
   <!-- <power> -->
-  <implementation name="IM_power_float_glsl" nodedef="ND_power_float" target="glsl" sourcecode="pow({{in1}}, {{in2}})" />
-  <implementation name="IM_power_color3_glsl" nodedef="ND_power_color3" target="glsl" sourcecode="pow({{in1}}, {{in2}})" />
-  <implementation name="IM_power_color3FA_glsl" nodedef="ND_power_color3FA" target="glsl" sourcecode="pow({{in1}}, vec3({{in2}}))" />
-  <implementation name="IM_power_color4_glsl" nodedef="ND_power_color4" target="glsl" sourcecode="pow({{in1}}, {{in2}})" />
-  <implementation name="IM_power_color4FA_glsl" nodedef="ND_power_color4FA" target="glsl" sourcecode="pow({{in1}}, vec4({{in2}}))" />
-  <implementation name="IM_power_float2_glsl" nodedef="ND_power_float2" target="glsl" sourcecode="pow({{in1}}, {{in2}})" />
-  <implementation name="IM_power_float2FA_glsl" nodedef="ND_power_float2FA" target="glsl" sourcecode="pow({{in1}}, vec2({{in2}}))" />
-  <implementation name="IM_power_float3_glsl" nodedef="ND_power_float3" target="glsl" sourcecode="pow({{in1}}, {{in2}})" />
-  <implementation name="IM_power_float3FA_glsl" nodedef="ND_power_float3FA" target="glsl" sourcecode="pow({{in1}}, vec3({{in2}}))" />
-  <implementation name="IM_power_float4_glsl" nodedef="ND_power_float4" target="glsl" sourcecode="pow({{in1}}, {{in2}})" />
-  <implementation name="IM_power_float4FA_glsl" nodedef="ND_power_float4FA" target="glsl" sourcecode="pow({{in1}}, vec4({{in2}}))" />
+  <implementation name="IM_power_float" nodedef="ND_power_float"  sourcecode="pow({{in1}}, {{in2}})" />
+  <implementation name="IM_power_color3" nodedef="ND_power_color3"  sourcecode="pow({{in1}}, {{in2}})" />
+  <implementation name="IM_power_color3FA" nodedef="ND_power_color3FA"  sourcecode="pow({{in1}}, vec3({{in2}}))" />
+  <implementation name="IM_power_color4" nodedef="ND_power_color4"  sourcecode="pow({{in1}}, {{in2}})" />
+  <implementation name="IM_power_color4FA" nodedef="ND_power_color4FA"  sourcecode="pow({{in1}}, vec4({{in2}}))" />
+  <implementation name="IM_power_float2" nodedef="ND_power_float2"  sourcecode="pow({{in1}}, {{in2}})" />
+  <implementation name="IM_power_float2FA" nodedef="ND_power_float2FA"  sourcecode="pow({{in1}}, vec2({{in2}}))" />
+  <implementation name="IM_power_float3" nodedef="ND_power_float3"  sourcecode="pow({{in1}}, {{in2}})" />
+  <implementation name="IM_power_float3FA" nodedef="ND_power_float3FA"  sourcecode="pow({{in1}}, vec3({{in2}}))" />
+  <implementation name="IM_power_float4" nodedef="ND_power_float4"  sourcecode="pow({{in1}}, {{in2}})" />
+  <implementation name="IM_power_float4FA" nodedef="ND_power_float4FA"  sourcecode="pow({{in1}}, vec4({{in2}}))" />
 
   <!-- <sin>, <cos>, <tan>, <asin>, <acos>, <atan2> -->
-  <implementation name="IM_sin_float_glsl" nodedef="ND_sin_float" target="glsl" sourcecode="sin({{in}})" />
-  <implementation name="IM_cos_float_glsl" nodedef="ND_cos_float" target="glsl" sourcecode="cos({{in}})" />
-  <implementation name="IM_tan_float_glsl" nodedef="ND_tan_float" target="glsl" sourcecode="tan({{in}})" />
-  <implementation name="IM_asin_float_glsl" nodedef="ND_asin_float" target="glsl" sourcecode="asin({{in}})" />
-  <implementation name="IM_acos_float_glsl" nodedef="ND_acos_float" target="glsl" sourcecode="acos({{in}})" />
-  <implementation name="IM_atan2_float_glsl" nodedef="ND_atan2_float" target="glsl" sourcecode="atan({{in1}}, {{in2}})" />
-  <implementation name="IM_sin_float2_glsl" nodedef="ND_sin_float2" target="glsl" sourcecode="sin({{in}})" />
-  <implementation name="IM_cos_float2_glsl" nodedef="ND_cos_float2" target="glsl" sourcecode="cos({{in}})" />
-  <implementation name="IM_tan_float2_glsl" nodedef="ND_tan_float2" target="glsl" sourcecode="tan({{in}})" />
-  <implementation name="IM_asin_float2_glsl" nodedef="ND_asin_float2" target="glsl" sourcecode="asin({{in}})" />
-  <implementation name="IM_acos_float2_glsl" nodedef="ND_acos_float2" target="glsl" sourcecode="acos({{in}})" />
-  <implementation name="IM_atan2_float2_glsl" nodedef="ND_atan2_float2" target="glsl" sourcecode="atan({{in1}}, {{in2}})" />
-  <implementation name="IM_sin_float3_glsl" nodedef="ND_sin_float3" target="glsl" sourcecode="sin({{in}})" />
-  <implementation name="IM_cos_float3_glsl" nodedef="ND_cos_float3" target="glsl" sourcecode="cos({{in}})" />
-  <implementation name="IM_tan_float3_glsl" nodedef="ND_tan_float3" target="glsl" sourcecode="tan({{in}})" />
-  <implementation name="IM_asin_float3_glsl" nodedef="ND_asin_float3" target="glsl" sourcecode="asin({{in}})" />
-  <implementation name="IM_acos_float3_glsl" nodedef="ND_acos_float3" target="glsl" sourcecode="acos({{in}})" />
-  <implementation name="IM_atan2_float3_glsl" nodedef="ND_atan2_float3" target="glsl" sourcecode="atan({{in1}}, {{in2}})" />
-  <implementation name="IM_sin_float4_glsl" nodedef="ND_sin_float4" target="glsl" sourcecode="sin({{in}})" />
-  <implementation name="IM_cos_float4_glsl" nodedef="ND_cos_float4" target="glsl" sourcecode="cos({{in}})" />
-  <implementation name="IM_tan_float4_glsl" nodedef="ND_tan_float4" target="glsl" sourcecode="tan({{in}})" />
-  <implementation name="IM_asin_float4_glsl" nodedef="ND_asin_float4" target="glsl" sourcecode="asin({{in}})" />
-  <implementation name="IM_acos_float4_glsl" nodedef="ND_acos_float4" target="glsl" sourcecode="acos({{in}})" />
-  <implementation name="IM_atan2_float4_glsl" nodedef="ND_atan2_float4" target="glsl" sourcecode="atan({{in1}}, {{in2}})" />
+  <implementation name="IM_sin_float" nodedef="ND_sin_float"  sourcecode="sin({{in}})" />
+  <implementation name="IM_cos_float" nodedef="ND_cos_float"  sourcecode="cos({{in}})" />
+  <implementation name="IM_tan_float" nodedef="ND_tan_float"  sourcecode="tan({{in}})" />
+  <implementation name="IM_asin_float" nodedef="ND_asin_float"  sourcecode="asin({{in}})" />
+  <implementation name="IM_acos_float" nodedef="ND_acos_float"  sourcecode="acos({{in}})" />
+  <implementation name="IM_atan2_float" nodedef="ND_atan2_float"  sourcecode="atan({{in1}}, {{in2}})" />
+  <implementation name="IM_sin_float2" nodedef="ND_sin_float2"  sourcecode="sin({{in}})" />
+  <implementation name="IM_cos_float2" nodedef="ND_cos_float2"  sourcecode="cos({{in}})" />
+  <implementation name="IM_tan_float2" nodedef="ND_tan_float2"  sourcecode="tan({{in}})" />
+  <implementation name="IM_asin_float2" nodedef="ND_asin_float2"  sourcecode="asin({{in}})" />
+  <implementation name="IM_acos_float2" nodedef="ND_acos_float2"  sourcecode="acos({{in}})" />
+  <implementation name="IM_atan2_float2" nodedef="ND_atan2_float2"  sourcecode="atan({{in1}}, {{in2}})" />
+  <implementation name="IM_sin_float3" nodedef="ND_sin_float3"  sourcecode="sin({{in}})" />
+  <implementation name="IM_cos_float3" nodedef="ND_cos_float3"  sourcecode="cos({{in}})" />
+  <implementation name="IM_tan_float3" nodedef="ND_tan_float3"  sourcecode="tan({{in}})" />
+  <implementation name="IM_asin_float3" nodedef="ND_asin_float3"  sourcecode="asin({{in}})" />
+  <implementation name="IM_acos_float3" nodedef="ND_acos_float3"  sourcecode="acos({{in}})" />
+  <implementation name="IM_atan2_float3" nodedef="ND_atan2_float3"  sourcecode="atan({{in1}}, {{in2}})" />
+  <implementation name="IM_sin_float4" nodedef="ND_sin_float4"  sourcecode="sin({{in}})" />
+  <implementation name="IM_cos_float4" nodedef="ND_cos_float4"  sourcecode="cos({{in}})" />
+  <implementation name="IM_tan_float4" nodedef="ND_tan_float4"  sourcecode="tan({{in}})" />
+  <implementation name="IM_asin_float4" nodedef="ND_asin_float4"  sourcecode="asin({{in}})" />
+  <implementation name="IM_acos_float4" nodedef="ND_acos_float4"  sourcecode="acos({{in}})" />
+  <implementation name="IM_atan2_float4" nodedef="ND_atan2_float4"  sourcecode="atan({{in1}}, {{in2}})" />
 
   <!-- <sqrt> -->
-  <implementation name="IM_sqrt_float_glsl" nodedef="ND_sqrt_float" target="glsl" sourcecode="sqrt({{in}})" />
-  <implementation name="IM_sqrt_float2_glsl" nodedef="ND_sqrt_float2" target="glsl" sourcecode="sqrt({{in}})" />
-  <implementation name="IM_sqrt_float3_glsl" nodedef="ND_sqrt_float3" target="glsl" sourcecode="sqrt({{in}})" />
-  <implementation name="IM_sqrt_float4_glsl" nodedef="ND_sqrt_float4" target="glsl" sourcecode="sqrt({{in}})" />
+  <implementation name="IM_sqrt_float" nodedef="ND_sqrt_float"  sourcecode="sqrt({{in}})" />
+  <implementation name="IM_sqrt_float2" nodedef="ND_sqrt_float2"  sourcecode="sqrt({{in}})" />
+  <implementation name="IM_sqrt_float3" nodedef="ND_sqrt_float3"  sourcecode="sqrt({{in}})" />
+  <implementation name="IM_sqrt_float4" nodedef="ND_sqrt_float4"  sourcecode="sqrt({{in}})" />
 
   <!-- <ln> -->
-  <implementation name="IM_ln_float_glsl" nodedef="ND_ln_float" target="glsl" sourcecode="log({{in}})" />
-  <implementation name="IM_ln_float2_glsl" nodedef="ND_ln_float2" target="glsl" sourcecode="log({{in}})" />
-  <implementation name="IM_ln_float3_glsl" nodedef="ND_ln_float3" target="glsl" sourcecode="log({{in}})" />
-  <implementation name="IM_ln_float4_glsl" nodedef="ND_ln_float4" target="glsl" sourcecode="log({{in}})" />
+  <implementation name="IM_ln_float" nodedef="ND_ln_float"  sourcecode="log({{in}})" />
+  <implementation name="IM_ln_float2" nodedef="ND_ln_float2"  sourcecode="log({{in}})" />
+  <implementation name="IM_ln_float3" nodedef="ND_ln_float3"  sourcecode="log({{in}})" />
+  <implementation name="IM_ln_float4" nodedef="ND_ln_float4"  sourcecode="log({{in}})" />
 
   <!-- <exp> -->
-  <implementation name="IM_exp_float_glsl" nodedef="ND_exp_float" target="glsl" sourcecode="exp({{in}})" />
-  <implementation name="IM_exp_float2_glsl" nodedef="ND_exp_float2" target="glsl" sourcecode="exp({{in}})" />
-  <implementation name="IM_exp_float3_glsl" nodedef="ND_exp_float3" target="glsl" sourcecode="exp({{in}})" />
-  <implementation name="IM_exp_float4_glsl" nodedef="ND_exp_float4" target="glsl" sourcecode="exp({{in}})" />
+  <implementation name="IM_exp_float" nodedef="ND_exp_float"  sourcecode="exp({{in}})" />
+  <implementation name="IM_exp_float2" nodedef="ND_exp_float2"  sourcecode="exp({{in}})" />
+  <implementation name="IM_exp_float3" nodedef="ND_exp_float3"  sourcecode="exp({{in}})" />
+  <implementation name="IM_exp_float4" nodedef="ND_exp_float4"  sourcecode="exp({{in}})" />
 
   <!-- sign -->
-  <implementation name="IM_sign_float_glsl" nodedef="ND_sign_float" target="glsl" sourcecode="sign({{in}})" />
-  <implementation name="IM_sign_color3_glsl" nodedef="ND_sign_color3" target="glsl" sourcecode="sign({{in}})" />
-  <implementation name="IM_sign_color4_glsl" nodedef="ND_sign_color4" target="glsl" sourcecode="sign({{in}})" />
-  <implementation name="IM_sign_float2_glsl" nodedef="ND_sign_float2" target="glsl" sourcecode="sign({{in}})" />
-  <implementation name="IM_sign_float3_glsl" nodedef="ND_sign_float3" target="glsl" sourcecode="sign({{in}})" />
-  <implementation name="IM_sign_float4_glsl" nodedef="ND_sign_float4" target="glsl" sourcecode="sign({{in}})" />
+  <implementation name="IM_sign_float" nodedef="ND_sign_float"  sourcecode="sign({{in}})" />
+  <implementation name="IM_sign_color3" nodedef="ND_sign_color3"  sourcecode="sign({{in}})" />
+  <implementation name="IM_sign_color4" nodedef="ND_sign_color4"  sourcecode="sign({{in}})" />
+  <implementation name="IM_sign_float2" nodedef="ND_sign_float2"  sourcecode="sign({{in}})" />
+  <implementation name="IM_sign_float3" nodedef="ND_sign_float3"  sourcecode="sign({{in}})" />
+  <implementation name="IM_sign_float4" nodedef="ND_sign_float4"  sourcecode="sign({{in}})" />
 
   <!-- <clamp> -->
-  <implementation name="IM_clamp_float_glsl" nodedef="ND_clamp_float" target="glsl" sourcecode="clamp({{in}}, {{low}}, {{high}})" />
-  <implementation name="IM_clamp_color3_glsl" nodedef="ND_clamp_color3" target="glsl" sourcecode="clamp({{in}}, {{low}}, {{high}})" />
-  <implementation name="IM_clamp_color3FA_glsl" nodedef="ND_clamp_color3FA" target="glsl" sourcecode="clamp({{in}}, {{low}}, {{high}})" />
-  <implementation name="IM_clamp_color4_glsl" nodedef="ND_clamp_color4" target="glsl" sourcecode="clamp({{in}}, {{low}}, {{high}})" />
-  <implementation name="IM_clamp_color4FA_glsl" nodedef="ND_clamp_color4FA" target="glsl" sourcecode="clamp({{in}}, {{low}}, {{high}})" />
-  <implementation name="IM_clamp_float2_glsl" nodedef="ND_clamp_float2" target="glsl" sourcecode="clamp({{in}}, {{low}}, {{high}})" />
-  <implementation name="IM_clamp_float2FA_glsl" nodedef="ND_clamp_float2FA" target="glsl" sourcecode="clamp({{in}}, {{low}}, {{high}})" />
-  <implementation name="IM_clamp_float3_glsl" nodedef="ND_clamp_float3" target="glsl" sourcecode="clamp({{in}}, {{low}}, {{high}})" />
-  <implementation name="IM_clamp_float3FA_glsl" nodedef="ND_clamp_float3FA" target="glsl" sourcecode="clamp({{in}}, {{low}}, {{high}})" />
-  <implementation name="IM_clamp_float4_glsl" nodedef="ND_clamp_float4" target="glsl" sourcecode="clamp({{in}}, {{low}}, {{high}})" />
-  <implementation name="IM_clamp_float4FA_glsl" nodedef="ND_clamp_float4FA" target="glsl" sourcecode="clamp({{in}}, {{low}}, {{high}})" />
+  <implementation name="IM_clamp_float" nodedef="ND_clamp_float"  sourcecode="clamp({{in}}, {{low}}, {{high}})" />
+  <implementation name="IM_clamp_color3" nodedef="ND_clamp_color3"  sourcecode="clamp({{in}}, {{low}}, {{high}})" />
+  <implementation name="IM_clamp_color3FA" nodedef="ND_clamp_color3FA"  sourcecode="clamp({{in}}, {{low}}, {{high}})" />
+  <implementation name="IM_clamp_color4" nodedef="ND_clamp_color4"  sourcecode="clamp({{in}}, {{low}}, {{high}})" />
+  <implementation name="IM_clamp_color4FA" nodedef="ND_clamp_color4FA"  sourcecode="clamp({{in}}, {{low}}, {{high}})" />
+  <implementation name="IM_clamp_float2" nodedef="ND_clamp_float2"  sourcecode="clamp({{in}}, {{low}}, {{high}})" />
+  <implementation name="IM_clamp_float2FA" nodedef="ND_clamp_float2FA"  sourcecode="clamp({{in}}, {{low}}, {{high}})" />
+  <implementation name="IM_clamp_float3" nodedef="ND_clamp_float3"  sourcecode="clamp({{in}}, {{low}}, {{high}})" />
+  <implementation name="IM_clamp_float3FA" nodedef="ND_clamp_float3FA"  sourcecode="clamp({{in}}, {{low}}, {{high}})" />
+  <implementation name="IM_clamp_float4" nodedef="ND_clamp_float4"  sourcecode="clamp({{in}}, {{low}}, {{high}})" />
+  <implementation name="IM_clamp_float4FA" nodedef="ND_clamp_float4FA"  sourcecode="clamp({{in}}, {{low}}, {{high}})" />
 
   <!-- <min> -->
-  <implementation name="IM_min_float_glsl" nodedef="ND_min_float" target="glsl" sourcecode="min({{in1}}, {{in2}})" />
-  <implementation name="IM_min_color3_glsl" nodedef="ND_min_color3" target="glsl" sourcecode="min({{in1}}, {{in2}})" />
-  <implementation name="IM_min_color3FA_glsl" nodedef="ND_min_color3FA" target="glsl" sourcecode="min({{in1}}, {{in2}})" />
-  <implementation name="IM_min_color4_glsl" nodedef="ND_min_color4" target="glsl" sourcecode="min({{in1}}, {{in2}})" />
-  <implementation name="IM_min_color4FA_glsl" nodedef="ND_min_color4FA" target="glsl" sourcecode="min({{in1}}, {{in2}})" />
-  <implementation name="IM_min_float2_glsl" nodedef="ND_min_float2" target="glsl" sourcecode="min({{in1}}, {{in2}})" />
-  <implementation name="IM_min_float2FA_glsl" nodedef="ND_min_float2FA" target="glsl" sourcecode="min({{in1}}, {{in2}})" />
-  <implementation name="IM_min_float3_glsl" nodedef="ND_min_float3" target="glsl" sourcecode="min({{in1}}, {{in2}})" />
-  <implementation name="IM_min_float3FA_glsl" nodedef="ND_min_float3FA" target="glsl" sourcecode="min({{in1}}, {{in2}})" />
-  <implementation name="IM_min_float4_glsl" nodedef="ND_min_float4" target="glsl" sourcecode="min({{in1}}, {{in2}})" />
-  <implementation name="IM_min_float4FA_glsl" nodedef="ND_min_float4FA" target="glsl" sourcecode="min({{in1}}, {{in2}})" />
+  <implementation name="IM_min_float" nodedef="ND_min_float"  sourcecode="min({{in1}}, {{in2}})" />
+  <implementation name="IM_min_color3" nodedef="ND_min_color3"  sourcecode="min({{in1}}, {{in2}})" />
+  <implementation name="IM_min_color3FA" nodedef="ND_min_color3FA"  sourcecode="min({{in1}}, {{in2}})" />
+  <implementation name="IM_min_color4" nodedef="ND_min_color4"  sourcecode="min({{in1}}, {{in2}})" />
+  <implementation name="IM_min_color4FA" nodedef="ND_min_color4FA"  sourcecode="min({{in1}}, {{in2}})" />
+  <implementation name="IM_min_float2" nodedef="ND_min_float2"  sourcecode="min({{in1}}, {{in2}})" />
+  <implementation name="IM_min_float2FA" nodedef="ND_min_float2FA"  sourcecode="min({{in1}}, {{in2}})" />
+  <implementation name="IM_min_float3" nodedef="ND_min_float3"  sourcecode="min({{in1}}, {{in2}})" />
+  <implementation name="IM_min_float3FA" nodedef="ND_min_float3FA"  sourcecode="min({{in1}}, {{in2}})" />
+  <implementation name="IM_min_float4" nodedef="ND_min_float4"  sourcecode="min({{in1}}, {{in2}})" />
+  <implementation name="IM_min_float4FA" nodedef="ND_min_float4FA"  sourcecode="min({{in1}}, {{in2}})" />
 
   <!-- <max> -->
-  <implementation name="IM_max_float_glsl" nodedef="ND_max_float" target="glsl" sourcecode="max({{in1}}, {{in2}})" />
-  <implementation name="IM_max_color3_glsl" nodedef="ND_max_color3" target="glsl" sourcecode="max({{in1}}, {{in2}})" />
-  <implementation name="IM_max_color3FA_glsl" nodedef="ND_max_color3FA" target="glsl" sourcecode="max({{in1}}, {{in2}})" />
-  <implementation name="IM_max_color4_glsl" nodedef="ND_max_color4" target="glsl" sourcecode="max({{in1}}, {{in2}})" />
-  <implementation name="IM_max_color4FA_glsl" nodedef="ND_max_color4FA" target="glsl" sourcecode="max({{in1}}, {{in2}})" />
-  <implementation name="IM_max_float2_glsl" nodedef="ND_max_float2" target="glsl" sourcecode="max({{in1}}, {{in2}})" />
-  <implementation name="IM_max_float2FA_glsl" nodedef="ND_max_float2FA" target="glsl" sourcecode="max({{in1}}, {{in2}})" />
-  <implementation name="IM_max_float3_glsl" nodedef="ND_max_float3" target="glsl" sourcecode="max({{in1}}, {{in2}})" />
-  <implementation name="IM_max_float3FA_glsl" nodedef="ND_max_float3FA" target="glsl" sourcecode="max({{in1}}, {{in2}})" />
-  <implementation name="IM_max_float4_glsl" nodedef="ND_max_float4" target="glsl" sourcecode="max({{in1}}, {{in2}})" />
-  <implementation name="IM_max_float4FA_glsl" nodedef="ND_max_float4FA" target="glsl" sourcecode="max({{in1}}, {{in2}})" />
+  <implementation name="IM_max_float" nodedef="ND_max_float"  sourcecode="max({{in1}}, {{in2}})" />
+  <implementation name="IM_max_color3" nodedef="ND_max_color3"  sourcecode="max({{in1}}, {{in2}})" />
+  <implementation name="IM_max_color3FA" nodedef="ND_max_color3FA"  sourcecode="max({{in1}}, {{in2}})" />
+  <implementation name="IM_max_color4" nodedef="ND_max_color4"  sourcecode="max({{in1}}, {{in2}})" />
+  <implementation name="IM_max_color4FA" nodedef="ND_max_color4FA"  sourcecode="max({{in1}}, {{in2}})" />
+  <implementation name="IM_max_float2" nodedef="ND_max_float2"  sourcecode="max({{in1}}, {{in2}})" />
+  <implementation name="IM_max_float2FA" nodedef="ND_max_float2FA"  sourcecode="max({{in1}}, {{in2}})" />
+  <implementation name="IM_max_float3" nodedef="ND_max_float3"  sourcecode="max({{in1}}, {{in2}})" />
+  <implementation name="IM_max_float3FA" nodedef="ND_max_float3FA"  sourcecode="max({{in1}}, {{in2}})" />
+  <implementation name="IM_max_float4" nodedef="ND_max_float4"  sourcecode="max({{in1}}, {{in2}})" />
+  <implementation name="IM_max_float4FA" nodedef="ND_max_float4FA"  sourcecode="max({{in1}}, {{in2}})" />
 
   <!-- <normalize> -->
-  <implementation name="IM_normalize_float2_glsl" nodedef="ND_normalize_float2" target="glsl" sourcecode="normalize({{in}})" />
-  <implementation name="IM_normalize_float3_glsl" nodedef="ND_normalize_float3" target="glsl" sourcecode="normalize({{in}})" />
-  <implementation name="IM_normalize_float4_glsl" nodedef="ND_normalize_float4" target="glsl" sourcecode="normalize({{in}})" />
+  <implementation name="IM_normalize_float2" nodedef="ND_normalize_float2"  sourcecode="normalize({{in}})" />
+  <implementation name="IM_normalize_float3" nodedef="ND_normalize_float3"  sourcecode="normalize({{in}})" />
+  <implementation name="IM_normalize_float4" nodedef="ND_normalize_float4"  sourcecode="normalize({{in}})" />
 
   <!-- <magnitude> -->
-  <implementation name="IM_magnitude_float2_glsl" nodedef="ND_magnitude_float2" target="glsl" sourcecode="length({{in}})" />
-  <implementation name="IM_magnitude_float3_glsl" nodedef="ND_magnitude_float3" target="glsl" sourcecode="length({{in}})" />
-  <implementation name="IM_magnitude_float4_glsl" nodedef="ND_magnitude_float4" target="glsl" sourcecode="length({{in}})" />
+  <implementation name="IM_magnitude_float2" nodedef="ND_magnitude_float2"  sourcecode="length({{in}})" />
+  <implementation name="IM_magnitude_float3" nodedef="ND_magnitude_float3"  sourcecode="length({{in}})" />
+  <implementation name="IM_magnitude_float4" nodedef="ND_magnitude_float4"  sourcecode="length({{in}})" />
 
   <!-- <dotproduct> -->
-  <implementation name="IM_dotproduct_float2_glsl" nodedef="ND_dotproduct_float2" target="glsl" sourcecode="dot({{in1}}, {{in2}})" />
-  <implementation name="IM_dotproduct_float3_glsl" nodedef="ND_dotproduct_float3" target="glsl" sourcecode="dot({{in1}}, {{in2}})" />
-  <implementation name="IM_dotproduct_float4_glsl" nodedef="ND_dotproduct_float4" target="glsl" sourcecode="dot({{in1}}, {{in2}})" />
+  <implementation name="IM_dotproduct_float2" nodedef="ND_dotproduct_float2"  sourcecode="dot({{in1}}, {{in2}})" />
+  <implementation name="IM_dotproduct_float3" nodedef="ND_dotproduct_float3"  sourcecode="dot({{in1}}, {{in2}})" />
+  <implementation name="IM_dotproduct_float4" nodedef="ND_dotproduct_float4"  sourcecode="dot({{in1}}, {{in2}})" />
 
   <!-- <crossproduct> -->
-  <implementation name="IM_crossproduct_float3_glsl" nodedef="ND_crossproduct_float3" target="glsl" sourcecode="cross({{in1}}, {{in2}})" />
+  <implementation name="IM_crossproduct_float3" nodedef="ND_crossproduct_float3"  sourcecode="cross({{in1}}, {{in2}})" />
 
 
 
 
   <!-- <constant> -->
-  <implementation name="IM_constant_float_glsl" nodedef="ND_constant_float" target="glsl" sourcecode="{{value}}" />
-  <implementation name="IM_constant_color3_glsl" nodedef="ND_constant_color3" target="glsl" sourcecode="{{value}}" />
-  <implementation name="IM_constant_color4_glsl" nodedef="ND_constant_color4" target="glsl" sourcecode="{{value}}" />
-  <implementation name="IM_constant_float2_glsl" nodedef="ND_constant_float2" target="glsl" sourcecode="{{value}}" />
-  <implementation name="IM_constant_float3_glsl" nodedef="ND_constant_float3" target="glsl" sourcecode="{{value}}" />
-  <implementation name="IM_constant_float4_glsl" nodedef="ND_constant_float4" target="glsl" sourcecode="{{value}}" />
-  <implementation name="IM_constant_boolean_glsl" nodedef="ND_constant_boolean" target="glsl" sourcecode="{{value}}" />
-  <implementation name="IM_constant_integer_glsl" nodedef="ND_constant_integer" target="glsl" sourcecode="{{value}}" />
-  <implementation name="IM_constant_string_glsl" nodedef="ND_constant_string" target="glsl" sourcecode="{{value}}" />
+  <implementation name="IM_constant_float" nodedef="ND_constant_float"  sourcecode="{{value}}" />
+  <implementation name="IM_constant_color3" nodedef="ND_constant_color3"  sourcecode="{{value}}" />
+  <implementation name="IM_constant_color4" nodedef="ND_constant_color4"  sourcecode="{{value}}" />
+  <implementation name="IM_constant_float2" nodedef="ND_constant_float2"  sourcecode="{{value}}" />
+  <implementation name="IM_constant_float3" nodedef="ND_constant_float3"  sourcecode="{{value}}" />
+  <implementation name="IM_constant_float4" nodedef="ND_constant_float4"  sourcecode="{{value}}" />
+  <implementation name="IM_constant_boolean" nodedef="ND_constant_boolean"  sourcecode="{{value}}" />
+  <implementation name="IM_constant_integer" nodedef="ND_constant_integer"  sourcecode="{{value}}" />
+  <implementation name="IM_constant_string" nodedef="ND_constant_string"  sourcecode="{{value}}" />
 
     <!-- <mix> -->
   <implementation name="IM_mix_float_genglsl" nodedef="ND_mix_float" target="genglsl" sourcecode="mix({{bg}}, {{fg}}, {{mix}})" />

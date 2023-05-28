@@ -184,6 +184,8 @@ std::string ReadFileAndSkipBOM(const std::filesystem::path& filepath) {
         in.read(result.data(), fileSize);
         // Add a dummy tab to beginning of file.
         // result[0] = '\t';
+    } else {
+        ET_CORE_WARN("Unable to load file {0}!", filepath.string());
     }
     in.close();
     result.pop_back();

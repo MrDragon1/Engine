@@ -1,6 +1,13 @@
 #include "ShaderGenerator.h"
 #include "Core/Material/ShaderGenerator/ShaderContext.h"
 #include "Base/GlobalContext.h"
+#include "Core/Material/MaterialNode.h"
+
+#include "Core/Material/ShaderGenerator/Nodes/SourceCodeShaderNode.h"
+#include "Core/Material/ShaderGenerator/Nodes/AggregationShaderNode.h"
+#include "Core/Material/ShaderGenerator/Nodes/CompoundShaderNode.h"
+#include "Core/Material/ShaderGenerator/Nodes/PositionShaderNode.h"
+#include "Core/Material/ShaderGenerator/Nodes/NormalShaderNode.h"
 namespace Ethereal {
 ShaderStagePtr Shader::CreateStage(const string& name) {
     auto it = mStages.find(name);
@@ -25,6 +32,11 @@ void Shader::Compile() {
 
     auto api = GlobalContext::GetDriverApi();
     mProgram = api->CreateProgram("MAT_" + mName, sss);
+}
+
+ShaderGenerator::ShaderGenerator() {
+    RegisterImplementation("IM_position_float3", PositionShaderNode::Create);
+    RegisterImplementation("IM_normal_float3", NormalShaderNode::Create);
 }
 
 void ShaderGenerator::CreateVariables(ShaderGraphPtr graph, ShaderContextPtr context,
@@ -114,6 +126,19 @@ void ShaderGenerator::AddConnectorVariable(const string& name, const string& typ
     VariableBlock& psConn = dst->GetInputBlock(name);
     vsConn.Add(nullptr, type, variable);
     psConn.Add(nullptr, type, variable);
+}
+ShaderNodeImplPtr ShaderGenerator::GetImpl(NodeInstancePtr instance, ShaderContextPtr context) {
+    NodeImplPtr implElem = instance->GetNodeImpl();
+    ShaderNodeImplPtr impl = nullptr;
+    if (implElem && implElem->IsNodeGraph()) {
+        impl = CompoundShaderNode::Create();
+    } else if (implElem && implElem->IsDynamic()) {
+        impl = mImplFactory.create(implElem->GetName());
+    } else {
+        impl = SourceCodeShaderNode::Create();
+    }
+    impl->Initilize(implElem, context);
+    return impl;
 }
 
 void ShaderGenerator::EmitUniforms(ShaderContextPtr context, ShaderStagePtr stage) {
@@ -209,6 +234,18 @@ void ShaderGenerator::EmitInputs(ShaderContextPtr context, ShaderStagePtr stage)
 void ShaderGenerator::EmitVersion(ShaderContextPtr context, ShaderStagePtr stage) {
     stage->EmitLine("#version 460");
     stage->EmitLine();
+}
+
+void ShaderGenerator::RegisterImplementation(const string& name,
+                                             CreatorFunction<ShaderNodeImpl> func) {
+    mImplFactory.registerClass(name, func);
+}
+
+void ShaderGenerator::RegisterImplementation(const StringVec& nameVec,
+                                             CreatorFunction<ShaderNodeImpl> func) {
+    for (auto& name : nameVec) {
+        RegisterImplementation(name, func);
+    }
 }
 
 }  // namespace Ethereal

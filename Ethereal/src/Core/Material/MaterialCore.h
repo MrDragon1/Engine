@@ -10,6 +10,7 @@ class MaterialCore : public Asset {
 
     void SetDocument(DocumentPtr doc) { mDocument = doc; }
     DocumentPtr GetDocument() { return mDocument; }
+    ShaderContextPtr GetContext() { return mShaderContext; }
 
     void Compile();
 

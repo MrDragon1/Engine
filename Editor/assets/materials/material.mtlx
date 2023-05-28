@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <materialx version="1.38" colorspace="lin_rec709">
 
-  <nodedef name="ND_fractal3d_vector3" nodedef="fractal3d" nodegroup="procedural3d">
+  <nodedef name="ND_fractal3d_float3" nodedef="fractal3d" nodegroup="procedural3d">
     <input name="amplitude" type="float3" value="1.0, 1.0, 1.0" />
     <input name="octaves" type="integer" value="3" />
     <input name="lacunarity" type="float" value="2.0" />
@@ -9,12 +9,15 @@
     <input name="position" type="float3" value="0.0, 0.0, 0.0"/>
     <output name="out1" type="float" default="0.0, 0.0, 0.0" />
   </nodedef>
-  <implementation name="IM_fractal3d_vector3_genglsl" nodedef="ND_fractal3d_vector3" file="assets/materials/lib/glsl/mx_fractal3d_vector3.glsl" function="mx_fractal3d_vector3" target="genglsl" />
+  <implementation name="IM_fractal3d_float3_genglsl" nodedef="ND_fractal3d_float3" file="assets/materials/lib/glsl/mx_fractal3d_float3.glsl" function="mx_fractal3d_float3" target="genglsl" />
       
       
       
   <input name="param_ambient" type="color3" value="1.0, 1.0, 1.0" />
-  <input name="param_roughness" type="float" value="0.2" />
+  <input name="param_lightdir" type="float3" value="1.0, 1.0, 1.0" />
+
+  <position name="biposition" type="float3"/>
+  <normal name="binormal" type="float3"/>
 
   <nodegraph name="NG_marble1">
     <input name="base_color_1" type="color3" value="0.8, 0.8, 1.8" />
@@ -77,7 +80,8 @@
   <standard_surface name="SR_marble1" type="surfaceshader">
     <input name="base_color" type="color3" connector="NG_marble1" output="out1"/>
     <input name="ambient" type="color3" connector="param_ambient"/>
-    <input name="roughness" type="float"  connector="param_roughness"/>
+    <input name="normal" type="float3"  connector="binormal" output="out1"/>
+    <input name="lightdir" type="float3"  connector="param_lightdir"/>
   </standard_surface>
   <surfacematerial name="Marble_3D" type="material">
     <input name="surfaceshader" type="surfaceshader" connector="SR_marble1"  output="out1"/>

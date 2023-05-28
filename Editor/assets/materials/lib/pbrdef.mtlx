@@ -6,38 +6,36 @@
     <output name="out1" type="surfaceshader" />
   </nodedef>
 
-  <implementation name="IM_surface_surfaceshader_genglsl" nodedef="ND_surface" target="genglsl" 
-  file="assets/materials/lib/glsl/surface.glsl" function="surface" />
+  <implementation name="IM_surface_surfaceshader" nodedef="ND_surface" file="assets/materials/lib/glsl/surface.glsl" function="surface" />
 
-  <nodedef name="ND_standard_surface_surfaceshader_phong" nodedef="standard_surface" >
+  <nodedef name="ND_standard_surface_phong_surfaceshader" nodedef="standard_surface" >
     <input name="base_color" type="color3" value="1.0, 1.0, 1.0"/>
     <input name="ambient" type="color3" value="1.0, 1.0, 1.0"/>
-    <input name="roughness" type="float" value="0.8" />
-    <input name="metalness" type="float" value="0.5" />
-    <input name="trans" type="float3" value="0.5, 0.5, 0.5" />
+    <input name="normal" type="float3" value="1.0, 0.0, 0.0" />
+    <input name="lightdir" type="float3" value="1.0, 0.0, 0.0" />
+    <input name="trans" type="float3" value="0.0, 0.0, 0.0" />
     <output name="out1" type="surfaceshader" />
   </nodedef>
 
-  <implementation name="IM_standard_surface_surfaceshader_phong" nodedef="ND_standard_surface_surfaceshader_phong" implgraph="NG_standard_surface_surfaceshader_phong"/>
+  <implementation name="IM_standard_surface_phong_surfaceshader" nodedef="ND_standard_surface_phong_surfaceshader" implgraph="NG_standard_surface_phong_surfaceshader"/>
 
-  <nodegraph name="NG_standard_surface_surfaceshader_phong" nodedef="ND_standard_surface_surfaceshader_phong">
+  <nodegraph name="NG_standard_surface_phong_surfaceshader" nodedef="ND_standard_surface_phong_surfaceshader">
+    <dotproduct name="NdotL" type="float"> 
+        <input name="in1" type="float3" connector="normal"/>
+        <input name="in2" type="float3" connector="lightdir"/>
+    </dotproduct>
+
+    <clamp name="clamp_NdotL" type="float"> 
+        <input name="in" type="float" connector="NdotL" output="out1"/>
+    </clamp>
+
     <multiply name="multiply_diffuse" type="color3"> 
         <input name="in1" type="color3" connector="base_color"/>
-        <input name="in2" type="float" connector="roughness"/>
+        <input name="in2" type="float" connector="clamp_NdotL" output="out1"/>
     </multiply>
-
-    <multiply name="multiply_specular" type="color3"> 
-        <input name="in1" type="color3" connector="base_color"/>
-        <input name="in2" type="float" connector="metalness"/>
-    </multiply>
-    
-    <add name="add_diffuse" type="color3">
-        <input name="in1" type="color3" connector="multiply_diffuse" output="out1"/>
-        <input name="in2" type="color3" connector="multiply_specular" output="out1"/>
-    </add>
 
     <add name="add_ambient" type="color3">
-        <input name="in1" type="color3" connector="add_diffuse" output="out1"/>
+        <input name="in1" type="color3" connector="multiply_diffuse" output="out1"/>
         <input name="in2" type="color3" connector="ambient"/>
     </add>
     

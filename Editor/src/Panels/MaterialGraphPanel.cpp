@@ -552,7 +552,13 @@ void MaterialGraphPanel::DrawPinController(MaterialPinPtr pin) {
     }
 }
 
-void MaterialGraphPanel::Compile() { mMaterial->Compile(); }
+void MaterialGraphPanel::Compile() {
+    mMaterial->Compile();
+
+    // Regenerate UI graph
+    while (mGraphStack.size() > 1) PopGraph();
+    SetGraph(mMaterial->GenerateUIGraph());
+}
 
 void MaterialGraphPanel::ResetLayout() {
     mAutoLayout = false;

@@ -203,7 +203,7 @@ MaterialGraphPtr Document::GenerateUIGraphFromNodeGraph(NodeGraphPtr ng) {
     return uiGraph;
 }
 
-ShaderGraphPtr Document::GenerateShaderGraph() {
+ShaderGraphPtr Document::GenerateShaderGraph(ShaderContextPtr context) {
     ShaderGraphPtr shaderGraph = ShaderGraphPtr::Create(GetName(), this);
 
     for (auto& [name, input] : GetInputSockets()) {
@@ -213,13 +213,13 @@ ShaderGraphPtr Document::GenerateShaderGraph() {
 
     /// Create ShaderNode
     for (auto& [_, node] : GetNodeInstances()) {
-        ShaderNodePtr shaderNode = ShaderNodePtr::Create(node, shaderGraph);
+        ShaderNodePtr shaderNode = ShaderNodePtr::Create(node, shaderGraph, context);
         shaderGraph->AddNode(shaderNode);
     }
 
     for (auto& [_, node] : GetNodeGraphs()) {
         if (node->IsImpl()) continue;
-        ShaderNodePtr shaderNode = ShaderNodePtr::Create(node, shaderGraph);
+        ShaderNodePtr shaderNode = ShaderNodePtr::Create(node, shaderGraph, context);
         shaderGraph->AddNode(shaderNode);
     }
 
@@ -242,12 +242,13 @@ ShaderGraphPtr Document::GenerateShaderGraph() {
     return shaderGraph;
 }
 
-ShaderGraphPtr Document::GenerateShaderGraphFromNodeGraph(NodeGraphPtr ng) {
+ShaderGraphPtr Document::GenerateShaderGraphFromNodeGraph(NodeGraphPtr ng,
+                                                          ShaderContextPtr context) {
     ShaderGraphPtr shaderGraph = ShaderGraphPtr::Create(ng->GetName(), this, ng->IsImpl());
 
     /// Create ShaderNode
     for (auto& [_, node] : ng->GetNodeInstances()) {
-        ShaderNodePtr shaderNode = ShaderNodePtr::Create(node, shaderGraph);
+        ShaderNodePtr shaderNode = ShaderNodePtr::Create(node, shaderGraph, context);
         shaderGraph->AddNode(shaderNode);
 
         // Emit unconnected node input to uniform variable
@@ -503,7 +504,7 @@ void NodeImpl::Validate() {
     } else if (!code.empty())
         mImplType = NodeImplType::INLINE;
     else
-        ET_CORE_ASSERT(false, "Implementation {0} is incomplete!", GetName());
+        mImplType = NodeImplType::DYNAMIC;
 
     ET_CORE_ASSERT(mNodeDefine, "Implementation {0} has no define!", GetName());
     for (auto node : GetChildren()) {

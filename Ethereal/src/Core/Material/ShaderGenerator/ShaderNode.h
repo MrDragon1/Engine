@@ -64,7 +64,6 @@ class ShaderInput : public ShaderPort {
 
     ShaderOutputPtr GetConnector() { return mConnector; }
     void SetConnector(ShaderOutputPtr conn);
-    void Disconnect() { SetConnector(nullptr); }
 
    private:
     ShaderOutputPtr mConnector;
@@ -86,12 +85,15 @@ class ShaderOutput : public ShaderPort {
 
 class ShaderNodeImpl : public RefCounted {
    public:
-    ShaderNodeImpl(ElementPtr elem) : mSource(elem){};
+    virtual void Initilize(ElementPtr elem, ShaderContextPtr context) { mSource = elem; }
     virtual void EmitFunctionCall(ShaderNodePtr node, ShaderContextPtr context,
-                                  ShaderStagePtr stage){};
+                                  ShaderStagePtr stage) {}
     virtual void EmitFunctionDefinition(ShaderNodePtr node, ShaderContextPtr context,
-                                        ShaderStagePtr stage){};
-    virtual void CreateVariables(ShaderNodePtr node, ShaderContextPtr context, ShaderPtr shader){};
+                                        ShaderStagePtr stage) {}
+    virtual void CreateVariables(ShaderNodePtr node, ShaderContextPtr context, ShaderPtr shader) {}
+
+   protected:
+    ShaderNodeImpl(){};
 
    private:
     ElementPtr mSource;
@@ -99,7 +101,7 @@ class ShaderNodeImpl : public RefCounted {
 
 class ShaderNode : public RefCounted {
    public:
-    ShaderNode(ElementPtr node, ShaderGraphPtr graph);
+    ShaderNode(ElementPtr node, ShaderGraphPtr graph, ShaderContextPtr context);
     void AddInput(NodeInputPtr input);
     void AddOutput(NodeOutputPtr output);
 
@@ -112,7 +114,7 @@ class ShaderNode : public RefCounted {
     vector<string> GetInputOrder() { return mInputOrder; }
     vector<string> GetOutputOrder() { return mOutputOrder; }
 
-    void Initalize();
+    void Initalize(ShaderContextPtr context);
     string GetName() { return mName; }
     ShaderGraphPtr GetGraph() { return mGraph; }
     ShaderNodeImplPtr GetImpl() { return mImpl; }

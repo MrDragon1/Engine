@@ -6,7 +6,9 @@ namespace Ethereal {
 using CompoundShaderNodePtr = Ref<class CompoundShaderNode>;
 class CompoundShaderNode : public ShaderNodeImpl {
    public:
-    CompoundShaderNode(NodeImplPtr impl);
+    CompoundShaderNode();
+    static ShaderNodeImplPtr Create();
+    void Initilize(ElementPtr elem, ShaderContextPtr context) override;
     void EmitFunctionDefinition(ShaderNodePtr node, ShaderContextPtr context,
                                 ShaderStagePtr stage) override;
     void EmitFunctionCall(ShaderNodePtr node, ShaderContextPtr context,

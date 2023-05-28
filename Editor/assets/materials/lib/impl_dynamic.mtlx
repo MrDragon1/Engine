@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<materialx version="1.36">
+  <nodedef name="ND_position_float3" nodedef="position" nodegroup="geometric">
+    <output name="out1" type="float3" value="0.0, 0.0, 0.0" />
+  </nodedef>
+  <implementation name="IM_position_float3" nodedef="ND_position_float3" />
+
+
+  <nodedef name="ND_normal_float3" nodedef="normal" nodegroup="geometric">
+    <output name="out1" type="float3" value="1.0, 0.0, 0.0" />
+  </nodedef>
+  <implementation name="IM_normal_float3" nodedef="ND_normal_float3" />
+
+</materialx>
