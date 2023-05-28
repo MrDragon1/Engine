@@ -1,3 +1,6 @@
 #include "UI.h"
 
-namespace Ethereal {}  // namespace Ethereal
+namespace Ethereal {
+namespace UI {}  // namespace UI
+
+}  // namespace Ethereal

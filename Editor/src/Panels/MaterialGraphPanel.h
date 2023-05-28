@@ -2,6 +2,7 @@
 #include "Core/Editor/EditorPanel.h"
 #include "Core/Material/MaterialGraph.h"
 #include "Core/Material/ShaderGenerator/ShaderContext.h"
+#include "Core/Material/MaterialManager.h"
 #include <stack>
 namespace ed = ax::NodeEditor;
 
@@ -17,7 +18,7 @@ class MaterialGraphPanel : public EditorPanel {
     void PopGraph();
 
    private:
-    DocumentPtr mDocument;
+    MaterialCorePtr mMaterial;
     MaterialGraphPtr mCurrentGraph = nullptr;
     std::stack<MaterialGraphPtr> mGraphStack;
     std::unordered_map<std::string, std::vector<NodeDefinePtr>> mBuildinNodeDef;

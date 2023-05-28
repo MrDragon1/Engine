@@ -119,6 +119,7 @@ class OpenGLDriverApi : public DriverApi {
                                                PrimitiveType pt, uint32_t offset, uint32_t minIndex,
                                                uint32_t maxIndex, uint32_t count) override;
     Ref<Program> CreateProgram(std::string_view name, ShaderSource source) override;
+    Ref<Program> CreateProgram(std::string_view name, ShaderSourceString source) override;
     Ref<RenderTarget> CreateRenderTarget(TargetBufferFlags targets, uint32_t width, uint32_t height,
                                          MRT color, TargetBufferInfo depth,
                                          TargetBufferInfo stencil) override;

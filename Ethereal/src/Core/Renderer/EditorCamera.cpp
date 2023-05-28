@@ -1,10 +1,10 @@
 #include "pch.h"
 #include "EditorCamera.h"
 
-#include "Ethereal/src/Base/Input.h"
-#include "Ethereal/src/Base/KeyCodes.h"
-#include "Ethereal/src/Base/MouseButtonCodes.h"
-#include "Ethereal/src/Base/GlobalContext.h"
+#include "Base/Input.h"
+#include "Base/KeyCodes.h"
+#include "Base/MouseButtonCodes.h"
+#include "Base/GlobalContext.h"
 
 namespace Ethereal {
 EditorCamera::EditorCamera(float fov, float aspectRatio, float nearClip, float farClip)
@@ -56,8 +56,10 @@ void EditorCamera::OnUpdate(TimeStamp ts) {
 void EditorCamera::OnEvent(Event& e) {
     EventDispatcher dispatcher(e);
     dispatcher.Dispatch<MouseScrolledEvent>(ET_BIND_EVENT_FN(EditorCamera::OnMouseScroll));
-    dispatcher.Dispatch<MouseButtonPressedEvent>(ET_BIND_EVENT_FN(EditorCamera::OnMouseButtonPressed));
-    dispatcher.Dispatch<MouseButtonReleasedEvent>(ET_BIND_EVENT_FN(EditorCamera::OnMouseButtonReleased));
+    dispatcher.Dispatch<MouseButtonPressedEvent>(
+        ET_BIND_EVENT_FN(EditorCamera::OnMouseButtonPressed));
+    dispatcher.Dispatch<MouseButtonReleasedEvent>(
+        ET_BIND_EVENT_FN(EditorCamera::OnMouseButtonReleased));
 }
 
 bool EditorCamera::OnMouseButtonPressed(MouseButtonPressedEvent& e) {
@@ -95,12 +97,20 @@ void EditorCamera::MouseZoom(float delta) {
     UpdateProjection();
 }
 
-Vector3 EditorCamera::GetUpDirection() const { return Math::Rotate(GetOrientation(), Vector3(0.0f, 1.0f, 0.0f)); }
+Vector3 EditorCamera::GetUpDirection() const {
+    return Math::Rotate(GetOrientation(), Vector3(0.0f, 1.0f, 0.0f));
+}
 
-Vector3 EditorCamera::GetRightDirection() const { return Math::Rotate(GetOrientation(), Vector3(1.0f, 0.0f, 0.0f)); }
+Vector3 EditorCamera::GetRightDirection() const {
+    return Math::Rotate(GetOrientation(), Vector3(1.0f, 0.0f, 0.0f));
+}
 
-Vector3 EditorCamera::GetForwardDirection() const { return Math::Rotate(GetOrientation(), Vector3(0.0f, 0.0f, -1.0f)); }
+Vector3 EditorCamera::GetForwardDirection() const {
+    return Math::Rotate(GetOrientation(), Vector3(0.0f, 0.0f, -1.0f));
+}
 
-Quaternion EditorCamera::GetOrientation() const { return Quaternion(Vector3(-mPitch, -mYaw, 0.0f)); }
+Quaternion EditorCamera::GetOrientation() const {
+    return Quaternion(Vector3(-mPitch, -mYaw, 0.0f));
+}
 
 }  // namespace Ethereal

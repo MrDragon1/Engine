@@ -35,8 +35,15 @@ struct Texture : public Asset {
     TextureFormat format;
     TextureUsage usage;
     TextureType type;
-    Texture(uint32_t width, uint32_t height, uint32_t depth, uint32_t levels, TextureFormat format, TextureUsage usage, TextureType type)
-        : width(width), height(height), depth(depth), levels(levels), format(format), usage(usage), type(type) {}
+    Texture(uint32_t width, uint32_t height, uint32_t depth, uint32_t levels, TextureFormat format,
+            TextureUsage usage, TextureType type)
+        : width(width),
+          height(height),
+          depth(depth),
+          levels(levels),
+          format(format),
+          usage(usage),
+          type(type) {}
 };
 
 struct SamplerDescriptor {
@@ -73,7 +80,8 @@ struct IndexBuffer : public RefCounted {
     uint32_t count;
     uint32_t elementSize;
     IndexBuffer() noexcept : count{}, elementSize{} {}
-    IndexBuffer(uint8_t elementSize, uint32_t indexCount) noexcept : count(indexCount), elementSize(elementSize) {
+    IndexBuffer(uint8_t elementSize, uint32_t indexCount) noexcept
+        : count(indexCount), elementSize(elementSize) {
         // we could almost store elementSize on 4 bits because it's never > 16 and never 0
         ET_CORE_ASSERT(elementSize > 0 && elementSize <= 16);
         ET_CORE_ASSERT(indexCount < (1u << 27));
@@ -94,6 +102,8 @@ struct RenderPrimitive : public RefCounted {
 static constexpr size_t SHADER_TYPE_COUNT = 3;
 using ShaderBlob = std::vector<unsigned char>;
 using ShaderSource = std::unordered_map<ShaderType, ShaderBlob>;
+using ShaderSourceString = std::unordered_map<ShaderType, std::string>;
+
 struct Program : public RefCounted {
     std::string name;
     Program(std::string_view name) : name(name) {}

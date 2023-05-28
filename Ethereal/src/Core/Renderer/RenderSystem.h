@@ -8,6 +8,7 @@
 #include "Core/Renderer/RenderPass/EnvironmentMapRenderPass.h"
 #include "Core/Renderer/RenderPass/MainCameraRenderPass.h"
 #include "Core/Renderer/RenderPass/ShadowMapRenderPass.h"
+#include "Core/Renderer/RenderPass/MaterialPreviewRenderPass.h"
 #include "Core/Scene/Scene.h"
 
 // For test backend
@@ -26,9 +27,10 @@ class RenderSystem : public RefCounted {
     void Draw(TimeStamp ts);
 
     std::pair<Ref<Texture>, Ref<Texture>> CreateEnvironmentMap(const std::string& path);
-    void SubmitStaticMesh(Ref<StaticMesh> staticMesh, Ref<MaterialTable> materialTabel, uint32_t EntityID,
-                          const Matrix4& transform = Matrix4::IDENTITY);
-    void SubmitMesh(Ref<Mesh> mesh, Ref<MaterialTable> materialTabel, uint32_t EntityID, const Matrix4& transform = Matrix4::IDENTITY);
+    void SubmitStaticMesh(Ref<StaticMesh> staticMesh, Ref<MaterialTable> materialTabel,
+                          uint32_t EntityID, const Matrix4& transform = Matrix4::IDENTITY);
+    void SubmitMesh(Ref<Mesh> mesh, Ref<MaterialTable> materialTabel, uint32_t EntityID,
+                    const Matrix4& transform = Matrix4::IDENTITY);
     void SubmitRenderSceneData();
     void OnResize();
     void LoadProjectSettings();
@@ -44,12 +46,16 @@ class RenderSystem : public RefCounted {
     Ref<CSMRenderPass> GetCSMRenderPass() { return mCSMRenderPass; }
     Ref<Environment> GetEnv() { return mEnvironment; }
 
+    uint64_t DrawMaterialPreview(MaterialCorePtr mat, uint32_t width, uint32_t height);
+
    private:
     Ref<MainCameraRenderPass> mMainCameraRenderPass;
     Ref<ShadowMapRenderPass> mShadowMapRenderPass;  // Don't use it for now.
     Ref<EnvironmentMapRenderPass> mEnvironmentMapRenderPass;
     Ref<BloomRenderPass> mBloomRenderPass;
     Ref<CSMRenderPass> mCSMRenderPass;
+
+    Ref<MaterialPreviewRenderPass> mMaterialPreviewRenderPass;
 
     Ref<Environment> mEnvironment;
     Ref<Texture> mMainImage;

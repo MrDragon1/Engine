@@ -1,5 +1,6 @@
 #include "Element.h"
 #include "Core/Material/MaterialBase/Document.h"
+
 namespace Ethereal {
 
 void Element::CopyContentFrom(ElementPtr source) {

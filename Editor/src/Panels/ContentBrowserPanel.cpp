@@ -4,6 +4,7 @@
 #include <Core/Editor/EditorResource.h>
 
 #include "Core/Asset/AssetManager.h"
+#include "Base/GlobalContext.h"
 #include "imgui.h"
 #include "pch.h"
 
@@ -48,17 +49,22 @@ void ContentBrowserPanel::OnImGuiRender(bool& isOpen) {
         ImGui::PushID(filenameString.c_str());
 
         Ref<Texture> icon =
-            directoryEntry.is_directory() ? EditorResource::FolderIcon : AssetManager::GetAssetIconFromExtension(path.extension().string());
+            directoryEntry.is_directory()
+                ? EditorResource::FolderIcon
+                : AssetManager::GetAssetIconFromExtension(path.extension().string());
         {
-            UI::ScopedColorStack style(ImGuiCol_Border, IM_COL32(0, 0, 0, 0), ImGuiCol_Button, IM_COL32(0, 0, 0, 0), ImGuiCol_ButtonHovered,
+            UI::ScopedColorStack style(ImGuiCol_Border, IM_COL32(0, 0, 0, 0), ImGuiCol_Button,
+                                       IM_COL32(0, 0, 0, 0), ImGuiCol_ButtonHovered,
                                        IM_COL32(0, 0, 0, 0));
             UI::ShiftCursorX(-5.0f);
             bool press = false;
             if (Utils::IsImageFormat(path.string())) {
                 Ref<Texture> img = AssetManager::GetAsset<Texture>(path.string()).As<Texture>();
-                press = ImGui::ImageButton((ImTextureID)(intptr_t)api->GetTextueID(img), {thumbnailSize, thumbnailSize}, {0, 1}, {1, 0});
+                press = ImGui::ImageButton((ImTextureID)(intptr_t)api->GetTextueID(img),
+                                           {thumbnailSize, thumbnailSize}, {0, 1}, {1, 0});
             } else
-                press = ImGui::ImageButton((ImTextureID)(intptr_t)api->GetTextueID(icon), {thumbnailSize, thumbnailSize}, {0, 1}, {1, 0});
+                press = ImGui::ImageButton((ImTextureID)(intptr_t)api->GetTextueID(icon),
+                                           {thumbnailSize, thumbnailSize}, {0, 1}, {1, 0});
 
             if (press) {
                 mSelectedDirectory = directoryEntry.path();
@@ -68,7 +74,8 @@ void ContentBrowserPanel::OnImGuiRender(bool& isOpen) {
 
         if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
             AssetHandle handle = AssetManager::GetAssetHandleFromFilePath(path);
-            ImGui::SetDragDropPayload(AssetManager::GetDisplayTypeName(handle).c_str(), &handle, sizeof(AssetHandle));
+            ImGui::SetDragDropPayload(AssetManager::GetDisplayTypeName(handle).c_str(), &handle,
+                                      sizeof(AssetHandle));
             ImGui::EndDragDropSource();
         }
 
@@ -80,12 +87,15 @@ void ContentBrowserPanel::OnImGuiRender(bool& isOpen) {
 
         std::string filename = path.stem().string();
         if (IsSelect) {
-            UI::ScopedColorStack color(ImGuiCol_Border, IM_COL32(0, 0, 0, 0), ImGuiCol_Button, IM_COL32(44, 93, 135, 255), ImGuiCol_ButtonHovered,
-                                       IM_COL32(44, 93, 135, 255), ImGuiCol_Text, IM_COL32(210, 221, 230, 255));
+            UI::ScopedColorStack color(ImGuiCol_Border, IM_COL32(0, 0, 0, 0), ImGuiCol_Button,
+                                       IM_COL32(44, 93, 135, 255), ImGuiCol_ButtonHovered,
+                                       IM_COL32(44, 93, 135, 255), ImGuiCol_Text,
+                                       IM_COL32(210, 221, 230, 255));
             UI::ScopedStyle stylepadding(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
             ImGui::Button(filename.c_str(), {thumbnailSize, 0});
         } else {
-            UI::ScopedColorStack color(ImGuiCol_Border, IM_COL32(0, 0, 0, 0), ImGuiCol_Button, IM_COL32(0, 0, 0, 0), ImGuiCol_ButtonHovered,
+            UI::ScopedColorStack color(ImGuiCol_Border, IM_COL32(0, 0, 0, 0), ImGuiCol_Button,
+                                       IM_COL32(0, 0, 0, 0), ImGuiCol_ButtonHovered,
                                        IM_COL32(0, 0, 0, 0));
             UI::ScopedStyle stylepadding(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
             //                ImGui::TextWrapped(filenameString.c_str());

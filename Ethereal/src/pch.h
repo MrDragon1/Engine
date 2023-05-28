@@ -22,6 +22,8 @@
 #include "Base/Math/Vector.h"
 #include "Base/Math/Quaternion.h"
 #include "Base/Math/Matrix.h"
+#include "Base/UUID.h"
+#include "Base/Singleton.h"
 
 #include "glad/glad.h"
 #include <glm/glm.hpp>

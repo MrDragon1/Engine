@@ -6,6 +6,7 @@
 #include <filesystem>
 
 #include "Base/ImGui/UI.h"
+#include "Base/GlobalContext.h"
 #include "Core/Asset/AssetManager.h"
 #include "Core/Editor/EditorResource.h"
 #include "Core/Renderer/RenderResource.h"
@@ -13,7 +14,8 @@
 namespace Ethereal {
 SelectionContext SceneHierarchyPanel::sActiveSelectionContext = SelectionContext::Scene;
 
-SceneHierarchyPanel::SceneHierarchyPanel(const Ref<Scene>& context, SelectionContext selectionContext)
+SceneHierarchyPanel::SceneHierarchyPanel(const Ref<Scene>& context,
+                                         SelectionContext selectionContext)
     : mContext(context), mSelectionContext(selectionContext) {}
 
 void SceneHierarchyPanel::SetSceneContext(const Ref<Scene>& scene) { mContext = scene; }
@@ -31,14 +33,30 @@ void SceneHierarchyPanel::DrawEntityCreateMenu(Entity parent) {
     Entity newEntity;
     if (ImGui::MenuItem("Create Empty Entity")) mContext->CreateEntity("Empty Entity");
     if (ImGui::BeginMenu("3D Object")) {
-        if (ImGui::MenuItem("Cube")) newEntity = mContext->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_CUBE);
-        if (ImGui::MenuItem("Sphere")) newEntity = mContext->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_SPHERE);
-        if (ImGui::MenuItem("Cylinder")) newEntity = mContext->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_CYLINDER);
-        if (ImGui::MenuItem("Cone")) newEntity = mContext->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_CONE);
-        if (ImGui::MenuItem("Torus")) newEntity = mContext->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_TORUS);
-        if (ImGui::MenuItem("Plane")) newEntity = mContext->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_PLANE);
-        if (ImGui::MenuItem("Quad")) newEntity = mContext->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_QUAD);
-        if (ImGui::MenuItem("Monkey")) newEntity = mContext->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_MONKEY);
+        if (ImGui::MenuItem("Cube"))
+            newEntity =
+                mContext->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_CUBE);
+        if (ImGui::MenuItem("Sphere"))
+            newEntity =
+                mContext->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_SPHERE);
+        if (ImGui::MenuItem("Cylinder"))
+            newEntity =
+                mContext->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_CYLINDER);
+        if (ImGui::MenuItem("Cone"))
+            newEntity =
+                mContext->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_CONE);
+        if (ImGui::MenuItem("Torus"))
+            newEntity =
+                mContext->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_TORUS);
+        if (ImGui::MenuItem("Plane"))
+            newEntity =
+                mContext->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_PLANE);
+        if (ImGui::MenuItem("Quad"))
+            newEntity =
+                mContext->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_QUAD);
+        if (ImGui::MenuItem("Monkey"))
+            newEntity =
+                mContext->Create3DObject(ETHEREAL_BASIC_3DOBJECT::ETHEREAL_BASIC_3DOBJECT_MONKEY);
         ImGui::EndMenu();
     }
     if (newEntity) {
@@ -51,14 +69,16 @@ void SceneHierarchyPanel::DrawEntityCreateMenu(Entity parent) {
 
     if (ImGui::MenuItem("Material")) {
         MaterialDesc desc(RenderResource::DefaultMaterialDesc);
-        AssetManager::CreateAsset_Ref("M_Unnamed", (Project::GetAssetDirectory() / "materials").string(), desc);
+        AssetManager::CreateAsset_Ref("M_Unnamed",
+                                      (Project::GetAssetDirectory() / "materials").string(), desc);
     }
 }
 
 enum class VectorAxis { X = BIT(0), Y = BIT(1), Z = BIT(2), W = BIT(3) };
 
 template <typename TComponent, typename UIFunction>
-void SceneHierarchyPanel::DrawComponent(const std::string& name, UIFunction uiFunction, Ref<Texture> icon) {
+void SceneHierarchyPanel::DrawComponent(const std::string& name, UIFunction uiFunction,
+                                        Ref<Texture> icon) {
     bool shouldDraw = true;
 
     auto& entities = SelectionManager::GetSelections(sActiveSelectionContext);
@@ -75,8 +95,9 @@ void SceneHierarchyPanel::DrawComponent(const std::string& name, UIFunction uiFu
     if (icon == nullptr) icon = EditorResource::AssetIcon;
 
     // NOTE(Peter):
-    //	This fixes an issue where the first "+" button would display the "Remove" buttons for ALL components on an Entity.
-    //	This is due to ImGui::TreeNodeEx only pushing the id for it's children if it's actually open
+    //	This fixes an issue where the first "+" button would display the "Remove" buttons for ALL
+    // components on an Entity. 	This is due to ImGui::TreeNodeEx only pushing the id for
+    // it's children if it's actually open
     ImGui::PushID((void*)typeid(TComponent).hash_code());
 
     bool open = UI::ComponentHeader(name.c_str(), ImGuiTreeNodeFlags_None);
@@ -97,7 +118,8 @@ void SceneHierarchyPanel::DrawComponent(const std::string& name, UIFunction uiFu
 
 void SceneHierarchyPanel::ShowInspector() {
     auto api = GlobalContext::GetDriverApi();
-    UI::ScopedStyleStack style(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 4.0f), ImGuiStyleVar_ChildBorderSize, 0.0f);
+    UI::ScopedStyleStack style(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 4.0f),
+                               ImGuiStyleVar_ChildBorderSize, 0.0f);
     ImGui::Begin("Inspector", nullptr);
 
     const std::vector<UUID> entities = SelectionManager::GetSelections(sActiveSelectionContext);
@@ -106,82 +128,103 @@ void SceneHierarchyPanel::ShowInspector() {
 
         UI::ShiftCursorX(10.0f);
         ImGui::SetNextItemWidth(ImGui::GetWindowWidth() / 3.0f);
-        ImGui::InputText("##InspectorTag", (char*)entity.GetComponent<BasicPropertyComponent>().Tag.c_str(),
+        ImGui::InputText("##InspectorTag",
+                         (char*)entity.GetComponent<BasicPropertyComponent>().Tag.c_str(),
                          ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll);
         ImGui::SameLine(ImGui::GetWindowWidth() - 30.0f);
         auto icon = EditorResource::PlusIcon;
-        if (UI::ImageButton("InspectorPlusIcon", (ImTextureID)(intptr_t)(api->GetTextueID(icon)), ImVec2(20.0f, 20.0f))) {
+        if (UI::ImageButton("InspectorPlusIcon", (ImTextureID)(intptr_t)(api->GetTextueID(icon)),
+                            ImVec2(20.0f, 20.0f))) {
             ImGui::OpenPopup("InspectorADDComponent");
         }
 
         if (ImGui::BeginPopup("InspectorADDComponent")) {
-            if (!entity.HasComponent<MeshComponent>() && ImGui::MenuItem("Mesh")) entity.AddComponent<MeshComponent>();
-            if (!entity.HasComponent<StaticMeshComponent>() && ImGui::MenuItem("StaticMesh")) entity.AddComponent<StaticMeshComponent>();
+            if (!entity.HasComponent<MeshComponent>() && ImGui::MenuItem("Mesh"))
+                entity.AddComponent<MeshComponent>();
+            if (!entity.HasComponent<StaticMeshComponent>() && ImGui::MenuItem("StaticMesh"))
+                entity.AddComponent<StaticMeshComponent>();
 
             ImGui::EndPopup();
         }
 
-        DrawComponent<TransformComponent>("Transform", [&](TransformComponent& firstComponent, const std::vector<UUID>& entities,
-                                                           const bool isMultiEdit, const std::string& type_name) {
-            // Not support multi edit for now
-            Entity entity = mContext->GetEntityWithUUID(entities[0]);
-            auto& component = entity.GetComponent<TransformComponent>();
+        DrawComponent<TransformComponent>(
+            "Transform", [&](TransformComponent& firstComponent, const std::vector<UUID>& entities,
+                             const bool isMultiEdit, const std::string& type_name) {
+                // Not support multi edit for now
+                Entity entity = mContext->GetEntityWithUUID(entities[0]);
+                auto& component = entity.GetComponent<TransformComponent>();
 
-            UI::ScopedStyleStack style(ImGuiStyleVar_FramePadding, ImVec2(4.0f, 4.0f), ImGuiStyleVar_ItemSpacing, ImVec2(8.0f, 8.0f));
-            ImGui::BeginTable("transformComponent", 2, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_BordersInnerV);
-            ImGui::TableSetupColumn("transform_label_column", 0, 80.0f);
-            ImGui::TableSetupColumn("transform_value_column", ImGuiTableColumnFlags_IndentEnable | ImGuiTableColumnFlags_NoClip,
-                                    ImGui::GetContentRegionAvail().x - 80.0f);  // Must set Sizing Policy like ImGuiTableFlags_SizingFixedFit
+                UI::ScopedStyleStack style(ImGuiStyleVar_FramePadding, ImVec2(4.0f, 4.0f),
+                                           ImGuiStyleVar_ItemSpacing, ImVec2(8.0f, 8.0f));
+                ImGui::BeginTable("transformComponent", 2,
+                                  ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_BordersInnerV);
+                ImGui::TableSetupColumn("transform_label_column", 0, 80.0f);
+                ImGui::TableSetupColumn(
+                    "transform_value_column",
+                    ImGuiTableColumnFlags_IndentEnable | ImGuiTableColumnFlags_NoClip,
+                    ImGui::GetContentRegionAvail().x -
+                        80.0f);  // Must set Sizing Policy like ImGuiTableFlags_SizingFixedFit
 
-            ImGui::TableNextRow();
-            UI::DrawVec3Slider("Translation", component.Position);
+                ImGui::TableNextRow();
+                UI::DrawVec3Slider("Translation", component.Position);
 
-            ImGui::TableNextRow();
-            Vector3 rotation = Math::Degrees(component.Rotation);
-            UI::DrawVec3Slider("Rotation", rotation);
-            component.Rotation = Math::Radians(rotation);
+                ImGui::TableNextRow();
+                Vector3 rotation = Math::Degrees(component.Rotation);
+                UI::DrawVec3Slider("Rotation", rotation);
+                component.Rotation = Math::Radians(rotation);
 
-            ImGui::TableNextRow();
-            UI::DrawVec3Slider("Scale", component.Scale, Vector3(1.0f));  // TODO: load default scale as resetvalue
+                ImGui::TableNextRow();
+                UI::DrawVec3Slider("Scale", component.Scale,
+                                   Vector3(1.0f));  // TODO: load default scale as resetvalue
 
-            ImGui::EndTable();
-        });
+                ImGui::EndTable();
+            });
 
         DrawComponent<MeshComponent>(
-            "Mesh", [&](MeshComponent& firstComponent, const std::vector<UUID>& entities, const bool isMultiEdit, const std::string& type_name) {
+            "Mesh", [&](MeshComponent& firstComponent, const std::vector<UUID>& entities,
+                        const bool isMultiEdit, const std::string& type_name) {
                 static float spacing = 10.0f;
-                UI::ScopedStyleStack style(ImGuiStyleVar_ItemSpacing, ImVec2(8.0f, spacing), ImGuiStyleVar_CellPadding, ImVec2(4.0f, spacing));
+                UI::ScopedStyleStack style(ImGuiStyleVar_ItemSpacing, ImVec2(8.0f, spacing),
+                                           ImGuiStyleVar_CellPadding, ImVec2(4.0f, spacing));
                 ImGui::SetCursorPosY(ImGui::GetCursorPosY() + spacing / 2.0f);
 
                 ImGui::Button("A", {1.0f, 1.0f});
                 ImGui::SameLine();
-                if (UI::DragDropBar(("##" + type_name).c_str(), type_name.c_str(), firstComponent.MeshHandle, AssetType::Mesh)) {
+                if (UI::DragDropBar(("##" + type_name).c_str(), type_name.c_str(),
+                                    firstComponent.MeshHandle, AssetType::Mesh)) {
                     firstComponent.PostLoad();
                 }
 
-                if (UI::ListHeader("Materials", firstComponent.MaterialTableRaw.Materials, AssetType::Material)) {
+                if (UI::ListHeader("Materials", firstComponent.MaterialTableRaw.Materials,
+                                   AssetType::Material)) {
                     firstComponent.PostLoad();
                 }
             });
 
-        DrawComponent<StaticMeshComponent>("Static Mesh", [&](StaticMeshComponent& firstComponent, const std::vector<UUID>& entities,
-                                                              const bool isMultiEdit, const std::string& type_name) {
-            static float spacing = 10.0f;
-            UI::ScopedStyleStack style(ImGuiStyleVar_ItemSpacing, ImVec2(8.0f, spacing), ImGuiStyleVar_CellPadding, ImVec2(4.0f, spacing));
-            ImGui::SetCursorPosY(ImGui::GetCursorPosY() + spacing / 2.0f);
+        DrawComponent<StaticMeshComponent>(
+            "Static Mesh",
+            [&](StaticMeshComponent& firstComponent, const std::vector<UUID>& entities,
+                const bool isMultiEdit, const std::string& type_name) {
+                static float spacing = 10.0f;
+                UI::ScopedStyleStack style(ImGuiStyleVar_ItemSpacing, ImVec2(8.0f, spacing),
+                                           ImGuiStyleVar_CellPadding, ImVec2(4.0f, spacing));
+                ImGui::SetCursorPosY(ImGui::GetCursorPosY() + spacing / 2.0f);
 
-            // FixMe: wired bug, if we don't draw the button with size > 0, the label in DragDropBar won't be aligned with
-            //  the text in InputText.
-            ImGui::Button("A", {1.0f, 1.0f});
-            ImGui::SameLine();
-            if (UI::DragDropBar(("##" + type_name).c_str(), type_name.c_str(), firstComponent.StaticMeshHandle, AssetType::StaticMesh)) {
-                firstComponent.PostLoad();
-            }
+                // FixMe: wired bug, if we don't draw the button with size > 0, the label in
+                // DragDropBar won't be aligned with
+                //  the text in InputText.
+                ImGui::Button("A", {1.0f, 1.0f});
+                ImGui::SameLine();
+                if (UI::DragDropBar(("##" + type_name).c_str(), type_name.c_str(),
+                                    firstComponent.StaticMeshHandle, AssetType::StaticMesh)) {
+                    firstComponent.PostLoad();
+                }
 
-            if (UI::ListHeader("Materials", firstComponent.MaterialTableRaw.Materials, AssetType::Material)) {
-                firstComponent.PostLoad();
-            }
-        });
+                if (UI::ListHeader("Materials", firstComponent.MaterialTableRaw.Materials,
+                                   AssetType::Material)) {
+                    firstComponent.PostLoad();
+                }
+            });
     }
 
     ImGui::End();
@@ -190,15 +233,18 @@ void SceneHierarchyPanel::ShowInspector() {
 void SceneHierarchyPanel::ShowHierarchy() {
     ImGui::Begin("Hierarchy");
 
-    static ImGuiTableFlags flags =
-        ImGuiTableFlags_BordersV | ImGuiTableFlags_BordersOuterH | ImGuiTableFlags_Resizable | ImGuiTableFlags_RowBg | ImGuiTableFlags_NoBordersInBody
-        //                                       | ImGuiTableFlags_ScrollX // this will create child window which will cause the empty area not able
-        //                                       to be clicked
+    static ImGuiTableFlags flags = ImGuiTableFlags_BordersV | ImGuiTableFlags_BordersOuterH |
+                                   ImGuiTableFlags_Resizable | ImGuiTableFlags_RowBg |
+                                   ImGuiTableFlags_NoBordersInBody
+        //                                       | ImGuiTableFlags_ScrollX // this will create child
+        //                                       window which will cause the empty area not able to
+        //                                       be clicked
         // | ImGuiTableFlags_SizingFixedFit
         ;
 
     if (ImGui::BeginTable("HierarchyTable", 3, flags)) {
-        // The first column will use the default _WidthStretch when ScrollX is Off and _WidthFixed when ScrollX is On
+        // The first column will use the default _WidthStretch when ScrollX is Off and _WidthFixed
+        // when ScrollX is On
         ImGui::TableSetupColumn("##Visible");
         ImGui::TableSetupColumn("Name");
         ImGui::TableSetupColumn("Type");
@@ -212,7 +258,8 @@ void SceneHierarchyPanel::ShowHierarchy() {
             uint64_t ChildIdx;
             std::vector<uint64_t> ChildList;
 
-            static void DisplayNode(const EntityNode* node, const EntityNode* all_nodes, Scene* context) {
+            static void DisplayNode(const EntityNode* node, const EntityNode* all_nodes,
+                                    Scene* context) {
                 const float text_width = ImGui::CalcTextSize("A").x;
                 const float text_height = ImGui::GetTextLineHeight();
                 auto api = GlobalContext::GetDriverApi();
@@ -221,9 +268,13 @@ void SceneHierarchyPanel::ShowHierarchy() {
                 auto icon = node->Visible ? EditorResource::EyeIcon : EditorResource::EyeCrossIcon;
                 {
                     //                        UI::ShiftCursorY(2.0f);
-                    UI::ScopedColorStack style(ImGuiCol_Border, IM_COL32(0, 0, 0, 0), ImGuiCol_Button, IM_COL32(0, 0, 0, 0));
-                    if (UI::ImageButton(("VisibleIcon" + std::to_string(node->ChildIdx)).c_str(), (ImTextureID)(intptr_t)(api->GetTextueID(icon)),
-                                        ImVec2(text_height, text_height), ImU32(IM_COL32(196, 196, 196, 255)), ImU32(IM_COL32(255, 255, 255, 255)),
+                    UI::ScopedColorStack style(ImGuiCol_Border, IM_COL32(0, 0, 0, 0),
+                                               ImGuiCol_Button, IM_COL32(0, 0, 0, 0));
+                    if (UI::ImageButton(("VisibleIcon" + std::to_string(node->ChildIdx)).c_str(),
+                                        (ImTextureID)(intptr_t)(api->GetTextueID(icon)),
+                                        ImVec2(text_height, text_height),
+                                        ImU32(IM_COL32(196, 196, 196, 255)),
+                                        ImU32(IM_COL32(255, 255, 255, 255)),
                                         ImU32(IM_COL32(255, 255, 255, 255)))) {
                         Entity entity = context->GetEntityWithUUID(node->ChildIdx);
                         entity.ChangeVisible();
@@ -232,12 +283,15 @@ void SceneHierarchyPanel::ShowHierarchy() {
                 }
 
                 ImGui::TableNextColumn();
-                const bool is_selected = SelectionManager::IsSelected(sActiveSelectionContext, node->ChildIdx);
+                const bool is_selected =
+                    SelectionManager::IsSelected(sActiveSelectionContext, node->ChildIdx);
                 const bool is_folder = !node->ChildList.empty();
-                ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_OpenOnArrow;
+                ImGuiTreeNodeFlags node_flags =
+                    ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_OpenOnArrow;
                 if (is_selected) node_flags |= ImGuiTreeNodeFlags_Selected;
 
-                ImGui::TreeNodeEx(node->Name, ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen | node_flags);
+                ImGui::TreeNodeEx(node->Name, ImGuiTreeNodeFlags_Leaf |
+                                                  ImGuiTreeNodeFlags_NoTreePushOnOpen | node_flags);
                 if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen()) {
                     SelectionManager::UniqueSelect(sActiveSelectionContext, node->ChildIdx);
                 }
@@ -250,7 +304,8 @@ void SceneHierarchyPanel::ShowHierarchy() {
         if (mContext) {
             mContext->mRegistry.each([&](auto entityID) {
                 Entity entity{entityID, mContext.Raw()};
-                EntityNode node{entity.IsVisible(), entity.GetName().c_str(), "Entity", entity.GetUUID(), {}};
+                EntityNode node{
+                    entity.IsVisible(), entity.GetName().c_str(), "Entity", entity.GetUUID(), {}};
                 all_nodes.push_back(node);
             });
         }

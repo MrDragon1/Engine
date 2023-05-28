@@ -62,9 +62,11 @@ class ScopedColorStack {
     ScopedColorStack& operator=(const ScopedColorStack&) = delete;
 
     template <typename ColorType, typename... OtherColors>
-    ScopedColorStack(ImGuiCol firstColorID, ColorType firstColor, OtherColors&&... otherColorPairs) : mCount((sizeof...(otherColorPairs) / 2) + 1) {
+    ScopedColorStack(ImGuiCol firstColorID, ColorType firstColor, OtherColors&&... otherColorPairs)
+        : mCount((sizeof...(otherColorPairs) / 2) + 1) {
         static_assert((sizeof...(otherColorPairs) & 1u) == 0,
-                      "ScopedColorStack constructor expects a list of pairs of Color IDs and Colors as its arguments");
+                      "ScopedColorStack constructor expects a list of pairs of Color IDs and "
+                      "Colors as its arguments");
 
         PushColor(firstColorID, firstColor, std::forward<OtherColors>(otherColorPairs)...);
     }
@@ -91,10 +93,12 @@ class ScopedStyleStack {
     ScopedStyleStack& operator=(const ScopedStyleStack&) = delete;
 
     template <typename ValueType, typename... OtherStylePairs>
-    ScopedStyleStack(ImGuiStyleVar firstStyleVar, ValueType firstValue, OtherStylePairs&&... otherStylePairs)
+    ScopedStyleStack(ImGuiStyleVar firstStyleVar, ValueType firstValue,
+                     OtherStylePairs&&... otherStylePairs)
         : mCount((sizeof...(otherStylePairs) / 2) + 1) {
         static_assert((sizeof...(otherStylePairs) & 1u) == 0,
-                      "ScopedStyleStack constructor expects a list of pairs of Color IDs and Colors as its arguments");
+                      "ScopedStyleStack constructor expects a list of pairs of Color IDs and "
+                      "Colors as its arguments");
 
         PushStyle(firstStyleVar, firstValue, std::forward<OtherStylePairs>(otherStylePairs)...);
     }
@@ -105,7 +109,8 @@ class ScopedStyleStack {
     int mCount;
 
     template <typename ValueType, typename... OtherStylePairs>
-    static void PushStyle(ImGuiStyleVar styleVar, ValueType value, OtherStylePairs&&... otherStylePairs) {
+    static void PushStyle(ImGuiStyleVar styleVar, ValueType value,
+                          OtherStylePairs&&... otherStylePairs) {
         if constexpr (sizeof...(otherStylePairs) == 0) {
             ImGui::PushStyleVar(styleVar, value);
         } else {
@@ -116,9 +121,13 @@ class ScopedStyleStack {
 };
 
 // Low Level
-static void ShiftCursorX(float distance) { ImGui::SetCursorPosX(ImGui::GetCursorPosX() + distance); }
+static void ShiftCursorX(float distance) {
+    ImGui::SetCursorPosX(ImGui::GetCursorPosX() + distance);
+}
 
-static void ShiftCursorY(float distance) { ImGui::SetCursorPosY(ImGui::GetCursorPosY() + distance); }
+static void ShiftCursorY(float distance) {
+    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + distance);
+}
 
 static void ShiftCursor(float x, float y) {
     const ImVec2 cursor = ImGui::GetCursorPos();
@@ -136,7 +145,8 @@ static void PopID() {
 }
 
 static const char* GenerateLabelID(std::string_view label) {
-    *fmt::format_to_n(sLabelIDBuffer, std::size(sLabelIDBuffer), "{}##{}", label, sCounter++).out = 0;
+    *fmt::format_to_n(sLabelIDBuffer, std::size(sLabelIDBuffer), "{}##{}", label, sCounter++).out =
+        0;
     return sLabelIDBuffer;
 }
 
@@ -176,16 +186,18 @@ static void DrawItemActivityOutline() {
     }
 }
 
-static bool DragFloat(const char* label, float* v, float v_speed = 1.0f, float v_min = 0.0f, float v_max = 0.0f, const char* format = "%.3f",
-                      ImGuiSliderFlags flags = 0) {
+static bool DragFloat(const char* label, float* v, float v_speed = 1.0f, float v_min = 0.0f,
+                      float v_max = 0.0f, const char* format = "%.3f", ImGuiSliderFlags flags = 0) {
     bool res = ImGui::DragFloat(label, v, v_speed, v_min, v_max, format);
     UI::DrawItemActivityOutline();
 
     return res;
 }
 
-static bool ImageButton(const char* label, ImTextureID user_texture_id, const ImVec2& size, ImU32 tintNormal = ImU32(IM_COL32(196, 196, 196, 255)),
-                        ImU32 tintHovered = ImU32(IM_COL32(255, 255, 255, 255)), ImU32 tintPressed = ImU32(IM_COL32(255, 255, 255, 255))) {
+static bool ImageButton(const char* label, ImTextureID user_texture_id, const ImVec2& size,
+                        ImU32 tintNormal = ImU32(IM_COL32(196, 196, 196, 255)),
+                        ImU32 tintHovered = ImU32(IM_COL32(255, 255, 255, 255)),
+                        ImU32 tintPressed = ImU32(IM_COL32(255, 255, 255, 255))) {
     using namespace ImGui;
     ImGuiContext& g = *GImGui;
     ImGuiWindow* window = g.CurrentWindow;
@@ -203,34 +215,43 @@ static bool ImageButton(const char* label, ImTextureID user_texture_id, const Im
     PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2((float)0, (float)0));
     bool pressed = false;
     const ImVec2 padding = g.Style.FramePadding;
-    const ImRect bb(window->DC.CursorPos, {window->DC.CursorPos.x + size.x + padding.x * 2, window->DC.CursorPos.y + size.y + padding.y * 2});
+    const ImRect bb(window->DC.CursorPos, {window->DC.CursorPos.x + size.x + padding.x * 2,
+                                           window->DC.CursorPos.y + size.y + padding.y * 2});
     ItemSize(bb);
     if (ItemAdd(bb, id)) {
         bool hovered, held;
         pressed = ButtonBehavior(bb, id, &hovered, &held);
 
         // Render
-        const ImU32 col = GetColorU32((held && hovered) ? ImGuiCol_ButtonActive : hovered ? ImGuiCol_ButtonHovered : ImGuiCol_Button);
+        const ImU32 col = GetColorU32((held && hovered) ? ImGuiCol_ButtonActive
+                                      : hovered         ? ImGuiCol_ButtonHovered
+                                                        : ImGuiCol_Button);
         RenderNavHighlight(bb, id);
-        RenderFrame(bb.Min, bb.Max, col, true, ImClamp((float)ImMin(padding.x, padding.y), 0.0f, g.Style.FrameRounding));
+        RenderFrame(bb.Min, bb.Max, col, true,
+                    ImClamp((float)ImMin(padding.x, padding.y), 0.0f, g.Style.FrameRounding));
 
         ImVec2 rectMin{bb.Min.x + padding.x, bb.Min.y + padding.y};
         ImVec2 rectMax{bb.Max.x - padding.x, bb.Max.y - padding.y};
-        //                window->DrawList->AddRectFilled(rectMin, rectMax, ImU32(IM_COL32(255,0,0,100)));
-        //                window->DrawList->AddImage(user_texture_id, rectMin, rectMax, ImVec2(0, 0), ImVec2(1, 1), tintNormal);
+        //                window->DrawList->AddRectFilled(rectMin, rectMax,
+        //                ImU32(IM_COL32(255,0,0,100))); window->DrawList->AddImage(user_texture_id,
+        //                rectMin, rectMax, ImVec2(0, 0), ImVec2(1, 1), tintNormal);
         if (ImGui::IsItemActive())
-            window->DrawList->AddImage(user_texture_id, rectMin, rectMax, ImVec2(0, 1), ImVec2(1, 0), tintPressed);
+            window->DrawList->AddImage(user_texture_id, rectMin, rectMax, ImVec2(0, 1),
+                                       ImVec2(1, 0), tintPressed);
         else if (ImGui::IsItemHovered())
-            window->DrawList->AddImage(user_texture_id, rectMin, rectMax, ImVec2(0, 1), ImVec2(1, 0), tintHovered);
+            window->DrawList->AddImage(user_texture_id, rectMin, rectMax, ImVec2(0, 1),
+                                       ImVec2(1, 0), tintHovered);
         else
-            window->DrawList->AddImage(user_texture_id, rectMin, rectMax, ImVec2(0, 1), ImVec2(1, 0), tintNormal);
+            window->DrawList->AddImage(user_texture_id, rectMin, rectMax, ImVec2(0, 1),
+                                       ImVec2(1, 0), tintNormal);
     }
     PopStyleVar();
 
     return pressed;
 }
 
-static void DrawVec3Slider(const std::string& label, Vector3& values, Vector3 resetValues = Vector3(0.0f)) {
+static void DrawVec3Slider(const std::string& label, Vector3& values,
+                           Vector3 resetValues = Vector3(0.0f)) {
     ImGui::TableSetColumnIndex(0);
     ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 17.0f);
     ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 7.0f);
@@ -246,23 +267,28 @@ static void DrawVec3Slider(const std::string& label, Vector3& values, Vector3 re
     const float spacing = 4.0f;  // spacing between the button and float slider
     const float lineHeight = ImGui::GetTextLineHeightWithSpacing();
     const ImVec2 buttonSize = {lineHeight, lineHeight};
-    const float inputItemWidth = (ImGui::GetContentRegionAvail().x - spacingX) / 3.0f - buttonSize.x - spacing * 2.0f;
+    const float inputItemWidth =
+        (ImGui::GetContentRegionAvail().x - spacingX) / 3.0f - buttonSize.x - spacing * 2.0f;
 
-    ScopedStyleStack style(ImGuiStyleVar_ItemSpacing, ImVec2{spacingX, 0.0f}, ImGuiStyleVar_WindowPadding, ImVec2{0.0f, 2.0f});
+    ScopedStyleStack style(ImGuiStyleVar_ItemSpacing, ImVec2{spacingX, 0.0f},
+                           ImGuiStyleVar_WindowPadding, ImVec2{0.0f, 2.0f});
     {
-        ScopedColorStack style(ImGuiCol_Border, IM_COL32(0, 0, 0, 0), ImGuiCol_FrameBg, IM_COL32(0, 0, 0, 0));
+        ScopedColorStack style(ImGuiCol_Border, IM_COL32(0, 0, 0, 0), ImGuiCol_FrameBg,
+                               IM_COL32(0, 0, 0, 0));
         ImGui::BeginChild(ImGui::GetID((label + "fr").c_str()),
-                          ImVec2(ImGui::GetContentRegionAvail().x - spacingX, ImGui::GetFrameHeightWithSpacing() + 8.0f), false,
-                          ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+                          ImVec2(ImGui::GetContentRegionAvail().x - spacingX,
+                                 ImGui::GetFrameHeightWithSpacing() + 8.0f),
+                          false, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
     }
     const ImGuiIO& io = ImGui::GetIO();
     auto boldFont = io.Fonts->Fonts[1];
 
-    auto drawControl = [&](const std::string& label, float& value, float resetValue, const ImVec4& colorN, const ImVec4& colorH,
-                           const ImVec4& colorP) {
+    auto drawControl = [&](const std::string& label, float& value, float resetValue,
+                           const ImVec4& colorN, const ImVec4& colorH, const ImVec4& colorP) {
         {
             ScopedStyle style(ImGuiStyleVar_FrameRounding, 1.0f);
-            ScopedColorStack colorStack(ImGuiCol_Button, colorN, ImGuiCol_ButtonHovered, colorH, ImGuiCol_ButtonActive, colorP);
+            ScopedColorStack colorStack(ImGuiCol_Button, colorN, ImGuiCol_ButtonHovered, colorH,
+                                        ImGuiCol_ButtonActive, colorP);
             ScopedFont boldFontScope(boldFont);
             if (ImGui::Button(label.c_str(), buttonSize)) {
                 value = resetValue;
@@ -275,13 +301,16 @@ static void DrawVec3Slider(const std::string& label, Vector3& values, Vector3 re
     };
 
     ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
-    drawControl("X", values.x, resetValues.x, ImVec4{0.8f, 0.1f, 0.15f, 1.0f}, ImVec4{0.9f, 0.2f, 0.2f, 1.0f}, ImVec4{0.8f, 0.1f, 0.15f, 1.0f});
+    drawControl("X", values.x, resetValues.x, ImVec4{0.8f, 0.1f, 0.15f, 1.0f},
+                ImVec4{0.9f, 0.2f, 0.2f, 1.0f}, ImVec4{0.8f, 0.1f, 0.15f, 1.0f});
 
     ImGui::SameLine(0.0f, spacing);
-    drawControl("Y", values.y, resetValues.y, ImVec4{0.2f, 0.7f, 0.2f, 1.0f}, ImVec4{0.3f, 0.8f, 0.3f, 1.0f}, ImVec4{0.2f, 0.7f, 0.2f, 1.0f});
+    drawControl("Y", values.y, resetValues.y, ImVec4{0.2f, 0.7f, 0.2f, 1.0f},
+                ImVec4{0.3f, 0.8f, 0.3f, 1.0f}, ImVec4{0.2f, 0.7f, 0.2f, 1.0f});
 
     ImGui::SameLine(0.0f, spacing);
-    drawControl("Z", values.z, resetValues.z, ImVec4{0.1f, 0.25f, 0.8f, 1.0f}, ImVec4{0.2f, 0.35f, 0.9f, 1.0f}, ImVec4{0.1f, 0.25f, 0.8f, 1.0f});
+    drawControl("Z", values.z, resetValues.z, ImVec4{0.1f, 0.25f, 0.8f, 1.0f},
+                ImVec4{0.2f, 0.35f, 0.9f, 1.0f}, ImVec4{0.1f, 0.25f, 0.8f, 1.0f});
 
     ImGui::EndChild();
 }
@@ -304,9 +333,12 @@ static bool ComponentHeader(const char* label, ImGuiTreeNodeFlags flags = ImGuiT
     ImGui::SameLine();
     {
         ShiftCursorY(2.0f);
-        ScopedColorStack style(ImGuiCol_Border, IM_COL32(0, 0, 0, 0), ImGuiCol_Button, IM_COL32(0, 0, 0, 0));
-        UI::ImageButton((cc + "AssetIcon").c_str(), (ImTextureID)(intptr_t)GlobalContext::GetDriverApi()->GetTextueID(icon), ImVec2(16.0f, 16.0f),
-                        ImU32(IM_COL32(196, 196, 196, 255)), ImU32(IM_COL32(196, 196, 196, 255)), ImU32(IM_COL32(196, 196, 196, 255)));
+        ScopedColorStack style(ImGuiCol_Border, IM_COL32(0, 0, 0, 0), ImGuiCol_Button,
+                               IM_COL32(0, 0, 0, 0));
+        UI::ImageButton((cc + "AssetIcon").c_str(),
+                        (ImTextureID)(intptr_t)GlobalContext::GetDriverApi()->GetTextueID(icon),
+                        ImVec2(16.0f, 16.0f), ImU32(IM_COL32(196, 196, 196, 255)),
+                        ImU32(IM_COL32(196, 196, 196, 255)), ImU32(IM_COL32(196, 196, 196, 255)));
 
         ShiftCursorY(-2.0f);
     }
@@ -317,8 +349,10 @@ static bool ComponentHeader(const char* label, ImGuiTreeNodeFlags flags = ImGuiT
     ImGui::SameLine(ImGui::GetContentRegionAvail().x - 30.0f, 0.0f);
     {
         ShiftCursorY(2.0f);
-        ScopedColorStack style(ImGuiCol_Border, IM_COL32(0, 0, 0, 0), ImGuiCol_Button, IM_COL32(0, 0, 0, 0));
-        if (UI::ImageButton((cc + "MenuDotsIcon").c_str(), (ImTextureID)(intptr_t)GlobalContext::GetDriverApi()->GetTextueID(icon),
+        ScopedColorStack style(ImGuiCol_Border, IM_COL32(0, 0, 0, 0), ImGuiCol_Button,
+                               IM_COL32(0, 0, 0, 0));
+        if (UI::ImageButton((cc + "MenuDotsIcon").c_str(),
+                            (ImTextureID)(intptr_t)GlobalContext::GetDriverApi()->GetTextueID(icon),
                             ImVec2(16.0f, 16.0f))) {
             // TODO: Open context menu
         }
@@ -333,14 +367,15 @@ static bool ComponentHeader(const char* label, ImGuiTreeNodeFlags flags = ImGuiT
  *
  * @param id_label prevent id conflict when use ListHeader's Element 0/1/2...
  * @param type_label identifier for drag drop system, usually the type of the payload can be used
- * @param payload the payload in this drag drop bar & the payload will be changed if the drag drop operation is successful
+ * @param payload the payload in this drag drop bar & the payload will be changed if the drag drop
+ * operation is successful
  * @param assetType the payload type of this drag drop bar
  * @param label_shift
  * @param text_shift
  * @return
  */
-static bool DragDropBar(const char* id_label, const char* type_label, AssetHandle& payload, AssetType assetType, float label_shift = 20.0f,
-                        float text_shift = 50.0f) {
+static bool DragDropBar(const char* id_label, const char* type_label, AssetHandle& payload,
+                        AssetType assetType, float label_shift = 20.0f, float text_shift = 50.0f) {
     bool modified = false;
     UI::ScopedStyle style(ImGuiStyleVar_FrameRounding, 2.0f);
     ScopedID id(id_label);
@@ -350,12 +385,16 @@ static bool DragDropBar(const char* id_label, const char* type_label, AssetHandl
 
     ImGui::SameLine(0.0f, text_shift);
     ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - 10.0f);
-    std::string payload_name = AssetManager::IsAssetHandleValid(payload) ? AssetManager::GetMetadata(payload).FilePath.stem().string() : "None";
+    std::string payload_name = AssetManager::IsAssetHandleValid(payload)
+                                   ? AssetManager::GetMetadata(payload).FilePath.stem().string()
+                                   : "None";
     // TODO: Replace the input text with text (disable maybe?) for better
-    ImGui::InputText("##dragdrop", (char*)payload_name.c_str(), 256, ImGuiInputTextFlags_ReadOnly | ImGuiInputTextFlags_NoMarkEdited);
+    ImGui::InputText("##dragdrop", (char*)payload_name.c_str(), 256,
+                     ImGuiInputTextFlags_ReadOnly | ImGuiInputTextFlags_NoMarkEdited);
     ImGui::SetItemAllowOverlap();
     if (ImGui::BeginDragDropTarget()) {
-        if (const ImGuiPayload* accept_payload = ImGui::AcceptDragDropPayload(Utils::AssetTypeToString(assetType))) {
+        if (const ImGuiPayload* accept_payload =
+                ImGui::AcceptDragDropPayload(Utils::AssetTypeToString(assetType))) {
             IM_ASSERT(accept_payload->DataSize == sizeof(AssetHandle));
             payload = *(const AssetHandle*)accept_payload->Data;
             modified = true;
@@ -370,9 +409,11 @@ static bool DragDropBar(const char* id_label, const char* type_label, AssetHandl
     {
         auto icon = EditorResource::ExchangeIcon;
         ShiftCursorY(2.0f);
-        ScopedColorStack style(ImGuiCol_Border, IM_COL32(0, 0, 0, 0), ImGuiCol_Button, IM_COL32(0, 0, 0, 0), ImGuiCol_ButtonHovered,
-                               IM_COL32(0, 0, 0, 0));
-        if (UI::ImageButton(id_label, (ImTextureID)(intptr_t)GlobalContext::GetDriverApi()->GetTextueID(icon), ImVec2(16.0f, 16.0f))) {
+        ScopedColorStack style(ImGuiCol_Border, IM_COL32(0, 0, 0, 0), ImGuiCol_Button,
+                               IM_COL32(0, 0, 0, 0), ImGuiCol_ButtonHovered, IM_COL32(0, 0, 0, 0));
+        if (UI::ImageButton(id_label,
+                            (ImTextureID)(intptr_t)GlobalContext::GetDriverApi()->GetTextueID(icon),
+                            ImVec2(16.0f, 16.0f))) {
             // TODO: Open component select menu
         }
 
@@ -394,7 +435,8 @@ static bool ListHeader(const char* label, std::vector<AssetHandle>& payloads, As
     bool open;
     bool modified = false;
     {
-        UI::ScopedColorStack(ImGuiCol_Border, IM_COL32(0, 0, 0, 0), ImGuiCol_Header, Colors::Theme::background);
+        UI::ScopedColorStack(ImGuiCol_Border, IM_COL32(0, 0, 0, 0), ImGuiCol_Header,
+                             Colors::Theme::background);
         open = ImGui::CollapsingHeader(cc.c_str());
     }
 
@@ -415,22 +457,29 @@ static bool ListHeader(const char* label, std::vector<AssetHandle>& payloads, As
         float width = ImGui::GetWindowContentRegionWidth() - 20.0f - spacing;
 
         if (value > 0) {
-            UI::ScopedColorStack colorStack(ImGuiCol_Border, IM_COL32(40, 40, 40, 255), ImGuiCol_ChildBg, IM_COL32(65, 65, 65, 255));
-            UI::ScopedStyleStack styleStack(ImGuiStyleVar_ChildBorderSize, 1.0f, ImGuiStyleVar_ChildRounding, 2.0f);
+            UI::ScopedColorStack colorStack(ImGuiCol_Border, IM_COL32(40, 40, 40, 255),
+                                            ImGuiCol_ChildBg, IM_COL32(65, 65, 65, 255));
+            UI::ScopedStyleStack styleStack(ImGuiStyleVar_ChildBorderSize, 1.0f,
+                                            ImGuiStyleVar_ChildRounding, 2.0f);
 
             ImGui::SetCursorPosX(ImGui::GetCursorPosX() + spacing);
-            ImGui::BeginChild(ImGui::GetID((std::string(label) + "child").c_str()), ImVec2(width, tocal_height), true, ImGuiWindowFlags_NoScrollbar);
+            ImGui::BeginChild(ImGui::GetID((std::string(label) + "child").c_str()),
+                              ImVec2(width, tocal_height), true, ImGuiWindowFlags_NoScrollbar);
             for (int i = 0; i < value; i++) {
                 float cury = ImGui::GetCursorPosY();
                 ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 5.0f);
                 //                        ImGui::Button("A", {20.0f, 20.0f});
                 {
                     ShiftCursorY(2.0f);
-                    ScopedColorStack style(ImGuiCol_Border, IM_COL32(0, 0, 0, 0), ImGuiCol_Button, IM_COL32(0, 0, 0, 0));
-                    if (UI::ImageButton((cc + "BurgerMenuIcon " + std::to_string(i)).c_str(),
-                                        (ImTextureID)(intptr_t)GlobalContext::GetDriverApi()->GetTextueID(EditorResource::BurgerMenuIcon),
-                                        ImVec2(16.0f, 16.0f), ImU32(IM_COL32(196, 196, 196, 255)), ImU32(IM_COL32(196, 196, 196, 255)),
-                                        ImU32(IM_COL32(196, 196, 196, 255)))) {
+                    ScopedColorStack style(ImGuiCol_Border, IM_COL32(0, 0, 0, 0), ImGuiCol_Button,
+                                           IM_COL32(0, 0, 0, 0));
+                    if (UI::ImageButton(
+                            (cc + "BurgerMenuIcon " + std::to_string(i)).c_str(),
+                            (ImTextureID)(intptr_t)GlobalContext::GetDriverApi()->GetTextueID(
+                                EditorResource::BurgerMenuIcon),
+                            ImVec2(16.0f, 16.0f), ImU32(IM_COL32(196, 196, 196, 255)),
+                            ImU32(IM_COL32(196, 196, 196, 255)),
+                            ImU32(IM_COL32(196, 196, 196, 255)))) {
                         //                                ET_CORE_INFO("BurgerMenuIcon Pressed");
                     }
 
@@ -440,7 +489,9 @@ static bool ListHeader(const char* label, std::vector<AssetHandle>& payloads, As
                 ShiftCursorY(3.0f);  // Wired bug
                 std::string elementlabel = "Element " + std::to_string(i);
                 auto& tmp = payloads[i];
-                modified = modified || DragDropBar((cc + elementlabel).c_str(), elementlabel.c_str(), payloads[i], assetType, 5.0f, 10.0f);
+                modified =
+                    modified || DragDropBar((cc + elementlabel).c_str(), elementlabel.c_str(),
+                                            payloads[i], assetType, 5.0f, 10.0f);
                 ImGui::SetCursorPosY(cury + height);
             }
             ImGui::EndChild();
@@ -449,14 +500,16 @@ static bool ListHeader(const char* label, std::vector<AssetHandle>& payloads, As
         ImGui::SetCursorPosX(width - 40.0f);
         UI::ShiftCursorY(-4.0f);
         auto icon = EditorResource::PlusIcon;
-        if (UI::ImageButton((cc + "PlusIcon").c_str(), (ImTextureID)(intptr_t)GlobalContext::GetDriverApi()->GetTextueID(icon),
+        if (UI::ImageButton((cc + "PlusIcon").c_str(),
+                            (ImTextureID)(intptr_t)GlobalContext::GetDriverApi()->GetTextueID(icon),
                             ImVec2(16.0f, 16.0f))) {
             // TODO:: Add global default material
             payloads.push_back(AssetHandle(9102962350420186113));
         }
         ImGui::SameLine(0.0f, 5.0f);
         icon = EditorResource::MinusIcon;
-        if (UI::ImageButton((cc + "MinusIcon").c_str(), (ImTextureID)(intptr_t)GlobalContext::GetDriverApi()->GetTextueID(icon),
+        if (UI::ImageButton((cc + "MinusIcon").c_str(),
+                            (ImTextureID)(intptr_t)GlobalContext::GetDriverApi()->GetTextueID(icon),
                             ImVec2(16.0f, 16.0f))) {
             payloads.pop_back();
         }

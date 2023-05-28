@@ -16,16 +16,11 @@ namespace Ethereal {
 MaterialGraphPanel::MaterialGraphPanel() {
     mEditor = ed::CreateEditor();
     ed::SetCurrentEditor(mEditor);
+    mMaterial = MaterialManager::LoadMaterial("assets/materials/material.mtlx");
 
-    mDocument = DocumentPtr::Create(nullptr, "doc1");
-    Xml::LoadDocument(mDocument, "assets/materials/material.mtlx");
-    Xml::LoadLibraries(mDocument);
-    mDocument->Validate();
     PrepareNodeMenuInfo();
 
-    auto ni = mDocument->GetChild("SR_marble1").As<NodeInstance>();
-    auto ng = mDocument->GetChildren(MaterialElementType::NODEGRAPH);
-    SetGraph(mDocument->GenerateUIGraph());
+    SetGraph(mMaterial->GenerateUIGraph());
 }
 
 MaterialGraphPanel::~MaterialGraphPanel() {
@@ -254,14 +249,16 @@ void MaterialGraphPanel::OnImGuiRender(bool& isOpen) {
     if (doubleClickNode) {
         ElementPtr source = doubleClickNode->mSource;
         if (source && source->Is(MaterialElementType::NODEGRAPH)) {
-            SetGraph(mDocument->GenerateUIGraphFromNodeGraph(source.As<NodeGraph>()));
+            SetGraph(
+                mMaterial->GetDocument()->GenerateUIGraphFromNodeGraph(source.As<NodeGraph>()));
         } else if (source && source->Is(MaterialElementType::NODEINSTANCE)) {
             NodeInstancePtr ni = source.As<NodeInstance>();
             NodeImplPtr impl = ni->GetNodeImpl();
 
             // if the node is implement by a shader file, we will not show the subgraph
             if (impl && impl->IsNodeGraph()) {
-                SetGraph(mDocument->GenerateUIGraphFromNodeGraph(impl->GetNodeGraph()));
+                SetGraph(
+                    mMaterial->GetDocument()->GenerateUIGraphFromNodeGraph(impl->GetNodeGraph()));
             }
         } else {
             std::cout << "empty subgraph select" << std::endl;
@@ -440,22 +437,22 @@ void MaterialGraphPanel::ShowUINodeInspectorPanel(float panelWidth, float panelH
 
 void MaterialGraphPanel::ShowPreviewPanel(float panelWidth, float panelHeight) {
     ImGui::BeginHorizontal("Preview", ImVec2(panelWidth, panelHeight));
-    // mRenderer.Resize((size_t)panelWidth, (size_t)panelHeight);
-    // ImGui::Spring(0.0f, 0.0f);
-    // auto& io = ImGui::GetIO();
+    auto& renderSystem = GlobalContext::GetRenderSystem();
+    ImGui::Spring(0.0f, 0.0f);
+    auto& io = ImGui::GetIO();
 
-    // mRenderer.RenderMaterial(mMaterial, mContext);
+    auto img = renderSystem.DrawMaterialPreview(mMaterial, (size_t)panelWidth, (size_t)panelHeight);
 
-    // ImGui::Image(reinterpret_cast<void*>(mRenderer.mAttachment), ImVec2{panelWidth, panelHeight},
-    //              ImVec2{0, 1}, ImVec2{1, 0});
-    ImGui::Text("Preview Image Here");
+    ImGui::Image(reinterpret_cast<void*>(img), ImVec2{panelWidth, panelHeight}, ImVec2{0, 1},
+                 ImVec2{1, 0});
+    // ImGui::Text("Preview Image Here");
 
     ImGui::EndHorizontal();
 }
 
 MaterialNodePtr MaterialGraphPanel::CreateNodeMenu() {
     MaterialNodePtr nodeUI = nullptr;
-    if (!mDocument) return nodeUI;
+    if (!mMaterial) return nodeUI;
 
     for (auto trunk : mBuildinNodeDef) {
         ImGui::SetNextWindowSizeConstraints(ImVec2(100, 10), ImVec2(250, 300));
@@ -480,7 +477,7 @@ MaterialNodePtr MaterialGraphPanel::CreateNodeMenu() {
 void MaterialGraphPanel::PrepareNodeMenuInfo() {
     mBuildinNodeDef.clear();
     const std::string EXTRA_GROUP_NAME = "extra";
-    for (auto& [name, nodeDefs] : mDocument->GetAllNodeDefines()) {
+    for (auto& [name, nodeDefs] : mMaterial->GetDocument()->GetAllNodeDefines()) {
         for (auto& nodeDef : nodeDefs) {
             std::string group = nodeDef->GetNodeGroup();
             if (group.empty()) {
@@ -555,51 +552,7 @@ void MaterialGraphPanel::DrawPinController(MaterialPinPtr pin) {
     }
 }
 
-void MaterialGraphPanel::Compile() {
-    VariableBlock::sBinding = 0;
-    ShaderContextPtr shaderContext = ShaderContextPtr::Create();
-    ShaderGenerator& shaderGen = shaderContext->GetShaderGenerator();
-    shaderContext->mShaderGraph = mDocument->GenerateShaderGraph();
-
-    shaderContext->PushScope(shaderContext->mShaderGraph->GetName());
-
-    auto shaderGraph = shaderContext->GetShaderGraph();
-    shaderContext->mShader = ShaderPtr::Create("shader", shaderGraph);
-    auto shader = shaderContext->GetShader();
-
-    ShaderStagePtr vs = shader->CreateStage(Stage::VERTEX);
-    VariableBlockPtr vsInputs = vs->CreateInputBlock(ShaderBuildInVariable::INPUT);
-    vsInputs->Add(nullptr, "float3", ShaderBuildInVariable::IN_POSITION);
-    vsInputs->Add(nullptr, "float3", ShaderBuildInVariable::IN_NORMAL);
-    VariableBlockPtr vsPublicUniforms = vs->CreateUniformBlock(ShaderBuildInVariable::VSPUBUNIFORM);
-    vsPublicUniforms->Add(nullptr, "matrix4", ShaderBuildInVariable::MODEL_MATRIX);
-    vsPublicUniforms->Add(nullptr, "matrix4", ShaderBuildInVariable::VIEW_MATRIX);
-    vsPublicUniforms->Add(nullptr, "matrix4", ShaderBuildInVariable::PROJ_MATRIX);
-
-    ShaderStagePtr ps = shader->CreateStage(Stage::PIXEL);
-    VariableBlockPtr psPublicUniforms = ps->CreateUniformBlock(ShaderBuildInVariable::PSPUBUNIFORM);
-    VariableBlockPtr psOutputs = ps->CreateOutputBlock(ShaderBuildInVariable::OUTPUT);
-
-    for (auto& [name, inputSocket] : shaderGraph->GetInputSockets()) {
-        psPublicUniforms->Add(inputSocket);
-    }
-
-    auto outputSocket = shaderGraph->GetOutputSockets().begin()->second;
-    ShaderPortPtr output = psOutputs->Add(nullptr, "color4", outputSocket->GetName());
-    output->SetVariable(outputSocket->GetVariable(shaderContext->GetScope()));
-
-    // connect between vs & ps
-    shaderGen.AddConnectorBlock("vertexData", "vd", vs, ps);
-    shaderGen.AddConnectorVariable("vertexData", "float3", ShaderBuildInVariable::POSITION_WORLD,
-                                   vs, ps);
-
-    shaderGen.CreateVariables(shaderGraph, shaderContext, shader);
-
-    shaderGen.EmitVertexStage(shaderGraph, shaderContext, vs);
-    shaderGen.EmitPixelStage(shaderGraph, shaderContext, ps);
-    std::cout << vs->GetSourceCode();
-    std::cout << ps->GetSourceCode();
-}
+void MaterialGraphPanel::Compile() { mMaterial->Compile(); }
 
 void MaterialGraphPanel::ResetLayout() {
     mAutoLayout = false;

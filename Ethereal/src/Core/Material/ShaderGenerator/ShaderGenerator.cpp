@@ -1,5 +1,6 @@
 #include "ShaderGenerator.h"
 #include "Core/Material/ShaderGenerator/ShaderContext.h"
+#include "Base/GlobalContext.h"
 namespace Ethereal {
 ShaderStagePtr Shader::CreateStage(const string& name) {
     auto it = mStages.find(name);
@@ -15,6 +16,15 @@ ShaderStagePtr Shader::GetStage(const string& name) {
         return nullptr;
     }
     return mStages[name];
+}
+
+void Shader::Compile() {
+    ShaderSourceString sss;
+    if (GetStage(Stage::VERTEX)) sss[ShaderType::VERTEX] = GetStage(Stage::VERTEX)->GetSourceCode();
+    if (GetStage(Stage::PIXEL)) sss[ShaderType::FRAGMENT] = GetStage(Stage::PIXEL)->GetSourceCode();
+
+    auto api = GlobalContext::GetDriverApi();
+    mProgram = api->CreateProgram("MAT_" + mName, sss);
 }
 
 void ShaderGenerator::CreateVariables(ShaderGraphPtr graph, ShaderContextPtr context,
@@ -130,7 +140,6 @@ void ShaderGenerator::EmitUniforms(ShaderContextPtr context, ShaderStagePtr stag
             stage->BeginScope();
             for (auto& uniform : uniforms.GetVariables()) {
                 stage->EmitVariableDeclaration(uniform, context);
-                stage->EmitLine("Value: " + uniform->GetValue()->GetValueString());
                 uniform->SetVariable(instance + "." + uniform->GetVariable(context->GetScope()));
             }
             stage->EndScope(" " + instance + ";");
@@ -142,7 +151,7 @@ void ShaderGenerator::EmitUniforms(ShaderContextPtr context, ShaderStagePtr stag
 void ShaderGenerator::EmitOutputs(ShaderContextPtr context, ShaderStagePtr stage) {
     if (stage->GetName() == Stage::VERTEX) {
         for (auto& it : stage->GetOutputBlocks()) {
-            stage->EmitLine("out layout(location = 0) " + it.second->GetName());
+            stage->EmitLine("out " + it.second->GetName());
             stage->BeginScope();
             VariableBlock& outputs = *it.second;
             string instance = it.second->GetInstance();
@@ -183,7 +192,7 @@ void ShaderGenerator::EmitInputs(ShaderContextPtr context, ShaderStagePtr stage)
     }
     if (stage->GetName() == Stage::PIXEL) {
         for (auto& it : stage->GetInputBlocks()) {
-            stage->EmitLine("in layout(location = 0) " + it.second->GetName());
+            stage->EmitLine("in " + it.second->GetName());
             stage->BeginScope();
             VariableBlock& inputs = *it.second;
             string instance = it.second->GetInstance();

@@ -1,5 +1,6 @@
 #include "SourceCodeShaderNode.h"
 #include "Core/Material/ShaderGenerator/ShaderContext.h"
+#include "Utils/StringUtils.h"
 namespace Ethereal {
 SourceCodeShaderNode::SourceCodeShaderNode(NodeImplPtr impl) : ShaderNodeImpl(impl) {
     mFunctionSource = impl->GetAttribute(MaterialAttribute::SOURCECODE);

@@ -3,7 +3,7 @@
 // include all base files
 #include "Base/Application.h"
 #include "Base/Buffer.h"
-#include "Base/GlobalContext.h"
+// #include "Base/GlobalContext.h"
 #include "Base/UUID.h"
 #include "Base/Window.h"
 #include "Utils/Yaml.h"
@@ -21,7 +21,7 @@
 #include "Base/Layer/LayerStack.h"
 
 #include "Base/ImGui/ImGuiLayer.h"
-#include "Base/ImGui/UI.h"
+// #include "Base/ImGui/UI.h"
 
 #include "Base/Event/ApplicationEvent.h"
 #include "Base/Event/SceneEvent.h"

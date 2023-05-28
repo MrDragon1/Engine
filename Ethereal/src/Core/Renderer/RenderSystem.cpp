@@ -38,6 +38,8 @@ void RenderSystem::Init() {
     mBloomRenderPass->Init(mWidth, mHeight);
     mCSMRenderPass = Ref<CSMRenderPass>::Create();
     mCSMRenderPass->Init(mWidth, mHeight);
+    mMaterialPreviewRenderPass = Ref<MaterialPreviewRenderPass>::Create();
+    mMaterialPreviewRenderPass->Init(mWidth, mHeight);
 
     // Must after mEnvironmentMapRenderPass Init
     mBuildinData->Environment = AssetManager::GetAsset<Environment>("skyboxs/Newport_Loft_Ref.hdr");
@@ -106,6 +108,13 @@ uint64_t RenderSystem::GetSkyboxImage() {
 
 int RenderSystem::GetMousePicking(int x, int y) {
     return mMainCameraRenderPass->GetMousePicking(x, y);
+}
+
+uint64_t RenderSystem::DrawMaterialPreview(MaterialCorePtr mat, uint32_t width, uint32_t height) {
+    mMaterialPreviewRenderPass->OnResize(width, height);
+    mMaterialPreviewRenderPass->SetMaterial(mat);
+    mMaterialPreviewRenderPass->Draw();
+    return GlobalContext::GetDriverApi()->GetTextueID(mMaterialPreviewRenderPass->GetMainImage());
 }
 
 void RenderSystem::SubmitStaticMesh(Ref<StaticMesh> staticMesh, Ref<MaterialTable> materialTable,

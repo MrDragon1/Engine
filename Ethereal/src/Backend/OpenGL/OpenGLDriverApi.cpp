@@ -160,6 +160,61 @@ Ref<Program> OpenGLDriverApi::CreateProgram(std::string_view name, ShaderSource 
     return p;
 }
 
+Ref<Program> OpenGLDriverApi::CreateProgram(std::string_view name, ShaderSourceString source) {
+    Ref<GLProgram> p = Ref<GLProgram>::Create(name);
+    p->gl.id = glCreateProgram();
+
+    std::vector<GLenum> glShaderIDs;
+    for (auto& kv : source) {
+        GLenum glShaderType = GLUtils::ResolveShaderType(kv.first);
+
+        const char* sourceCode = kv.second.c_str();
+
+        GLuint shader = glCreateShader(glShaderType);
+
+        glShaderSource(shader, 1, &sourceCode, nullptr);
+        glCompileShader(shader);
+
+        GLint isCompiled = 0;
+        glGetShaderiv(shader, GL_COMPILE_STATUS, &isCompiled);
+        if (isCompiled == GL_FALSE) {
+            glDeleteShader(shader);
+            ET_CORE_ASSERT(false, "Shader compilation failure!")
+            break;
+        }
+
+        glAttachShader(p->gl.id, shader);
+        glShaderIDs.push_back(shader);
+    }
+
+    // Link our program
+    glLinkProgram(p->gl.id);
+
+    // Note the different functions here: glGetProgram* instead of glGetShader*.
+    GLint isLinked = 0;
+    glGetProgramiv(p->gl.id, GL_LINK_STATUS, (int*)&isLinked);
+    if (isLinked == GL_FALSE) {
+        GLint maxLength = 0;
+        glGetProgramiv(p->gl.id, GL_INFO_LOG_LENGTH, &maxLength);
+
+        // The maxLength includes the NULL character
+        std::vector<GLchar> infoLog(maxLength);
+        glGetProgramInfoLog(p->gl.id, maxLength, &maxLength, &infoLog[0]);
+
+        // We don't need the program anymore.
+        glDeleteProgram(p->gl.id);
+
+        for (auto id : glShaderIDs) glDeleteShader(id);
+
+        ET_CORE_ERROR("{0}", infoLog.data());
+        ET_CORE_ASSERT(false, "OpenGLShader link failure!")
+    }
+
+    for (auto id : glShaderIDs) glDetachShader(p->gl.id, id);
+
+    return p;
+}
+
 Ref<RenderTarget> OpenGLDriverApi::CreateRenderTarget(TargetBufferFlags targets, uint32_t width,
                                                       uint32_t height, MRT color,
                                                       TargetBufferInfo depth,

@@ -1,5 +1,6 @@
 #pragma once
 #include "Core/Material/ShaderGenerator/ShaderStage.h"
+#include "Backend/Driver.h"
 namespace Ethereal {
 using ShaderGeneratorPtr = Ref<class ShaderGenerator>;
 using ShaderPtr = Ref<class Shader>;
@@ -11,11 +12,16 @@ class Shader : public RefCounted {
 
     ShaderStagePtr GetStage(const string& name);
 
+    void Compile();
+
+    ProgramHandle GetProgram() { return mProgram; }
+
    protected:
     string mName;
     ShaderGraphPtr mGraph;
     std::unordered_map<string, ShaderStagePtr> mStages;
 
+    ProgramHandle mProgram;
     friend class ShaderGenerator;
 };
 

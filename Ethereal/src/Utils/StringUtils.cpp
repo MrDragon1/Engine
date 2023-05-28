@@ -186,6 +186,7 @@ std::string ReadFileAndSkipBOM(const std::filesystem::path& filepath) {
         // result[0] = '\t';
     }
     in.close();
+    result.pop_back();
     if (result.empty()) ET_CORE_WARN("Unable to load file {0}!", filepath.string());
     return result;
 }
