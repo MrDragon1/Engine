@@ -66,21 +66,40 @@ void MaterialNode::Initalize() {
     mType = NodeType::Blueprint;
 
     if (mSource->Is(MaterialElementType::NODEINSTANCE)) {
-        NodeInstancePtr node = mSource.As<NodeInstance>();
-        for (auto& input : node->GetInputs()) {
-            AddInput(mGraph->GenerateID(), input);
+        NodeInstancePtr instance = mSource.As<NodeInstance>();
+        NodeDefinePtr nodeDefine = instance->GetNodeDefine();
+        for (auto& input : nodeDefine->GetInputs()) {
+            mInputOrder.push_back(input->GetName());
+        }
+        for (auto& output : nodeDefine->GetOutputs()) {
+            mOutputOrder.push_back(output->GetName());
         }
 
-        for (auto& output : node->GetOutputs()) {
-            AddOutput(mGraph->GenerateID(), output);
+        for (auto& name : mInputOrder) {
+            NodeInputPtr input = instance->GetInput(name);
+            if (input)
+                AddInput(mGraph->GenerateID(), input);
+            else
+                AddInput(mGraph->GenerateID(), nodeDefine->GetInput(name));
+        }
+
+        for (auto& name : mOutputOrder) {
+            NodeOutputPtr output = instance->GetOutput(name);
+            if (output)
+                AddOutput(mGraph->GenerateID(), output);
+            else
+                AddOutput(mGraph->GenerateID(), nodeDefine->GetOutput(name));
         }
     } else if (mSource->Is(MaterialElementType::NODEGRAPH)) {
-        NodeGraphPtr node = mSource.As<NodeGraph>();
-        for (auto& input : node->GetInputs()) {
+        NodeGraphPtr nodeGraph = mSource.As<NodeGraph>();
+        for (auto& input : nodeGraph->GetInputs()) {
             AddInput(mGraph->GenerateID(), input);
+            mInputOrder.push_back(input->GetName());
         }
-        for (auto& output : node->GetOutputs()) {
+
+        for (auto& output : nodeGraph->GetOutputs()) {
             AddOutput(mGraph->GenerateID(), output);
+            mOutputOrder.push_back(output->GetName());
         }
     } else if (mSource->Is(MaterialElementType::OUTPUT)) {
         InputSocketPtr input = mSource.As<InputSocket>();

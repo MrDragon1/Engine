@@ -53,6 +53,9 @@ void AggregationShaderNode::CreateVariables(ShaderNodePtr node, ShaderContextPtr
     auto& uniformBlock = context->GetShader()
                              ->GetStage(Stage::PIXEL)
                              ->GetUniformBlock(ShaderBuildInVariable::PSPUBUNIFORM);
+    for (auto& snode : mGraph->GetSortedNodes()) {
+        snode->GetImpl()->CreateVariables(node, context, shader);
+    }
     for (auto& [name, socket] : mGraph->GetInputSockets()) {
         uniformBlock.Add(socket);
     }

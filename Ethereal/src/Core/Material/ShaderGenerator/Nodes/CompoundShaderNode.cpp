@@ -94,6 +94,9 @@ void CompoundShaderNode::CreateVariables(ShaderNodePtr node, ShaderContextPtr co
     auto& uniformBlock = context->GetShader()
                              ->GetStage(Stage::PIXEL)
                              ->GetUniformBlock(ShaderBuildInVariable::PSPUBUNIFORM);
+    for (auto& snode : mGraph->GetSortedNodes()) {
+        snode->GetImpl()->CreateVariables(node, context, shader);
+    }
     for (auto& name : node->GetInputOrder()) {
         auto input = node->GetInput(name);
         if (!input->GetConnector()) {

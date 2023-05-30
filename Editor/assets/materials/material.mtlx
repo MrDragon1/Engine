@@ -1,6 +1,16 @@
 <?xml version="1.0"?>
 <materialx version="1.38" colorspace="lin_rec709">
-
+ <!-- 
+  + The root document and impl.nodegraph should not have any input\output port 
+  + The node instances in impl.nodegraph should fully connected (no override input port) ===> 
+  + Document: 
+    + Most elements are have same attribute with this file except for nodeinstance. 
+    Nodeinstance will copy the outputs from node define.
+    + If the input port has connector&port attribute, it will connected.
+  + ShaderGraph:
+    + Copy the graph from Document.
+    + For the ShaderNode from NodeInstance, fill the missing input from NodeDefine.
+  -->
   <nodedef name="ND_fractal3d_float3" nodedef="fractal3d" nodegroup="procedural3d">
     <input name="amplitude" type="float3" value="1.0, 1.0, 1.0" />
     <input name="octaves" type="integer" value="3" />
@@ -11,9 +21,6 @@
   </nodedef>
   <implementation name="IM_fractal3d_float3_genglsl" nodedef="ND_fractal3d_float3" file="assets/materials/lib/glsl/mx_fractal3d_float3.glsl" function="mx_fractal3d_float3" target="genglsl" />
       
-      
-      
-  <input name="param_ambient" type="color3" value="0.0, 0.0, 0.0" />
 
   <position name="biposition" type="float3"/>
   <normal name="binormal" type="float3"/>
@@ -77,7 +84,7 @@
   </nodegraph>
 
   <standard_surface name="SR_marble1" type="surfaceshader">
-    <input name="ambient" type="color3" connector="param_ambient"/>
+    <input name="ambient" type="color3" value="0.0, 0.0, 0.0"/>
     <input name="normal" type="float3"  connector="binormal" output="out1"/>
   </standard_surface>
   <surfacematerial name="Marble_3D" type="material">

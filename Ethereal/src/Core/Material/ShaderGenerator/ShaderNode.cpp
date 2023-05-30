@@ -51,6 +51,8 @@ void ShaderNode::Initalize(ShaderContextPtr context) {
     } else if (mSource->Is(MaterialElementType::NODEINSTANCE)) {
         NodeInstancePtr instance = mSource.As<NodeInstance>();
         NodeDefinePtr nodeDefine = instance->GetNodeDefine();
+        NodeImplPtr impl = instance->GetNodeImpl();
+
         for (auto& input : nodeDefine->GetInputs()) {
             mInputOrder.push_back(input->GetName());
         }
@@ -58,12 +60,38 @@ void ShaderNode::Initalize(ShaderContextPtr context) {
             mOutputOrder.push_back(output->GetName());
         }
 
-        for (auto& input : instance->GetInputs()) {
-            AddInput(input);
+        for (auto& name : mInputOrder) {
+            NodeInputPtr input = instance->GetInput(name);
+            if (input) {
+                AddInput(input);
+                // Emit unconnected node input (with only value attribute) to uniform variable
+                if (input->GetAttribute(MaterialAttribute::CONNECTOR).empty()) {
+                    ShaderInputSocketPtr shaderInput =
+                        ShaderInputSocketPtr::Create(this, input, true);
+                    mGraph->AddInputSocket(shaderInput);
+                    GetInput(input->GetName())->SetConnector(shaderInput);
+                }
+            } else {
+                input = nodeDefine->GetInput(name);
+                AddInput(input);
+                // Emit override node input to uniform variable
+                if (!impl->IsNodeGraph() &&
+                    input->GetAttribute(MaterialAttribute::CONNECTOR).empty()) {
+                    ShaderInputSocketPtr shaderInput =
+                        ShaderInputSocketPtr::Create(this, input, true);
+                    mGraph->AddInputSocket(shaderInput);
+                    GetInput(input->GetName())->SetConnector(shaderInput);
+                }
+            }
+            
         }
 
-        for (auto& output : instance->GetOutputs()) {
-            AddOutput(output);
+        for (auto& name : mOutputOrder) {
+            NodeOutputPtr output = instance->GetOutput(name);
+            if (output)
+                AddOutput(output);
+            else
+                AddOutput(nodeDefine->GetOutput(name));
         }
 
         mImpl = context->GetShaderGenerator().GetImpl(instance, context);

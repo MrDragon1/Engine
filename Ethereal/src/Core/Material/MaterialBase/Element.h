@@ -31,9 +31,11 @@ class Element : public RefCounted {
     std::vector<NodeInputPtr> GetInputs() {
         return GetChildren<NodeInput>(MaterialElementType::INPUT);
     }
+    NodeInputPtr GetInput(const string& name) { return GetChild(name).As<NodeInput>();}
     std::vector<NodeOutputPtr> GetOutputs() {
         return GetChildren<NodeOutput>(MaterialElementType::OUTPUT);
     }
+    NodeOutputPtr GetOutput(const string& name) { return GetChild(name).As<NodeOutput>(); }
 
     UUID GetID() { return mId; }
     ElementPtr GetParent() { return mParent; }

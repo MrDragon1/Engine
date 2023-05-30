@@ -23,7 +23,7 @@ struct ProjectConfig {
 
     // Not serialized
     std::string ProjectFileName = "Default Project";
-    std::string ProjectDirectory = "E:\\Code\\Engine\\Editor";
+    std::string ProjectDirectory = ".";
 };
 
 class Project : public RefCounted {

@@ -56,6 +56,8 @@ class MaterialNode : public RefCounted {
     unordered_map<PinID, MaterialPinPtr> mOutputs;
     unordered_map<string, PinID> mInputIdMaps;
     unordered_map<string, PinID> mOutputIdMaps;
+    vector<string> mOutputOrder;
+    vector<string> mInputOrder;
 
     NodeType mType;
 
