@@ -8,7 +8,7 @@ parser_header.h
 .vs/
 out/
 .idea/
-./Ethereal/src/Resource/generated
+Ethereal/src/Resource/generated
 *.pdb
 *.bak
 
