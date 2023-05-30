@@ -13,8 +13,7 @@
       
       
       
-  <input name="param_ambient" type="color3" value="1.0, 1.0, 1.0" />
-  <input name="param_lightdir" type="float3" value="1.0, 1.0, 1.0" />
+  <input name="param_ambient" type="color3" value="0.0, 0.0, 0.0" />
 
   <position name="biposition" type="float3"/>
   <normal name="binormal" type="float3"/>
@@ -78,10 +77,8 @@
   </nodegraph>
 
   <standard_surface name="SR_marble1" type="surfaceshader">
-    <input name="base_color" type="color3" connector="NG_marble1" output="out1"/>
     <input name="ambient" type="color3" connector="param_ambient"/>
     <input name="normal" type="float3"  connector="binormal" output="out1"/>
-    <input name="lightdir" type="float3"  connector="param_lightdir"/>
   </standard_surface>
   <surfacematerial name="Marble_3D" type="material">
     <input name="surfaceshader" type="surfaceshader" connector="SR_marble1"  output="out1"/>

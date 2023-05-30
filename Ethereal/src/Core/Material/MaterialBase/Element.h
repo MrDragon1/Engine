@@ -23,6 +23,8 @@ class Element : public RefCounted {
     ElementPtr AddChildOfType(const string& type, const string& name);
     ElementPtr GetChild(UUID id);
     ElementPtr GetChild(const string& name);
+    void RemoveChild(const string& name);
+
     template <typename T = Element>
     std::vector<Ref<T>> GetChildren(string type = EMPTY_STRING);
 
@@ -38,6 +40,7 @@ class Element : public RefCounted {
     ElementPtr GetRoot();
     DocumentPtr GetDocument() { return GetRoot().As<Document>(); }
     const string& GetName() { return mName; }
+    string GetFullName();
     const string& GetType() { return mType; }
 
     bool Is(string type);

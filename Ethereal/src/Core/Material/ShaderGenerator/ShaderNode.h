@@ -18,7 +18,6 @@ class ShaderPortFlag {
    public:
     static const uint32_t UNIFORM = 1u << 0;
     static const uint32_t EMITTED = 1u << 1;
-    static const uint32_t BIND_INPUT = 1u << 2;
 };
 
 class ShaderPort : public RefCounted {

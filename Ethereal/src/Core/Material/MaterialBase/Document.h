@@ -39,6 +39,8 @@ class Document : public Element {
 
     void Validate() override;
 
+    NodeInstancePtr AddNodeInstnce(NodeDefinePtr nodeDef, const string& name);
+
     MaterialGraphPtr GenerateUIGraph();
     MaterialGraphPtr GenerateUIGraphFromNodeGraph(NodeGraphPtr ng);
 
@@ -82,6 +84,8 @@ class NodeGraph : public Element {
 
     InputSocketPtr GetInputSocket(const string& name) { return mInputSockets[name]; }
     OutputSocketPtr GetOutputSocket(const string& name) { return mOutputSockets[name]; }
+
+    NodeInstancePtr AddNodeInstnce(NodeDefinePtr nodeDef, const string& name);
 
    private:
     unordered_map<string, NodeInstancePtr> mNodeInstances;
@@ -153,16 +157,12 @@ class NodeImpl : public Element {
 
 class NodeInput : public Element {
    public:
-    NodeInput(ElementPtr parent, const string& name)
-        : Element(parent, name, MaterialElementType::INPUT){};
+    NodeInput(ElementPtr parent, const string& name, bool socket = false)
+        : Element(parent, name, MaterialElementType::INPUT), mIsSocket(socket){};
 
     ElementPtr GetConnector() { return mConnector; }
     void SetConnector(ElementPtr conn);
-    void Disconnect() {
-        RemoveAttribute(MaterialAttribute::CONNECTOR);
-        RemoveAttribute(MaterialAttribute::PORT);
-        SetConnector(nullptr);
-    }
+    void Disconnect();
 
     string GetTypeAttribute() { return GetAttribute(MaterialAttribute::TYPE); }
 
@@ -171,15 +171,18 @@ class NodeInput : public Element {
     ValueBasePtr GetValue() { return mValue; }
     void SetValue(ValueBasePtr value) { mValue = value; }
 
+    bool IsSocket() { return mIsSocket; }
+
    private:
+    bool mIsSocket = false;
     ElementPtr mConnector;
     ValueBasePtr mValue = nullptr;
 };
 
 class NodeOutput : public Element {
    public:
-    NodeOutput(ElementPtr parent, const string& name)
-        : Element(parent, name, MaterialElementType::OUTPUT){};
+    NodeOutput(ElementPtr parent, const string& name, bool socket = false)
+        : Element(parent, name, MaterialElementType::OUTPUT), mIsSocket(socket){};
 
     std::vector<ElementPtr> GetConnectors();
     void AddConnector(ElementPtr conn);
@@ -194,7 +197,10 @@ class NodeOutput : public Element {
 
     void Validate() override;
 
+    bool IsSocket() { return mIsSocket; }
+
    private:
+    bool mIsSocket = false;
     std::unordered_map<UUID, ElementPtr> mConnectors;
     ValueBasePtr mValue = nullptr;
 };

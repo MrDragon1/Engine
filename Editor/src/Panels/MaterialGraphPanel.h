@@ -17,6 +17,11 @@ class MaterialGraphPanel : public EditorPanel {
     void SetGraph(MaterialGraphPtr graph);
     void PopGraph();
 
+    void AddNode(MaterialNodePtr node);
+    void RemoveNode(NodeID nodeId);
+    void AddLink(LinkID id, PinID src, PinID dst);
+    void RemoveLink(LinkID linkId);
+
    private:
     MaterialCorePtr mMaterial;
     MaterialGraphPtr mCurrentGraph = nullptr;

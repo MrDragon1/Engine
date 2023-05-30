@@ -28,7 +28,8 @@ void ShaderGraph::UpdateLink() {
                 ElementPtr conn = input->GetSource().As<NodeInput>()->GetConnector();
                 if (conn && conn->Is(MaterialElementType::OUTPUT)) {
                     string upNodeName = conn.As<NodeOutput>()->GetParent()->GetName();
-                    if (upNodeName == GetName())  // upstream node connect to input socket
+                    if (conn.As<NodeOutput>()->IsSocket() ||
+                        upNodeName == GetName())  // upstream node connect to input socket
                     {
                         input->SetConnector(GetInputSocket(conn->GetName()));
                     } else {

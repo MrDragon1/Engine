@@ -14,7 +14,8 @@ MaterialPinPtr MaterialNode::AddInput(PinID id, ElementPtr source) {
         ET_CORE_ASSERT(false, "Only input element can add as node's input");
     }
     MaterialPinPtr pin = MaterialPinPtr::Create(id, source, this);
-    mInputs[source->GetName()] = pin;
+    mInputs[id] = pin;
+    mInputIdMaps[source->GetName()] = id;
     return pin;
 }
 
@@ -23,8 +24,41 @@ MaterialPinPtr MaterialNode::AddOutput(PinID id, ElementPtr source) {
         ET_CORE_ASSERT(false, "Only output element can add as node's output");
     }
     MaterialPinPtr pin = MaterialPinPtr::Create(id, source, this);
-    mOutputs[source->GetName()] = pin;
+    mOutputs[id] = pin;
+    mOutputIdMaps[source->GetName()] = id;
     return pin;
+}
+
+MaterialPinPtr MaterialNode::GetInput(PinID id) {
+    auto it = mInputs.find(id);
+    if (it != mInputs.end()) {
+        return it->second;
+    }
+    return nullptr;
+}
+
+MaterialPinPtr MaterialNode::GetInput(const string& name) {
+    auto it = mInputIdMaps.find(name);
+    if (it != mInputIdMaps.end()) {
+        return GetInput(it->second);
+    }
+    return nullptr;
+}
+
+MaterialPinPtr MaterialNode::GetOutput(PinID id) {
+    auto it = mOutputs.find(id);
+    if (it != mOutputs.end()) {
+        return it->second;
+    }
+    return nullptr;
+}
+
+MaterialPinPtr MaterialNode::GetOutput(const string& name) {
+    auto it = mOutputIdMaps.find(name);
+    if (it != mOutputIdMaps.end()) {
+        return GetOutput(it->second);
+    }
+    return nullptr;
 }
 
 void MaterialNode::Initalize() {
@@ -97,6 +131,13 @@ MaterialLink::MaterialLink(LinkID id, PinID src, PinID dst, NodeInputPtr sinput,
                            NodeOutputPtr soutput)
     : mID(id), mSrcID(src), mDstID(dst), mSourceInput(sinput), mSourceOutput(soutput) {
     mSourceInput->SetConnector(mSourceOutput);
+    if (!mSourceOutput->IsSocket()) {
+        mSourceInput->SetAttribute(MaterialAttribute::CONNECTOR,
+                                   mSourceOutput->GetParent()->GetName());
+        mSourceInput->SetAttribute(MaterialAttribute::PORT, mSourceOutput->GetName());
+    } else {
+        mSourceInput->SetAttribute(MaterialAttribute::CONNECTOR, mSourceOutput->GetName());
+    }
 }
 
 }  // namespace Ethereal

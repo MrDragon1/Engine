@@ -194,8 +194,8 @@ void MaterialGraphPanel::OnImGuiRender(bool& isOpen) {
                         } else {
                             showLabel("+ Create Link", ImColor(32, 45, 32, 180));
                             if (ed::AcceptNewItem(ImColor(128, 255, 128), 4.0f)) {
-                                mCurrentGraph->AddLink(mCurrentGraph->GenerateID(),
-                                                       (PinID)startPinId, (PinID)endPinId);
+                                AddLink(mCurrentGraph->GenerateID(), (PinID)startPinId,
+                                        (PinID)endPinId);
                                 // s_Links.back().Color = GetIconColor(startPin->Type);
                             }
                         }
@@ -225,14 +225,14 @@ void MaterialGraphPanel::OnImGuiRender(bool& isOpen) {
                 ed::LinkId linkId = 0;
                 while (ed::QueryDeletedLink(&linkId)) {
                     if (ed::AcceptDeletedItem()) {
-                        mCurrentGraph->RemoveLink((LinkID)linkId);
+                        RemoveLink((LinkID)linkId);
                     }
                 }
 
                 ed::NodeId nodeId = 0;
                 while (ed::QueryDeletedNode(&nodeId)) {
                     if (ed::AcceptDeletedItem()) {
-                        mCurrentGraph->RemoveNode((NodeID)nodeId);
+                        RemoveNode((NodeID)nodeId);
                     }
                 }
             }
@@ -287,7 +287,7 @@ void MaterialGraphPanel::OnImGuiRender(bool& isOpen) {
         MaterialNodePtr node = CreateNodeMenu();
 
         if (node) {
-            mCurrentGraph->AddNode(node);
+            AddNode(node);
             createNewNode = false;
             node->mPosition = Vector2(newNodePosition.x, newNodePosition.y);
             ed::SetNodePosition(node->mID, newNodePosition);
@@ -299,8 +299,7 @@ void MaterialGraphPanel::OnImGuiRender(bool& isOpen) {
                     if (startPin->mType == pin->mType) {  // CanCreateLink(startPin, &pin)
                         auto endPin = pin;
                         if (startPin->mKind == PinKind::Input) std::swap(startPin, endPin);
-                        mCurrentGraph->AddLink(mCurrentGraph->GenerateID(), startPin->mID,
-                                               endPin->mID);
+                        AddLink(mCurrentGraph->GenerateID(), startPin->mID, endPin->mID);
                         break;
                     }
                 }
@@ -337,6 +336,35 @@ void MaterialGraphPanel::PopGraph() {
     mGraphStack.pop();
     mAutoLayout = true;
 }
+
+void MaterialGraphPanel::AddNode(MaterialNodePtr node) { mCurrentGraph->AddNode(node); }
+
+void MaterialGraphPanel::RemoveNode(NodeID nodeId) {
+    auto node = mCurrentGraph->GetNode(nodeId);
+
+    if (node->mSource->Is(MaterialElementType::INPUT)) {
+        node->mSource.As<NodeInput>()->Disconnect();
+    } else if (node->mSource->Is(MaterialElementType::OUTPUT)) {
+        node->mSource.As<NodeOutput>()->Disconnect();
+    } else if (!node->mSource->Is(MaterialElementType::DOCUMENT)) {
+        for (auto& input : node->mSource->GetInputs()) {
+            input->Disconnect();
+        }
+        for (auto& output : node->mSource->GetOutputs()) {
+            output->Disconnect();
+        }
+    }
+    auto doc = mMaterial->GetDocument();
+    doc->RemoveChild(node->mSource->GetName());
+
+    mCurrentGraph->RemoveNode((NodeID)nodeId);
+}
+
+void MaterialGraphPanel::AddLink(LinkID id, PinID src, PinID dst) {
+    mCurrentGraph->AddLink(id, src, dst);
+}
+
+void MaterialGraphPanel::RemoveLink(LinkID linkId) { mCurrentGraph->RemoveLink((LinkID)linkId); }
 
 void MaterialGraphPanel::ShowLeftPanel(float width) {
     static float previewPanelHeight = 200.0f;
@@ -460,11 +488,17 @@ MaterialNodePtr MaterialGraphPanel::CreateNodeMenu() {
             for (auto& nodeDef : trunk.second) {
                 std::string name = nodeDef->GetName();
                 if (ImGui::MenuItem(name.substr(3, name.length()).c_str())) {
-                    NodeInstancePtr node = mCurrentGraph->GetSource()->AddChildOfType(
-                        nodeDef->GetNodeDefineString(), name.substr(3, name.length()));
-                    node->SetNodeDefine(nodeDef);
-                    node->Validate();
-                    nodeUI = MaterialNodePtr::Create(node, mCurrentGraph);
+                    if (mCurrentGraph->GetSource()->Is(MaterialElementType::DOCUMENT)) {
+                        DocumentPtr doc = mCurrentGraph->GetSource().As<Document>();
+                        NodeInstancePtr node =
+                            doc->AddNodeInstnce(nodeDef, name.substr(3, name.length()));
+                        nodeUI = MaterialNodePtr::Create(node, mCurrentGraph);
+                    } else if (mCurrentGraph->GetSource()->Is(MaterialElementType::NODEGRAPH)) {
+                        NodeGraphPtr graph = mCurrentGraph->GetSource().As<NodeGraph>();
+                        NodeInstancePtr node =
+                            graph->AddNodeInstnce(nodeDef, name.substr(3, name.length()));
+                        nodeUI = MaterialNodePtr::Create(node, mCurrentGraph);
+                    }
                 }
                 ImGui::Separator();
             }

@@ -39,10 +39,12 @@ class MaterialNode : public RefCounted {
     MaterialPinPtr AddInput(PinID id, ElementPtr source);
     MaterialPinPtr AddOutput(PinID id, ElementPtr source);
 
-    unordered_map<string, MaterialPinPtr> GetInputs() { return mInputs; }
-    unordered_map<string, MaterialPinPtr> GetOutputs() { return mOutputs; }
-    MaterialPinPtr GetInput(const string& id) { return mInputs[id]; }
-    MaterialPinPtr GetOutput(const string& id) { return mOutputs[id]; }
+    unordered_map<PinID, MaterialPinPtr> GetInputs() { return mInputs; }
+    unordered_map<PinID, MaterialPinPtr> GetOutputs() { return mOutputs; }
+    MaterialPinPtr GetInput(PinID id);
+    MaterialPinPtr GetOutput(PinID id);
+    MaterialPinPtr GetInput(const string& name);
+    MaterialPinPtr GetOutput(const string& name);
 
    private:
     void Initalize();
@@ -50,8 +52,11 @@ class MaterialNode : public RefCounted {
    public:
     NodeID mID;
     std::string mName;
-    unordered_map<string, MaterialPinPtr> mInputs;
-    unordered_map<string, MaterialPinPtr> mOutputs;
+    unordered_map<PinID, MaterialPinPtr> mInputs;
+    unordered_map<PinID, MaterialPinPtr> mOutputs;
+    unordered_map<string, PinID> mInputIdMaps;
+    unordered_map<string, PinID> mOutputIdMaps;
+
     NodeType mType;
 
     ElementPtr mSource;

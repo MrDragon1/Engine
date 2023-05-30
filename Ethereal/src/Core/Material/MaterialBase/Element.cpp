@@ -78,10 +78,25 @@ ElementPtr Element::GetChild(const string& name) {
     return nullptr;
 }
 
+void Element::RemoveChild(const string& name) {
+    for (auto it = mChildren.begin(); it != mChildren.end(); it++) {
+        if ((*it)->GetName() == name) mChildren.erase(it);
+    }
+}
+
 ElementPtr Element::GetRoot() {
     ElementPtr elem = this;
     while (elem->GetParent()) elem = elem->GetParent();
     return elem;
+}
+
+string Element::GetFullName() {
+    string res = mName;
+    if (mParent) {
+        res = mParent->GetName() + "_" + res;
+        // if (mParent->GetGraph()) res = mParent->GetGraph()->GetName() + "_" + res;
+    }
+    return res;
 }
 
 bool Element::Is(string type) {

@@ -14,16 +14,12 @@ void MaterialGraph::AddNode(MaterialNodePtr node) {
 void MaterialGraph::RemoveNode(NodeID id) {
     if (mNodes.find(id) != mNodes.end()) {
         auto& node = mNodes[id];
-        if (node->mSource->Is(MaterialElementType::INPUT)) {
-            node->mSource.As<NodeInput>()->Disconnect();
-        } else if (node->mSource->Is(MaterialElementType::OUTPUT)) {
-            node->mSource.As<NodeOutput>()->Disconnect();
-        } else if (!node->mSource->Is(MaterialElementType::DOCUMENT)) {
-            for (auto& input : node->mSource->GetInputs()) {
-                input->Disconnect();
+        for (auto& [linkid, link] : GetLinks()) {
+            if (node->GetInput(link->mDstID)) {
+                RemoveLink(linkid);
             }
-            for (auto& output : node->mSource->GetOutputs()) {
-                output->Disconnect();
+            if (node->GetOutput(link->mSrcID)) {
+                RemoveLink(linkid);
             }
         }
 
@@ -48,6 +44,7 @@ void MaterialGraph::RemoveLink(LinkID id) {
     if (mLinks.find(id) != mLinks.end()) {
         auto& link = mLinks[id];
         link->mSourceInput.As<NodeInput>()->Disconnect();
+
         // we needn't disconnect output, since it's already disconnected.
         mLinks.erase(id);
     } else

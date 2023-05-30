@@ -138,6 +138,16 @@ void Document::Validate() {
     }
 }
 
+NodeInstancePtr Document::AddNodeInstnce(NodeDefinePtr nodeDef, const string& name) {
+    NodeInstancePtr instance = AddChildOfType(nodeDef->GetNodeDefineString(), name);
+
+    mNodeInstances[name] = instance;
+
+    instance->SetNodeDefine(nodeDef);
+    instance->Validate();
+    return instance;
+}
+
 MaterialGraphPtr Document::GenerateUIGraph() {
     MaterialGraphPtr uiGraph = MaterialGraphPtr::Create(GetName(), this);
 
@@ -305,9 +315,23 @@ ShaderGraphPtr Document::GenerateShaderGraphFromNodeGraph(NodeGraphPtr ng,
 void NodeInput::SetConnector(ElementPtr conn) {
     if (mConnector && conn != mConnector) {
         mConnector.As<NodeOutput>()->RemoveConnector(this);
-        if (conn) conn.As<NodeOutput>()->AddConnector(this);
     }
     mConnector = conn;
+    if (conn) conn.As<NodeOutput>()->AddConnector(this);
+}
+
+void NodeInput::Disconnect() {
+    RemoveAttribute(MaterialAttribute::CONNECTOR);
+    RemoveAttribute(MaterialAttribute::PORT);
+    auto parent = GetParent();
+    if (parent && parent->Is(MaterialElementType::NODEINSTANCE)) {
+        SetValue(parent.As<NodeInstance>()
+                     ->GetNodeDefine()
+                     ->GetChild(GetName())
+                     .As<NodeInput>()
+                     ->GetValue());
+    }
+    SetConnector(nullptr);
 }
 
 void NodeInput::Validate() {
@@ -374,12 +398,12 @@ void NodeGraph::Validate() {
         mNodeInstances[ni->GetName()] = ni;
     }
     for (auto& ni : GetInputs()) {
-        auto socket = InputSocketPtr::Create(ni->GetParent(), ni->GetName());
+        auto socket = InputSocketPtr::Create(ni->GetParent(), ni->GetName(), true);
         socket->CopyContentFrom(ni);
         mInputSockets[ni->GetName()] = socket;
     }
     for (auto& ni : GetOutputs()) {
-        auto socket = OutputSocketPtr::Create(ni->GetParent(), ni->GetName());
+        auto socket = OutputSocketPtr::Create(ni->GetParent(), ni->GetName(), true);
         socket->CopyContentFrom(ni);
         mOutputSockets[ni->GetName()] = socket;
     }
@@ -406,6 +430,10 @@ void NodeGraph::Validate() {
         ET_CORE_ASSERT(nd, "Instance {0} has no Node Define.", ni->GetName());
         ni->SetNodeDefine(nd);
         ni->Validate();
+    }
+
+    for (auto node : GetChildren()) {
+        node->Validate();
     }
 
     /// Connect all inputs with CONNECTOR attributes
@@ -445,10 +473,16 @@ void NodeGraph::Validate() {
         }
         socket->SetConnector(output);
     }
+}
 
-    for (auto node : GetChildren()) {
-        node->Validate();
-    }
+NodeInstancePtr NodeGraph::AddNodeInstnce(NodeDefinePtr nodeDef, const string& name) {
+    NodeInstancePtr instance = AddChildOfType(nodeDef->GetNodeDefineString(), name);
+
+    mNodeInstances[name] = instance;
+
+    instance->SetNodeDefine(nodeDef);
+    instance->Validate();
+    return instance;
 }
 
 NodeImplPtr NodeInstance::GetNodeImpl() {
