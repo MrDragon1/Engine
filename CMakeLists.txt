@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.23)
-set(CMAKE_TOOLCHAIN_FILE "D:/vcpkg/scripts/buildsystems/vcpkg.cmake")
+file(TO_CMAKE_PATH $ENV{VCPKG_ROOT} VCPKG_DIR)
+set(CMAKE_TOOLCHAIN_FILE "${VCPKG_DIR}/scripts/buildsystems/vcpkg.cmake")
 
 project(Ethereal)
 set(CMAKE_CXX_STANDARD 20)
