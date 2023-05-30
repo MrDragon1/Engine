@@ -40,6 +40,7 @@ class Document : public Element {
     void Validate() override;
 
     NodeInstancePtr AddNodeInstnce(NodeDefinePtr nodeDef, const string& name);
+    void RemoveNodeInstance(const string& name);
 
     MaterialGraphPtr GenerateUIGraph();
     MaterialGraphPtr GenerateUIGraphFromNodeGraph(NodeGraphPtr ng);
@@ -86,6 +87,7 @@ class NodeGraph : public Element {
     OutputSocketPtr GetOutputSocket(const string& name) { return mOutputSockets[name]; }
 
     NodeInstancePtr AddNodeInstnce(NodeDefinePtr nodeDef, const string& name);
+    void RemoveNodeInstance(const string& name);
 
    private:
     unordered_map<string, NodeInstancePtr> mNodeInstances;

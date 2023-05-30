@@ -84,6 +84,7 @@
   </nodegraph>
 
   <standard_surface name="SR_marble1" type="surfaceshader">
+    <input name="base_color" type="color3"  connector="NG_marble1" output="out1"/>
     <input name="ambient" type="color3" value="0.0, 0.0, 0.0"/>
     <input name="normal" type="float3"  connector="binormal" output="out1"/>
   </standard_surface>

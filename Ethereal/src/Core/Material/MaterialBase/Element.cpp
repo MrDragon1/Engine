@@ -79,8 +79,11 @@ ElementPtr Element::GetChild(const string& name) {
 }
 
 void Element::RemoveChild(const string& name) {
-    for (auto it = mChildren.begin(); it != mChildren.end(); it++) {
-        if ((*it)->GetName() == name) mChildren.erase(it);
+    for (auto it = mChildren.begin(); it != mChildren.end();) {
+        if ((*it)->GetName() == name)
+            it = mChildren.erase(it);
+        else
+            ++it;
     }
 }
 

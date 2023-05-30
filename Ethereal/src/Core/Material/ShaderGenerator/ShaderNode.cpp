@@ -51,7 +51,6 @@ void ShaderNode::Initalize(ShaderContextPtr context) {
     } else if (mSource->Is(MaterialElementType::NODEINSTANCE)) {
         NodeInstancePtr instance = mSource.As<NodeInstance>();
         NodeDefinePtr nodeDefine = instance->GetNodeDefine();
-        NodeImplPtr impl = instance->GetNodeImpl();
 
         for (auto& input : nodeDefine->GetInputs()) {
             mInputOrder.push_back(input->GetName());
@@ -75,7 +74,7 @@ void ShaderNode::Initalize(ShaderContextPtr context) {
                 input = nodeDefine->GetInput(name);
                 AddInput(input);
                 // Emit override node input to uniform variable
-                if (!impl->IsNodeGraph() &&
+                if (!mGraph->IsImpl() &&
                     input->GetAttribute(MaterialAttribute::CONNECTOR).empty()) {
                     ShaderInputSocketPtr shaderInput =
                         ShaderInputSocketPtr::Create(this, input, true);
@@ -83,7 +82,6 @@ void ShaderNode::Initalize(ShaderContextPtr context) {
                     GetInput(input->GetName())->SetConnector(shaderInput);
                 }
             }
-            
         }
 
         for (auto& name : mOutputOrder) {

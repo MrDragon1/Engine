@@ -37,7 +37,6 @@ void Document::Validate() {
     for (auto& ni : GetChildren<NodeInstance>(MaterialElementType::NODEINSTANCE)) {
         mNodeInstances[ni->GetName()] = ni;
     }
-    
 
     /// Set node define in node instance
     for (auto& [_, ni] : GetNodeInstances()) {
@@ -88,9 +87,9 @@ void Document::Validate() {
         for (auto& input : node->GetInputs()) {
             string conn = input->GetAttribute(MaterialAttribute::CONNECTOR);
             string port = input->GetAttribute(MaterialAttribute::PORT);
-            if (conn.empty()){
+            if (conn.empty()) {
                 continue;
-            } else if(!port.empty()){
+            } else if (!port.empty()) {
                 ElementPtr child = GetChild(conn);
                 auto output = child->GetChild(port);
                 input->SetConnector(output);
@@ -126,13 +125,30 @@ void Document::Validate() {
 }
 
 NodeInstancePtr Document::AddNodeInstnce(NodeDefinePtr nodeDef, const string& name) {
-    NodeInstancePtr instance = AddChildOfType(nodeDef->GetNodeDefineString(), name);
+    string validName = name;
+    auto it = mNodeInstances.find(validName);
+    while (it != mNodeInstances.end()) {
+        validName += "1";
+        it = mNodeInstances.find(validName);
+    }
+
+    NodeInstancePtr instance = AddChildOfType(nodeDef->GetNodeDefineString(), validName);
 
     mNodeInstances[name] = instance;
 
     instance->SetNodeDefine(nodeDef);
     instance->Validate();
     return instance;
+}
+
+void Document::RemoveNodeInstance(const string& name) {
+    auto it = mNodeInstances.find(name);
+    if (it == mNodeInstances.end()) {
+        ET_CORE_WARN("Node Instance {0} not exists!", name);
+        return;
+    }
+    RemoveChild(name);
+    mNodeInstances.erase(it);
 }
 
 MaterialGraphPtr Document::GenerateUIGraph() {
@@ -470,13 +486,30 @@ void NodeGraph::Validate() {
 }
 
 NodeInstancePtr NodeGraph::AddNodeInstnce(NodeDefinePtr nodeDef, const string& name) {
-    NodeInstancePtr instance = AddChildOfType(nodeDef->GetNodeDefineString(), name);
+    string validName = name;
+    auto it = mNodeInstances.find(validName);
+    while (it != mNodeInstances.end()) {
+        validName += "1";
+        it = mNodeInstances.find(validName);
+    }
 
-    mNodeInstances[name] = instance;
+    NodeInstancePtr instance = AddChildOfType(nodeDef->GetNodeDefineString(), validName);
+
+    mNodeInstances[validName] = instance;
 
     instance->SetNodeDefine(nodeDef);
     instance->Validate();
     return instance;
+}
+
+void NodeGraph::RemoveNodeInstance(const string& name) {
+    auto it = mNodeInstances.find(name);
+    if (it == mNodeInstances.end()) {
+        ET_CORE_WARN("Node Instance {0} not exists!", name);
+        return;
+    }
+    RemoveChild(name);
+    mNodeInstances.erase(it);
 }
 
 NodeImplPtr NodeInstance::GetNodeImpl() {

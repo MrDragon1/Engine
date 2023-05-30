@@ -337,7 +337,10 @@ void MaterialGraphPanel::PopGraph() {
     mAutoLayout = true;
 }
 
-void MaterialGraphPanel::AddNode(MaterialNodePtr node) { mCurrentGraph->AddNode(node); }
+void MaterialGraphPanel::AddNode(MaterialNodePtr node) {
+    // More operation refer to CreateNodeMenu()
+    mCurrentGraph->AddNode(node);
+}
 
 void MaterialGraphPanel::RemoveNode(NodeID nodeId) {
     auto node = mCurrentGraph->GetNode(nodeId);
@@ -355,7 +358,7 @@ void MaterialGraphPanel::RemoveNode(NodeID nodeId) {
         }
     }
     auto doc = mMaterial->GetDocument();
-    doc->RemoveChild(node->mSource->GetName());
+    doc->RemoveNodeInstance(node->mSource->GetName());
 
     mCurrentGraph->RemoveNode((NodeID)nodeId);
 }
