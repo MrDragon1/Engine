@@ -15,8 +15,9 @@ void NormalShaderNode::EmitFunctionCall(ShaderNodePtr node, ShaderContextPtr con
         auto normal = vertexData[ShaderBuildInVariable::NORMAL_WORLD];
         if (!normal->IsEmitted()) {
             normal->SetEmitted();
-            stage->EmitLine(normal->GetVariable(context->GetScope()) + " = normalize(" +
-                            ShaderBuildInVariable::IN_NORMAL + ");");
+            stage->EmitLine(normal->GetVariable(context->GetScope()) + " = normalize((" +
+                            ShaderBuildInVariable::MODEL_INVERSE_TRANSPOSE_MATRIX + " * vec4(" +
+                            ShaderBuildInVariable::IN_NORMAL + ", 0.0)).xyz);");
         }
     }
     if (stage->GetName() == Stage::PIXEL) {
@@ -40,6 +41,10 @@ void NormalShaderNode::CreateVariables(ShaderNodePtr node, ShaderContextPtr cont
     auto& shaderGen = context->GetShaderGenerator();
     shaderGen.AddConnectorVariable(ShaderBuildInVariable::VERTEXDATA, "float3",
                                    ShaderBuildInVariable::NORMAL_WORLD, vs, ps);
+
+    VariableBlockPtr vsPublicUniforms = vs->CreateUniformBlock(ShaderBuildInVariable::VSPUBUNIFORM);
+    vsPublicUniforms->Add(nullptr, "matrix4",
+                          ShaderBuildInVariable::MODEL_INVERSE_TRANSPOSE_MATRIX);
 }
 
 }  // namespace Ethereal

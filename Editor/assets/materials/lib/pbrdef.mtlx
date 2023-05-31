@@ -47,4 +47,24 @@
     <output name="out1" type="surfaceshader" connector="shader_constructor" output="out1"/>
   </nodegraph>
 
+  <nodedef name="ND_disney_brdf_2012_surface" nodedef="disney_brdf_2012" nodegroup="pbr" >
+      <input name="L" type="float3" value="0.0, 1.0, 0.0" />
+      <input name="V" type="float3" value="0.0, 0.0, 1.0" />
+      <input name="N" type="float3" value="1.0, 0.0, 0.0" />
+      <input name="X" type="float3" value="0.0, 1.0, 0.0" />
+      <input name="Y" type="float3" value="0.0, 0.0, 1.0" />
+      <input name="baseColor" type="color3" value="0.16, 0.16, 0.16" />
+      <input name="metallic" type="float" value="0" />
+      <input name="subsurface" type="float" value="0" />
+      <input name="specular" type="float" value="0.5" />
+      <input name="roughness" type="float" value="0.5" />
+      <input name="specularTint" type="float" value="0" />
+      <input name="anisotropic" type="float" value="0" />
+      <input name="sheen" type="float" value="0" />
+      <input name="sheenTint" type="float" value="0.5" />
+      <input name="clearcoat" type="float" value="0" />
+      <input name="clearcoatGloss" type="float" value="1" />
+      <output name="out1" type="surfaceshader" />
+  </nodedef>
+  <implementation name="IM_disney_brdf_2012_surface" nodedef="ND_disney_brdf_2012_surface" file="assets/materials/lib/glsl/disney_brdf_2012.glsl"  function="disney_brdf_2012"/>
 </materialx>

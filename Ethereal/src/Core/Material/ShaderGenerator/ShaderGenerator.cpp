@@ -8,6 +8,8 @@
 #include "Core/Material/ShaderGenerator/Nodes/CompoundShaderNode.h"
 #include "Core/Material/ShaderGenerator/Nodes/PositionShaderNode.h"
 #include "Core/Material/ShaderGenerator/Nodes/NormalShaderNode.h"
+#include "Core/Material/ShaderGenerator/Nodes/TangentShaderNode.h"
+#include "Core/Material/ShaderGenerator/Nodes/BitangentShaderNode.h"
 namespace Ethereal {
 ShaderStagePtr Shader::CreateStage(const string& name) {
     auto it = mStages.find(name);
@@ -37,6 +39,8 @@ void Shader::Compile() {
 ShaderGenerator::ShaderGenerator() {
     RegisterImplementation("IM_position_float3", PositionShaderNode::Create);
     RegisterImplementation("IM_normal_float3", NormalShaderNode::Create);
+    RegisterImplementation("IM_tangent_float3", TangentShaderNode::Create);
+    RegisterImplementation("IM_bitangent_float3", BitangentShaderNode::Create);
 }
 
 void ShaderGenerator::CreateVariables(ShaderGraphPtr graph, ShaderContextPtr context,
@@ -204,15 +208,23 @@ void ShaderGenerator::EmitOutputs(ShaderContextPtr context, ShaderStagePtr stage
 
 void ShaderGenerator::EmitInputs(ShaderContextPtr context, ShaderStagePtr stage) {
     if (stage->GetName() == Stage::VERTEX) {
-        for (auto& it : stage->GetInputBlocks()) {
-            VariableBlock& inputs = *it.second;
-            size_t location = 0;
-            for (auto input : inputs.GetVariables()) {
-                stage->EmitVariableDeclaration(
-                    input, context, "layout(location = " + std::to_string(location++) + " ) in",
-                    false);
-            }
-        }
+        // for (auto& it : stage->GetInputBlocks()) {
+        //     VariableBlock& inputs = *it.second;
+        //     size_t location = 0;
+        //     for (auto input : inputs.GetVariables()) {
+        //         stage->EmitVariableDeclaration(
+        //             input, context, "layout(location = " + std::to_string(location++) + " ) in",
+        //             false);
+        //     }
+        // }
+        // TODO: emit only necessary inputs
+        string expression =
+            "layout(location = 0) in vec3 i_position;\n"
+            "layout(location = 1) in vec3 i_normal;\n"
+            "layout(location = 2) in vec3 i_tangent;\n"
+            "layout(location = 3) in vec3 i_bitangent;\n"
+            "layout(location = 4) in vec2 i_texcoord;\n";
+        stage->EmitLine(expression);
         stage->EmitLine();
     }
     if (stage->GetName() == Stage::PIXEL) {

@@ -52,6 +52,10 @@ void MaterialPreviewRenderPass::Draw() {
         ->GetValue()
         ->SetData<Matrix4>(param.ProjectionMatrix);
 
+    vsblock->GetVariable(ShaderBuildInVariable::MODEL_INVERSE_TRANSPOSE_MATRIX)
+        ->GetValue()
+        ->SetData<Matrix4>(Math::Transpose(Math::Inverse(model)));
+
     for (auto& [name, var] : vsblock->GetRawVariables()) {
         if (!var->GetValue()) ET_CORE_WARN("uniform {0} has no value", name);
         api->BindUniform(mPipeline.program, var->GetVariable(mMaterial->GetContext()->GetScope()),

@@ -16,8 +16,8 @@ namespace Ethereal {
 MaterialGraphPanel::MaterialGraphPanel() {
     mEditor = ed::CreateEditor();
     ed::SetCurrentEditor(mEditor);
-    mMaterial = MaterialManager::LoadMaterial("assets/materials/material.mtlx");
-
+    mMaterial = MaterialManager::LoadMaterial("assets/materials/disney_material.mtlx");
+    // mMaterial = MaterialManager::LoadMaterial("assets/materials/material.mtlx");
     PrepareNodeMenuInfo();
 
     SetGraph(mMaterial->GenerateUIGraph());
