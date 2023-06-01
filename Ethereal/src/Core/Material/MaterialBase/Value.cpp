@@ -276,7 +276,7 @@ INSTANTIATE_TYPE(Matrix4, "matrix4",
                  "")
 INSTANTIATE_TYPE(string, "string", "", "", "", "")
 
-INSTANTIATE_TYPE(BSDF, "bsdf", "", "BSDF", "vec3(0.0),vec3(1.0), 0.0, 0.0",
+INSTANTIATE_TYPE(BSDF, "BSDF", "", "BSDF", "vec3(0.0),vec3(1.0), 0.0, 0.0",
                  "struct BSDF { vec3 response; vec3 throughput; float thickness; float ior; };")
 INSTANTIATE_TYPE(surfaceshader, "surfaceshader", "", "surfaceshader", "vec3(0.0),vec3(0.0)",
                  "struct surfaceshader { vec3 color; vec3 transparency; };")

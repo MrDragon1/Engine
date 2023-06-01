@@ -2,7 +2,7 @@
 #include "Core/Material/ShaderGenerator/ShaderContext.h"
 #include "Base/GlobalContext.h"
 #include "Core/Material/MaterialNode.h"
-
+#include "Utils/StringUtils.h"
 #include "Core/Material/ShaderGenerator/Nodes/SourceCodeShaderNode.h"
 #include "Core/Material/ShaderGenerator/Nodes/AggregationShaderNode.h"
 #include "Core/Material/ShaderGenerator/Nodes/CompoundShaderNode.h"
@@ -10,6 +10,9 @@
 #include "Core/Material/ShaderGenerator/Nodes/NormalShaderNode.h"
 #include "Core/Material/ShaderGenerator/Nodes/TangentShaderNode.h"
 #include "Core/Material/ShaderGenerator/Nodes/BitangentShaderNode.h"
+#include "Core/Material/ShaderGenerator/Nodes/ClosureMixShaderNode.h"
+#include "Core/Material/ShaderGenerator/Nodes/ClosureMultiplyShaderNode.h"
+#include "Core/Material/ShaderGenerator/Nodes/ClosureAddShaderNode.h"
 namespace Ethereal {
 ShaderStagePtr Shader::CreateStage(const string& name) {
     auto it = mStages.find(name);
@@ -37,10 +40,26 @@ void Shader::Compile() {
 }
 
 ShaderGenerator::ShaderGenerator() {
+    StringVec elementNames;
     RegisterImplementation("IM_position_float3", PositionShaderNode::Create);
     RegisterImplementation("IM_normal_float3", NormalShaderNode::Create);
     RegisterImplementation("IM_tangent_float3", TangentShaderNode::Create);
     RegisterImplementation("IM_bitangent_float3", BitangentShaderNode::Create);
+
+    // <!-- <mix> -->
+    RegisterImplementation("IM_mix_bsdf", ClosureMixShaderNode::Create);
+    RegisterImplementation("IM_mix_edf", ClosureMixShaderNode::Create);
+    // <!-- <add> -->
+    RegisterImplementation("IM_add_bsdf", ClosureAddShaderNode::Create);
+    RegisterImplementation("IM_add_edf", ClosureAddShaderNode::Create);
+    // <!-- <multiply> -->
+    elementNames = {
+        "IM_multiply_bsdfC",
+        "IM_multiply_bsdfF",
+        "IM_multiply_edfC_",
+        "IM_multiply_edfF",
+    };
+    RegisterImplementation(elementNames, ClosureMultiplyShaderNode::Create);
 }
 
 void ShaderGenerator::CreateVariables(ShaderGraphPtr graph, ShaderContextPtr context,
@@ -61,6 +80,8 @@ void ShaderGenerator::EmitVertexStage(ShaderGraphPtr graph, ShaderContextPtr con
     EmitInputs(context, stage);
 
     EmitOutputs(context, stage);
+
+    EmitLibs(context, stage);
 
     stage->EmitLine("void main()");
     stage->BeginScope();
@@ -92,6 +113,8 @@ void ShaderGenerator::EmitPixelStage(ShaderGraphPtr graph, ShaderContextPtr cont
     EmitInputs(context, stage);
 
     EmitOutputs(context, stage);
+
+    EmitLibs(context, stage);
 
     for (auto& node : graph->GetSortedNodes()) {
         stage->AddFunctionDefinition(node, context);
@@ -246,6 +269,15 @@ void ShaderGenerator::EmitInputs(ShaderContextPtr context, ShaderStagePtr stage)
 void ShaderGenerator::EmitVersion(ShaderContextPtr context, ShaderStagePtr stage) {
     stage->EmitLine("#version 460");
     stage->EmitLine();
+}
+
+void ShaderGenerator::EmitLibs(ShaderContextPtr context, ShaderStagePtr stage) {
+    if (stage->GetName() == Stage::VERTEX) {
+    }
+    if (stage->GetName() == Stage::PIXEL) {
+        string file = Utils::ReadFileAndSkipBOM("assets/materials/lib/glsl/base.glsl");
+        stage->EmitLine(file);
+    }
 }
 
 void ShaderGenerator::RegisterImplementation(const string& name,

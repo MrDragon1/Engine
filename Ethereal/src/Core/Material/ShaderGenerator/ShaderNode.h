@@ -37,14 +37,18 @@ class ShaderPort : public RefCounted {
         auto startpos = var.find_last_of('.');
         if (startpos == std::string::npos) startpos = -1;  // skip the '.' indexing
         if (!scope.empty() && var.substr(startpos + 1, scope.size()) == scope)
-            return mVariable.substr(startpos + 1 + scope.size() + 1);
+            return mVariable.substr(startpos + 1 + scope.size() + 1) + mChannels;
         else
-            return mVariable;
+            return mVariable + mChannels;
     }
+    string GetChannels() { return mChannels; }
+
     bool IsSocket() { return mIsSocket; }
 
     void SetEmitted() { mFlags |= ShaderPortFlag::EMITTED; }
     bool IsEmitted() const { return (mFlags & ShaderPortFlag::EMITTED) != 0; }
+    void SetUniform() { mFlags |= ShaderPortFlag::UNIFORM; }
+    bool IsUniform() const { return (mFlags & ShaderPortFlag::UNIFORM) != 0; }
 
    private:
     bool mIsSocket;
@@ -53,7 +57,8 @@ class ShaderPort : public RefCounted {
     ValueBasePtr mValue;
     ElementPtr mSource;
     ShaderNodePtr mParent;
-    uint32_t mFlags;
+    uint32_t mFlags = 0;
+    string mChannels = "";
 };
 
 class ShaderInput : public ShaderPort {
@@ -90,6 +95,8 @@ class ShaderNodeImpl : public RefCounted {
     virtual void EmitFunctionDefinition(ShaderNodePtr node, ShaderContextPtr context,
                                         ShaderStagePtr stage) {}
     virtual void CreateVariables(ShaderNodePtr node, ShaderContextPtr context, ShaderPtr shader) {}
+
+    string GetInputVariable(ShaderInputPtr port, ShaderContextPtr context);
 
    protected:
     ShaderNodeImpl(){};

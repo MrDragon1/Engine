@@ -437,7 +437,7 @@ void NodeGraph::Validate() {
                 break;
             }
         }
-        ET_CORE_ASSERT(nd, "Instance {0} has no Node Define.", ni->GetName());
+        ET_CORE_ASSERT(nd, "Instance {0} has no Node Define with {1}.", ni->GetName(), type);
         ni->SetNodeDefine(nd);
         ni->Validate();
     }

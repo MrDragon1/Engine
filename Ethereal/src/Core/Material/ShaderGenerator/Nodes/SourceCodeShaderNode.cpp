@@ -45,13 +45,7 @@ void SourceCodeShaderNode::EmitFunctionCall(ShaderNodePtr node, ShaderContextPtr
             StringMap map;
             for (auto& name : node->GetInputOrder()) {
                 auto input = node->GetInput(name);
-                auto output = input->GetConnector();
-                if (output) {
-                    map[name] = output->GetVariable(context->GetScope());
-                } else {
-                    map[name] = input->GetValue()->GetSyntaxString() + "(" +
-                                input->GetValue()->GetValueString() + ")";
-                }
+                map[name] = GetInputVariable(input, context);
             }
             Utils::ReplaceIdentifier(sourcecode, map);
 
@@ -65,11 +59,7 @@ void SourceCodeShaderNode::EmitFunctionCall(ShaderNodePtr node, ShaderContextPtr
             string split = "";
             for (auto& name : node->GetInputOrder()) {
                 auto input = node->GetInput(name);
-                if (input->GetConnector()) {
-                    expression += split + input->GetConnector()->GetVariable(context->GetScope());
-                } else {
-                    expression += split + input->GetVariable(context->GetScope());
-                }
+                expression += split + GetInputVariable(input, context);
                 split = ", ";
             }
             for (auto& name : node->GetOutputOrder()) {

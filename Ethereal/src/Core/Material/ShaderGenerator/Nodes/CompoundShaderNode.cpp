@@ -75,7 +75,7 @@ void CompoundShaderNode::EmitFunctionCall(ShaderNodePtr node, ShaderContextPtr c
             } else {
                 expression +=
                     split +
-                    mGraph->GetInputSocket(input->GetName())->GetVariable(context->GetScope());
+                    mGraph->GetInputSocket(input->GetFullName())->GetVariable(context->GetScope());
             }
             split = ", ";
         }
@@ -100,7 +100,7 @@ void CompoundShaderNode::CreateVariables(ShaderNodePtr node, ShaderContextPtr co
     for (auto& name : node->GetInputOrder()) {
         auto input = node->GetInput(name);
         if (!input->GetConnector()) {
-            uniformBlock.Add(mGraph->GetInputSocket(input->GetName()));
+            uniformBlock.Add(mGraph->GetInputSocket(input->GetFullName()));
         }
     }
 }

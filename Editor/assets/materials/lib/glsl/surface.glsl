@@ -1,5 +1,5 @@
-void surface(vec3 color, vec3 transparency, out surfaceshader result)
+void surface(BSDF bsdf, float opacity, inout surfaceshader result)
 {
-    result.color = color;
-    result.transparency = transparency;
+    result.color = bsdf.response;
+    result.transparency = vec3(opacity);
 }

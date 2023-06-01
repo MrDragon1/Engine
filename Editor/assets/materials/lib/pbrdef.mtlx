@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <materialx version="1.36">
   <nodedef name="ND_surface" nodedef="surface">
-    <input name="in1" type="color3" value="1.0, 1.0, 1.0"/>
-    <input name="in2" type="float3" value="1.0, 1.0, 1.0"/>
+    <input name="bsdf" type="BSDF" value="1.0, 1.0, 1.0" />
+    <input name="opacity" type="float" value="1.0"/>
     <output name="out1" type="surfaceshader" />
   </nodedef>
 
   <implementation name="IM_surface_surfaceshader" nodedef="ND_surface" file="assets/materials/lib/glsl/surface.glsl" function="surface" />
 
-  <nodedef name="ND_standard_surface_phong_surfaceshader" nodedef="standard_surface" >
+  <nodedef name="ND_standard_surface_phong_surfaceshader" nodedef="standard_surface">
     <input name="base_color" type="color3" value="1.0, 1.0, 1.0"/>
     <input name="ambient" type="color3" value="1.0, 1.0, 1.0"/>
     <input name="normal" type="float3" value="1.0, 0.0, 0.0" />
@@ -20,51 +20,196 @@
   <implementation name="IM_standard_surface_phong_surfaceshader" nodedef="ND_standard_surface_phong_surfaceshader" implgraph="NG_standard_surface_phong_surfaceshader"/>
 
   <nodegraph name="NG_standard_surface_phong_surfaceshader" nodedef="ND_standard_surface_phong_surfaceshader">
-    <dotproduct name="NdotL" type="float"> 
-        <input name="in1" type="float3" connector="normal"/>
-        <input name="in2" type="float3" connector="lightdir"/>
+    <dotproduct name="NdotL" type="float">
+      <input name="in1" type="float3" connector="normal"/>
+      <input name="in2" type="float3" connector="lightdir"/>
     </dotproduct>
 
-    <clamp name="clamp_NdotL" type="float"> 
-        <input name="in" type="float" connector="NdotL" output="out1"/>
+    <clamp name="clamp_NdotL" type="float">
+      <input name="in" type="float" connector="NdotL" output="out1"/>
     </clamp>
 
-    <multiply name="multiply_diffuse" type="color3"> 
-        <input name="in1" type="color3" connector="base_color"/>
-        <input name="in2" type="float" connector="clamp_NdotL" output="out1"/>
+    <multiply name="multiply_diffuse" type="color3">
+      <input name="in1" type="color3" connector="base_color"/>
+      <input name="in2" type="float" connector="clamp_NdotL" output="out1"/>
     </multiply>
 
     <add name="add_ambient" type="color3">
-        <input name="in1" type="color3" connector="multiply_diffuse" output="out1"/>
-        <input name="in2" type="color3" connector="ambient"/>
+      <input name="in1" type="color3" connector="multiply_diffuse" output="out1"/>
+      <input name="in2" type="color3" connector="ambient"/>
     </add>
-    
+
     <surface name="shader_constructor" type="surfaceshader">
-        <input name="in1" type="color3" connector="add_ambient" output="out1"/>
-        <input name="in2" type="float3" connector="trans"/>
+      <input name="in1" type="color3" connector="add_ambient" output="out1"/>
+      <input name="in2" type="float3" connector="trans"/>
     </surface>
 
     <output name="out1" type="surfaceshader" connector="shader_constructor" output="out1"/>
   </nodegraph>
 
-  <nodedef name="ND_disney_brdf_2012_surface" nodedef="disney_brdf_2012" nodegroup="pbr" >
-      <input name="L" type="float3" value="0.0, 1.0, 0.0" />
-      <input name="V" type="float3" value="0.0, 0.0, 1.0" />
-      <input name="N" type="float3" value="1.0, 0.0, 0.0" />
-      <input name="X" type="float3" value="0.0, 1.0, 0.0" />
-      <input name="Y" type="float3" value="0.0, 0.0, 1.0" />
-      <input name="baseColor" type="color3" value="0.16, 0.16, 0.16" />
-      <input name="metallic" type="float" value="0" />
-      <input name="subsurface" type="float" value="0" />
-      <input name="specular" type="float" value="0.5" />
-      <input name="roughness" type="float" value="0.5" />
-      <input name="specularTint" type="float" value="0" />
-      <input name="anisotropic" type="float" value="0" />
-      <input name="sheen" type="float" value="0" />
-      <input name="sheenTint" type="float" value="0.5" />
-      <input name="clearcoat" type="float" value="0" />
-      <input name="clearcoatGloss" type="float" value="1" />
-      <output name="out1" type="surfaceshader" />
+  <nodedef name="ND_disney_bsdf_2012_surface" nodedef="disney_bsdf_2012" nodegroup="pbr">
+    <input name="L" type="float3" value="0.0, 1.0, 0.0" />
+    <input name="V" type="float3" value="0.0, 0.0, 1.0" />
+    <input name="N" type="float3" value="1.0, 0.0, 0.0" />
+    <input name="X" type="float3" value="0.0, 1.0, 0.0" />
+    <input name="Y" type="float3" value="0.0, 0.0, 1.0" />
+    <input name="baseColor" type="color3" value="0.82, 0.67, 0.16" />
+    <input name="metallic" type="float" value="0" />
+    <input name="subsurface" type="float" value="0" />
+    <input name="specular" type="float" value="0.5" />
+    <input name="roughness" type="float" value="0.5" />
+    <input name="specularTint" type="float" value="0" />
+    <input name="anisotropic" type="float" value="0" />
+    <input name="sheen" type="float" value="0" />
+    <input name="sheenTint" type="float" value="0.5" />
+    <input name="clearcoat" type="float" value="0" />
+    <input name="clearcoatGloss" type="float" value="1" />
+    <output name="out1" type="surfaceshader" />
   </nodedef>
-  <implementation name="IM_disney_brdf_2012_surface" nodedef="ND_disney_brdf_2012_surface" file="assets/materials/lib/glsl/disney_brdf_2012.glsl"  function="disney_brdf_2012"/>
+
+  <implementation name="IM_disney_bsdf_2012_surface" nodedef="ND_disney_bsdf_2012_surface" implgraph="NG_disney_bsdf_2012_surface"/>
+  <!-- <implementation name="IM_disney_bsdf_2012_surface" nodedef="ND_disney_bsdf_2012_surface" file="assets/materials/lib/glsl/disney_bsdf_2012.glsl" function="disney_bsdf_2012"/> -->
+
+  <nodegraph name="NG_disney_bsdf_2012_surface" nodedef="ND_standard_surface_phong_surfaceshader">
+    <power name="Cdlin" type="color3">
+      <input name="in1" type="color3" connector="baseColor" />
+      <input name="in2" type="float" value="2.2" uniform="false"/>
+    </power>
+
+    <luminance name="Cdlum" type="color3">
+      <input name="in" type="color3" connector="Cdlin" output="out1"/>
+    </luminance>
+
+    <divide name="divide_C" type="color3">
+      <input name="in1" type="color3" connector="Cdlin" output="out1" />
+      <input name="in2" type="color3" connector="Cdlum" output="out1" />
+    </divide>
+
+    <ifgreater name="Ctint" type="color3">
+      <input name="value1" type="float" connector="Cdlum" output="out1" channels="r"/>
+      <input name="value2" type="float" value="0.0" uniform="false"/>
+      <input name="in1" type="color3" connector="divide_C" output="out1"/>
+      <input name="in2" type="color3" value="1.0, 1.0, 1.0" uniform="false"/>
+    </ifgreater>
+
+    <mix name="spec_tint_mix" type="color3">
+      <input name="fg" type="color3" value="1.0, 1.0, 1.0" uniform="false"/>
+      <input name="bg" type="color3" connector="Ctint" output="out1" />
+      <input name="mix" type="float" connector="specularTint" />
+    </mix>
+
+    <multiply name="spec_tint_tmp" type="color3">
+      <input name="in1" type="color3" connector="spec_tint_mix" output="out1" />
+      <input name="in2" type="float" value="0.08" uniform="false"/>
+    </multiply>
+
+    <multiply name="spec_tint_tmp1" type="color3">
+      <input name="in1" type="color3" connector="spec_tint_tmp" output="out1" />
+      <input name="in2" type="float" connector="specular" />
+    </multiply>
+
+    <mix name="Cspec" type="color3">
+      <input name="fg" type="color3" connector="spec_tint_tmp1" output="out1" />
+      <input name="bg" type="color3" connector="Cdlin" output="out1" />
+      <input name="mix" type="float" connector="metallic" />
+    </mix>
+
+    <!-- BSDF -->
+    <disney_diffuse_bsdf name="diffuse_bsdf" type="BSDF">
+      <input name="color" type="color3" connector="Cdlin" output="out1" />
+      <input name="roughness" type="float" connector="roughness" />
+      <input name="L" type="float3" connector="L" />
+      <input name="V" type="float3" connector="V" />
+      <input name="N" type="float3" connector="N" />
+    </disney_diffuse_bsdf>
+
+    <HanrahanKrueger_subsurface_bsdf name="subsurface_bsdf" type="BSDF">
+      <input name="color" type="color3" connector="Cdlin" output="out1"/>
+      <input name="roughness" type="float" connector="roughness" />
+      <input name="L" type="float3" connector="L" />
+      <input name="V" type="float3" connector="V" />
+      <input name="N" type="float3" connector="N" />
+    </HanrahanKrueger_subsurface_bsdf>
+
+    <disney_specular_bsdf name="specular_bsdf" type="BSDF">
+      <input name="color" type="color3" connector="Cspec" output="out1"/>
+      <input name="metallic" type="float" connector="metallic" />
+      <input name="specular" type="float" connector="specular" />
+      <input name="roughness" type="float" connector="roughness" />
+      <input name="specularTint" type="float" connector="specularTint" />
+      <input name="anisotropic" type="float" connector="anisotropic" />
+
+      <input name="L" type="float3" connector="L" />
+      <input name="V" type="float3" connector="V" />
+      <input name="N" type="float3" connector="N" />
+      <input name="X" type="float3" connector="X" />
+      <input name="Y" type="float3" connector="Y" />
+    </disney_specular_bsdf>
+
+    <disney_sheen_bsdf name="sheen_bsdf" type="BSDF">
+      <input name="color" type="color3" connector="Ctint" output="out1"/>
+      <input name="sheen" type="float" connector="sheen" />
+      <input name="sheenTint" type="float" connector="sheenTint" />
+
+      <input name="L" type="float3" connector="L" />
+      <input name="V" type="float3" connector="V" />
+      <input name="N" type="float3" connector="N" />
+    </disney_sheen_bsdf>
+
+    <disney_clearcoat_bsdf name="clearcoat_bsdf" type="BSDF">
+      <input name="clearcoat" type="float" connector="clearcoat" />
+      <input name="clearcoatGloss" type="float" connector="clearcoatGloss" />
+
+      <input name="L" type="float3" connector="L" />
+      <input name="V" type="float3" connector="V" />
+      <input name="N" type="float3" connector="N" />
+    </disney_clearcoat_bsdf>
+
+    <!-- Connect  -->
+    <mix name="diffuse_mix" type="BSDF">
+      <input name="fg" type="BSDF" connector="diffuse_bsdf" output="out1" />
+      <input name="bg" type="BSDF" connector="subsurface_bsdf" output="out1" />
+      <input name="mix" type="float" connector="subsurface" />
+    </mix>
+
+    <add name="sheen_add" type="BSDF">
+      <input name="in1" type="BSDF" connector="diffuse_mix" output="out1" />
+      <input name="in2" type="BSDF" connector="sheen_bsdf" output="out1" />
+    </add>
+
+    <subtract name="one_minus_metallic" type="float">
+      <input name="in1" type="float" value="1.0" uniform="false"/>
+      <input name="in2" type="float" connector="metallic" />
+    </subtract>
+
+    <multiply name="sheen_scale" type="BSDF">
+      <input name="in1" type="BSDF" connector="sheen_add" output="out1" />
+      <input name="in2" type="float" connector="one_minus_metallic" output="out1" />
+    </multiply>
+
+    <add name="specular_add" type="BSDF">
+      <input name="in1" type="BSDF" connector="sheen_scale" output="out1" />
+      <input name="in2" type="BSDF" connector="specular_bsdf" output="out1" />
+    </add>
+
+    <multiply name="quater_clearcoat" type="BSDF">
+      <input name="in1" type="BSDF" connector="clearcoat_bsdf" output="out1" />
+      <input name="in2" type="float" value="0.25" uniform="false"/>
+    </multiply>
+
+    <add name="clearcoat_add" type="BSDF">
+      <input name="in1" type="BSDF" connector="specular_add" output="out1" />
+      <input name="in2" type="BSDF" connector="quater_clearcoat" output="out1" />
+    </add>
+
+    <surface name="shader_constructor" type="surfaceshader">
+      <input name="bsdf" type="BSDF" connector="clearcoat_add" output="out1"  />
+      <input name="opacity" type="float" value="1.0" uniform="false"/>
+    </surface>
+
+    <!-- Output -->
+    <output name="out1" type="surfaceshader" connector="shader_constructor" output="out1" />
+  </nodegraph>
+
+
 </materialx>

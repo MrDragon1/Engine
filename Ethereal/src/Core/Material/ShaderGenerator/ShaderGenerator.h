@@ -48,6 +48,7 @@ class ShaderGenerator : public RefCounted {
     void EmitOutputs(ShaderContextPtr context, ShaderStagePtr stage);
     void EmitInputs(ShaderContextPtr context, ShaderStagePtr stage);
     void EmitVersion(ShaderContextPtr context, ShaderStagePtr stage);
+    void EmitLibs(ShaderContextPtr context, ShaderStagePtr stage);
 
    private:
     template <class T>

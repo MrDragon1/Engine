@@ -19,10 +19,9 @@ struct material : public surfaceshader {};
 const string EMPTY_STRING = "";
 
 const StringVec LibraryPath = {
-    "assets/materials/lib/def.mtlx",
-    "assets/materials/lib/impl.mtlx",
-    "assets/materials/lib/pbrdef.mtlx",
-    "assets/materials/lib/impl_dynamic.mtlx",
+    "assets/materials/lib/def.mtlx",         "assets/materials/lib/impl.mtlx",
+    "assets/materials/lib/pbrdef.mtlx",      "assets/materials/lib/pbrlib.mtlx",
+    "assets/materials/lib/pbrlib_impl.mtlx",
 };
 
 namespace Stage {
@@ -105,7 +104,8 @@ const string IMPLGRAPH = "implgraph";
 const string SOURCECODE = "sourcecode";
 const string FILE = "file";
 const string FUNCTION = "function";
-
+const string CHANNELS = "channels";
+const string UNIFORM = "uniform";
 }  // namespace MaterialAttribute
 
 }  // namespace Ethereal

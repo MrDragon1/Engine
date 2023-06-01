@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<materialx version="1.36">
+    <nodedef name="ND_disney_diffuse_bsdf" nodedef="disney_diffuse_bsdf" nodegroup="pbr">
+        <input name="color" type="color3" value="0.5, 0.5, 0.5" />
+        <input name="roughness" type="float" value="0.5" />
+        <input name="L" type="float3" value="0.0, 1.0, 0.0" />
+        <input name="V" type="float3" value="0.0, 0.0, 1.0" />
+        <input name="N" type="float3" value="1.0, 0.0, 0.0" />
+        <output name="out1" type="BSDF" />
+    </nodedef>
+
+    <nodedef name="ND_HanrahanKrueger_subsurface_bsdf" nodedef="HanrahanKrueger_subsurface_bsdf" nodegroup="pbr">
+        <input name="color" type="color3" value="0.5, 0.5, 0.5" />
+        <input name="roughness" type="float" value="0.5" />
+        <input name="L" type="float3" value="0.0, 1.0, 0.0" />
+        <input name="V" type="float3" value="0.0, 0.0, 1.0" />
+        <input name="N" type="float3" value="1.0, 0.0, 0.0" />
+        <output name="out1" type="BSDF" />
+    </nodedef>
+
+    <nodedef name="ND_disney_specular_bsdf" nodedef="disney_specular_bsdf" nodegroup="pbr">
+        <input name="color" type="color3" value="0.0, 0.0, 0.0" />
+        <input name="metallic" type="float" value="0" />
+        <input name="specular" type="float" value="0.5" />
+        <input name="roughness" type="float" value="0.5" />
+        <input name="specularTint" type="float" value="0" />
+        <input name="anisotropic" type="float" value="0" />
+
+        <input name="L" type="float3" value="0.0, 1.0, 0.0" />
+        <input name="V" type="float3" value="0.0, 0.0, 1.0" />
+        <input name="N" type="float3" value="1.0, 0.0, 0.0" />
+        <input name="X" type="float3" value="0.0, 1.0, 0.0" />
+        <input name="Y" type="float3" value="0.0, 0.0, 1.0" />
+        <output name="out1" type="BSDF" />
+    </nodedef>
+
+    <nodedef name="ND_disney_sheen_bsdf" nodedef="disney_sheen_bsdf" nodegroup="pbr">
+        <input name="color" type="color3" value="0.5, 0.5, 0.5" />
+        <input name="sheen" type="float" value="0" />
+        <input name="sheenTint" type="float" value="0.5" />
+
+        <input name="L" type="float3" value="0.0, 1.0, 0.0" />
+        <input name="V" type="float3" value="0.0, 0.0, 1.0" />
+        <input name="N" type="float3" value="1.0, 0.0, 0.0" />
+        <output name="out1" type="BSDF" />
+    </nodedef>
+
+    <nodedef name="ND_disney_clearcoat_bsdf" nodedef="disney_clearcoat_bsdf" nodegroup="pbr">
+        <input name="clearcoat" type="float" value="0.5" />
+        <input name="clearcoatGloss" type="float" value="0.5" />
+
+        <input name="L" type="float3" value="0.0, 1.0, 0.0" />
+        <input name="V" type="float3" value="0.0, 0.0, 1.0" />
+        <input name="N" type="float3" value="1.0, 0.0, 0.0" />
+        <output name="out1" type="BSDF" />
+    </nodedef>
+
+    <!-- ======================================================================== -->
+    <!-- Utility Nodes                                                            -->
+    <!-- ======================================================================== -->
+
+    <!--
+        Node: <layer>
+    -->
+    <!-- <nodedef name="ND_layer_bsdf" nodedef="layer" nodegroup="pbr">
+        <input name="top" type="BSDF" />
+        <input name="base" type="BSDF" />
+        <output name="out1" type="BSDF" />
+    </nodedef>
+    <nodedef name="ND_layer_vdf" nodedef="layer" nodegroup="pbr">
+        <input name="top" type="BSDF" />
+        <input name="base" type="VDF" />
+        <output name="out1" type="BSDF" />
+    </nodedef> -->
+
+    <!--
+        Node: <mix>
+    -->
+    <nodedef name="ND_mix_bsdf" nodedef="mix" nodegroup="pbr">
+        <input name="fg" type="BSDF" />
+        <input name="bg" type="BSDF" />
+        <input name="mix" type="float" value="0.0"/>
+        <output name="out1" type="BSDF" />
+    </nodedef>
+    <nodedef name="ND_mix_edf" nodedef="mix" nodegroup="pbr">
+        <input name="fg" type="EDF" />
+        <input name="bg" type="EDF" />
+        <input name="mix" type="float" value="0.0" />
+        <output name="out1" type="EDF" />
+    </nodedef>
+
+    <!--
+        Node: <add>
+    -->
+    <nodedef name="ND_add_bsdf" nodedef="add" nodegroup="pbr">
+        <input name="in1" type="BSDF" />
+        <input name="in2" type="BSDF" />
+        <output name="out1" type="BSDF" />
+    </nodedef>
+    <nodedef name="ND_add_edf" nodedef="add" nodegroup="pbr">
+        <input name="in1" type="EDF" />
+        <input name="in2" type="EDF" />
+        <output name="out1" type="EDF" />
+    </nodedef>
+
+    <!--
+        Node: <multiply>
+    -->
+    <nodedef name="ND_multiply_bsdfC" nodedef="multiply" nodegroup="pbr">
+        <input name="in1" type="BSDF" />
+        <input name="in2" type="color3" value="1.0, 1.0, 1.0" />
+        <output name="out1" type="BSDF" />
+    </nodedef>
+    <nodedef name="ND_multiply_bsdfF" nodedef="multiply" nodegroup="pbr">
+        <input name="in1" type="BSDF" />
+        <input name="in2" type="float" value="1.0" />
+        <output name="out1" type="BSDF" />
+    </nodedef>
+    <nodedef name="ND_multiply_edfC" nodedef="multiply" nodegroup="pbr">
+        <input name="in1" type="EDF" />
+        <input name="in2" type="color3" value="1.0, 1.0, 1.0" />
+        <output name="out1" type="EDF" />
+    </nodedef>
+    <nodedef name="ND_multiply_edfF" nodedef="multiply" nodegroup="pbr">
+        <input name="in1" type="EDF" />
+        <input name="in2" type="float" value="1.0" />
+        <output name="out1" type="EDF" />
+    </nodedef>
+</materialx>

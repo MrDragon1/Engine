@@ -63,8 +63,13 @@ void ShaderNode::Initalize(ShaderContextPtr context) {
             NodeInputPtr input = instance->GetInput(name);
             if (input) {
                 AddInput(input);
+                if (!nodeDefine->GetInput(name)) {
+                    ET_CORE_WARN("This input {} is not defined in node {}!", name,
+                                 nodeDefine->GetName());
+                }
                 // Emit unconnected node input (with only value attribute) to uniform variable
-                if (input->GetAttribute(MaterialAttribute::CONNECTOR).empty()) {
+                if (!mGraph->IsImpl() &&
+                    input->GetAttribute(MaterialAttribute::CONNECTOR).empty()) {
                     ShaderInputSocketPtr shaderInput =
                         ShaderInputSocketPtr::Create(this, input, true);
                     mGraph->AddInputSocket(shaderInput);
@@ -158,6 +163,14 @@ void ShaderOutput::RemoveConnector(ShaderInputPtr conn) {
 ShaderPort::ShaderPort(ShaderNodePtr parent, ElementPtr source, bool socket /*= false*/)
     : mParent(parent), mSource(source), mIsSocket(socket) {
     mName = source->GetName();
+    if (!source->GetAttribute(MaterialAttribute::CHANNELS).empty()) {
+        mChannels = "." + source->GetAttribute(MaterialAttribute::CHANNELS);
+    }
+    string uniform = source->GetAttribute(MaterialAttribute::UNIFORM);
+    if (uniform != "false") {
+        SetUniform();
+    }
+
     if (source->Is(MaterialElementType::INPUT)) {
         SetValue(source.As<NodeInput>()->GetValue());
     } else if (source->Is(MaterialElementType::OUTPUT)) {
@@ -177,6 +190,7 @@ ShaderPort::ShaderPort(ShaderNodePtr parent, const string& type, const string& n
     mSource = nullptr;
     mParent = parent;
     mVariable = name;
+    mChannels = "";
 }
 
 string ShaderPort::GetFullName() {
@@ -186,6 +200,20 @@ string ShaderPort::GetFullName() {
         // if (mParent->GetGraph()) res = mParent->GetGraph()->GetName() + "_" + res;
     }
     return res;
+}
+
+string ShaderNodeImpl::GetInputVariable(ShaderInputPtr input, ShaderContextPtr context) {
+    auto output = input->GetConnector();
+    string res;
+    if (output) {
+        res = output->GetVariable(context->GetScope());
+    } else if (!input->IsUniform()) {
+        res =
+            input->GetValue()->GetSyntaxString() + "(" + input->GetValue()->GetValueString() + ")";
+    } else {
+        res = input->GetVariable(context->GetScope());
+    }
+    return res + input->GetChannels();
 }
 
 }  // namespace Ethereal

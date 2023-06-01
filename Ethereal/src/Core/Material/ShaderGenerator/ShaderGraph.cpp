@@ -31,7 +31,7 @@ void ShaderGraph::UpdateLink() {
                     if (conn.As<NodeOutput>()->IsSocket() ||
                         upNodeName == GetName())  // upstream node connect to input socket
                     {
-                        input->SetConnector(GetInputSocket(conn->GetName()));
+                        input->SetConnector(GetInputSocket(conn->GetFullName()));
                     } else {
                         input->SetConnector(GetNode(upNodeName)->GetOutput(conn->GetName()));
                     }
@@ -112,19 +112,19 @@ void ShaderGraph::UpdateVariable() {
 }
 
 void ShaderGraph::AddOutputSocket(ShaderOutputSocketPtr output) {
-    if (GetOutputSocket(output->GetName())) {
-        ET_CORE_WARN("ShaderOutputSocket {} already exists!", output->GetName());
+    if (GetOutputSocket(output->GetFullName())) {
+        ET_CORE_WARN("ShaderOutputSocket {} already exists!", output->GetFullName());
         return;
     }
-    mOutputSockets[output->GetName()] = output;
+    mOutputSockets[output->GetFullName()] = output;
 }
 
 void ShaderGraph::AddInputSocket(ShaderInputSocketPtr input) {
-    if (GetInputSocket(input->GetName())) {
-        ET_CORE_WARN("ShaderInputSocket {} already exists!", input->GetName());
+    if (GetInputSocket(input->GetFullName())) {
+        ET_CORE_WARN("ShaderInputSocket {} already exists!", input->GetFullName());
         return;
     }
-    mInputSockets[input->GetName()] = input;
+    mInputSockets[input->GetFullName()] = input;
 }
 
 ShaderOutputSocketPtr ShaderGraph::GetOutputSocket(const string& name) {

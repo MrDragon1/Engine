@@ -6,13 +6,13 @@
   <tangent name="Itangent" type="float3"/>
   <bitangent name="Ibitangent" type="float3"/>
  
-  <disney_brdf_2012 name="SR_marble1" type="surfaceshader">
-      <input name="L" type="float3" value="1.0, 0.0, 0.0" />
-      <input name="V" type="float3" value="0.0, 0.0, 0.0"/>
+  <disney_bsdf_2012 name="SR_marble1" type="surfaceshader">
+      <input name="L" type="float3" value="0.0, 0.0, 1.0" />
+      <input name="V" type="float3" value="0.0, 0.0, 1.0"/>
       <input name="N" type="float3" connector="Inormal" output="out1"/>
       <input name="X" type="float3" connector="Itangent" output="out1"/>
       <input name="Y" type="float3" connector="Ibitangent" output="out1"/>
-  </disney_brdf_2012>
+  </disney_bsdf_2012>
   <surfacematerial name="Marble_3D" type="material">
     <input name="surfaceshader" type="surfaceshader" connector="SR_marble1"  output="out1"/>
   </surfacematerial>
