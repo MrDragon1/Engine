@@ -48,11 +48,11 @@
   </nodegraph>
 
   <nodedef name="ND_disney_bsdf_2012_surface" nodedef="disney_bsdf_2012" nodegroup="pbr">
-    <input name="L" type="float3" value="0.0, 1.0, 0.0" />
-    <input name="V" type="float3" value="0.0, 0.0, 1.0" />
-    <input name="N" type="float3" value="1.0, 0.0, 0.0" />
-    <input name="X" type="float3" value="0.0, 1.0, 0.0" />
-    <input name="Y" type="float3" value="0.0, 0.0, 1.0" />
+    <input name="L" type="float3" geom="lightdir" />
+    <input name="V" type="float3" geom="viewdir" />
+    <input name="N" type="float3" geom="normal" />
+    <input name="X" type="float3" geom="tangent" />
+    <input name="Y" type="float3" geom="bitangent" />
     <input name="baseColor" type="color3" value="0.82, 0.67, 0.16" />
     <input name="metallic" type="float" value="0" />
     <input name="subsurface" type="float" value="0" />

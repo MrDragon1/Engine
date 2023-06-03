@@ -1,10 +1,10 @@
 void disney_specular(vec3 color, float metallic, float specular, float roughness, float specularTint, float anisotropic, vec3 L, vec3 V, vec3 N, vec3 X, vec3 Y, inout BSDF out1)
 {
     vec3 H = normalize(L+V);
-    float NdotH = dot(N,H);
-    float LdotH = dot(L,H);
-    float NdotV = dot(N,V);
-    float NdotL = dot(N,L);
+    float NdotH = clamp(dot(N,H), FLOAT_EPS, 1.0);
+    float LdotH = clamp(dot(L,H), FLOAT_EPS, 1.0);
+    float NdotV = clamp(dot(N,V), FLOAT_EPS, 1.0);
+    float NdotL = clamp(dot(N,L), FLOAT_EPS, 1.0);
     
     float aspect = sqrt(1-anisotropic*.9);
     float ax = max(.001, sqr(roughness)/aspect);

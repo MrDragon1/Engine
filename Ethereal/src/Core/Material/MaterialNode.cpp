@@ -69,6 +69,7 @@ void MaterialNode::Initalize() {
         NodeInstancePtr instance = mSource.As<NodeInstance>();
         NodeDefinePtr nodeDefine = instance->GetNodeDefine();
         for (auto& input : nodeDefine->GetInputs()) {
+            if (!input->GetAttribute(MaterialAttribute::GEOM).empty()) continue;
             mInputOrder.push_back(input->GetName());
         }
         for (auto& output : nodeDefine->GetOutputs()) {
@@ -93,6 +94,7 @@ void MaterialNode::Initalize() {
     } else if (mSource->Is(MaterialElementType::NODEGRAPH)) {
         NodeGraphPtr nodeGraph = mSource.As<NodeGraph>();
         for (auto& input : nodeGraph->GetInputs()) {
+            if (!input->GetAttribute(MaterialAttribute::GEOM).empty()) continue;
             AddInput(mGraph->GenerateID(), input);
             mInputOrder.push_back(input->GetName());
         }

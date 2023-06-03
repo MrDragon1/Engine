@@ -111,6 +111,55 @@ void ShaderStage::EmitVariableDeclaration(ShaderPortPtr data, ShaderContextPtr c
     EmitLine(expression);
 }
 
+void ShaderStage::EmitGeometryConnection(ShaderPortPtr data, ShaderContextPtr context) {
+    if (!data->IsGeom() || !data->IsSocket()) return;
+    string expression =
+        data->GetValue()->GetSyntaxString() + " " + data->GetVariable(context->GetScope()) + " = ";
+    string geom = data->GetSource()->GetAttribute(MaterialAttribute::GEOM);
+
+    if (GetName() == Stage::PIXEL) {
+        auto& inputBlock = GetInputBlock(ShaderBuildInVariable::VERTEXDATA);
+        if (geom == "normal") {
+            expression +=
+                "normalize(" +
+                inputBlock[ShaderBuildInVariable::NORMAL_WORLD]->GetVariable(context->GetScope()) +
+                ")";
+        } else if (geom == "tangent") {
+            expression +=
+                "normalize(" +
+                inputBlock[ShaderBuildInVariable::TANGENT_WORLD]->GetVariable(context->GetScope()) +
+                ")";
+        } else if (geom == "bitangent") {
+            expression += "normalize(" +
+                          inputBlock[ShaderBuildInVariable::BITANGENT_WORLD]->GetVariable(
+                              context->GetScope()) +
+                          ")";
+        } else if (geom == "uv") {
+            expression +=
+                inputBlock[ShaderBuildInVariable::TEXCOORD]->GetVariable(context->GetScope());
+        } else if (geom == "position") {
+            expression +=
+                inputBlock[ShaderBuildInVariable::POSITION_WORLD]->GetVariable(context->GetScope());
+        }
+
+        auto& privUniformBlock = GetUniformBlock(ShaderBuildInVariable::PRVUNIFORM);
+        if (geom == "viewdir") {
+            string pos =
+                inputBlock[ShaderBuildInVariable::POSITION_WORLD]->GetVariable(context->GetScope());
+            string viewpos = privUniformBlock[ShaderBuildInVariable::VIEW_POSITION]->GetVariable(
+                context->GetScope());
+            expression += "normalize(" + viewpos + " - " + pos + ")";
+        } else if (geom == "lightdir") {
+            string pos =
+                inputBlock[ShaderBuildInVariable::POSITION_WORLD]->GetVariable(context->GetScope());
+            string lightpos = privUniformBlock[ShaderBuildInVariable::LIGHT_POSITION]->GetVariable(
+                context->GetScope());
+            expression += "normalize(" + lightpos + " - " + pos + ")";
+        }
+    }
+    EmitLine(expression + ";");
+}
+
 void ShaderStage::BeginLine() { EmitString(mIndention); }
 
 void ShaderStage::EndLine() { EmitString("\n"); }

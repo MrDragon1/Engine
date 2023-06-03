@@ -1,5 +1,6 @@
 #define PI 3.1415926535897932
 #define PI_INV (1.0 / PI)
+#define FLOAT_EPS 1e-8
 
 float sqr(float x) { return x*x; }
 

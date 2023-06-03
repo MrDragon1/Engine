@@ -24,6 +24,8 @@ void MaterialCore::Compile() {
 
     ShaderStagePtr ps = shader->CreateStage(Stage::PIXEL);
     VariableBlockPtr psPublicUniforms = ps->CreateUniformBlock(ShaderBuildInVariable::PSPUBUNIFORM);
+    VariableBlockPtr psPrivateUniforms = ps->CreateUniformBlock(ShaderBuildInVariable::PRVUNIFORM);
+
     VariableBlockPtr psOutputs = ps->CreateOutputBlock(ShaderBuildInVariable::OUTPUT);
 
     auto shaderGraph = mShaderContext->GetShaderGraph();

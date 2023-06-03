@@ -200,6 +200,7 @@ class NodeOutput : public Element {
     void Validate() override;
 
     bool IsSocket() { return mIsSocket; }
+    bool IsClosure() { return GetValue()->IsClosureType(); }
 
    private:
     bool mIsSocket = false;

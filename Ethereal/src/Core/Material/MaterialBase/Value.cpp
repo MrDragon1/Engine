@@ -180,6 +180,11 @@ void ValueBase::EmitTypeDefine(ShaderContextPtr context, ShaderStagePtr stage) {
     }
 }
 
+bool ValueBase::IsClosureType() {
+    auto type = GetTypeString();
+    return type == "BSDF" || type == "surfaceshader" || type == "material";
+}
+
 template <class T>
 const string& GetTypeString() {
     return Value<T>::sType;

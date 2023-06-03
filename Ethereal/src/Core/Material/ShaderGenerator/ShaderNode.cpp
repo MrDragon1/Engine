@@ -162,6 +162,7 @@ void ShaderOutput::RemoveConnector(ShaderInputPtr conn) {
 
 ShaderPort::ShaderPort(ShaderNodePtr parent, ElementPtr source, bool socket /*= false*/)
     : mParent(parent), mSource(source), mIsSocket(socket) {
+    mFlags = 0;
     mName = source->GetName();
     if (!source->GetAttribute(MaterialAttribute::CHANNELS).empty()) {
         mChannels = "." + source->GetAttribute(MaterialAttribute::CHANNELS);
@@ -169,6 +170,11 @@ ShaderPort::ShaderPort(ShaderNodePtr parent, ElementPtr source, bool socket /*= 
     string uniform = source->GetAttribute(MaterialAttribute::UNIFORM);
     if (uniform != "false") {
         SetUniform();
+    }
+
+    string geom = source->GetAttribute(MaterialAttribute::GEOM);
+    if (!geom.empty()) {
+        SetGeom();
     }
 
     if (source->Is(MaterialElementType::INPUT)) {
@@ -184,13 +190,14 @@ ShaderPort::ShaderPort(ShaderNodePtr parent, ElementPtr source, bool socket /*= 
 };
 
 ShaderPort::ShaderPort(ShaderNodePtr parent, const string& type, const string& name) {
+    mFlags = 0;
     mIsSocket = false;
     mName = name;
-    mValue = ValueBase::CreateValueWithType(type);
     mSource = nullptr;
     mParent = parent;
     mVariable = name;
     mChannels = "";
+    SetValue(ValueBase::CreateValueWithType(type));
 }
 
 string ShaderPort::GetFullName() {
@@ -201,6 +208,8 @@ string ShaderPort::GetFullName() {
     }
     return res;
 }
+
+void ShaderPort::SetValue(ValueBasePtr value) { mValue = value; }
 
 string ShaderNodeImpl::GetInputVariable(ShaderInputPtr input, ShaderContextPtr context) {
     auto output = input->GetConnector();

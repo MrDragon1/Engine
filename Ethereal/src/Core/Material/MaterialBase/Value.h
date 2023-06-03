@@ -31,6 +31,7 @@ class ValueBase : public RefCounted {
     static ValueBasePtr CreateValueWithType(const string& type);
     static void EmitTypeDefine(ShaderContextPtr context, ShaderStagePtr stage);
 
+    bool IsClosureType();
     virtual ValueBasePtr Copy() const = 0;
 
     virtual string GetValueString() const = 0;

@@ -72,7 +72,7 @@ const string WORLD_VIEW_MATRIX = "u_worldViewMatrix";
 const string VIEW_PROJECTION_MATRIX = "u_viewProjectionMatrix";
 const string WORLD_VIEW_PROJECTION_MATRIX = "u_worldViewProjectionMatrix";
 const string VIEW_POSITION = "u_viewPosition";
-const string VIEW_DIRECTION = "u_viewDirection";
+const string LIGHT_POSITION = "u_lightPosition";  // Temp
 const string FRAME = "u_frame";
 const string TIME = "u_time";
 }  // namespace ShaderBuildInVariable
@@ -106,6 +106,7 @@ const string FILE = "file";
 const string FUNCTION = "function";
 const string CHANNELS = "channels";
 const string UNIFORM = "uniform";
+const string GEOM = "geom";
 }  // namespace MaterialAttribute
 
 }  // namespace Ethereal

@@ -84,6 +84,7 @@ class ShaderStage : public RefCounted {
 
     void EmitVariableDeclaration(ShaderPortPtr data, ShaderContextPtr context,
                                  const string& prefix = EMPTY_STRING, bool initialvalue = false);
+    void EmitGeometryConnection(ShaderPortPtr data, ShaderContextPtr context);
 
     void BeginLine();
     void EndLine();

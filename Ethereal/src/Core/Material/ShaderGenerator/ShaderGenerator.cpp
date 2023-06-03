@@ -6,6 +6,7 @@
 #include "Core/Material/ShaderGenerator/Nodes/SourceCodeShaderNode.h"
 #include "Core/Material/ShaderGenerator/Nodes/AggregationShaderNode.h"
 #include "Core/Material/ShaderGenerator/Nodes/CompoundShaderNode.h"
+#include "Core/Material/ShaderGenerator/Nodes/ClosureCompoundShaderNode.h"
 #include "Core/Material/ShaderGenerator/Nodes/PositionShaderNode.h"
 #include "Core/Material/ShaderGenerator/Nodes/NormalShaderNode.h"
 #include "Core/Material/ShaderGenerator/Nodes/TangentShaderNode.h"
@@ -158,7 +159,11 @@ ShaderNodeImplPtr ShaderGenerator::GetImpl(NodeInstancePtr instance, ShaderConte
     NodeImplPtr implElem = instance->GetNodeImpl();
     ShaderNodeImplPtr impl = nullptr;
     if (implElem && implElem->IsNodeGraph()) {
-        impl = CompoundShaderNode::Create();
+        if (instance->GetOutputs()[0]->IsClosure()) {
+            impl = ClosureCompoundShaderNode::Create();
+        } else {
+            impl = CompoundShaderNode::Create();
+        }
     } else if (implElem && implElem->IsDynamic()) {
         impl = mImplFactory.create(implElem->GetName());
     } else {

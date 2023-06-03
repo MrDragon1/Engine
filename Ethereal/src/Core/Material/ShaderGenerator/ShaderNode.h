@@ -18,6 +18,7 @@ class ShaderPortFlag {
    public:
     static const uint32_t UNIFORM = 1u << 0;
     static const uint32_t EMITTED = 1u << 1;
+    static const uint32_t GEOM = 1u << 2;
 };
 
 class ShaderPort : public RefCounted {
@@ -29,7 +30,7 @@ class ShaderPort : public RefCounted {
     ShaderNodePtr GetParent() { return mParent; }
     string GetName() { return mName; }
     string GetFullName();
-    void SetValue(ValueBasePtr value) { mValue = value; }
+    void SetValue(ValueBasePtr value);
     ValueBasePtr GetValue() { return mValue; }
     void SetVariable(const string& var) { mVariable = var; }
     string GetVariable(const string& scope = EMPTY_STRING) {
@@ -49,6 +50,8 @@ class ShaderPort : public RefCounted {
     bool IsEmitted() const { return (mFlags & ShaderPortFlag::EMITTED) != 0; }
     void SetUniform() { mFlags |= ShaderPortFlag::UNIFORM; }
     bool IsUniform() const { return (mFlags & ShaderPortFlag::UNIFORM) != 0; }
+    void SetGeom() { mFlags |= ShaderPortFlag::GEOM; }
+    bool IsGeom() const { return (mFlags & ShaderPortFlag::GEOM) != 0; }
 
    private:
     bool mIsSocket;

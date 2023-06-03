@@ -44,23 +44,33 @@ void MaterialPreviewRenderPass::Draw() {
     auto& psblocks = mMaterial->GetUniforms(Stage::PIXEL);
     auto& vsblock = vsblocks[ShaderBuildInVariable::VSPUBUNIFORM];
     vsblock->GetVariable(ShaderBuildInVariable::MODEL_MATRIX)->GetValue()->SetData<Matrix4>(model);
-    vsblock->GetVariable(ShaderBuildInVariable::VIEW_MATRIX)
-        ->GetValue()
-        ->SetData<Matrix4>(param.ViewMatrix);
+    vsblock->GetVariable(ShaderBuildInVariable::VIEW_MATRIX)->GetValue()->SetData(param.ViewMatrix);
     vsblock->GetVariable(ShaderBuildInVariable::PROJ_MATRIX)
         ->GetValue()
-        ->SetData<Matrix4>(param.ProjectionMatrix);
+        ->SetData(param.ProjectionMatrix);
 
     vsblock->GetVariable(ShaderBuildInVariable::MODEL_INVERSE_TRANSPOSE_MATRIX)
         ->GetValue()
-        ->SetData<Matrix4>(Math::Transpose(Math::Inverse(model)));
+        ->SetData(Math::Transpose(Math::Inverse(model)));
+
+    auto& psPrivateblock = psblocks[ShaderBuildInVariable::PRVUNIFORM];
+    psPrivateblock->GetVariable(ShaderBuildInVariable::VIEW_POSITION)
+        ->GetValue()
+        ->SetData(param.CameraPosition);
+    psPrivateblock->GetVariable(ShaderBuildInVariable::LIGHT_POSITION)
+        ->GetValue()
+        ->SetData(Vector3(0, 1, 3));
 
     for (auto& [name, var] : vsblock->GetRawVariables()) {
         if (!var->GetValue()) ET_CORE_WARN("uniform {0} has no value", name);
         api->BindUniform(mPipeline.program, var->GetVariable(mMaterial->GetContext()->GetScope()),
                          var->GetValue());
     }
-
+    for (auto& [name, var] : psPrivateblock->GetRawVariables()) {
+        if (!var->GetValue()) ET_CORE_WARN("uniform {0} has no value", name);
+        api->BindUniform(mPipeline.program, var->GetVariable(mMaterial->GetContext()->GetScope()),
+                         var->GetValue());
+    }
     for (auto& [name, var] : psblocks[ShaderBuildInVariable::PSPUBUNIFORM]->GetRawVariables()) {
         if (!var->GetValue()) ET_CORE_WARN("uniform {0} has no value", name);
         api->BindUniform(mPipeline.program, var->GetVariable(mMaterial->GetContext()->GetScope()),
