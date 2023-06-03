@@ -14,6 +14,12 @@ struct surfaceshader {
     Vector3 color;
     Vector3 transparency;
 };
+
+struct lightshader {
+    Vector3 intensity;
+    Vector3 direction;
+};
+
 struct material : public surfaceshader {};
 
 const string EMPTY_STRING = "";
@@ -75,6 +81,12 @@ const string VIEW_POSITION = "u_viewPosition";
 const string LIGHT_POSITION = "u_lightPosition";  // Temp
 const string FRAME = "u_frame";
 const string TIME = "u_time";
+
+const string LIGHT_DATA = "LightData";
+const string LIGHT_DATA_INSTANCE = "u_lightData";
+const string LIGHT_DATA_MAX_LIGHT_SOURCES = "MAX_LIGHT_SOURCES";
+const string NUM_ACTIVE_LIGHT_SOURCES = "u_numActiveLightSources";
+
 }  // namespace ShaderBuildInVariable
 
 namespace MaterialElementType {

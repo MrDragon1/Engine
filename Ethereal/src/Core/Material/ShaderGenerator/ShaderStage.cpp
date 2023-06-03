@@ -1,5 +1,6 @@
 #include "ShaderStage.h"
 #include "Core/Material/ShaderGenerator/ShaderContext.h"
+#include "Utils/StringUtils.h"
 namespace Ethereal {
 size_t VariableBlock::sBinding = 0;
 
@@ -93,6 +94,11 @@ void ShaderStage::EmitLine(const string& str) {
     BeginLine();
     EmitString(str);
     EndLine();
+}
+
+void ShaderStage::EmitFile(const string& path) {
+    string file = Utils::ReadFileAndSkipBOM(path);
+    EmitLine(file);
 }
 
 void ShaderStage::EmitVariableDeclaration(ShaderPortPtr data, ShaderContextPtr context,

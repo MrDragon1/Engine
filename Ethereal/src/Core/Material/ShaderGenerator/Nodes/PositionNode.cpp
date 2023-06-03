@@ -1,12 +1,12 @@
-#include "PositionShaderNode.h"
+#include "PositionNode.h"
 #include "Core/Material/ShaderGenerator/ShaderContext.h"
 namespace Ethereal {
 
-PositionShaderNode::PositionShaderNode() {}
+PositionNode::PositionNode() {}
 
-ShaderNodeImplPtr PositionShaderNode::Create() { return PositionShaderNodePtr::Create(); }
+ShaderNodeImplPtr PositionNode::Create() { return PositionNodePtr::Create(); }
 
-void PositionShaderNode::EmitFunctionCall(ShaderNodePtr node, ShaderContextPtr context,
+void PositionNode::EmitFunctionCall(ShaderNodePtr node, ShaderContextPtr context,
                                           ShaderStagePtr stage) {
     auto& shaderGen = context->GetShaderGenerator();
 
@@ -28,7 +28,7 @@ void PositionShaderNode::EmitFunctionCall(ShaderNodePtr node, ShaderContextPtr c
     }
 }
 
-void PositionShaderNode::CreateVariables(ShaderNodePtr node, ShaderContextPtr context,
+void PositionNode::CreateVariables(ShaderNodePtr node, ShaderContextPtr context,
                                          ShaderPtr shader) {
     ShaderStagePtr vs = shader->GetStage(Stage::VERTEX);
     ShaderStagePtr ps = shader->GetStage(Stage::PIXEL);

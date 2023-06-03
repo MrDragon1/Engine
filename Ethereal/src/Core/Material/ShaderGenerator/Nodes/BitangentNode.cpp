@@ -1,12 +1,12 @@
-#include "BitangentShaderNode.h"
+#include "BitangentNode.h"
 #include "Core/Material/ShaderGenerator/ShaderContext.h"
 namespace Ethereal {
 
-BitangentShaderNode::BitangentShaderNode() {}
+BitangentNode::BitangentNode() {}
 
-ShaderNodeImplPtr BitangentShaderNode::Create() { return BitangentShaderNodePtr::Create(); }
+ShaderNodeImplPtr BitangentNode::Create() { return BitangentNodePtr::Create(); }
 
-void BitangentShaderNode::EmitFunctionCall(ShaderNodePtr node, ShaderContextPtr context,
+void BitangentNode::EmitFunctionCall(ShaderNodePtr node, ShaderContextPtr context,
                                            ShaderStagePtr stage) {
     auto& shaderGen = context->GetShaderGenerator();
 
@@ -44,7 +44,7 @@ void BitangentShaderNode::EmitFunctionCall(ShaderNodePtr node, ShaderContextPtr 
     }
 }
 
-void BitangentShaderNode::CreateVariables(ShaderNodePtr node, ShaderContextPtr context,
+void BitangentNode::CreateVariables(ShaderNodePtr node, ShaderContextPtr context,
                                           ShaderPtr shader) {
     ShaderStagePtr vs = shader->GetStage(Stage::VERTEX);
     ShaderStagePtr ps = shader->GetStage(Stage::PIXEL);

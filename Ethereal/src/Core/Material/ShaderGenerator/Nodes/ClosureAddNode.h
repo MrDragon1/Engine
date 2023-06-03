@@ -1,18 +1,16 @@
 #pragma once
-
 #include "Core/Material/ShaderGenerator/ShaderNode.h"
 
 namespace Ethereal {
-using TangentShaderNodePtr = Ref<class TangentShaderNode>;
-class TangentShaderNode : public ShaderNodeImpl {
+using ClosureAddNodePtr = Ref<class ClosureAddNode>;
+class ClosureAddNode : public ShaderNodeImpl {
    public:
-    TangentShaderNode();
+    ClosureAddNode();
     static ShaderNodeImplPtr Create();
-
     void EmitFunctionCall(ShaderNodePtr node, ShaderContextPtr context,
                           ShaderStagePtr stage) override;
-    void CreateVariables(ShaderNodePtr node, ShaderContextPtr context, ShaderPtr shader) override;
 
-   private:
+    static const string IN1;
+    static const string IN2;
 };
 }  // namespace Ethereal

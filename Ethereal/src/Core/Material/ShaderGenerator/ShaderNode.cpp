@@ -1,6 +1,6 @@
 #include "ShaderNode.h"
 #include "Core/Material/ShaderGenerator/ShaderContext.h"
-#include "Core/Material/ShaderGenerator/Nodes/AggregationShaderNode.h"
+#include "Core/Material/ShaderGenerator/Nodes/AggregationNode.h"
 
 namespace Ethereal {
 ShaderNode::ShaderNode(ElementPtr node, ShaderGraphPtr graph, ShaderContextPtr context)
@@ -70,7 +70,8 @@ void ShaderNode::Initalize(ShaderContextPtr context) {
                 // Emit unconnected node input (with only value attribute) to uniform variable
                 if (!mGraph->IsImpl() &&
                     input->GetAttribute(MaterialAttribute::CONNECTOR).empty() &&
-                    !input->GetAttribute(MaterialAttribute::VALUE).empty()) {
+                    !input->GetAttribute(MaterialAttribute::VALUE).empty() &&
+                    input->GetAttribute(MaterialAttribute::GEOM).empty()) {
                     ShaderInputSocketPtr shaderInput =
                         ShaderInputSocketPtr::Create(this, input, true);
                     mGraph->AddInputSocket(shaderInput);
@@ -80,7 +81,7 @@ void ShaderNode::Initalize(ShaderContextPtr context) {
                 input = nodeDefine->GetInput(name);
                 AddInput(input);
                 // Emit override node input to uniform variable
-                if (!mGraph->IsImpl()) {
+                if (!mGraph->IsImpl() && input->GetAttribute(MaterialAttribute::GEOM).empty()) {
                     ShaderInputSocketPtr shaderInput =
                         ShaderInputSocketPtr::Create(this, input, true);
                     mGraph->AddInputSocket(shaderInput);
@@ -111,9 +112,21 @@ void ShaderNode::Initalize(ShaderContextPtr context) {
             mOutputOrder.push_back(output->GetName());
         }
 
-        mImpl = AggregationShaderNode::Create();
+        mImpl = AggregationNode::Create();
         mImpl->Initilize(nodeGraph, context);
         ET_CORE_ASSERT(!mOutputs.empty(), "Must specify the output of NodeInstance!");
+    }
+
+    ShaderOutputPtr output = GetOutputs().begin()->second;
+    ValueBasePtr value = output->GetValue();
+    SetClassification(Classification::DEFAULT);
+    if (value->Is<material>()) {
+        SetClassification(Classification::MATERIAL);
+    } else if (value->Is<surfaceshader>()) {
+        SetClassification(Classification::SHADER | Classification::SURFACE |
+                          Classification::CLOSURE);
+    } else if (value->Is<BSDF>()) {
+        SetClassification(Classification::BSDF | Classification::CLOSURE);
     }
 }
 
@@ -129,6 +142,13 @@ void ShaderInput::SetConnector(ShaderOutputPtr conn) {
     }
     mConnector = conn;
     if (conn) conn->AddConnector(this);
+}
+
+ShaderNodePtr ShaderInput::GetSibling() {
+    if (GetConnector() && !GetConnector()->IsSocket() &&
+        GetConnector()->GetParent()->GetGraph() == GetParent()->GetGraph())
+        return GetConnector()->GetParent();
+    return nullptr;
 }
 
 ShaderOutput::ShaderOutput(ShaderNodePtr parent, NodeOutputPtr output, bool socket)

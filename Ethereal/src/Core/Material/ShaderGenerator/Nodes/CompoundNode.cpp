@@ -1,13 +1,11 @@
-#include "ClosureCompoundShaderNode.h"
+#include "CompoundNode.h"
 #include "Core/Material/ShaderGenerator/ShaderContext.h"
 namespace Ethereal {
-ClosureCompoundShaderNode::ClosureCompoundShaderNode() {}
+CompoundNode::CompoundNode() {}
 
-ShaderNodeImplPtr ClosureCompoundShaderNode::Create() {
-    return ClosureCompoundShaderNodePtr::Create();
-}
+ShaderNodeImplPtr CompoundNode::Create() { return CompoundNodePtr::Create(); }
 
-void ClosureCompoundShaderNode::Initilize(ElementPtr elem, ShaderContextPtr context) {
+void CompoundNode::Initilize(ElementPtr elem, ShaderContextPtr context) {
     auto impl = elem.As<NodeImpl>();
     ShaderNodeImpl::Initilize(impl, context);
     NodeGraphPtr graph = impl->GetNodeGraph();
@@ -15,15 +13,13 @@ void ClosureCompoundShaderNode::Initilize(ElementPtr elem, ShaderContextPtr cont
     mGraph = graph->GetDocument()->GenerateShaderGraphFromNodeGraph(graph, context);
 }
 
-void ClosureCompoundShaderNode::EmitFunctionDefinition(ShaderNodePtr node, ShaderContextPtr context,
-                                                       ShaderStagePtr stage) {
+void CompoundNode::EmitFunctionDefinition(ShaderNodePtr node, ShaderContextPtr context,
+                                          ShaderStagePtr stage) {
     if (stage->GetName() == Stage::VERTEX) {
     }
     if (stage->GetName() == Stage::PIXEL) {
         // Emit function define that this function will use
-        for (auto& snode : mGraph->GetSortedNodes()) {
-            stage->AddFunctionDefinition(snode, context);
-        }
+        context->GetShaderGenerator().EmitFunctionDefinitions(mGraph, context, stage);
 
         // Emit function call
         context->PushScope(mGraph->GetName());
@@ -31,7 +27,6 @@ void ClosureCompoundShaderNode::EmitFunctionDefinition(ShaderNodePtr node, Shade
         string split = "";
         for (auto& sinput : node->GetInputOrder()) {
             auto input = mGraph->GetInputSocket(sinput);
-            if (input->IsGeom()) continue;
             expression += split + input->GetValue()->GetSyntaxString() + " " +
                           input->GetVariable(context->GetScope());
             split = ", ";
@@ -46,17 +41,7 @@ void ClosureCompoundShaderNode::EmitFunctionDefinition(ShaderNodePtr node, Shade
         stage->EmitLine(expression);
 
         stage->BeginScope();
-
-        for (auto& sinput : node->GetInputOrder()) {
-            auto input = mGraph->GetInputSocket(sinput);
-            if (input->IsGeom()) {
-                stage->EmitGeometryConnection(input, context);
-            }
-        }
-
-        for (auto& snode : mGraph->GetSortedNodes()) {
-            stage->AddFunctionCall(snode, context);
-        }
+        context->GetShaderGenerator().EmitFunctionCalls(mGraph, context, stage);
 
         for (auto& [name, output] : mGraph->GetOutputSockets()) {
             stage->EmitLine(output->GetVariable(context->GetScope()) + " = " +
@@ -70,8 +55,8 @@ void ClosureCompoundShaderNode::EmitFunctionDefinition(ShaderNodePtr node, Shade
     }
 }
 
-void ClosureCompoundShaderNode::EmitFunctionCall(ShaderNodePtr node, ShaderContextPtr context,
-                                                 ShaderStagePtr stage) {
+void CompoundNode::EmitFunctionCall(ShaderNodePtr node, ShaderContextPtr context,
+                                    ShaderStagePtr stage) {
     if (stage->GetName() == Stage::VERTEX) {
     }
     if (stage->GetName() == Stage::PIXEL) {
@@ -81,7 +66,6 @@ void ClosureCompoundShaderNode::EmitFunctionCall(ShaderNodePtr node, ShaderConte
         string split = "";
         for (auto& name : node->GetInputOrder()) {
             auto input = node->GetInput(name);
-            if (mGraph->GetInputSocket(name)->IsGeom()) continue;
             if (input->GetConnector()) {
                 expression += split + input->GetConnector()->GetVariable(context->GetScope());
             } else {
@@ -101,26 +85,19 @@ void ClosureCompoundShaderNode::EmitFunctionCall(ShaderNodePtr node, ShaderConte
     }
 }
 
-void ClosureCompoundShaderNode::CreateVariables(ShaderNodePtr node, ShaderContextPtr context,
-                                                ShaderPtr shader) {
-    ShaderStagePtr vs = shader->GetStage(Stage::VERTEX);
-    ShaderStagePtr ps = shader->GetStage(Stage::PIXEL);
-
-    auto& uniformBlock = ps->GetUniformBlock(ShaderBuildInVariable::PSPUBUNIFORM);
+void CompoundNode::CreateVariables(ShaderNodePtr node, ShaderContextPtr context, ShaderPtr shader) {
+    auto& uniformBlock = context->GetShader()
+                             ->GetStage(Stage::PIXEL)
+                             ->GetUniformBlock(ShaderBuildInVariable::PSPUBUNIFORM);
     for (auto& snode : mGraph->GetSortedNodes()) {
         snode->GetImpl()->CreateVariables(node, context, shader);
     }
     for (auto& name : node->GetInputOrder()) {
-        if (mGraph->GetInputSocket(name)->IsGeom()) continue;
         auto input = node->GetInput(name);
         if (!input->GetConnector()) {
             uniformBlock.Add(mGraph->GetInputSocket(input->GetFullName()));
         }
     }
-
-    auto& prvUniformBlock = ps->GetUniformBlock(ShaderBuildInVariable::PRVUNIFORM);
-    prvUniformBlock.Add(nullptr, "float3", ShaderBuildInVariable::VIEW_POSITION);
-    prvUniformBlock.Add(nullptr, "float3", ShaderBuildInVariable::LIGHT_POSITION);
 }
 
 }  // namespace Ethereal

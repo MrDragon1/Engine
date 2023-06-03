@@ -1,4 +1,4 @@
-#include "SourceCodeShaderNode.h"
+#include "SourceCodeNode.h"
 #include "Core/Material/ShaderGenerator/ShaderContext.h"
 #include "Utils/StringUtils.h"
 namespace Ethereal {

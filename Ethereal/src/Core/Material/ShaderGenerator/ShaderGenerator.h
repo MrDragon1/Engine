@@ -41,6 +41,22 @@ class ShaderGenerator : public RefCounted {
 
     void EmitTypeDefinition(ShaderContextPtr context, ShaderStagePtr stage);
 
+    void EmitFunctionDefinition(ShaderNodePtr node, ShaderContextPtr context, ShaderStagePtr stage);
+
+    void EmitFunctionDefinitions(ShaderGraphPtr graph, ShaderContextPtr context,
+                                 ShaderStagePtr stage);
+
+    void EmitFunctionCall(ShaderNodePtr node, ShaderContextPtr context, ShaderStagePtr stage,
+                          bool checkScope = true);
+
+    void EmitFunctionCalls(ShaderGraphPtr graph, ShaderContextPtr context, ShaderStagePtr stage,
+                           uint32_t classification = 0u);
+
+    void EmitDependentFunctionCalls(ShaderNodePtr node, ShaderContextPtr context,
+                                    ShaderStagePtr stage, uint32_t classification = 0u);
+
+    void EmitLightData(ShaderContextPtr context, ShaderStagePtr stage);
+
     ShaderNodeImplPtr GetImpl(NodeInstancePtr nodeDefine, ShaderContextPtr context);
 
    public:

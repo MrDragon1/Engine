@@ -149,6 +149,11 @@ template <>
 void Load<surfaceshader>(const string& value, surfaceshader& data) {}
 
 template <>
+void Save<lightshader>(const lightshader& data, string& value) {}
+template <>
+void Load<lightshader>(const string& value, lightshader& data) {}
+
+template <>
 void Save<material>(const material& data, string& value) {}
 template <>
 void Load<material>(const string& value, material& data) {}
@@ -285,6 +290,8 @@ INSTANTIATE_TYPE(BSDF, "BSDF", "", "BSDF", "vec3(0.0),vec3(1.0), 0.0, 0.0",
                  "struct BSDF { vec3 response; vec3 throughput; float thickness; float ior; };")
 INSTANTIATE_TYPE(surfaceshader, "surfaceshader", "", "surfaceshader", "vec3(0.0),vec3(0.0)",
                  "struct surfaceshader { vec3 color; vec3 transparency; };")
+INSTANTIATE_TYPE(lightshader, "lightshader", "", "lightshader", "vec3(0.0),vec3(0.0)",
+                 "struct lightshader { vec3 intensity; vec3 direction; };")
 INSTANTIATE_TYPE(material, "material", "", "material", "vec3(0.0),vec3(0.0)",
                  "#define material surfaceshader")
 

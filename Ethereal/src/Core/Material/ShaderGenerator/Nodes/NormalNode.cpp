@@ -1,13 +1,13 @@
-#include "NormalShaderNode.h"
+#include "NormalNode.h"
 #include "Core/Material/ShaderGenerator/ShaderContext.h"
 namespace Ethereal {
 
-NormalShaderNode::NormalShaderNode() {}
+NormalNode::NormalNode() {}
 
-ShaderNodeImplPtr NormalShaderNode::Create() { return NormalShaderNodePtr::Create(); }
+ShaderNodeImplPtr NormalNode::Create() { return NormalNodePtr::Create(); }
 
-void NormalShaderNode::EmitFunctionCall(ShaderNodePtr node, ShaderContextPtr context,
-                                        ShaderStagePtr stage) {
+void NormalNode::EmitFunctionCall(ShaderNodePtr node, ShaderContextPtr context,
+                                  ShaderStagePtr stage) {
     auto& shaderGen = context->GetShaderGenerator();
 
     if (stage->GetName() == Stage::VERTEX) {
@@ -30,8 +30,7 @@ void NormalShaderNode::EmitFunctionCall(ShaderNodePtr node, ShaderContextPtr con
     }
 }
 
-void NormalShaderNode::CreateVariables(ShaderNodePtr node, ShaderContextPtr context,
-                                       ShaderPtr shader) {
+void NormalNode::CreateVariables(ShaderNodePtr node, ShaderContextPtr context, ShaderPtr shader) {
     ShaderStagePtr vs = shader->GetStage(Stage::VERTEX);
     ShaderStagePtr ps = shader->GetStage(Stage::PIXEL);
 

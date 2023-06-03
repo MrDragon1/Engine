@@ -3,17 +3,18 @@
 #include "Base/GlobalContext.h"
 #include "Core/Material/MaterialNode.h"
 #include "Utils/StringUtils.h"
-#include "Core/Material/ShaderGenerator/Nodes/SourceCodeShaderNode.h"
-#include "Core/Material/ShaderGenerator/Nodes/AggregationShaderNode.h"
-#include "Core/Material/ShaderGenerator/Nodes/CompoundShaderNode.h"
-#include "Core/Material/ShaderGenerator/Nodes/ClosureCompoundShaderNode.h"
-#include "Core/Material/ShaderGenerator/Nodes/PositionShaderNode.h"
-#include "Core/Material/ShaderGenerator/Nodes/NormalShaderNode.h"
-#include "Core/Material/ShaderGenerator/Nodes/TangentShaderNode.h"
-#include "Core/Material/ShaderGenerator/Nodes/BitangentShaderNode.h"
-#include "Core/Material/ShaderGenerator/Nodes/ClosureMixShaderNode.h"
-#include "Core/Material/ShaderGenerator/Nodes/ClosureMultiplyShaderNode.h"
-#include "Core/Material/ShaderGenerator/Nodes/ClosureAddShaderNode.h"
+#include "Core/Material/ShaderGenerator/Nodes/SourceCodeNode.h"
+#include "Core/Material/ShaderGenerator/Nodes/AggregationNode.h"
+#include "Core/Material/ShaderGenerator/Nodes/CompoundNode.h"
+#include "Core/Material/ShaderGenerator/Nodes/ClosureCompoundNode.h"
+#include "Core/Material/ShaderGenerator/Nodes/PositionNode.h"
+#include "Core/Material/ShaderGenerator/Nodes/NormalNode.h"
+#include "Core/Material/ShaderGenerator/Nodes/TangentNode.h"
+#include "Core/Material/ShaderGenerator/Nodes/BitangentNode.h"
+#include "Core/Material/ShaderGenerator/Nodes/ClosureMixNode.h"
+#include "Core/Material/ShaderGenerator/Nodes/ClosureMultiplyNode.h"
+#include "Core/Material/ShaderGenerator/Nodes/ClosureAddNode.h"
+#include "Core/Material/ShaderGenerator/Nodes/SurfaceNode.h"
 namespace Ethereal {
 ShaderStagePtr Shader::CreateStage(const string& name) {
     auto it = mStages.find(name);
@@ -42,17 +43,19 @@ void Shader::Compile() {
 
 ShaderGenerator::ShaderGenerator() {
     StringVec elementNames;
-    RegisterImplementation("IM_position_float3", PositionShaderNode::Create);
-    RegisterImplementation("IM_normal_float3", NormalShaderNode::Create);
-    RegisterImplementation("IM_tangent_float3", TangentShaderNode::Create);
-    RegisterImplementation("IM_bitangent_float3", BitangentShaderNode::Create);
+    RegisterImplementation("IM_position_float3", PositionNode::Create);
+    RegisterImplementation("IM_normal_float3", NormalNode::Create);
+    RegisterImplementation("IM_tangent_float3", TangentNode::Create);
+    RegisterImplementation("IM_bitangent_float3", BitangentNode::Create);
+
+    RegisterImplementation("IM_surface_surfaceshader", SurfaceNode::Create);
 
     // <!-- <mix> -->
-    RegisterImplementation("IM_mix_bsdf", ClosureMixShaderNode::Create);
-    RegisterImplementation("IM_mix_edf", ClosureMixShaderNode::Create);
+    RegisterImplementation("IM_mix_bsdf", ClosureMixNode::Create);
+    RegisterImplementation("IM_mix_edf", ClosureMixNode::Create);
     // <!-- <add> -->
-    RegisterImplementation("IM_add_bsdf", ClosureAddShaderNode::Create);
-    RegisterImplementation("IM_add_edf", ClosureAddShaderNode::Create);
+    RegisterImplementation("IM_add_bsdf", ClosureAddNode::Create);
+    RegisterImplementation("IM_add_edf", ClosureAddNode::Create);
     // <!-- <multiply> -->
     elementNames = {
         "IM_multiply_bsdfC",
@@ -60,7 +63,7 @@ ShaderGenerator::ShaderGenerator() {
         "IM_multiply_edfC_",
         "IM_multiply_edfF",
     };
-    RegisterImplementation(elementNames, ClosureMultiplyShaderNode::Create);
+    RegisterImplementation(elementNames, ClosureMultiplyNode::Create);
 }
 
 void ShaderGenerator::CreateVariables(ShaderGraphPtr graph, ShaderContextPtr context,
@@ -74,7 +77,7 @@ void ShaderGenerator::EmitVertexStage(ShaderGraphPtr graph, ShaderContextPtr con
                                       ShaderStagePtr stage) {
     EmitVersion(context, stage);
 
-    ValueBase::EmitTypeDefine(context, stage);
+    EmitTypeDefinition(context, stage);
 
     EmitUniforms(context, stage);
 
@@ -83,6 +86,8 @@ void ShaderGenerator::EmitVertexStage(ShaderGraphPtr graph, ShaderContextPtr con
     EmitOutputs(context, stage);
 
     EmitLibs(context, stage);
+
+    EmitFunctionDefinitions(graph, context, stage);
 
     stage->EmitLine("void main()");
     stage->BeginScope();
@@ -107,7 +112,7 @@ void ShaderGenerator::EmitPixelStage(ShaderGraphPtr graph, ShaderContextPtr cont
                                      ShaderStagePtr stage) {
     EmitVersion(context, stage);
 
-    ValueBase::EmitTypeDefine(context, stage);
+    EmitTypeDefinition(context, stage);
 
     EmitUniforms(context, stage);
 
@@ -117,15 +122,14 @@ void ShaderGenerator::EmitPixelStage(ShaderGraphPtr graph, ShaderContextPtr cont
 
     EmitLibs(context, stage);
 
-    for (auto& node : graph->GetSortedNodes()) {
-        stage->AddFunctionDefinition(node, context);
-    }
+    EmitLightData(context, stage);
+
+    EmitFunctionDefinitions(graph, context, stage);
 
     stage->EmitLine("void main()");
     stage->BeginScope();
-    for (auto node : graph->GetSortedNodes()) {
-        stage->AddFunctionCall(node, context);
-    }
+
+    EmitFunctionCalls(graph, context, stage);
 
     for (auto& [name, output] : graph->GetOutputSockets()) {
         if (output->GetValue()->Is<material>()) {
@@ -155,14 +159,81 @@ void ShaderGenerator::AddConnectorVariable(const string& name, const string& typ
     vsConn.Add(nullptr, type, variable);
     psConn.Add(nullptr, type, variable);
 }
+
+void ShaderGenerator::EmitTypeDefinition(ShaderContextPtr context, ShaderStagePtr stage) {
+    ValueBase::EmitTypeDefine(context, stage);
+}
+
+void ShaderGenerator::EmitFunctionDefinition(ShaderNodePtr node, ShaderContextPtr context,
+                                             ShaderStagePtr stage) {
+    stage->AddFunctionDefinition(node, context);
+}
+
+void ShaderGenerator::EmitFunctionDefinitions(ShaderGraphPtr graph, ShaderContextPtr context,
+                                              ShaderStagePtr stage) {
+    for (auto& node : graph->GetSortedNodes()) {
+        EmitFunctionDefinition(node, context, stage);
+    }
+}
+
+void ShaderGenerator::EmitFunctionCall(ShaderNodePtr node, ShaderContextPtr context,
+                                       ShaderStagePtr stage, bool checkScope /*= true*/) {
+    stage->AddFunctionCall(node, context);
+}
+
+void ShaderGenerator::EmitFunctionCalls(ShaderGraphPtr graph, ShaderContextPtr context,
+                                        ShaderStagePtr stage, uint32_t classification /*= 0u*/) {
+    for (auto node : graph->GetSortedNodes()) {
+        if (!classification || node->HasClassification(classification)) {
+            EmitFunctionCall(node, context, stage);
+        }
+    }
+}
+
+void ShaderGenerator::EmitDependentFunctionCalls(ShaderNodePtr node, ShaderContextPtr context,
+                                                 ShaderStagePtr stage, uint32_t classification) {
+    for (auto& [name, input] : node->GetInputs()) {
+        ShaderNodePtr upstream = input->GetSibling();
+        if (upstream && (!classification || upstream->HasClassification(classification))) {
+            EmitFunctionCall(upstream, context, stage);
+        }
+    }
+}
+
+void ShaderGenerator::EmitLightData(ShaderContextPtr context, ShaderStagePtr stage) {
+    stage->EmitLine("#define " + ShaderBuildInVariable::LIGHT_DATA_MAX_LIGHT_SOURCES + " 5");
+    stage->EmitLine();
+
+    VariableBlock& lightData = stage->GetUniformBlock(ShaderBuildInVariable::LIGHT_DATA);
+    string structArraySuffix = "[" + ShaderBuildInVariable::LIGHT_DATA_MAX_LIGHT_SOURCES + "]";
+    string structName = lightData.GetInstance();
+
+    stage->EmitLine();
+    stage->EmitLine("struct " + lightData.GetName());
+    stage->BeginScope();
+
+    stage->EmitLine("int type;");
+    stage->EmitLine("vec3 direction;");
+    stage->EmitLine("vec3 color;");
+    stage->EmitLine("float intensity;");
+
+    stage->EndScope(";");
+    stage->EmitLine();
+    stage->EmitLine("uniform " + lightData.GetName() + " " + structName + structArraySuffix + ";");
+
+    stage->EmitLine();
+    stage->EmitFile("assets/materials/lib/glsl/light.glsl");
+    stage->EmitLine();
+}
+
 ShaderNodeImplPtr ShaderGenerator::GetImpl(NodeInstancePtr instance, ShaderContextPtr context) {
     NodeImplPtr implElem = instance->GetNodeImpl();
     ShaderNodeImplPtr impl = nullptr;
     if (implElem && implElem->IsNodeGraph()) {
         if (instance->GetOutputs()[0]->IsClosure()) {
-            impl = ClosureCompoundShaderNode::Create();
+            impl = ClosureCompoundNode::Create();
         } else {
-            impl = CompoundShaderNode::Create();
+            impl = CompoundNode::Create();
         }
     } else if (implElem && implElem->IsDynamic()) {
         impl = mImplFactory.create(implElem->GetName());
@@ -280,8 +351,7 @@ void ShaderGenerator::EmitLibs(ShaderContextPtr context, ShaderStagePtr stage) {
     if (stage->GetName() == Stage::VERTEX) {
     }
     if (stage->GetName() == Stage::PIXEL) {
-        string file = Utils::ReadFileAndSkipBOM("assets/materials/lib/glsl/base.glsl");
-        stage->EmitLine(file);
+        stage->EmitFile("assets/materials/lib/glsl/base.glsl");
     }
 }
 

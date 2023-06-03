@@ -3,10 +3,10 @@
 #include "Core/Material/ShaderGenerator/ShaderNode.h"
 
 namespace Ethereal {
-using BitangentShaderNodePtr = Ref<class BitangentShaderNode>;
-class BitangentShaderNode : public ShaderNodeImpl {
+using BitangentNodePtr = Ref<class BitangentNode>;
+class BitangentNode : public ShaderNodeImpl {
    public:
-    BitangentShaderNode();
+    BitangentNode();
     static ShaderNodeImplPtr Create();
 
     void EmitFunctionCall(ShaderNodePtr node, ShaderContextPtr context,

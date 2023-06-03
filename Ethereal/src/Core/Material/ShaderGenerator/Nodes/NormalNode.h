@@ -3,16 +3,16 @@
 #include "Core/Material/ShaderGenerator/ShaderNode.h"
 
 namespace Ethereal {
-using ClosureMixShaderNodePtr = Ref<class ClosureMixShaderNode>;
-class ClosureMixShaderNode : public ShaderNodeImpl {
+using NormalNodePtr = Ref<class NormalNode>;
+class NormalNode : public ShaderNodeImpl {
    public:
-    ClosureMixShaderNode();
+    NormalNode();
     static ShaderNodeImplPtr Create();
+
     void EmitFunctionCall(ShaderNodePtr node, ShaderContextPtr context,
                           ShaderStagePtr stage) override;
+    void CreateVariables(ShaderNodePtr node, ShaderContextPtr context, ShaderPtr shader) override;
 
-    static const string FG;
-    static const string BG;
-    static const string MIX;
+   private:
 };
 }  // namespace Ethereal

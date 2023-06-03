@@ -72,6 +72,8 @@ class ShaderInput : public ShaderPort {
     ShaderOutputPtr GetConnector() { return mConnector; }
     void SetConnector(ShaderOutputPtr conn);
 
+    ShaderNodePtr GetSibling();
+
    private:
     ShaderOutputPtr mConnector;
 };
@@ -110,6 +112,28 @@ class ShaderNodeImpl : public RefCounted {
 
 class ShaderNode : public RefCounted {
    public:
+    class Classification {
+       public:
+        static const uint32_t DEFAULT =
+            1 << 0;  /// Any node that outputs floats, colors, vectors, etc.
+        static const uint32_t CLOSURE = 1 << 1;   /// Any node that represents light integration
+        static const uint32_t SHADER = 1 << 2;    /// Any node that outputs a shader
+        static const uint32_t MATERIAL = 1 << 3;  /// Any node that outputs a material
+
+        // Specific closure types
+        static const uint32_t BSDF = 1 << 7;    /// A BSDF node
+        static const uint32_t BSDF_R = 1 << 8;  /// A reflection BSDF node
+        static const uint32_t BSDF_T = 1 << 9;  /// A transmission BSDF node
+        static const uint32_t EDF = 1 << 10;    /// A EDF node
+        static const uint32_t VDF = 1 << 11;    /// A VDF node
+
+        // Specific shader types
+        static const uint32_t SURFACE = 1 << 14;  /// A surface shader node
+        static const uint32_t VOLUME = 1 << 15;   /// A volume shader node
+        static const uint32_t LIGHT = 1 << 16;    /// A light shader node
+        static const uint32_t UNLIT = 1 << 17;    /// An unlit surface shader node
+    };
+
     ShaderNode(ElementPtr node, ShaderGraphPtr graph, ShaderContextPtr context);
     void AddInput(NodeInputPtr input);
     void AddOutput(NodeOutputPtr output);
@@ -135,6 +159,11 @@ class ShaderNode : public RefCounted {
         mImpl->EmitFunctionCall(this, context, stage);
     }
 
+    void SetClassification(uint32_t c) { mClassification = c; }
+    uint32_t GetClassification() const { return mClassification; }
+    void AddClassification(uint32_t c) { mClassification |= c; }
+    bool HasClassification(uint32_t c) const { return (mClassification & c) == c; }
+
    private:
     string mName;
     unordered_map<string, ShaderInputPtr> mInputs;
@@ -143,7 +172,7 @@ class ShaderNode : public RefCounted {
 
     vector<string> mOutputOrder;
     vector<string> mInputOrder;
-
+    uint32_t mClassification;
     ElementPtr mSource;
     ShaderGraphPtr mGraph;
 };

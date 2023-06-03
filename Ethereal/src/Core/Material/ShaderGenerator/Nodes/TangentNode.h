@@ -1,11 +1,12 @@
 #pragma once
+
 #include "Core/Material/ShaderGenerator/ShaderNode.h"
 
 namespace Ethereal {
-using PositionShaderNodePtr = Ref<class PositionShaderNode>;
-class PositionShaderNode : public ShaderNodeImpl {
+using TangentNodePtr = Ref<class TangentNode>;
+class TangentNode : public ShaderNodeImpl {
    public:
-    PositionShaderNode();
+    TangentNode();
     static ShaderNodeImplPtr Create();
 
     void EmitFunctionCall(ShaderNodePtr node, ShaderContextPtr context,

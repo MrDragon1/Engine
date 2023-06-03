@@ -3,10 +3,10 @@
 #include "Core/Material/ShaderGenerator/ShaderGraph.h"
 
 namespace Ethereal {
-using CompoundShaderNodePtr = Ref<class CompoundShaderNode>;
-class CompoundShaderNode : public ShaderNodeImpl {
+using ClosureCompoundNodePtr = Ref<class ClosureCompoundNode>;
+class ClosureCompoundNode : public ShaderNodeImpl {
    public:
-    CompoundShaderNode();
+    ClosureCompoundNode();
     static ShaderNodeImplPtr Create();
     void Initilize(ElementPtr elem, ShaderContextPtr context) override;
     void EmitFunctionDefinition(ShaderNodePtr node, ShaderContextPtr context,

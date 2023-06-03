@@ -2,15 +2,16 @@
 #include "Core/Material/ShaderGenerator/ShaderNode.h"
 
 namespace Ethereal {
-using ClosureAddShaderNodePtr = Ref<class ClosureAddShaderNode>;
-class ClosureAddShaderNode : public ShaderNodeImpl {
+using PositionNodePtr = Ref<class PositionNode>;
+class PositionNode : public ShaderNodeImpl {
    public:
-    ClosureAddShaderNode();
+    PositionNode();
     static ShaderNodeImplPtr Create();
+
     void EmitFunctionCall(ShaderNodePtr node, ShaderContextPtr context,
                           ShaderStagePtr stage) override;
+    void CreateVariables(ShaderNodePtr node, ShaderContextPtr context, ShaderPtr shader) override;
 
-    static const string IN1;
-    static const string IN2;
+   private:
 };
 }  // namespace Ethereal

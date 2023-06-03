@@ -57,6 +57,12 @@ void MaterialPreviewRenderPass::Draw() {
     psPrivateblock->GetVariable(ShaderBuildInVariable::VIEW_POSITION)
         ->GetValue()
         ->SetData(param.CameraPosition);
+
+    psPrivateblock->GetVariable(ShaderBuildInVariable::NUM_ACTIVE_LIGHT_SOURCES)
+        ->GetValue()
+        ->SetData(2);
+
+    // Actually not work
     psPrivateblock->GetVariable(ShaderBuildInVariable::LIGHT_POSITION)
         ->GetValue()
         ->SetData(Vector3(0, 1, 3));
@@ -77,9 +83,27 @@ void MaterialPreviewRenderPass::Draw() {
                          var->GetValue());
     }
 
-    ValueBasePtr value = ValueBase::CreateValueWithType("float3");
-    value->SetData<Vector3>(param.CameraPosition);
-    api->BindUniform(mPipeline.program, "view_subtract_in1", value);
+    api->BindUniform(mPipeline.program, ShaderBuildInVariable::LIGHT_DATA_INSTANCE + "[0].type",
+                     ValueBase::CreateValue<int>(1));
+    api->BindUniform(mPipeline.program,
+                     ShaderBuildInVariable::LIGHT_DATA_INSTANCE + "[0].direction",
+                     ValueBase::CreateValue<Vector3>(Vector3(0, 0, 1)));
+    api->BindUniform(mPipeline.program,
+                     ShaderBuildInVariable::LIGHT_DATA_INSTANCE + "[0].intensity",
+                     ValueBase::CreateValue<float>(0.4f));
+    api->BindUniform(mPipeline.program, ShaderBuildInVariable::LIGHT_DATA_INSTANCE + "[0].color",
+                     ValueBase::CreateValue<Color3>(Color3(0.0, 1, 0.0)));
+
+    api->BindUniform(mPipeline.program, ShaderBuildInVariable::LIGHT_DATA_INSTANCE + "[1].type",
+                     ValueBase::CreateValue<int>(1));
+    api->BindUniform(mPipeline.program,
+                     ShaderBuildInVariable::LIGHT_DATA_INSTANCE + "[1].direction",
+                     ValueBase::CreateValue<Vector3>(Vector3(1, 1, 1)));
+    api->BindUniform(mPipeline.program,
+                     ShaderBuildInVariable::LIGHT_DATA_INSTANCE + "[1].intensity",
+                     ValueBase::CreateValue<float>(0.4f));
+    api->BindUniform(mPipeline.program, ShaderBuildInVariable::LIGHT_DATA_INSTANCE + "[1].color",
+                     ValueBase::CreateValue<Color3>(Color3(1, 0.0, 0.0)));
 
     api->Draw(mObject->GetMeshSource()->GetRenderPrimitive(), mPipeline);
 

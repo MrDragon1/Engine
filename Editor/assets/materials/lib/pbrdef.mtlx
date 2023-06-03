@@ -6,7 +6,8 @@
     <output name="out1" type="surfaceshader" />
   </nodedef>
 
-  <implementation name="IM_surface_surfaceshader" nodedef="ND_surface" file="assets/materials/lib/glsl/surface.glsl" function="surface" />
+  <!-- <implementation name="IM_surface_surfaceshader" nodedef="ND_surface" file="assets/materials/lib/glsl/surface.glsl" function="surface" /> -->
+  <implementation name="IM_surface_surfaceshader" nodedef="ND_surface"/>
 
   <nodedef name="ND_standard_surface_phong_surfaceshader" nodedef="standard_surface">
     <input name="base_color" type="color3" value="1.0, 1.0, 1.0"/>

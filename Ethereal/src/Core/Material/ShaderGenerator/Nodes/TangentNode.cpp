@@ -1,12 +1,12 @@
-#include "TangentShaderNode.h"
+#include "TangentNode.h"
 #include "Core/Material/ShaderGenerator/ShaderContext.h"
 namespace Ethereal {
 
-TangentShaderNode::TangentShaderNode() {}
+TangentNode::TangentNode() {}
 
-ShaderNodeImplPtr TangentShaderNode::Create() { return TangentShaderNodePtr::Create(); }
+ShaderNodeImplPtr TangentNode::Create() { return TangentNodePtr::Create(); }
 
-void TangentShaderNode::EmitFunctionCall(ShaderNodePtr node, ShaderContextPtr context,
+void TangentNode::EmitFunctionCall(ShaderNodePtr node, ShaderContextPtr context,
                                          ShaderStagePtr stage) {
     auto& shaderGen = context->GetShaderGenerator();
 
@@ -30,7 +30,7 @@ void TangentShaderNode::EmitFunctionCall(ShaderNodePtr node, ShaderContextPtr co
     }
 }
 
-void TangentShaderNode::CreateVariables(ShaderNodePtr node, ShaderContextPtr context,
+void TangentNode::CreateVariables(ShaderNodePtr node, ShaderContextPtr context,
                                         ShaderPtr shader) {
     ShaderStagePtr vs = shader->GetStage(Stage::VERTEX);
     ShaderStagePtr ps = shader->GetStage(Stage::PIXEL);

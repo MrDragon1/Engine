@@ -1,17 +1,17 @@
-#include "AggregationShaderNode.h"
+#include "AggregationNode.h"
 #include "Core/Material/ShaderGenerator/ShaderContext.h"
 namespace Ethereal {
-AggregationShaderNode::AggregationShaderNode() {}
+AggregationNode::AggregationNode() {}
 
-ShaderNodeImplPtr AggregationShaderNode::Create() { return AggregationShaderNodePtr::Create(); }
+ShaderNodeImplPtr AggregationNode::Create() { return AggregationNodePtr::Create(); }
 
-void AggregationShaderNode::Initilize(ElementPtr elem, ShaderContextPtr context) {
+void AggregationNode::Initilize(ElementPtr elem, ShaderContextPtr context) {
     auto graph = elem.As<NodeGraph>();
     ShaderNodeImpl::Initilize(graph, context);
     mGraph = graph->GetDocument()->GenerateShaderGraphFromNodeGraph(graph, context);
 }
 
-void AggregationShaderNode::EmitFunctionDefinition(ShaderNodePtr node, ShaderContextPtr context,
+void AggregationNode::EmitFunctionDefinition(ShaderNodePtr node, ShaderContextPtr context,
                                                    ShaderStagePtr stage) {
     if (stage->GetName() == Stage::VERTEX) {
     }
@@ -22,7 +22,7 @@ void AggregationShaderNode::EmitFunctionDefinition(ShaderNodePtr node, ShaderCon
     }
 }
 
-void AggregationShaderNode::EmitFunctionCall(ShaderNodePtr node, ShaderContextPtr context,
+void AggregationNode::EmitFunctionCall(ShaderNodePtr node, ShaderContextPtr context,
                                              ShaderStagePtr stage) {
     auto& shaderGen = context->GetShaderGenerator();
     if (stage->GetName() == Stage::VERTEX) {
@@ -48,7 +48,7 @@ void AggregationShaderNode::EmitFunctionCall(ShaderNodePtr node, ShaderContextPt
     }
 }
 
-void AggregationShaderNode::CreateVariables(ShaderNodePtr node, ShaderContextPtr context,
+void AggregationNode::CreateVariables(ShaderNodePtr node, ShaderContextPtr context,
                                             ShaderPtr shader) {
     auto& uniformBlock = context->GetShader()
                              ->GetStage(Stage::PIXEL)

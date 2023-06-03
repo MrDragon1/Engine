@@ -1,12 +1,11 @@
 #pragma once
 #include "Core/Material/ShaderGenerator/ShaderNode.h"
-#include "Core/Material/ShaderGenerator/ShaderGraph.h"
 
 namespace Ethereal {
-using ClosureCompoundShaderNodePtr = Ref<class ClosureCompoundShaderNode>;
-class ClosureCompoundShaderNode : public ShaderNodeImpl {
+using AggregationNodePtr = Ref<class AggregationNode>;
+class AggregationNode : public ShaderNodeImpl {
    public:
-    ClosureCompoundShaderNode();
+    AggregationNode();
     static ShaderNodeImplPtr Create();
     void Initilize(ElementPtr elem, ShaderContextPtr context) override;
     void EmitFunctionDefinition(ShaderNodePtr node, ShaderContextPtr context,

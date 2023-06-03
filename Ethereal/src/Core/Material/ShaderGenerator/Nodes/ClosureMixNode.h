@@ -1,16 +1,18 @@
 #pragma once
+
 #include "Core/Material/ShaderGenerator/ShaderNode.h"
 
 namespace Ethereal {
-using ClosureMultiplyShaderNodePtr = Ref<class ClosureMultiplyShaderNode>;
-class ClosureMultiplyShaderNode : public ShaderNodeImpl {
+using ClosureMixNodePtr = Ref<class ClosureMixNode>;
+class ClosureMixNode : public ShaderNodeImpl {
    public:
-    ClosureMultiplyShaderNode();
+    ClosureMixNode();
     static ShaderNodeImplPtr Create();
     void EmitFunctionCall(ShaderNodePtr node, ShaderContextPtr context,
                           ShaderStagePtr stage) override;
 
-    static const string IN1;
-    static const string IN2;
+    static const string FG;
+    static const string BG;
+    static const string MIX;
 };
 }  // namespace Ethereal
