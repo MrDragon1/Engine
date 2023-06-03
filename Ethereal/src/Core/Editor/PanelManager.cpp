@@ -16,7 +16,11 @@ void PanelManager::OnImGuiRender() {
         }
     }
 }
-
+void PanelManager::OnUpdate(TimeStamp ts) {
+    for (auto& panelMap : mPanels) {
+        for (auto& [id, panelData] : panelMap) panelData.Panel->OnUpdate(ts);
+    }
+}
 void PanelManager::OnEvent(Event& e) {
     for (auto& panelMap : mPanels) {
         for (auto& [id, panelData] : panelMap) panelData.Panel->OnEvent(e);
@@ -37,7 +41,8 @@ void PanelManager::OnProjectChanged(const Ref<Project>& project) {
 
 template <typename TPanel>
 Ref<TPanel> PanelManager::GetPanel(const char* strID) {
-    static_assert(std::is_base_of<EditorPanel, TPanel>::value, "PanelManager::AddPanel requires TPanel to inherit from EditorPanel");
+    static_assert(std::is_base_of<EditorPanel, TPanel>::value,
+                  "PanelManager::AddPanel requires TPanel to inherit from EditorPanel");
 
     uint32_t id = Math::Hash::GenerateFNVHash(strID);
 

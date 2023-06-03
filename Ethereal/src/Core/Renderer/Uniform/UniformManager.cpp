@@ -45,7 +45,7 @@ void UniformManager::UpdateFog() {
 }
 
 void UniformManager::UpdateCamera() {
-    auto& param = Project::GetConfigManager().sUniformManagerConfig.CameraParam;
+    auto& param = Project::GetConfigManager().sUniformManagerConfig.MainCameraParam;
     auto& s = mViewUib.Edit();
     s.ViewProjectionMatrix = param.ViewProjectionMatrix;
     s.InverseViewProjectionMatrix = param.InverseViewProjectionMatrix;

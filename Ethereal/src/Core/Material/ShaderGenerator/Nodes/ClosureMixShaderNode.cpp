@@ -21,12 +21,12 @@ void ClosureMixShaderNode::EmitFunctionCall(ShaderNodePtr node, ShaderContextPtr
         if (output->GetValue()->Is<BSDF>()) {
             stage->EmitVariableDeclaration(output, context, "", true);
             stage->EmitLine(output->GetVariable(context->GetScope()) + ".response = mix(" +
-                            GetInputVariable(bg, context) + ".response, " +
                             GetInputVariable(fg, context) + ".response, " +
+                            GetInputVariable(bg, context) + ".response, " +
                             GetInputVariable(mix, context) + ");");
             stage->EmitLine(output->GetVariable(context->GetScope()) + ".throughput = mix(" +
-                            GetInputVariable(bg, context) + ".throughput, " +
                             GetInputVariable(fg, context) + ".throughput, " +
+                            GetInputVariable(bg, context) + ".throughput, " +
                             GetInputVariable(mix, context) + ");");
         }
     }

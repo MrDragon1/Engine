@@ -37,9 +37,8 @@ void MaterialPreviewRenderPass::Draw() {
     api->BeginRenderPass(mRenderTarget, mParams);
 
     // Draw Static Mesh
-    auto& param = Project::GetConfigManager().sUniformManagerConfig.CameraParam;
+    auto& param = Project::GetConfigManager().sUniformManagerConfig.PreivewCameraParam;
     Matrix4 model = Matrix4::IDENTITY;
-    Math::Translate(model, Vector3(0, 0, -1));
 
     auto& vsblocks = mMaterial->GetUniforms(Stage::VERTEX);
     auto& psblocks = mMaterial->GetUniforms(Stage::PIXEL);
@@ -67,6 +66,10 @@ void MaterialPreviewRenderPass::Draw() {
         api->BindUniform(mPipeline.program, var->GetVariable(mMaterial->GetContext()->GetScope()),
                          var->GetValue());
     }
+
+    ValueBasePtr value = ValueBase::CreateValueWithType("float3");
+    value->SetData<Vector3>(param.CameraPosition);
+    api->BindUniform(mPipeline.program, "view_subtract_in1", value);
 
     api->Draw(mObject->GetMeshSource()->GetRenderPrimitive(), mPipeline);
 

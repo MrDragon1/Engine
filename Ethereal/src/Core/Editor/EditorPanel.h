@@ -5,15 +5,15 @@
 
 namespace Ethereal {
 
-    class EditorPanel : public RefCounted
-    {
-      public:
-        virtual ~EditorPanel()= default;
+class EditorPanel : public RefCounted {
+   public:
+    virtual ~EditorPanel() = default;
 
-        virtual void OnImGuiRender(bool& isOpen) = 0;
-        virtual void OnEvent(Event& e) {}
-        virtual void OnProjectChanged(const Ref<Project>& project){}
-        virtual void SetSceneContext(const Ref<Scene>& context){}
-    };
+    virtual void OnImGuiRender(bool& isOpen) = 0;
+    virtual void OnEvent(Event& e) {}
+    virtual void OnUpdate(TimeStamp ts){};
+    virtual void OnProjectChanged(const Ref<Project>& project) {}
+    virtual void SetSceneContext(const Ref<Scene>& context) {}
+};
 
-}
+}  // namespace Ethereal

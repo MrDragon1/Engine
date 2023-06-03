@@ -6,9 +6,18 @@
   <tangent name="Itangent" type="float3"/>
   <bitangent name="Ibitangent" type="float3"/>
  
+  <subtract name="view_subtract" type="float3">
+      <input name="in1" type="float3" value="0.0, 0.0, 0.0" />
+      <input name="in2" type="float3" connector="Iposition" output="out1"/>
+  </subtract>
+
+  <normalize name="view_normalize" type="float3">
+      <input name="in" type="float3" connector="view_subtract" output="out1"/>
+  </normalize>
+
   <disney_bsdf_2012 name="SR_marble1" type="surfaceshader">
       <input name="L" type="float3" value="0.0, 0.0, 1.0" />
-      <input name="V" type="float3" value="0.0, 0.0, 1.0"/>
+      <input name="V" type="float3" connector="view_normalize" output="out1"/>
       <input name="N" type="float3" connector="Inormal" output="out1"/>
       <input name="X" type="float3" connector="Itangent" output="out1"/>
       <input name="Y" type="float3" connector="Ibitangent" output="out1"/>

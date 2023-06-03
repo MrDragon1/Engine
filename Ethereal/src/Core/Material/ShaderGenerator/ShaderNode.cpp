@@ -69,7 +69,8 @@ void ShaderNode::Initalize(ShaderContextPtr context) {
                 }
                 // Emit unconnected node input (with only value attribute) to uniform variable
                 if (!mGraph->IsImpl() &&
-                    input->GetAttribute(MaterialAttribute::CONNECTOR).empty()) {
+                    input->GetAttribute(MaterialAttribute::CONNECTOR).empty() &&
+                    !input->GetAttribute(MaterialAttribute::VALUE).empty()) {
                     ShaderInputSocketPtr shaderInput =
                         ShaderInputSocketPtr::Create(this, input, true);
                     mGraph->AddInputSocket(shaderInput);
@@ -79,8 +80,7 @@ void ShaderNode::Initalize(ShaderContextPtr context) {
                 input = nodeDefine->GetInput(name);
                 AddInput(input);
                 // Emit override node input to uniform variable
-                if (!mGraph->IsImpl() &&
-                    input->GetAttribute(MaterialAttribute::CONNECTOR).empty()) {
+                if (!mGraph->IsImpl()) {
                     ShaderInputSocketPtr shaderInput =
                         ShaderInputSocketPtr::Create(this, input, true);
                     mGraph->AddInputSocket(shaderInput);

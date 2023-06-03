@@ -56,6 +56,8 @@ void EditorLayer::OnAttach() {
 void EditorLayer::OnDetach() { EditorResource::Shutdown(); }
 
 void EditorLayer::OnUpdate(TimeStamp ts) {
+    mPanelManager->OnUpdate(ts);
+
     switch (mSceneState) {
         case SceneState::Play: {
             mRuntimeScene->OnUpdateRuntime(ts);
@@ -70,7 +72,7 @@ void EditorLayer::OnUpdate(TimeStamp ts) {
                 Vector4(1, 1, 4096 - 2, 4096 - 2) / 4096;  // the size of shadow map
             sp.EnvironmentMapIntensity = 1.0f;
 
-            CameraParam& cp = Project::GetConfigManager().sUniformManagerConfig.CameraParam;
+            CameraParam& cp = Project::GetConfigManager().sUniformManagerConfig.MainCameraParam;
             cp.ViewProjectionMatrix = mEditorCamera.GetViewProjection();
             cp.ViewMatrix = mEditorCamera.GetViewMatrix();
             cp.ProjectionMatrix = mEditorCamera.GetProjection();

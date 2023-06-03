@@ -248,17 +248,17 @@
   <implementation name="IM_constant_string" nodedef="ND_constant_string" sourcecode="{{value}}" />
 
   <!-- <mix> -->
-  <implementation name="IM_mix_float" nodedef="ND_mix_float" sourcecode="mix({{bg}}, {{fg}}, {{mix}})" />
-  <implementation name="IM_mix_color3" nodedef="ND_mix_color3" sourcecode="mix({{bg}}, {{fg}}, {{mix}})" />
-  <implementation name="IM_mix_color3_color3" nodedef="ND_mix_color3_color3" sourcecode="mix({{bg}}, {{fg}}, {{mix}})" />
-  <implementation name="IM_mix_color4" nodedef="ND_mix_color4" sourcecode="mix({{bg}}, {{fg}}, {{mix}})" />
-  <implementation name="IM_mix_color4_color4" nodedef="ND_mix_color4_color4" sourcecode="mix({{bg}}, {{fg}}, {{mix}})" />
-  <implementation name="IM_mix_float2" nodedef="ND_mix_float2" sourcecode="mix({{bg}}, {{fg}}, {{mix}})" />
-  <implementation name="IM_mix_float2_float2" nodedef="ND_mix_float2_float2" sourcecode="mix({{bg}}, {{fg}}, {{mix}})" />
-  <implementation name="IM_mix_float3" nodedef="ND_mix_float3" sourcecode="mix({{bg}}, {{fg}}, {{mix}})" />
-  <implementation name="IM_mix_float3_float3" nodedef="ND_mix_float3_float3" sourcecode="mix({{bg}}, {{fg}}, {{mix}})" />
-  <implementation name="IM_mix_float4" nodedef="ND_mix_float4" sourcecode="mix({{bg}}, {{fg}}, {{mix}})" />
-  <implementation name="IM_mix_float4_float4" nodedef="ND_mix_float4_float4" sourcecode="mix({{bg}}, {{fg}}, {{mix}})" />
+  <implementation name="IM_mix_float" nodedef="ND_mix_float" sourcecode="mix({{fg}}, {{bg}}, {{mix}})" />
+  <implementation name="IM_mix_color3" nodedef="ND_mix_color3" sourcecode="mix({{fg}}, {{bg}}, {{mix}})" />
+  <implementation name="IM_mix_color3_color3" nodedef="ND_mix_color3_color3" sourcecode="mix({{fg}}, {{bg}}, {{mix}})" />
+  <implementation name="IM_mix_color4" nodedef="ND_mix_color4" sourcecode="mix({{fg}}, {{bg}}, {{mix}})" />
+  <implementation name="IM_mix_color4_color4" nodedef="ND_mix_color4_color4" sourcecode="mix({{fg}}, {{bg}}, {{mix}})" />
+  <implementation name="IM_mix_float2" nodedef="ND_mix_float2" sourcecode="mix({{fg}}, {{bg}}, {{mix}})" />
+  <implementation name="IM_mix_float2_float2" nodedef="ND_mix_float2_float2" sourcecode="mix({{fg}}, {{bg}}, {{mix}})" />
+  <implementation name="IM_mix_float3" nodedef="ND_mix_float3" sourcecode="mix({{fg}}, {{bg}}, {{mix}})" />
+  <implementation name="IM_mix_float3_float3" nodedef="ND_mix_float3_float3" sourcecode="mix({{fg}}, {{bg}}, {{mix}})" />
+  <implementation name="IM_mix_float4" nodedef="ND_mix_float4" sourcecode="mix({{fg}}, {{bg}}, {{mix}})" />
+  <implementation name="IM_mix_float4_float4" nodedef="ND_mix_float4_float4" sourcecode="mix({{fg}}, {{bg}}, {{mix}})" />
 
   <!-- ======================================================================== -->
   <!-- Conditional nodes                                                        -->

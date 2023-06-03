@@ -37,10 +37,10 @@ void BitangentShaderNode::EmitFunctionCall(ShaderNodePtr node, ShaderContextPtr 
     if (stage->GetName() == Stage::PIXEL) {
         VariableBlock& vertexData = stage->GetInputBlock(ShaderBuildInVariable::VERTEXDATA);
 
-        auto normal = vertexData[ShaderBuildInVariable::TANGENT_WORLD];
+        auto bitangent = vertexData[ShaderBuildInVariable::BITANGENT_WORLD];
         stage->EmitLine(node->GetOutput()->GetValue()->GetSyntaxString() + " " +
                         node->GetOutput()->GetVariable(context->GetScope()) + " = " +
-                        normal->GetVariable(context->GetScope()) + ";");
+                        bitangent->GetVariable(context->GetScope()) + ";");
     }
 }
 

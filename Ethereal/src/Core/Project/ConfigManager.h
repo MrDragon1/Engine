@@ -39,7 +39,8 @@ class ConfigManager {
     } sBloomConfig;
 
     static struct UniformManagerConfig {
-        CameraParam CameraParam;
+        CameraParam MainCameraParam;
+        CameraParam PreivewCameraParam;
         EditorParam EditorParam;
         SceneParam SceneParam;
         LightParam LightParam;

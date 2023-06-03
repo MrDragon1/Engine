@@ -17,6 +17,7 @@ struct CameraParam {
     Matrix4 InverseViewMatrix;
     float FarPlane;
     float NearPlane;
+    Vector3 CameraPosition;
 };
 
 struct EditorParam {

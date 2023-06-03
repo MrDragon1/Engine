@@ -317,7 +317,23 @@ void MaterialGraphPanel::OnImGuiRender(bool& isOpen) {
     ImGui::End();
 }
 
-void MaterialGraphPanel::OnEvent(Event& event) {}
+void MaterialGraphPanel::OnEvent(Event& event) {
+    if (mPreviewImageHovered) mPreviewCamera.OnEvent(event);
+}
+
+void MaterialGraphPanel::OnUpdate(TimeStamp ts) {
+    mPreviewCamera.OnUpdate(ts);
+
+    auto& param = Project::GetConfigManager().sUniformManagerConfig.PreivewCameraParam;
+    param.CameraPosition = mPreviewCamera.GetPosition();
+    param.ViewMatrix = mPreviewCamera.GetViewMatrix();
+    param.ProjectionMatrix = mPreviewCamera.GetProjection();
+    param.ViewProjectionMatrix = mPreviewCamera.GetProjection() * mPreviewCamera.GetViewMatrix();
+    param.InverseViewMatrix = Math::Inverse(mPreviewCamera.GetViewMatrix());
+    param.InverseProjectionMatrix = Math::Inverse(mPreviewCamera.GetProjection());
+    param.InverseViewProjectionMatrix =
+        Math::Inverse(mPreviewCamera.GetProjection() * mPreviewCamera.GetViewMatrix());
+}
 
 void MaterialGraphPanel::SetGraph(MaterialGraphPtr graph) {
     if (mCurrentGraph) {
@@ -472,10 +488,14 @@ void MaterialGraphPanel::ShowPreviewPanel(float panelWidth, float panelHeight) {
     ImGui::Spring(0.0f, 0.0f);
     auto& io = ImGui::GetIO();
 
+    mPreviewCamera.SetViewportSize(Vector2(panelWidth, panelHeight));
+
     auto img = renderSystem.DrawMaterialPreview(mMaterial, (size_t)panelWidth, (size_t)panelHeight);
 
     ImGui::Image(reinterpret_cast<void*>(img), ImVec2{panelWidth, panelHeight}, ImVec2{0, 1},
                  ImVec2{1, 0});
+    mPreviewImageHovered = ImGui::IsItemHovered();
+
     // ImGui::Text("Preview Image Here");
 
     ImGui::EndHorizontal();

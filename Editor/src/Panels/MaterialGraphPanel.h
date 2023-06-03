@@ -3,6 +3,7 @@
 #include "Core/Material/MaterialGraph.h"
 #include "Core/Material/ShaderGenerator/ShaderContext.h"
 #include "Core/Material/MaterialManager.h"
+#include "Core/Renderer/PreviewCamera.h"
 #include <stack>
 namespace ed = ax::NodeEditor;
 
@@ -14,6 +15,8 @@ class MaterialGraphPanel : public EditorPanel {
 
     void OnImGuiRender(bool& isOpen) override;
     void OnEvent(Event& event) override;
+    void OnUpdate(TimeStamp ts) override;
+
     void SetGraph(MaterialGraphPtr graph);
     void PopGraph();
 
@@ -25,11 +28,14 @@ class MaterialGraphPanel : public EditorPanel {
    private:
     MaterialCorePtr mMaterial;
     MaterialGraphPtr mCurrentGraph = nullptr;
+    PreviewCamera mPreviewCamera;
+
     std::stack<MaterialGraphPtr> mGraphStack;
     std::unordered_map<std::string, std::vector<NodeDefinePtr>> mBuildinNodeDef;
     bool mAutoLayout = false;
     /// UI stuff
     ed::EditorContext* mEditor = nullptr;
+    bool mPreviewImageHovered = false;
 
     struct NodeIdLess {
         bool operator()(const NodeID& lhs, const NodeID& rhs) const { return lhs < rhs; }
