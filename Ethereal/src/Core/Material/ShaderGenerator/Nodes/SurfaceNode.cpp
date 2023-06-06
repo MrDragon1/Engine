@@ -70,7 +70,8 @@ void SurfaceNode::EmitLightLoop(ShaderNodePtr node, ShaderContextPtr context, Sh
     stage->EmitLine();
     stage->EmitComment("Accumulate the light's contribution");
     stage->EmitLine(outColor + " += lightShader.intensity * " +
-                    bsdf->GetOutput("out1")->GetVariable(context->GetScope()) + ".response;");
+                    bsdf->GetOutput("out1")->GetVariable(context->GetScope()) +
+                    ".response * clamp(dot(N,L),0,1);");
 
     stage->EndScope();
 }

@@ -7,6 +7,7 @@
 
 #include "Backend/Driver.h";
 #include "Core/Renderer/Uniform/UniformManager.h"
+#include "Core/Renderer/LightManager.h"
 namespace Ethereal {
 class GlobalContext final : public Singleton<GlobalContext> {
    public:
@@ -18,6 +19,7 @@ class GlobalContext final : public Singleton<GlobalContext> {
     static void Init();
     static void Reset();
     static RenderSystem& GetRenderSystem() { return mRenderSystem; };
+    static LightManager& GetLightManager() { return mLightManager; };
     static Vector2& GetViewportSize() { return mViewportSize; };
     static void SetViewportSize(const Vector2& viewportSize) { mViewportSize = viewportSize; };
     static Ref<Backend::DriverApi> GetDriverApi() {
@@ -31,6 +33,7 @@ class GlobalContext final : public Singleton<GlobalContext> {
     static RenderSystem mRenderSystem;
     static Backend::Driver* mDriver;
     static Ref<UniformManager> mUniformManager;
+    static LightManager mLightManager;
     static Vector2 mViewportSize;
 };
 }  // namespace Ethereal

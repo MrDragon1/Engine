@@ -2,6 +2,7 @@
 
 namespace Ethereal {
 RenderSystem GlobalContext::mRenderSystem;
+LightManager GlobalContext::mLightManager;
 
 Vector2 GlobalContext::mViewportSize = {1280.0f, 720.0f};
 Backend::Driver* GlobalContext::mDriver = nullptr;

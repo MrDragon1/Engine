@@ -33,6 +33,7 @@ void MaterialPreviewRenderPass::Draw() {
     mParams.clearColor = {0.1, 0.1, 0.1, 1.0};
     auto uniformManager = GlobalContext::GetUniformManager();
     auto api = GlobalContext::GetDriverApi();
+    GlobalContext::GetLightManager().Clear();
 
     api->BeginRenderPass(mRenderTarget, mParams);
 
@@ -58,15 +59,6 @@ void MaterialPreviewRenderPass::Draw() {
         ->GetValue()
         ->SetData(param.CameraPosition);
 
-    psPrivateblock->GetVariable(ShaderBuildInVariable::NUM_ACTIVE_LIGHT_SOURCES)
-        ->GetValue()
-        ->SetData(2);
-
-    // Actually not work
-    psPrivateblock->GetVariable(ShaderBuildInVariable::LIGHT_POSITION)
-        ->GetValue()
-        ->SetData(Vector3(0, 1, 3));
-
     for (auto& [name, var] : vsblock->GetRawVariables()) {
         if (!var->GetValue()) ET_CORE_WARN("uniform {0} has no value", name);
         api->BindUniform(mPipeline.program, var->GetVariable(mMaterial->GetContext()->GetScope()),
@@ -83,27 +75,25 @@ void MaterialPreviewRenderPass::Draw() {
                          var->GetValue());
     }
 
-    api->BindUniform(mPipeline.program, ShaderBuildInVariable::LIGHT_DATA_INSTANCE + "[0].type",
-                     ValueBase::CreateValue<int>(1));
-    api->BindUniform(mPipeline.program,
-                     ShaderBuildInVariable::LIGHT_DATA_INSTANCE + "[0].direction",
-                     ValueBase::CreateValue<Vector3>(Vector3(0, 0, 1)));
-    api->BindUniform(mPipeline.program,
-                     ShaderBuildInVariable::LIGHT_DATA_INSTANCE + "[0].intensity",
-                     ValueBase::CreateValue<float>(0.4f));
-    api->BindUniform(mPipeline.program, ShaderBuildInVariable::LIGHT_DATA_INSTANCE + "[0].color",
-                     ValueBase::CreateValue<Color3>(Color3(0.0, 1, 0.0)));
+    GlobalContext::GetLightManager().AddDirectionalLight(DirectionalLight{
+        .mDirection = Vector3(-2, 2, 2),
+        .mColor = Color3(0, 0, 1),
+        .mIntensity = 1.0f,
+    });
 
-    api->BindUniform(mPipeline.program, ShaderBuildInVariable::LIGHT_DATA_INSTANCE + "[1].type",
-                     ValueBase::CreateValue<int>(1));
-    api->BindUniform(mPipeline.program,
-                     ShaderBuildInVariable::LIGHT_DATA_INSTANCE + "[1].direction",
-                     ValueBase::CreateValue<Vector3>(Vector3(1, 1, 1)));
-    api->BindUniform(mPipeline.program,
-                     ShaderBuildInVariable::LIGHT_DATA_INSTANCE + "[1].intensity",
-                     ValueBase::CreateValue<float>(0.4f));
-    api->BindUniform(mPipeline.program, ShaderBuildInVariable::LIGHT_DATA_INSTANCE + "[1].color",
-                     ValueBase::CreateValue<Color3>(Color3(1, 0.0, 0.0)));
+    GlobalContext::GetLightManager().AddPointLight(PointLight{
+        .mPosition = Vector3(2, 2, 2),
+        .mColor = Color3(1, 0, 0),
+        .mIntensity = 1.0f,
+    });
+
+    GlobalContext::GetLightManager().AddPointLight(PointLight{
+        .mPosition = Vector3(2, -2, -2),
+        .mColor = Color3(0, 1, 0),
+        .mIntensity = 2.0f,
+    });
+
+    GlobalContext::GetLightManager().Bind(mMaterial);
 
     api->Draw(mObject->GetMeshSource()->GetRenderPrimitive(), mPipeline);
 
