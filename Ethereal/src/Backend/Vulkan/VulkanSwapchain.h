@@ -43,9 +43,12 @@ class VulkanSwapchain : public RefCounted {
 
     VkSemaphore GetRenderCompleteSemaphore() { return mSemaphores.RenderComplete; }
 
-   private:
     uint32_t AcquireNextImage();
 
+    void Present();
+    void ResetCommandPool();
+
+   private:
     void FindImageFormatAndColorSpace();
 
    private:
@@ -99,6 +102,7 @@ class VulkanSwapchain : public RefCounted {
     VkSurfaceKHR mSurface;
 
     friend class VulkanContext;
+    friend class VulkanDriverApi;
 };
 }  // namespace Backend
 }  // namespace Ethereal

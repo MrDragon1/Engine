@@ -31,7 +31,7 @@ class VulkanPhysicalDevice : public RefCounted {
     VulkanPhysicalDevice();
     ~VulkanPhysicalDevice();
 
-    void Init();
+    void Init(VkInstance instance);
     void Clean();
 
     bool IsExtensionSupported(const std::string& extensionName);
@@ -72,7 +72,7 @@ class VulkanDevice : public RefCounted {
    public:
     VulkanDevice();
     ~VulkanDevice();
-    void Init();
+    void Init(VkInstance instance);
     void Clean();
 
     Ref<VulkanPhysicalDevice> GetPhysicalDevice() { return mPhysicalDevice; }

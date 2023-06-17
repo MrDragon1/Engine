@@ -64,9 +64,13 @@ void Application::Run() {
         if (!mMinimized) {
             for (Ref<Layer> layer : mLayerStack) layer->OnUpdate(timestep);
         }
+
+        GlobalContext::GetDriverApi()->BeginFrame();
         mImGuiLayer->Begin();
         for (Ref<Layer> layer : mLayerStack) layer->OnImGuiRender();
         mImGuiLayer->End();
+        GlobalContext::GetDriverApi()->EndFrame();
+
         mWindow->OnUpdate();
     }
 }

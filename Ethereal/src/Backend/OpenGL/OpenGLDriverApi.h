@@ -105,6 +105,9 @@ struct GLRenderTarget : public RenderTarget {
 };
 
 class OpenGLDriverApi : public DriverApi {
+    void BeginFrame() override{};
+    void EndFrame() override{};
+
     void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) override;
     Ref<Texture> CreateTexture(uint8_t levels, uint32_t width, uint32_t height, uint32_t depth,
                                TextureFormat format, TextureUsage usage, TextureType type) override;

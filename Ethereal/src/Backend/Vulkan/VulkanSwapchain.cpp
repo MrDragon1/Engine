@@ -117,12 +117,10 @@ void VulkanSwapchain::Create(uint32_t width, uint32_t height) {
     } else {
         // If the surface size is defined, the swap chain size must match
         swapchainExtent = surfCaps.currentExtent;
-        width = surfCaps.currentExtent.width;
-        height = surfCaps.currentExtent.height;
     }
 
-    mWidth = width;
-    mHeight = height;
+    mWidth = swapchainExtent.width;
+    mHeight = swapchainExtent.height;
 
     // Select a present mode for the swapchain
 
@@ -436,13 +434,78 @@ void VulkanSwapchain::OnResize(uint32_t width, uint32_t height) {
 }
 
 uint32_t VulkanSwapchain::AcquireNextImage() {
-    uint32_t imageIndex;
     if (vkAcquireNextImageKHR(mDevice->GetDevice(), mSwapchain, UINT64_MAX,
                               mSemaphores.PresentComplete, VK_NULL_HANDLE,
-                              &imageIndex) != VK_SUCCESS) {
+                              &mCurrentImageIndex) != VK_SUCCESS) {
         throw std::runtime_error("Failed to acquire next image");
     }
-    return imageIndex;
+    return mCurrentImageIndex;
+}
+
+void VulkanSwapchain::Present() {
+    const uint64_t DEFAULT_FENCE_TIMEOUT = 100000000000;
+
+    VkPipelineStageFlags waitStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+
+    VkSubmitInfo submitInfo = {};
+    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+    submitInfo.pWaitDstStageMask = &waitStageMask;
+    submitInfo.pWaitSemaphores = &mSemaphores.PresentComplete;
+    submitInfo.waitSemaphoreCount = 1;
+    submitInfo.pSignalSemaphores = &mSemaphores.RenderComplete;
+    submitInfo.signalSemaphoreCount = 1;
+    submitInfo.pCommandBuffers = &mCommandBuffers[mCurrentBufferIndex].CommandBuffer;
+    submitInfo.commandBufferCount = 1;
+
+    if (vkResetFences(mDevice->GetDevice(), 1, &mWaitFences[mCurrentBufferIndex]) != VK_SUCCESS) {
+        throw std::runtime_error("Failed to reset fence");
+    }
+    if (vkQueueSubmit(mDevice->GetGraphicsQueue(), 1, &submitInfo,
+                      mWaitFences[mCurrentBufferIndex]) != VK_SUCCESS) {
+        throw std::runtime_error("Failed to submit to queue");
+    }
+
+    // Present the current buffer to the swap chain
+    // Pass the semaphore signaled by the command buffer submission from the submit info as the wait
+    // semaphore for swap chain presentation This ensures that the image is not presented to the
+    // windowing system until all commands have been submitted
+    VkResult result;
+    {
+        VkPresentInfoKHR presentInfo = {};
+        presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+        presentInfo.pNext = NULL;
+        presentInfo.swapchainCount = 1;
+        presentInfo.pSwapchains = &mSwapchain;
+        presentInfo.pImageIndices = &mCurrentImageIndex;
+
+        presentInfo.pWaitSemaphores = &mSemaphores.RenderComplete;
+        presentInfo.waitSemaphoreCount = 1;
+        result = vkQueuePresentKHR(mDevice->GetGraphicsQueue(), &presentInfo);
+    }
+
+    if (result != VK_SUCCESS) {
+        if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR) {
+            OnResize(mWidth, mHeight);
+        } else {
+            throw std::runtime_error("Failed to present swap chain image");
+        }
+    }
+
+    {
+        mCurrentBufferIndex = (mCurrentBufferIndex + 1) % MAX_FRAMES_IN_FLIGHT;
+        // Make sure the frame we're requesting has finished rendering
+        if (vkWaitForFences(mDevice->GetDevice(), 1, &mWaitFences[mCurrentBufferIndex], VK_TRUE,
+                            UINT64_MAX) != VK_SUCCESS) {
+            throw std::runtime_error("Failed to wait for fence");
+        }
+    }
+}
+
+void VulkanSwapchain::ResetCommandPool() {
+    if (vkResetCommandPool(mDevice->GetDevice(), mCommandBuffers[mCurrentBufferIndex].CommandPool,
+                           0) != VK_SUCCESS) {
+        throw std::runtime_error("Failed to reset command pool");
+    }
 }
 
 void VulkanSwapchain::FindImageFormatAndColorSpace() {

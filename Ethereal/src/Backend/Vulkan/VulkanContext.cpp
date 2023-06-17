@@ -97,7 +97,7 @@ void VulkanContext::CreateInstance() {
 
 void VulkanContext::CreateDevice() {
     mDevice = Ref<VulkanDevice>::Create();
-    mDevice->Init();
+    mDevice->Init(mInstance);
 }
 
 void VulkanContext::SetupDebugMessenger() {

@@ -22,6 +22,9 @@ class DriverApi : public RefCounted {
      * The function below is provided to Driver
      */
    public:
+    virtual void BeginFrame() = 0;
+    virtual void EndFrame() = 0;
+
     virtual void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) = 0;
 
     virtual Ref<Texture> CreateTexture(uint8_t levels, uint32_t width, uint32_t height,

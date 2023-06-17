@@ -1,4 +1,5 @@
 #include "VulkanDriverApi.h"
+#include "Core/Material/MaterialBase/Value.h"
 
 namespace Ethereal {
 namespace Backend {
@@ -12,6 +13,14 @@ void VulkanDriverApi::Init() {
 }
 
 void VulkanDriverApi::Clean() { mContext->Clean(); }
+
+void VulkanDriverApi::BeginFrame() {
+    mContext->mSwapchain->AcquireNextImage();
+
+    mContext->mSwapchain->ResetCommandPool();
+}
+
+void VulkanDriverApi::EndFrame() { mContext->mSwapchain->Present(); }
 
 }  // namespace Backend
 }  // namespace Ethereal
