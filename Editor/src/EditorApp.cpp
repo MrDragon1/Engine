@@ -10,7 +10,7 @@
 namespace Ethereal {
 class Editor : public Application {
    public:
-    Editor() : Application("Engine Editor") { PushLayer(new EditorLayer()); }
+    Editor() : Application("Engine Editor") { PushLayer(Ref<EditorLayer>::Create()); }
 
     ~Editor() {}
 };

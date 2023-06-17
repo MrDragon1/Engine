@@ -14,7 +14,7 @@ Application* Application::sInstance = nullptr;
 Application::Application(const std::string& name) {
     ET_CORE_ASSERT(!sInstance, "Application already exists!")
     sInstance = this;
-    mWindow = Window::Create(WindowProps(name));
+    mWindow = Window::Create(GlobalContext::GetBackendType(), WindowProps(name));
     mWindow->SetEventCallback(ET_BIND_EVENT_FN(Application::OnEvent));
     Reflection::TypeMetaRegister::Register();
 
@@ -22,7 +22,7 @@ Application::Application(const std::string& name) {
 
     GlobalContext::Reset();
 
-    mImGuiLayer = new ImGuiLayer();
+    mImGuiLayer = ImGuiLayer::Create(GlobalContext::GetBackendType());
     PushOverlay(mImGuiLayer);
 }
 
@@ -34,12 +34,12 @@ Application::~Application() {
     Project::SetActive(nullptr);
 }
 
-void Application::PushLayer(Layer* layer) {
+void Application::PushLayer(Ref<Layer> layer) {
     mLayerStack.PushLayer(layer);
     layer->OnAttach();
 }
 
-void Application::PushOverlay(Layer* layer) {
+void Application::PushOverlay(Ref<Layer> layer) {
     mLayerStack.PushOverlay(layer);
     layer->OnAttach();
 }
@@ -62,10 +62,10 @@ void Application::Run() {
         mLastFrameTime = time;
 
         if (!mMinimized) {
-            for (Layer* layer : mLayerStack) layer->OnUpdate(timestep);
+            for (Ref<Layer> layer : mLayerStack) layer->OnUpdate(timestep);
         }
         mImGuiLayer->Begin();
-        for (Layer* layer : mLayerStack) layer->OnImGuiRender();
+        for (Ref<Layer> layer : mLayerStack) layer->OnImGuiRender();
         mImGuiLayer->End();
         mWindow->OnUpdate();
     }

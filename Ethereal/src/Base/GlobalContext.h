@@ -28,6 +28,7 @@ class GlobalContext final : public Singleton<GlobalContext> {
     }
 
     static Ref<UniformManager> GetUniformManager() { return mUniformManager; }
+    static BackendType GetBackendType() { return mBackendType; }
 
    private:
     static RenderSystem mRenderSystem;
@@ -35,5 +36,6 @@ class GlobalContext final : public Singleton<GlobalContext> {
     static Ref<UniformManager> mUniformManager;
     static LightManager mLightManager;
     static Vector2 mViewportSize;
+    static BackendType mBackendType;
 };
 }  // namespace Ethereal

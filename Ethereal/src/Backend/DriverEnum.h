@@ -9,6 +9,7 @@ static constexpr size_t MAX_VERTEX_ATTRIBUTE_COUNT = 16u;
 enum class BackendType : uint8_t {
     NONE = 0,
     OPENGL = 1,
+    VULKAN = 2,
 };
 
 enum class TextureUsage : uint8_t {

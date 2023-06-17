@@ -6,27 +6,22 @@
 #include "Base/Event/KeyEvent.h"
 #include "Base/Event/MouseEvent.h"
 
-namespace Ethereal
-{
-    class ImGuiLayer : public Layer {
-      public:
-        ImGuiLayer();
-        ~ImGuiLayer();
+#include "Backend/DriverEnum.h"
+namespace Ethereal {
+class ImGuiLayer : public Layer {
+   public:
+    ImGuiLayer();
+    static Ref<ImGuiLayer> Create(BackendType backend);
 
-        virtual void OnAttach() override;
-        virtual void OnDetach() override;
-        virtual void OnImGuiRender() override;
-        virtual void OnEvent(Event& e) override;
+    virtual void BlockEvents(bool block) { mBlockEvents = block; }
+    virtual void Begin() = 0;
+    virtual void End() = 0;
 
-        void BlockEvents(bool block) { mBlockEvents = block; }
-        void Begin();
-        void End();
+   protected:
+    virtual void SetDarkThemeColors();
 
-      private:
-        void SetDarkThemeColors();
-
-      private:
-        float mTime = 0.0f;
-        bool mBlockEvents = true;
-    };
+   private:
+    float mTime = 0.0f;
+    bool mBlockEvents = true;
+};
 }  // namespace Ethereal

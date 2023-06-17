@@ -6,9 +6,10 @@
 #include "Base/Event/MouseEvent.h"
 
 namespace Ethereal {
-void APIENTRY glDebugOutput(GLenum source, GLenum type, unsigned int id, GLenum severity, GLsizei length, const char* message,
-                            const void* userParam) {
-    if (id == 131169 || id == 131185 || id == 131218 || id == 131204) return;  // ignore these non-significant error codes
+void APIENTRY glDebugOutput(GLenum source, GLenum type, unsigned int id, GLenum severity,
+                            GLsizei length, const char* message, const void* userParam) {
+    if (id == 131169 || id == 131185 || id == 131218 || id == 131204)
+        return;  // ignore these non-significant error codes
 
     std::cout << "---------------" << std::endl;
     std::cout << "Debug message (" << id << "): " << message << std::endl;
@@ -84,12 +85,6 @@ void APIENTRY glDebugOutput(GLenum source, GLenum type, unsigned int id, GLenum 
     std::cout << std::endl;
 }
 
-static bool sGLFWInitialized = false;
-
-static void GLFWErrorCallback(int error, const char* description) { ET_ERROR("GLFW Error ({0}): {1}", error, description); }
-
-Scope<Window> Window::Create(const WindowProps& props) { return CreateScope<GLWindow>(props); }
-
 GLWindow::GLWindow(const WindowProps& props) { Init(props); }
 
 GLWindow::~GLWindow() { Shutdown(); }
@@ -132,27 +127,28 @@ void GLWindow::Init(const WindowProps& props) {
         data.EventCallback(event);
     });
 
-    glfwSetKeyCallback(mWindow, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
-        WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+    glfwSetKeyCallback(mWindow,
+                       [](GLFWwindow* window, int key, int scancode, int action, int mods) {
+                           WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
-        switch (action) {
-            case GLFW_PRESS: {
-                KeyPressedEvent event(key, 0);
-                data.EventCallback(event);
-                break;
-            }
-            case GLFW_RELEASE: {
-                KeyReleasedEvent event(key);
-                data.EventCallback(event);
-                break;
-            }
-            case GLFW_REPEAT: {
-                KeyPressedEvent event(key, true);
-                data.EventCallback(event);
-                break;
-            }
-        }
-    });
+                           switch (action) {
+                               case GLFW_PRESS: {
+                                   KeyPressedEvent event(key, 0);
+                                   data.EventCallback(event);
+                                   break;
+                               }
+                               case GLFW_RELEASE: {
+                                   KeyReleasedEvent event(key);
+                                   data.EventCallback(event);
+                                   break;
+                               }
+                               case GLFW_REPEAT: {
+                                   KeyPressedEvent event(key, true);
+                                   data.EventCallback(event);
+                                   break;
+                               }
+                           }
+                       });
 
     glfwSetCharCallback(mWindow, [](GLFWwindow* window, unsigned int keycode) {
         WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
@@ -199,7 +195,8 @@ void GLWindow::Init(const WindowProps& props) {
         glEnable(GL_DEBUG_OUTPUT);
         glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);  // makes sure errors are displayed synchronously
         glDebugMessageCallback(glDebugOutput, nullptr);
-        glDebugMessageControl(GL_DEBUG_SOURCE_API, GL_DEBUG_TYPE_ERROR, GL_DEBUG_SEVERITY_HIGH, 0, nullptr, GL_TRUE);
+        glDebugMessageControl(GL_DEBUG_SOURCE_API, GL_DEBUG_TYPE_ERROR, GL_DEBUG_SEVERITY_HIGH, 0,
+                              nullptr, GL_TRUE);
     }
 }
 

@@ -16,12 +16,13 @@ class Application {
     void Run();
     void OnEvent(Event& e);
 
-    void PushLayer(Layer* layer);
-    void PushOverlay(Layer* layer);
+    void PushLayer(Ref<Layer> layer);
+    void PushOverlay(Ref<Layer> layer);
     Window& GetWindow() { return *mWindow; }
-    ImGuiLayer* GetImGuiLayer() { return mImGuiLayer; }
+    Ref<ImGuiLayer> GetImGuiLayer() { return mImGuiLayer; }
 
-    /// Creates & Dispatches an event either immediately, or adds it to an event queue which will be proccessed at the end of each frame
+    /// Creates & Dispatches an event either immediately, or adds it to an event queue which will be
+    /// processed at the end of each frame
     template <typename TEvent, bool DispatchImmediately = true, typename... TEventArgs>
     void DispatchEvent(TEventArgs&&... args) {
         static_assert(std::is_assignable_v<Event, TEvent>);
@@ -45,7 +46,7 @@ class Application {
     std::unique_ptr<Window> mWindow;
     bool mRunning = true;
     bool mMinimized = false;
-    ImGuiLayer* mImGuiLayer;
+    Ref<ImGuiLayer> mImGuiLayer;
     LayerStack mLayerStack;
     float mLastFrameTime = 0.0f;
 
