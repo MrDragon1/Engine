@@ -7,7 +7,7 @@ LightManager GlobalContext::mLightManager;
 Vector2 GlobalContext::mViewportSize = {1280.0f, 720.0f};
 Backend::Driver* GlobalContext::mDriver = nullptr;
 Ref<UniformManager> GlobalContext::mUniformManager = nullptr;
-BackendType GlobalContext::mBackendType = BackendType::OPENGL;
+BackendType GlobalContext::mBackendType = BackendType::VULKAN;
 
 GlobalContext::GlobalContext() {}
 

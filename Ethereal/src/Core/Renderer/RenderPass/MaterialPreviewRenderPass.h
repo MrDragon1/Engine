@@ -11,7 +11,7 @@ class MaterialPreviewRenderPass : public RenderPass {
     void OnResize(uint32_t width, uint32_t height) override;
 
     void SetMaterial(MaterialCorePtr mat);
-    TextureHandle GetMainImage() { return mRenderTarget->color[0]; }
+    TextureHandle GetMainImage();
 
    private:
     friend class RenderSystem;

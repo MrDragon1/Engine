@@ -45,9 +45,15 @@ void VulkanContext::Init() {
     auto& window = Application::Get().GetWindow();
     mSwapchain->InitSurface(window.GetNativeWindow());
     mSwapchain->Create(window.GetWidth(), window.GetHeight());
+
+    // init sampler cache
+    mSamplerCache = Ref<VulkanSamplerCache>::Create();
+    mSamplerCache->Init(mDevice->GetDevice());
 }
 
 void VulkanContext::Clean() {
+    mSamplerCache->Reset();
+
     mSwapchain->Clean();
 
     DestroyDebugUtilsMessengerEXT(mInstance, debugMessenger, nullptr);
@@ -64,10 +70,10 @@ void VulkanContext::CreateInstance() {
     VkApplicationInfo appInfo{};
     appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
     appInfo.pApplicationName = "Hello Triangle";
-    appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
+    appInfo.applicationVersion = VK_MAKE_VERSION(1, 3, 0);
     appInfo.pEngineName = "No Engine";
-    appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
-    appInfo.apiVersion = VK_API_VERSION_1_0;
+    appInfo.engineVersion = VK_MAKE_VERSION(1, 3, 0);
+    appInfo.apiVersion = VK_API_VERSION_1_3;
 
     VkInstanceCreateInfo createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;

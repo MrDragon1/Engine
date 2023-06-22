@@ -89,6 +89,8 @@ class VulkanDevice : public RefCounted {
     VkCommandBuffer GetCommandBuffer(bool begin, bool compute = false);
     void FlushCommandBuffer(VkCommandBuffer commandBuffer);
     void FlushCommandBuffer(VkCommandBuffer commandBuffer, VkQueue queue);
+    uint32_t GetMemoryType(uint32_t typeBits, VkMemoryPropertyFlags properties,
+                           VkBool32* memTypeFound = nullptr);
 
    private:
     Ref<VulkanPhysicalDevice> mPhysicalDevice;
@@ -99,6 +101,8 @@ class VulkanDevice : public RefCounted {
 
     VkQueue mGraphicsQueue;
     VkQueue mComputeQueue;
+
+    VkPhysicalDeviceMemoryProperties memoryProperties;
 };
 }  // namespace Backend
 }  // namespace Ethereal

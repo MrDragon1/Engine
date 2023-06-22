@@ -16,8 +16,10 @@ enum class TextureUsage : uint8_t {
     NONE = 0x1 << 0,
     COLOR_ATTACHMENT = 0x1 << 1,
     DEPTH_ATTACHMENT = 0x1 << 2,
-    SAMPLEABLE = 0x1 << 3,
-    UPLOADABLE = 0x1 << 4,
+    STENCIL_ATTACHMENT = 0x1 << 3,
+    SAMPLEABLE = 0x1 << 4,
+    UPLOADABLE = 0x1 << 5,
+    SUBPASS_INPUT = 0x1 << 6,
     DEFAULT = SAMPLEABLE | UPLOADABLE,
 };
 
@@ -253,15 +255,28 @@ struct SamplerParams {
         params.compareFunc = SamplerCompareFunc::LE;
         return params;
     }
+    union {
+        struct {
+            SamplerMagFilter filterMag : 1;
+            SamplerMinFilter filterMin : 3;
+            SamplerWrapMode wrapS : 2;
+            SamplerWrapMode wrapT : 2;
 
-    SamplerMagFilter filterMag : 1;
-    SamplerMinFilter filterMin : 3;
-    SamplerWrapMode wrapS : 2;
-    SamplerWrapMode wrapT : 2;
-    SamplerWrapMode wrapR : 2;
-    uint8_t anisotropyLog2 : 3;
-    SamplerCompareMode compareMode : 1;
-    SamplerCompareFunc compareFunc : 3;
+            SamplerWrapMode wrapR : 2;
+            uint8_t anisotropyLog2 : 3;
+            SamplerCompareMode compareMode : 1;
+            uint8_t padding0 : 2;
+
+            SamplerCompareFunc compareFunc : 3;
+            uint8_t padding1 : 5;
+
+            uint8_t padding2 : 8;
+        };
+        uint32_t u;
+    };
+
+   private:
+    friend inline bool operator<(SamplerParams lhs, SamplerParams rhs) { return lhs.u < rhs.u; }
 };
 
 struct RenderPassParams {

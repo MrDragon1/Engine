@@ -44,7 +44,9 @@ void RenderSystem::Init() {
     // Must after mEnvironmentMapRenderPass Init
     mBuildinData->Environment = AssetManager::GetAsset<Environment>("skyboxs/Newport_Loft_Ref.hdr");
 
-    mMainImage = mMainCameraRenderPass->mRenderTarget->color[0];
+    auto api = GlobalContext::GetDriverApi();
+
+    mMainImage = api->GetColorAttachment(mMainCameraRenderPass->mRenderTarget, 0);
 }
 
 void RenderSystem::Draw(TimeStamp ts) {
@@ -52,7 +54,8 @@ void RenderSystem::Draw(TimeStamp ts) {
     // mMainCameraRenderPass->mFramebuffer->Bind();
     // RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1});
     // RenderCommand::Clear();
-    mMainImage = mMainCameraRenderPass->mRenderTarget->color[0];
+    auto api = GlobalContext::GetDriverApi();
+    mMainImage = api->GetColorAttachment(mMainCameraRenderPass->mRenderTarget, 0);
     mCSMRenderPass->Draw();
 
     mMainCameraRenderPass->Draw();

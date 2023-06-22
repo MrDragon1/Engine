@@ -1,6 +1,7 @@
 #pragma once
 #include "Backend/Vulkan/VulkanDevice.h"
 #include "Backend/Vulkan/VulkanSwapchain.h"
+#include "Backend/Vulkan/VulkanSamplerCache.h"
 namespace Ethereal {
 namespace Backend {
 class VulkanContext : public RefCounted {
@@ -30,6 +31,8 @@ class VulkanContext : public RefCounted {
     VkDebugUtilsMessengerEXT debugMessenger;
 
     Ref<VulkanSwapchain> mSwapchain;
+
+    Ref<VulkanSamplerCache> mSamplerCache;
 };
 }  // namespace Backend
 }  // namespace Ethereal

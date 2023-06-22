@@ -129,4 +129,9 @@ void MaterialPreviewRenderPass::SetMaterial(MaterialCorePtr mat) {
     mPipeline.program = mat->GetProgram();
 }
 
+TextureHandle MaterialPreviewRenderPass::GetMainImage() {
+    auto api = GlobalContext::GetDriverApi();
+    return api->GetColorAttachment(mRenderTarget, 0);
+}
+
 }  // namespace Ethereal

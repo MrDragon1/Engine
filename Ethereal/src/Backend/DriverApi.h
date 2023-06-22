@@ -76,7 +76,7 @@ class DriverApi : public RefCounted {
     virtual void GetSubTexture(TextureHandle th, uint32_t layer, TextureHandle dst) = 0;
     virtual int ReadPixel(RenderTargetHandle rth, uint32_t attachmentIndex, uint32_t xoffset,
                           uint32_t yoffset) = 0;
-
+    virtual TextureHandle GetColorAttachment(RenderTargetHandle rth, uint32_t attachmentIndex) = 0;
     virtual void Clear() = 0;
     virtual uint32_t UseProgram(ProgramHandle program) = 0;
     virtual void BindUniform(ProgramHandle program, const string& name, ValueBasePtr value) = 0;

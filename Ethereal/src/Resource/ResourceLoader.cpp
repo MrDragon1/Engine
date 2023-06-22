@@ -36,26 +36,31 @@ Matrix4 Mat4FromAssimpMat4(const aiMatrix4x4& matrix) {
 
 Vector3 Vec3FromAssimpVec3(const aiVector3D& vec) { return Vector3(vec.x, vec.y, vec.z); }
 
-Quaternion QuatFromAssimpQuat(const aiQuaternion& pOrientation) { return Quaternion(pOrientation.w, pOrientation.x, pOrientation.y, pOrientation.z); }
+Quaternion QuatFromAssimpQuat(const aiQuaternion& pOrientation) {
+    return Quaternion(pOrientation.w, pOrientation.x, pOrientation.y, pOrientation.z);
+}
 
 }  // namespace Utils
 
-static const uint32_t sMeshImportFlags = aiProcess_CalcTangentSpace |  // Create binormals/tangents just in case
-                                         aiProcess_Triangulate |       // Make sure we're triangles
-                                         aiProcess_SortByPType |       // Split meshes by primitive type
-                                         aiProcess_GenNormals |        // Make sure we have legit normals
-                                         aiProcess_GenUVCoords |       // Convert UVs if required
-                                                                       // 		aiProcess_OptimizeGraph |
-                                         aiProcess_OptimizeMeshes |    // Batch draws where possible
-                                         aiProcess_JoinIdenticalVertices |
-                                         aiProcess_GlobalScale |  // e.g. convert cm to m for fbx import (and other formats where cm is native)
-                                         aiProcess_ValidateDataStructure;  // Validation
+static const uint32_t sMeshImportFlags =
+    aiProcess_CalcTangentSpace |  // Create binormals/tangents just in case
+    aiProcess_Triangulate |       // Make sure we're triangles
+    aiProcess_SortByPType |       // Split meshes by primitive type
+    aiProcess_GenNormals |        // Make sure we have legit normals
+    aiProcess_GenUVCoords |       // Convert UVs if required
+                                  // 		aiProcess_OptimizeGraph |
+    aiProcess_OptimizeMeshes |    // Batch draws where possible
+    aiProcess_JoinIdenticalVertices |
+    aiProcess_GlobalScale |  // e.g. convert cm to m for fbx import (and other formats where cm is
+                             // native)
+    aiProcess_ValidateDataStructure;  // Validation
 
 struct LogStream : public Assimp::LogStream {
     static void Initialize() {
         if (Assimp::DefaultLogger::isNullLogger()) {
             Assimp::DefaultLogger::create("", Assimp::Logger::VERBOSE);
-            Assimp::DefaultLogger::get()->attachStream(new LogStream, Assimp::Logger::Err | Assimp::Logger::Warn);
+            Assimp::DefaultLogger::get()->attachStream(new LogStream,
+                                                       Assimp::Logger::Err | Assimp::Logger::Warn);
         }
     }
     virtual void write(const char* message) override {
@@ -73,10 +78,11 @@ Ref<Texture> ResourceLoader::LoadTexture(const std::string& path, bool flip) {
     bool hdr = path.ends_with(".hdr");
     void* data;
     if (hdr)
-        data = stbi_loadf(path.c_str(), &width, &height, &channels, 0);
+        data = stbi_loadf(path.c_str(), &width, &height, &channels, STBI_rgb_alpha);
     else
-        data = stbi_load(path.c_str(), &width, &height, &channels, 0);
-
+        data = stbi_load(path.c_str(), &width, &height, &channels,
+                         STBI_rgb_alpha);  // force 4 channels, will add alpha if not present
+    channels = 4;
     if (data) {
         auto api = GlobalContext::GetDriverApi();
 
@@ -113,9 +119,11 @@ Ref<Texture> ResourceLoader::LoadTexture(const std::string& path, bool flip) {
             }
         }
 
-        texture = api->CreateTexture(1, width, height, 1, textureFormat, TextureUsage::DEFAULT, TextureType::TEXTURE_2D);
-        PixelBufferDescriptor pixelDesc(pixels, datasize, dataFormat,
-                                        hdr ? PixelDataType::FLOAT : PixelDataType::UBYTE);  // The image loaded is 4 channel
+        texture = api->CreateTexture(1, width, height, 1, textureFormat, TextureUsage::DEFAULT,
+                                     TextureType::TEXTURE_2D);
+        PixelBufferDescriptor pixelDesc(
+            pixels, datasize, dataFormat,
+            hdr ? PixelDataType::FLOAT : PixelDataType::UBYTE);  // The image loaded is 4 channel
         api->SetTextureData(texture, 0, 0, 0, 0, width, height, 1, std::move(pixelDesc));
 
         stbi_image_free(data);
@@ -142,7 +150,8 @@ Ref<MeshSource> ResourceLoader::LoadMeshSource(const std::string& path) {
         return ms;
     }
     ms->mScene = scene;
-    ms->mInverseTransform = Math::Inverse(Utils::Mat4FromAssimpMat4(scene->mRootNode->mTransformation));
+    ms->mInverseTransform =
+        Math::Inverse(Utils::Mat4FromAssimpMat4(scene->mRootNode->mTransformation));
     ms->mIsAnimated = scene->mAnimations != nullptr;
     if (ms->mIsAnimated) {
         Ref<Skeleton> skel = Ref<Skeleton>::Create();
@@ -177,12 +186,15 @@ Ref<MeshSource> ResourceLoader::LoadMeshSource(const std::string& path) {
         if (ms->mIsAnimated) {
             for (size_t i = 0; i < mesh->mNumVertices; i++) {
                 AnimationVertex vertex;
-                vertex.Position = {mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z};
+                vertex.Position = {mesh->mVertices[i].x, mesh->mVertices[i].y,
+                                   mesh->mVertices[i].z};
                 vertex.Normal = {mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z};
 
                 if (mesh->HasTangentsAndBitangents()) {
-                    vertex.Tangent = {mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z};
-                    vertex.Binormal = {mesh->mBitangents[i].x, mesh->mBitangents[i].y, mesh->mBitangents[i].z};
+                    vertex.Tangent = {mesh->mTangents[i].x, mesh->mTangents[i].y,
+                                      mesh->mTangents[i].z};
+                    vertex.Binormal = {mesh->mBitangents[i].x, mesh->mBitangents[i].y,
+                                       mesh->mBitangents[i].z};
                 }
 
                 if (mesh->HasTextureCoords(0))
@@ -198,7 +210,8 @@ Ref<MeshSource> ResourceLoader::LoadMeshSource(const std::string& path) {
             aabb.Max = {-FLT_MAX, -FLT_MAX, -FLT_MAX};
             for (size_t i = 0; i < mesh->mNumVertices; i++) {
                 Vertex vertex;
-                vertex.Position = {mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z};
+                vertex.Position = {mesh->mVertices[i].x, mesh->mVertices[i].y,
+                                   mesh->mVertices[i].z};
                 vertex.Normal = {mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z};
                 aabb.Min.x = Math::Min(vertex.Position.x, aabb.Min.x);
                 aabb.Min.y = Math::Min(vertex.Position.y, aabb.Min.y);
@@ -208,8 +221,10 @@ Ref<MeshSource> ResourceLoader::LoadMeshSource(const std::string& path) {
                 aabb.Max.z = Math::Max(vertex.Position.z, aabb.Max.z);
 
                 if (mesh->HasTangentsAndBitangents()) {
-                    vertex.Tangent = {mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z};
-                    vertex.Binormal = {mesh->mBitangents[i].x, mesh->mBitangents[i].y, mesh->mBitangents[i].z};
+                    vertex.Tangent = {mesh->mTangents[i].x, mesh->mTangents[i].y,
+                                      mesh->mTangents[i].z};
+                    vertex.Binormal = {mesh->mBitangents[i].x, mesh->mBitangents[i].y,
+                                       mesh->mBitangents[i].z};
                 }
 
                 if (mesh->HasTextureCoords(0))
@@ -224,7 +239,8 @@ Ref<MeshSource> ResourceLoader::LoadMeshSource(const std::string& path) {
         // Indices
         for (size_t i = 0; i < mesh->mNumFaces; i++) {
             ET_CORE_ASSERT(mesh->mFaces[i].mNumIndices == 3, "Must have 3 indices.");
-            Index index = {mesh->mFaces[i].mIndices[0], mesh->mFaces[i].mIndices[1], mesh->mFaces[i].mIndices[2]};
+            Index index = {mesh->mFaces[i].mIndices[0], mesh->mFaces[i].mIndices[1],
+                           mesh->mFaces[i].mIndices[2]};
             ms->mIndices.push_back(index);
         }
     }
@@ -379,7 +395,8 @@ Ref<MeshSource> ResourceLoader::LoadMeshSource(const std::string& path) {
             };
 
             const size_t size = sizeof(AnimationVertex) * ms->mAnimationVertices.size();
-            BufferObjectHandle bufferObject = api->CreateBufferObject(size, BufferObjectBinding::VERTEX, BufferUsage::STATIC);
+            BufferObjectHandle bufferObject =
+                api->CreateBufferObject(size, BufferObjectBinding::VERTEX, BufferUsage::STATIC);
             BufferDescriptor vertexBufferDesc(ms->mAnimationVertices.data(), size);
             api->UpdateBufferObject(bufferObject, std::move(vertexBufferDesc), 0);
 
@@ -425,7 +442,8 @@ Ref<MeshSource> ResourceLoader::LoadMeshSource(const std::string& path) {
             };
 
             const size_t size = sizeof(Vertex) * ms->mStaticVertices.size();
-            BufferObjectHandle bufferObject = api->CreateBufferObject(size, BufferObjectBinding::VERTEX, BufferUsage::STATIC);
+            BufferObjectHandle bufferObject =
+                api->CreateBufferObject(size, BufferObjectBinding::VERTEX, BufferUsage::STATIC);
             BufferDescriptor vertexBufferDesc(ms->mStaticVertices.data(), size);
             api->UpdateBufferObject(bufferObject, std::move(vertexBufferDesc), 0);
 
@@ -436,11 +454,13 @@ Ref<MeshSource> ResourceLoader::LoadMeshSource(const std::string& path) {
         uint32_t mIndexCount = 3 * ms->mIndices.size();
         ElementType elementType = ElementType::UINT;
         static_assert(sizeof(uint32_t) == 4);
-        IndexBufferHandle indexBuffer = api->CreateIndexBuffer(elementType, mIndexCount, BufferUsage::STATIC);
+        IndexBufferHandle indexBuffer =
+            api->CreateIndexBuffer(elementType, mIndexCount, BufferUsage::STATIC);
         BufferDescriptor indexBufferDesc(ms->mIndices.data(), mIndexCount * sizeof(uint32_t));
         api->UpdateIndexBuffer(indexBuffer, std::move(indexBufferDesc), 0);
 
-        ms->mRenderPrimitive = api->CreateRenderPrimitive(vertexBuffer, indexBuffer, PrimitiveType::TRIANGLES, 0, 0, 0, mIndexCount);
+        ms->mRenderPrimitive = api->CreateRenderPrimitive(
+            vertexBuffer, indexBuffer, PrimitiveType::TRIANGLES, 0, 0, 0, mIndexCount);
     }
     return ms;
 }
@@ -454,7 +474,8 @@ Ref<Environment> ResourceLoader::LoadEnvironmentMap(const std::string& path) {
     return asset;
 }
 
-void ResourceLoader::TraverseNodes(Ref<MeshSource>& ms, aiNode* node, const Matrix4& parentTransform, uint32_t level) {
+void ResourceLoader::TraverseNodes(Ref<MeshSource>& ms, aiNode* node,
+                                   const Matrix4& parentTransform, uint32_t level) {
     Matrix4 localTransform = Utils::Mat4FromAssimpMat4(node->mTransformation);
     Matrix4 transform = parentTransform * localTransform;
     ms->mNodeMap[node].resize(node->mNumMeshes);
@@ -466,7 +487,8 @@ void ResourceLoader::TraverseNodes(Ref<MeshSource>& ms, aiNode* node, const Matr
         submesh.LocalTransform = localTransform;
         ms->mNodeMap[node][i] = mesh;
     }
-    for (uint32_t i = 0; i < node->mNumChildren; i++) TraverseNodes(ms, node->mChildren[i], transform, level + 1);
+    for (uint32_t i = 0; i < node->mNumChildren; i++)
+        TraverseNodes(ms, node->mChildren[i], transform, level + 1);
 }
 
 void ResourceLoader::TraverseNodesAnim(Ref<MeshSource>& ms, aiNode* node, Ref<Joint>& joint) {

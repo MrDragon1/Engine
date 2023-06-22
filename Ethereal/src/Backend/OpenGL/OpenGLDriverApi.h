@@ -100,6 +100,11 @@ struct GLProgram : public Program {
 struct GLRenderTarget : public RenderTarget {
     using RenderTarget::RenderTarget;
     struct {
+        Ref<Texture> color[MAX_SUPPORTED_RENDER_TARGET_COUNT];
+        Ref<Texture> depth;
+        Ref<Texture> stencil;
+        TargetBufferFlags targets = {};
+
         GLuint id;
     } gl;
 };
@@ -155,6 +160,9 @@ class OpenGLDriverApi : public DriverApi {
     void GetSubTexture(TextureHandle th, uint32_t layer, TextureHandle dst) override;
     int ReadPixel(RenderTargetHandle rth, uint32_t attachmentIndex, uint32_t xoffset,
                   uint32_t yoffset) override;
+
+    virtual TextureHandle GetColorAttachment(RenderTargetHandle rth,
+                                             uint32_t attachmentIndex) override;
     void Clear() override;
 
     uint32_t UseProgram(ProgramHandle program) override;

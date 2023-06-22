@@ -125,10 +125,6 @@ using MRT = std::array<TargetBufferInfo, MAX_SUPPORTED_RENDER_TARGET_COUNT>;
 struct RenderTarget : public RefCounted {
     uint32_t width{};
     uint32_t height{};
-    Ref<Texture> color[MAX_SUPPORTED_RENDER_TARGET_COUNT];
-    Ref<Texture> depth;
-    Ref<Texture> stencil;
-    TargetBufferFlags targets = {};
 
     RenderTarget() noexcept = default;
     RenderTarget(uint32_t w, uint32_t h) : width(w), height(h) {}

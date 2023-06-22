@@ -2,7 +2,9 @@
 
 namespace Ethereal {
 
-size_t PixelBufferDescriptor::ComputeDataSize(PixelDataFormat format, PixelDataType type, uint32_t stride, uint32_t height, uint32_t alignment) {
+size_t PixelBufferDescriptor::ComputeDataSize(PixelDataFormat format, PixelDataType type,
+                                              uint32_t stride, uint32_t height,
+                                              uint32_t alignment) {
     size_t n = 0;
     switch (format) {
         case PixelDataFormat::R:

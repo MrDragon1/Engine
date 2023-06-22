@@ -223,6 +223,9 @@ void VulkanDevice::Init(VkInstance instance) {
 
     // Get a compute queue from the device
     vkGetDeviceQueue(mDevice, mPhysicalDevice->mQueueFamilyIndices.Compute, 0, &mComputeQueue);
+
+    vkGetPhysicalDeviceMemoryProperties(mPhysicalDevice->GetVulkanPhysicalDevice(),
+                                        &memoryProperties);
 }
 
 void VulkanDevice::Clean() {
@@ -314,5 +317,28 @@ void VulkanDevice::FlushCommandBuffer(VkCommandBuffer commandBuffer, VkQueue que
     vkDestroyFence(mDevice, fence, nullptr);
     vkFreeCommandBuffers(mDevice, mCommandPool, 1, &commandBuffer);
 }
+
+uint32_t VulkanDevice::GetMemoryType(uint32_t typeBits, VkMemoryPropertyFlags properties,
+                                     VkBool32* memTypeFound) {
+    for (uint32_t i = 0; i < memoryProperties.memoryTypeCount; i++) {
+        if ((typeBits & 1) == 1) {
+            if ((memoryProperties.memoryTypes[i].propertyFlags & properties) == properties) {
+                if (memTypeFound) {
+                    *memTypeFound = true;
+                }
+                return i;
+            }
+        }
+        typeBits >>= 1;
+    }
+
+    if (memTypeFound) {
+        *memTypeFound = false;
+        return 0;
+    } else {
+        ET_CORE_ASSERT("Could not find a matching memory type");
+    }
+}
+
 }  // namespace Backend
 }  // namespace Ethereal
