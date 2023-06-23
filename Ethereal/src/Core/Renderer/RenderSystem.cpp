@@ -42,7 +42,8 @@ void RenderSystem::Init() {
     mMaterialPreviewRenderPass->Init(mWidth, mHeight);
 
     // Must after mEnvironmentMapRenderPass Init
-    mBuildinData->Environment = AssetManager::GetAsset<Environment>("skyboxs/Newport_Loft_Ref.hdr");
+    // mBuildinData->Environment =
+    // AssetManager::GetAsset<Environment>("skyboxs/Newport_Loft_Ref.hdr");
 
     auto api = GlobalContext::GetDriverApi();
 
@@ -51,44 +52,20 @@ void RenderSystem::Init() {
 
 void RenderSystem::Draw(TimeStamp ts) {
     LoadProjectSettings();
-    // mMainCameraRenderPass->mFramebuffer->Bind();
-    // RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1});
-    // RenderCommand::Clear();
+
     auto api = GlobalContext::GetDriverApi();
     mMainImage = api->GetColorAttachment(mMainCameraRenderPass->mRenderTarget, 0);
-    mCSMRenderPass->Draw();
 
-    mMainCameraRenderPass->Draw();
-
-    // mMainCameraRenderPass->mFramebuffer->Unbind();
-    // mMainImage = mMainCameraRenderPass->mFramebuffer->GetColorAttachment(0);
-
-    //// mShadowMapRenderPass->SetLightPosition();
     // mCSMRenderPass->Draw();
-
-    //// mShadowMapRenderPass->Draw();
-    //// mShadowMapRenderPass->mFramebuffer->GetDepthAttachment()->Bind(5);
-
-    // mMainCameraRenderPass->SetCSMData(mCSMRenderPass->GetData());
-    //// TODO: Radiance and Irradiance may used as reversed wrongly in shader!!!
-    // mEnvironment->RadianceMap->Bind(17);
-    // mEnvironment->IrradianceMap->Bind(16);
-    // RenderResource::BRDFLutTexture->Bind(15);
     // mMainCameraRenderPass->Draw();
 
-    //// TODO : make skybox render pass a subpass of main camera render pass
-    // mMainCameraRenderPass->mFramebuffer->Bind();
-    // mEnvironment->IrradianceMap->Bind(0);
-    // mSkyboxRenderPass->Draw();
-    // mMainCameraRenderPass->mFramebuffer->Unbind();
-
     // For postprocessing
-    if (Project::GetConfigManager().sBloomConfig.Enabled) {
-        mBloomRenderPass->SetMainImage(mMainImage);
-        mBloomRenderPass->Draw();
+    // if (Project::GetConfigManager().sBloomConfig.Enabled) {
+    //    mBloomRenderPass->SetMainImage(mMainImage);
+    //    mBloomRenderPass->Draw();
 
-        mMainImage = mBloomRenderPass->GetBloomImage();
-    }
+    //    mMainImage = mBloomRenderPass->GetBloomImage();
+    //}
 
     mDrawLists->MeshTransformMap.clear();
     mDrawLists->StaticMeshDrawList.clear();
@@ -101,11 +78,11 @@ void RenderSystem::OnResize() {
     mMainCameraRenderPass->OnResize(mWidth, mHeight);
 }
 
-uint64_t RenderSystem::GetMainImage() {
+TextureID RenderSystem::GetMainImage() {
     return GlobalContext::GetDriverApi()->GetTextueID(mMainImage);
 }
 
-uint64_t RenderSystem::GetSkyboxImage() {
+TextureID RenderSystem::GetSkyboxImage() {
     return GlobalContext::GetDriverApi()->GetTextueID(mEnvironmentMapRenderPass->mInputTexture);
 };
 
@@ -113,7 +90,7 @@ int RenderSystem::GetMousePicking(int x, int y) {
     return mMainCameraRenderPass->GetMousePicking(x, y);
 }
 
-uint64_t RenderSystem::DrawMaterialPreview(MaterialCorePtr mat, uint32_t width, uint32_t height) {
+TextureID RenderSystem::DrawMaterialPreview(MaterialCorePtr mat, uint32_t width, uint32_t height) {
     mMaterialPreviewRenderPass->OnResize(width, height);
     mMaterialPreviewRenderPass->SetMaterial(mat);
     mMaterialPreviewRenderPass->Draw();

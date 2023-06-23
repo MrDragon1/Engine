@@ -44,7 +44,7 @@ void VulkanImGuiLayer::OnAttach() {
         style.WindowRounding = 0.0f;
         style.Colors[ImGuiCol_WindowBg].w = 1.0f;
     }
-
+    SetDarkThemeColors();
     VkDescriptorPool descriptorPool;
 
     // Create Descriptor Pool
@@ -90,6 +90,7 @@ void VulkanImGuiLayer::OnAttach() {
     // Upload Fonts
     {
         io.Fonts->AddFontFromFileTTF("C:/windows/Fonts/arial.ttf", 14.0f);
+        io.Fonts->AddFontFromFileTTF("C:/windows/Fonts/arialbd.ttf", 14.0f);
 
         VkCommandBuffer commandBuffer = context->mDevice->GetCommandBuffer(true);
         ImGui_ImplVulkan_CreateFontsTexture(commandBuffer);
@@ -126,7 +127,7 @@ void VulkanImGuiLayer::OnDetach() {
 void VulkanImGuiLayer::OnImGuiRender() {
     static bool show = true;
     ImGui::ShowDemoWindow(&show);
-    ImGui::ShowDebugLogWindow();
+    // ImGui::ShowDebugLogWindow();
 }
 
 void VulkanImGuiLayer::OnEvent(Event& event) {}

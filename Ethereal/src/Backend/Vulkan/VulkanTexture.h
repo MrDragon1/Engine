@@ -24,6 +24,7 @@ class VulkanTexture : public Texture {
     void TransitionLayout(VkCommandBuffer buffer, VulkanLayout newLayout,
                           VkImageSubresourceRange range);
 
+    VkImageView GetPrimaryImageView() const { return mCachedImageViews.at(mPrimaryViewRange); }
     VulkanLayout GetPrimaryImageLayout() {
         return GetLayout(mPrimaryViewRange.baseArrayLayer, mPrimaryViewRange.baseMipLevel);
     }

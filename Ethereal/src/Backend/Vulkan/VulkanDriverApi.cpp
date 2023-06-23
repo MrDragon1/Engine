@@ -2,6 +2,7 @@
 #include "Core/Material/MaterialBase/Value.h"
 #include "Backend/Vulkan/VulkanTexture.h"
 #include "Backend/Vulkan/VulkanBuffer.h"
+#include "backends/imgui_impl_vulkan.h"
 namespace Ethereal {
 namespace Backend {
 VulkanDriverApi::VulkanDriverApi() { Init(); }
@@ -268,6 +269,23 @@ void VulkanDriverApi::UpdateSamplerGroup(SamplerGroupHandle sgh, SamplerGroupDes
 
 void VulkanDriverApi::BindSamplerGroup(uint8_t binding, SamplerGroupHandle sgh) {
     mSamplerGroupBindings[binding] = sgh.As<VulkanSamplerGroup>();
+}
+
+TextureID VulkanDriverApi::GetTextueID(TextureHandle th) {
+    Ref<VulkanTexture> vulkanTexture = th.As<VulkanTexture>();
+
+    if (vulkanTexture->textureid == (TextureID)INVALID_UINT32) {
+        auto imageview = vulkanTexture->GetPrimaryImageView();
+        if (!imageview) {
+            ET_CORE_WARN("Texture has no imageview!");
+            return 0;
+        }
+        SamplerParams params = SamplerParams::Default();
+        vulkanTexture->textureid = (TextureID)ImGui_ImplVulkan_AddTexture(
+            mSamplerCache->GetSampler(params), imageview,
+            VulkanUtils::GetVkImageLayout(vulkanTexture->GetPrimaryImageLayout()));
+    }
+    return vulkanTexture->textureid;
 }
 
 TextureHandle VulkanDriverApi::GetColorAttachment(RenderTargetHandle rth,

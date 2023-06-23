@@ -25,7 +25,7 @@ using ProgramHandle = Ref<Program>;
 using RenderTargetHandle = Ref<RenderTarget>;
 
 static constexpr uint32_t INVALID_UINT32 = 0xffffffff;
-
+using TextureID = void*;
 struct Texture : public Asset {
     uint32_t width;
     uint32_t height;
@@ -35,6 +35,7 @@ struct Texture : public Asset {
     TextureFormat format;
     TextureUsage usage;
     TextureType type;
+    TextureID textureid = (TextureID)INVALID_UINT32;
     Texture(uint32_t width, uint32_t height, uint32_t depth, uint32_t levels, TextureFormat format,
             TextureUsage usage, TextureType type)
         : width(width),

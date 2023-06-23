@@ -6,6 +6,7 @@
 #include "UniformBuffer.h"
 namespace Ethereal {
 using ValueBasePtr = Ref<class ValueBase>;
+
 namespace Backend {
 /*
  * DriverApi aggregates the hardware operations that support by OpenGL & Vulkan. Only this class can
@@ -72,7 +73,7 @@ class DriverApi : public RefCounted {
     virtual void GenerateMipmaps(TextureHandle th) = 0;
     virtual void SetRenderTargetAttachment(RenderTargetHandle rth, TargetBufferInfo const& info,
                                            TargetBufferFlags flag) = 0;
-    virtual uint32_t GetTextueID(TextureHandle th) = 0;
+    virtual TextureID GetTextueID(TextureHandle th) = 0;
     virtual void GetSubTexture(TextureHandle th, uint32_t layer, TextureHandle dst) = 0;
     virtual int ReadPixel(RenderTargetHandle rth, uint32_t attachmentIndex, uint32_t xoffset,
                           uint32_t yoffset) = 0;

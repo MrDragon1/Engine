@@ -60,11 +60,11 @@ void ContentBrowserPanel::OnImGuiRender(bool& isOpen) {
             bool press = false;
             if (Utils::IsImageFormat(path.string())) {
                 Ref<Texture> img = AssetManager::GetAsset<Texture>(path.string()).As<Texture>();
-                press = ImGui::ImageButton((ImTextureID)(intptr_t)api->GetTextueID(img),
-                                           {thumbnailSize, thumbnailSize}, {0, 1}, {1, 0});
+                press = ImGui::ImageButton(api->GetTextueID(img), {thumbnailSize, thumbnailSize},
+                                           {0, 1}, {1, 0});
             } else
-                press = ImGui::ImageButton((ImTextureID)(intptr_t)api->GetTextueID(icon),
-                                           {thumbnailSize, thumbnailSize}, {0, 1}, {1, 0});
+                press = ImGui::ImageButton(api->GetTextueID(icon), {thumbnailSize, thumbnailSize},
+                                           {0, 1}, {1, 0});
 
             if (press) {
                 mSelectedDirectory = directoryEntry.path();

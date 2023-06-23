@@ -7,7 +7,8 @@ void EnvironmentMapRenderPass::Init(uint32_t width, uint32_t height) {
     ShaderSource source;
     source[ShaderType::VERTEX] = EQUIRECTANGULARTOCUBEMAP_VERT;
     source[ShaderType::FRAGMENT] = EQUIRECTANGULARTOCUBEMAP_FRAG;
-    mEquirectangularToCubeMapPipeline.program = api->CreateProgram("EQUIRECTANGULARTOCUBEMAP", source);
+    mEquirectangularToCubeMapPipeline.program =
+        api->CreateProgram("EQUIRECTANGULARTOCUBEMAP", source);
     source[ShaderType::VERTEX] = PREFILTER_VERT;
     source[ShaderType::FRAGMENT] = PREFILTER_FRAG;
     mPrefilterPipeline.program = api->CreateProgram("PREFILTER", source);
@@ -17,37 +18,52 @@ void EnvironmentMapRenderPass::Init(uint32_t width, uint32_t height) {
 
     auto usage = TextureUsage::COLOR_ATTACHMENT | TextureUsage::SAMPLEABLE;
 
-    auto dummyTex = api->CreateTexture(1, width, height, 1, TextureFormat::R16G16B16A16_HDR, usage, TextureType::TEXTURE_2D);
-    mRenderTarget = api->CreateRenderTarget(TargetBufferFlags::COLOR0, width, height, {dummyTex}, {}, {});
+    auto dummyTex = api->CreateTexture(1, width, height, 1, TextureFormat::R16G16B16A16_HDR, usage,
+                                       TextureType::TEXTURE_2D);
+    mRenderTarget =
+        api->CreateRenderTarget(TargetBufferFlags::COLOR0, width, height, {dummyTex}, {}, {});
 
     mCube = RenderResource::Cube;
 
-    mEnvironmentCubeMap = api->CreateTexture(1, 32, 32, 6, TextureFormat::R16G16B16A16_HDR, usage, TextureType::TEXTURE_CUBEMAP);
-    mReflectionCubeMap = api->CreateTexture(10, 512, 512, 6, TextureFormat::R16G16B16A16_HDR, usage, TextureType::TEXTURE_CUBEMAP);
+    mEnvironmentCubeMap = api->CreateTexture(1, 32, 32, 6, TextureFormat::R16G16B16A16_HDR, usage,
+                                             TextureType::TEXTURE_CUBEMAP);
+    mReflectionCubeMap = api->CreateTexture(10, 512, 512, 6, TextureFormat::R16G16B16A16_HDR, usage,
+                                            TextureType::TEXTURE_CUBEMAP);
     api->GenerateMipmaps(mReflectionCubeMap);
-    mTextureCube = api->CreateTexture(1, 512, 512, 6, TextureFormat::R16G16B16A16_HDR, usage, TextureType::TEXTURE_CUBEMAP);
+    mTextureCube = api->CreateTexture(1, 512, 512, 6, TextureFormat::R16G16B16A16_HDR, usage,
+                                      TextureType::TEXTURE_CUBEMAP);
 
     mEquirectangularToCubeMapPipeline.rasterState.depthFunc = RasterState::DepthFunc::LE;
 
-    mUniformBuffer = api->CreateBufferObject(mUniformInterfaceBuffer.GetSize(), BufferObjectBinding::UNIFORM, BufferUsage::STATIC);
+    mUniformBuffer = api->CreateBufferObject(mUniformInterfaceBuffer.GetSize(),
+                                             BufferObjectBinding::UNIFORM, BufferUsage::STATIC);
     api->UpdateBufferObject(mUniformBuffer, mUniformInterfaceBuffer.ToBufferDescriptor(), 0);
 
     mSamplerGroup = api->CreateSamplerGroup(1);
     mSamplerGroupDesc = SamplerGroupDescriptor(1);
+
+    mParams.flags.clearMask = TargetBufferFlags::COLOR0;
 }
 
 void EnvironmentMapRenderPass::Draw() {
     Matrix4 captureProjection = Math::Perspective(Math::Radians(90.0f), 1.0f, 0.1f, 10.0f);
-    Matrix4 captureViews[] = {Math::LookAt(Vector3(0.0f, 0.0f, 0.0f), Vector3(1.0f, 0.0f, 0.0f), Vector3(0.0f, -1.0f, 0.0f)),
-                              Math::LookAt(Vector3(0.0f, 0.0f, 0.0f), Vector3(-1.0f, 0.0f, 0.0f), Vector3(0.0f, -1.0f, 0.0f)),
-                              Math::LookAt(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f), Vector3(0.0f, 0.0f, 1.0f)),
-                              Math::LookAt(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, -1.0f, 0.0f), Vector3(0.0f, 0.0f, -1.0f)),
-                              Math::LookAt(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, -1.0f, 0.0f)),
-                              Math::LookAt(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, -1.0f), Vector3(0.0f, -1.0f, 0.0f))};
+    Matrix4 captureViews[] = {Math::LookAt(Vector3(0.0f, 0.0f, 0.0f), Vector3(1.0f, 0.0f, 0.0f),
+                                           Vector3(0.0f, -1.0f, 0.0f)),
+                              Math::LookAt(Vector3(0.0f, 0.0f, 0.0f), Vector3(-1.0f, 0.0f, 0.0f),
+                                           Vector3(0.0f, -1.0f, 0.0f)),
+                              Math::LookAt(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f),
+                                           Vector3(0.0f, 0.0f, 1.0f)),
+                              Math::LookAt(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, -1.0f, 0.0f),
+                                           Vector3(0.0f, 0.0f, -1.0f)),
+                              Math::LookAt(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 1.0f),
+                                           Vector3(0.0f, -1.0f, 0.0f)),
+                              Math::LookAt(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, -1.0f),
+                                           Vector3(0.0f, -1.0f, 0.0f))};
     auto api = GlobalContext::GetDriverApi();
     auto uniformManager = GlobalContext::GetUniformManager();
 
-    api->SetRenderTargetAttachment(mRenderTarget, {.handle = mTextureCube, .level = 0, .layer = 0}, TargetBufferFlags::COLOR0);
+    api->SetRenderTargetAttachment(mRenderTarget, {.handle = mTextureCube, .level = 0, .layer = 0},
+                                   TargetBufferFlags::COLOR0);
     api->BeginRenderPass(mRenderTarget, mParams);
     auto& s = mUniformInterfaceBuffer.Edit();
     // Generate Environment CubeMap
@@ -60,7 +76,9 @@ void EnvironmentMapRenderPass::Draw() {
         };
         s.ViewMatrix = captureViews[i];
 
-        api->SetRenderTargetAttachment(mRenderTarget, {.handle = mTextureCube, .level = 0, .layer = i}, TargetBufferFlags::COLOR0);
+        api->SetRenderTargetAttachment(mRenderTarget,
+                                       {.handle = mTextureCube, .level = 0, .layer = i},
+                                       TargetBufferFlags::COLOR0);
 
         api->UpdateBufferObject(mUniformBuffer, mUniformInterfaceBuffer.ToBufferDescriptor(), 0);
         api->BindUniformBuffer(0, mUniformBuffer);
@@ -73,7 +91,9 @@ void EnvironmentMapRenderPass::Draw() {
 
     api->EndRenderPass();
 
-    api->SetRenderTargetAttachment(mRenderTarget, {.handle = mEnvironmentCubeMap, .level = 0, .layer = 0}, TargetBufferFlags::COLOR0);
+    api->SetRenderTargetAttachment(mRenderTarget,
+                                   {.handle = mEnvironmentCubeMap, .level = 0, .layer = 0},
+                                   TargetBufferFlags::COLOR0);
     api->BeginRenderPass(mRenderTarget, mParams);
     // Convolution
     for (uint16_t i = 0; i < 6; i++) {
@@ -84,7 +104,9 @@ void EnvironmentMapRenderPass::Draw() {
         };
         s.ViewMatrix = captureViews[i];
 
-        api->SetRenderTargetAttachment(mRenderTarget, {.handle = mEnvironmentCubeMap, .level = 0, .layer = i}, TargetBufferFlags::COLOR0);
+        api->SetRenderTargetAttachment(mRenderTarget,
+                                       {.handle = mEnvironmentCubeMap, .level = 0, .layer = i},
+                                       TargetBufferFlags::COLOR0);
 
         api->UpdateBufferObject(mUniformBuffer, mUniformInterfaceBuffer.ToBufferDescriptor(), 0);
         api->BindUniformBuffer(0, mUniformBuffer);
@@ -108,7 +130,9 @@ void EnvironmentMapRenderPass::Draw() {
 
         s.Roughness = roughness;
 
-        api->SetRenderTargetAttachment(mRenderTarget, {.handle = mReflectionCubeMap, .level = mip, .layer = 0}, TargetBufferFlags::COLOR0);
+        api->SetRenderTargetAttachment(mRenderTarget,
+                                       {.handle = mReflectionCubeMap, .level = mip, .layer = 0},
+                                       TargetBufferFlags::COLOR0);
         api->BeginRenderPass(mRenderTarget, mParams);
         for (uint32_t i = 0; i < 6; i++) {
             mSamplerGroupDesc[0] = SamplerDescriptor{
@@ -118,9 +142,12 @@ void EnvironmentMapRenderPass::Draw() {
             };
             s.ViewMatrix = captureViews[i];
 
-            api->SetRenderTargetAttachment(mRenderTarget, {.handle = mReflectionCubeMap, .level = mip, .layer = i}, TargetBufferFlags::COLOR0);
+            api->SetRenderTargetAttachment(mRenderTarget,
+                                           {.handle = mReflectionCubeMap, .level = mip, .layer = i},
+                                           TargetBufferFlags::COLOR0);
 
-            api->UpdateBufferObject(mUniformBuffer, mUniformInterfaceBuffer.ToBufferDescriptor(), 0);
+            api->UpdateBufferObject(mUniformBuffer, mUniformInterfaceBuffer.ToBufferDescriptor(),
+                                    0);
             api->BindUniformBuffer(0, mUniformBuffer);
 
             api->UpdateSamplerGroup(mSamplerGroup, mSamplerGroupDesc);
@@ -131,5 +158,7 @@ void EnvironmentMapRenderPass::Draw() {
     }
 }
 
-void EnvironmentMapRenderPass::OnResize(uint32_t width, uint32_t height) { ET_CORE_INFO("EnvironmentMapRenderPass::OnResize"); }
+void EnvironmentMapRenderPass::OnResize(uint32_t width, uint32_t height) {
+    ET_CORE_INFO("EnvironmentMapRenderPass::OnResize");
+}
 }  // namespace Ethereal

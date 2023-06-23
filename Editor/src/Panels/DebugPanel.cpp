@@ -8,8 +8,10 @@
 namespace Ethereal {
 DebugPanel::DebugPanel() {
     auto api = GlobalContext::GetDriverApi();
-    mCSMShadowMap = api->CreateTexture(1, Project::GetConfigManager().sCSMConfig.ShadowMapSize, Project::GetConfigManager().sCSMConfig.ShadowMapSize, 1,
-                       TextureFormat::DEPTH, TextureUsage::DEFAULT, TextureType::TEXTURE_2D);
+    mCSMShadowMap =
+        api->CreateTexture(1, Project::GetConfigManager().sCSMConfig.ShadowMapSize,
+                           Project::GetConfigManager().sCSMConfig.ShadowMapSize, 1,
+                           TextureFormat::DEPTH, TextureUsage::DEFAULT, TextureType::TEXTURE_2D);
 }
 
 void DebugPanel::OnImGuiRender(bool& isOpen) {
@@ -33,7 +35,7 @@ void DebugPanel::OnImGuiRender(bool& isOpen) {
         auto api = GlobalContext::GetDriverApi();
         api->GetSubTexture(shadowmap, CSMSelectLayer, mCSMShadowMap);
 
-        ImGui::Image((ImTextureID)(intptr_t)api->GetTextueID(mCSMShadowMap), ImVec2(256, 256), ImVec2(0, 1), ImVec2(1, 0));
+        ImGui::Image(api->GetTextueID(mCSMShadowMap), ImVec2(256, 256), ImVec2(0, 1), ImVec2(1, 0));
     }
     ImGui::End();
 }

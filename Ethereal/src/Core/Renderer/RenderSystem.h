@@ -39,14 +39,14 @@ class RenderSystem : public RefCounted {
 
     uint32_t GetMainImageHeight() { return mHeight; };
     uint32_t GetMainImageWidth() { return mWidth; };
-    uint64_t GetMainImage();
-    uint64_t GetSkyboxImage();
+    TextureID GetMainImage();
+    TextureID GetSkyboxImage();
     int GetMousePicking(int x, int y);
 
     Ref<CSMRenderPass> GetCSMRenderPass() { return mCSMRenderPass; }
     Ref<Environment> GetEnv() { return mEnvironment; }
 
-    uint64_t DrawMaterialPreview(MaterialCorePtr mat, uint32_t width, uint32_t height);
+    TextureID DrawMaterialPreview(MaterialCorePtr mat, uint32_t width, uint32_t height);
 
    private:
     Ref<MainCameraRenderPass> mMainCameraRenderPass;
