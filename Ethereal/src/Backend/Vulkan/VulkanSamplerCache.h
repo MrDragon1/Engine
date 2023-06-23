@@ -5,7 +5,9 @@ namespace Ethereal {
 namespace Backend {
 class VulkanSamplerGroup : public SamplerGroup {
    public:
-    VulkanSamplerGroup(uint32_t){};  // TODO: Implement
+    VulkanSamplerGroup(uint32_t size) : descs(size){};
+
+    std::vector<SamplerDescriptor> descs;
 };
 
 class VulkanSamplerCache : public RefCounted {

@@ -21,6 +21,7 @@ VulkanTexture::VulkanTexture(Ref<VulkanContext> context, uint32_t width, uint32_
     if (type == TextureType::TEXTURE_CUBEMAP) {
         imageInfo.arrayLayers = 6;
         imageInfo.flags = VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT;
+        imageInfo.extent = {width, height, 1};
     }
     if (type == TextureType::TEXTURE_2D_ARRAY) {
         imageInfo.arrayLayers = depth;

@@ -3,6 +3,9 @@
 #include "Backend/Vulkan/VulkanContext.h"
 #include "Backend/Vulkan/VulkanBase.h"
 
+#include "Backend/Vulkan/VulkanSamplerCache.h"
+#include "Backend/Vulkan/VulkanFramebufferCache.h"
+
 namespace Ethereal {
 namespace Backend {
 class VulkanDriverApi : public DriverApi {
@@ -47,7 +50,7 @@ class VulkanDriverApi : public DriverApi {
     virtual void DestroyRenderTarget(Ref<RenderTarget> handle) {}
 
     virtual void Draw(Ref<RenderPrimitive> rph, PipelineState pipeline) {}
-    virtual void BeginRenderPass(RenderTargetHandle rth, const RenderPassParams& params) {}
+    virtual void BeginRenderPass(RenderTargetHandle rth, const RenderPassParams& params) override;
     virtual void EndRenderPass() {}
 
     virtual void SetVertexBufferObject(Ref<VertexBuffer> vbh, uint32_t index,
@@ -59,9 +62,9 @@ class VulkanDriverApi : public DriverApi {
     virtual void SetTextureData(Ref<Texture> texture, uint32_t levels, uint32_t xoffset,
                                 uint32_t yoffset, uint32_t zoffset, uint32_t width, uint32_t height,
                                 uint32_t depth, const PixelBufferDescriptor& desc) override;
-    virtual void UpdateSamplerGroup(SamplerGroupHandle sgh, SamplerGroupDescriptor& desc) {}
-    virtual void BindSamplerGroup(uint8_t binding, SamplerGroupHandle sgh) {}
-    virtual void BindUniformBuffer(uint8_t binding, BufferObjectHandle boh) {}
+    virtual void UpdateSamplerGroup(SamplerGroupHandle sgh, SamplerGroupDescriptor& desc) override;
+    virtual void BindSamplerGroup(uint8_t binding, SamplerGroupHandle sgh) override;
+    virtual void BindUniformBuffer(uint8_t binding, BufferObjectHandle boh){};
 
     virtual void GenerateMipmaps(TextureHandle th) {}
     virtual void SetRenderTargetAttachment(RenderTargetHandle rth, TargetBufferInfo const& info,
@@ -86,6 +89,11 @@ class VulkanDriverApi : public DriverApi {
 
    private:
     Ref<VulkanContext> mContext;
+
+    std::array<Ref<VulkanSamplerGroup>, SAMPLER_BINDING_COUNT> mSamplerGroupBindings;
+
+    Ref<VulkanSamplerCache> mSamplerCache;
+    Ref<VulkanFramebufferCache> mFramebufferCache;
 };
 }  // namespace Backend
 }  // namespace Ethereal

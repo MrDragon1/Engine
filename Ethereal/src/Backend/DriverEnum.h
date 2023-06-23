@@ -5,6 +5,7 @@
 namespace Ethereal {
 static constexpr size_t MAX_SUPPORTED_RENDER_TARGET_COUNT = 8u;
 static constexpr size_t MAX_VERTEX_ATTRIBUTE_COUNT = 16u;
+static constexpr size_t SAMPLER_BINDING_COUNT = 4u;
 
 enum class BackendType : uint8_t {
     NONE = 0,
@@ -279,17 +280,6 @@ struct SamplerParams {
     friend inline bool operator<(SamplerParams lhs, SamplerParams rhs) { return lhs.u < rhs.u; }
 };
 
-struct RenderPassParams {
-    Vector4 clearColor = {0, 0, 0, 1};
-};
-
-struct RasterState {
-    using DepthFunc = SamplerCompareFunc;
-    bool EnableDepthWrite = true;
-    bool EnableDepthTest = true;
-    DepthFunc depthFunc = DepthFunc::L;
-};
-
 enum class TargetBufferFlags : uint32_t {
     NONE = 0x0u,
     COLOR0 = 0x00000001u,
@@ -351,6 +341,59 @@ enum class Precision : uint8_t {
     HIGH,
     DEFAULT,
 };
+
+struct RenderPassFlags {
+    /**
+     * bitmask indicating which buffers to clear at the beginning of a render pass.
+     * This implies discard.
+     */
+    TargetBufferFlags clearMask;
+
+    /**
+     * bitmask indicating which buffers to discard at the beginning of a render pass.
+     * Discarded buffers have uninitialized content, they must be entirely drawn over or cleared.
+     */
+    TargetBufferFlags discardStart;
+
+    /**
+     * bitmask indicating which buffers to discard at the end of a render pass.
+     * Discarded buffers' content becomes invalid, they must not be read from again.
+     */
+    TargetBufferFlags discardEnd;
+};
+
+struct Viewport {
+    int32_t left;     //!< left coordinate in window space.
+    int32_t bottom;   //!< bottom coordinate in window space.
+    uint32_t width;   //!< width in pixels
+    uint32_t height;  //!< height in pixels
+    //! get the right coordinate in window space of the viewport
+    int32_t right() const noexcept { return left + int32_t(width); }
+    //! get the top coordinate in window space of the viewport
+    int32_t top() const noexcept { return bottom + int32_t(height); }
+};
+
+struct DepthRange {
+    float near_ = 0.0f;
+    float far_ = 1.0f;
+};
+
+struct RenderPassParams {
+    RenderPassFlags flags;
+    Viewport viewport{};
+    DepthRange depthRange{};
+    Vector4 clearColor = {0, 0, 0, 1};
+    double clearDepth = 0.0;
+    uint32_t clearStencil = 0;
+};
+
+struct RasterState {
+    using DepthFunc = SamplerCompareFunc;
+    bool EnableDepthWrite = true;
+    bool EnableDepthTest = true;
+    DepthFunc depthFunc = DepthFunc::L;
+};
+
 }  // namespace Ethereal
 
 template <>

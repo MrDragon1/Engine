@@ -45,15 +45,9 @@ void VulkanContext::Init() {
     auto& window = Application::Get().GetWindow();
     mSwapchain->InitSurface(window.GetNativeWindow());
     mSwapchain->Create(window.GetWidth(), window.GetHeight());
-
-    // init sampler cache
-    mSamplerCache = Ref<VulkanSamplerCache>::Create();
-    mSamplerCache->Init(mDevice->GetDevice());
 }
 
 void VulkanContext::Clean() {
-    mSamplerCache->Reset();
-
     mSwapchain->Clean();
 
     DestroyDebugUtilsMessengerEXT(mInstance, debugMessenger, nullptr);

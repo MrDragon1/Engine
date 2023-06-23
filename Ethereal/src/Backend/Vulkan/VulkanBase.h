@@ -31,9 +31,6 @@ struct VulkanIndexBuffer : public IndexBuffer {
 struct VulkanRenderPrimitive : public RenderPrimitive {
     void SetPrimitiveType(PrimitiveType pt);
     void SetBuffers(Ref<VulkanVertexBuffer> vertexBuffer, Ref<VulkanIndexBuffer> indexBuffer);
-
-    Ref<VulkanVertexBuffer> vertexBuffer;
-    Ref<VulkanIndexBuffer> indexBuffer;
     VkPrimitiveTopology primitiveTopology;
 };
 
@@ -60,8 +57,13 @@ struct VulkanAttachment {
     VkImageSubresourceRange GetSubresourceRange(VkImageAspectFlags aspect);
 };
 struct VulkanRenderTarget : public RenderTarget {
-    VulkanRenderTarget(Ref<VulkanContext> context, uint32_t width, uint32_t height);
-
+    VulkanRenderTarget(Ref<VulkanContext> context, uint32_t width, uint32_t height,
+                       VulkanAttachment color[MAX_SUPPORTED_RENDER_TARGET_COUNT],
+                       VulkanAttachment depthStencil[2]);
+    VkExtent2D GetExtent();
+    VulkanAttachment GetColor(int target);
+    VulkanAttachment GetDepth();
+    bool HasDepth() const { return depth.texture; }
     VulkanAttachment color[MAX_SUPPORTED_RENDER_TARGET_COUNT] = {};
     VulkanAttachment depth = {};
 };

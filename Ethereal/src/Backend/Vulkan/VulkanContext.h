@@ -31,8 +31,6 @@ class VulkanContext : public RefCounted {
     VkDebugUtilsMessengerEXT debugMessenger;
 
     Ref<VulkanSwapchain> mSwapchain;
-
-    Ref<VulkanSamplerCache> mSamplerCache;
 };
 }  // namespace Backend
 }  // namespace Ethereal

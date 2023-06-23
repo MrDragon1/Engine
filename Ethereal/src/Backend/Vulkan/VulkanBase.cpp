@@ -46,8 +46,8 @@ void VulkanRenderPrimitive::SetPrimitiveType(PrimitiveType pt) {
 
 void VulkanRenderPrimitive::SetBuffers(Ref<VulkanVertexBuffer> vertexBuffer,
                                        Ref<VulkanIndexBuffer> indexBuffer) {
-    vertexBuffer = vertexBuffer;
-    indexBuffer = indexBuffer;
+    this->vertexBuffer = vertexBuffer;
+    this->indexBuffer = indexBuffer;
 }
 
 VulkanProgram::VulkanProgram(Ref<VulkanContext> context, std::string_view name, ShaderSource source)
@@ -72,8 +72,21 @@ VulkanProgram::VulkanProgram(Ref<VulkanContext> context, std::string_view name, 
     }
 }
 
-VulkanRenderTarget::VulkanRenderTarget(Ref<VulkanContext> context, uint32_t width, uint32_t height)
-    : RenderTarget(width, height) {}
+VulkanRenderTarget::VulkanRenderTarget(Ref<VulkanContext> context, uint32_t width, uint32_t height,
+                                       VulkanAttachment color[MAX_SUPPORTED_RENDER_TARGET_COUNT],
+                                       VulkanAttachment depthStencil[2])
+    : RenderTarget(width, height) {
+    for (int index = 0; index < MAX_SUPPORTED_RENDER_TARGET_COUNT; index++) {
+        this->color[index] = color[index];
+    }
+    this->depth = depthStencil[0];
+}
+
+VkExtent2D VulkanRenderTarget::GetExtent() { return {width, height}; }
+
+VulkanAttachment VulkanRenderTarget::GetColor(int target) { return color[target]; }
+
+VulkanAttachment VulkanRenderTarget::GetDepth() { return depth; }
 
 VkImage VulkanAttachment::GetImage() { return texture ? texture->GetVkImage() : VK_NULL_HANDLE; }
 

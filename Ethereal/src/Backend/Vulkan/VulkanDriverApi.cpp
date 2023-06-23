@@ -1,7 +1,6 @@
 #include "VulkanDriverApi.h"
 #include "Core/Material/MaterialBase/Value.h"
 #include "Backend/Vulkan/VulkanTexture.h"
-#include "Backend/Vulkan/VulkanSamplerCache.h"
 #include "Backend/Vulkan/VulkanBuffer.h"
 namespace Ethereal {
 namespace Backend {
@@ -12,6 +11,12 @@ VulkanDriverApi::~VulkanDriverApi() { Clean(); }
 void VulkanDriverApi::Init() {
     mContext = Ref<VulkanContext>::Create();
     mContext->Init();
+
+    mSamplerCache = Ref<VulkanSamplerCache>::Create();
+    mSamplerCache->Init(mContext->mDevice->GetDevice());
+
+    mFramebufferCache = Ref<VulkanFramebufferCache>::Create();
+    mFramebufferCache->Init(mContext->mDevice->GetDevice());
 }
 
 void VulkanDriverApi::Clean() { mContext->Clean(); }
@@ -89,8 +94,8 @@ Ref<RenderTarget> VulkanDriverApi::CreateRenderTarget(TargetBufferFlags targets,
                                                       uint32_t height, MRT color,
                                                       TargetBufferInfo depth,
                                                       TargetBufferInfo stencil) {
-    uint32_t tmin[2] = {std::numeric_limits<uint32_t>::max()};
-    uint32_t tmax[2] = {0};
+    uint32_t tmin[2] = {std::numeric_limits<uint32_t>::max(), std::numeric_limits<uint32_t>::max()};
+    uint32_t tmax[2] = {0, 0};
     size_t attachmentCount = 0;
 
     VulkanAttachment colorTargets[MAX_SUPPORTED_RENDER_TARGET_COUNT] = {};
@@ -142,11 +147,86 @@ Ref<RenderTarget> VulkanDriverApi::CreateRenderTarget(TargetBufferFlags targets,
     // All attachments must have the same dimensions, which must be greater than or equal to the
     // render target dimensions.
     ET_CORE_ASSERT(attachmentCount > 0);
-    ET_CORE_ASSERT(tmin == tmax);
+    ET_CORE_ASSERT(tmin[0] == tmax[0] && tmin[1] == tmax[1]);
     ET_CORE_ASSERT(tmin[0] >= width && tmin[1] >= height);
 
-    Ref<VulkanRenderTarget> rt = Ref<VulkanRenderTarget>::Create(mContext, width, height);
+    Ref<VulkanRenderTarget> rt =
+        Ref<VulkanRenderTarget>::Create(mContext, width, height, colorTargets, depthStencil);
+
     return rt;
+}
+
+void VulkanDriverApi::BeginRenderPass(RenderTargetHandle rth, const RenderPassParams& params) {
+    Ref<VulkanRenderTarget> rt = rth.As<VulkanRenderTarget>();
+    const VkExtent2D extent = rt->GetExtent();
+
+    VulkanAttachment depth = rt->GetDepth();
+
+    VkCommandBuffer const cmdbuffer = mContext->mDevice->GetCommandBuffer(true);
+
+    for (uint8_t samplerGroupIdx = 0; samplerGroupIdx < SAMPLER_BINDING_COUNT; samplerGroupIdx++) {
+        Ref<VulkanSamplerGroup> vksb = mSamplerGroupBindings[samplerGroupIdx];
+        if (!vksb) {
+            continue;
+        }
+        std::vector<SamplerDescriptor> descs = vksb->descs;
+        for (const auto& boundSampler : descs) {
+            if (boundSampler.texture) {
+                Ref<VulkanTexture> texture = boundSampler.texture.As<VulkanTexture>();
+                if (!any(texture->usage & TextureUsage::DEPTH_ATTACHMENT)) {
+                    continue;
+                }
+
+                VkImageSubresourceRange const subresources{
+                    .aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
+                    .baseMipLevel = 0,
+                    .levelCount = texture->levels,
+                    .baseArrayLayer = 0,
+                    .layerCount = texture->depth,
+                };
+                texture->TransitionLayout(cmdbuffer, VulkanLayout::DEPTH_SAMPLER, subresources);
+                break;
+            }
+        }
+    }
+
+    VulkanLayout currentDepthLayout = depth.GetLayout();
+    VulkanLayout renderPassDepthLayout = VulkanLayout::DEPTH_ATTACHMENT;
+    VulkanLayout finalDepthLayout = renderPassDepthLayout;
+
+    if (depth.texture) {
+        if (currentDepthLayout != renderPassDepthLayout) {
+            depth.texture->TransitionLayout(cmdbuffer, renderPassDepthLayout,
+                                            depth.GetSubresourceRange(VK_IMAGE_ASPECT_DEPTH_BIT));
+            currentDepthLayout = renderPassDepthLayout;
+        }
+    }
+
+    VulkanFramebufferCache::RenderPassKey rpkey = {
+        .initialDepthLayout = currentDepthLayout,
+        .renderPassDepthLayout = renderPassDepthLayout,
+        .finalDepthLayout = finalDepthLayout,
+        .depthFormat = depth.GetFormat(),
+        .clearMask = params.flags.clearMask,
+        .discardStart = params.flags.discardStart,
+        .discardEnd = params.flags.discardEnd,
+    };
+
+    for (int i = 0; i < MAX_SUPPORTED_RENDER_TARGET_COUNT; i++) {
+        VulkanAttachment info = rt->GetColor(i);
+        if (info.texture) {
+            rpkey.colorFormat[i] = info.GetFormat();
+            if (info.texture->GetPrimaryImageLayout() != VulkanLayout::COLOR_ATTACHMENT) {
+                info.texture.As<VulkanTexture>()->TransitionLayout(
+                    cmdbuffer, VulkanLayout::COLOR_ATTACHMENT,
+                    info.GetSubresourceRange(VK_IMAGE_ASPECT_COLOR_BIT));
+            }
+        } else {
+            rpkey.colorFormat[i] = VK_FORMAT_UNDEFINED;
+        }
+    }
+
+    VkRenderPass renderPass = mFramebufferCache->GetRenderPass(rpkey);
 }
 
 void VulkanDriverApi::SetVertexBufferObject(Ref<VertexBuffer> vbh, uint32_t index,
@@ -176,9 +256,24 @@ void VulkanDriverApi::SetTextureData(Ref<Texture> texture, uint32_t levels, uint
     vulkanTexture->UpdateData(desc, width, height, depth, xoffset, yoffset, zoffset, levels);
 }
 
+void VulkanDriverApi::UpdateSamplerGroup(SamplerGroupHandle sgh, SamplerGroupDescriptor& desc) {
+    Ref<VulkanSamplerGroup> vulkanSamplerGroup = sgh.As<VulkanSamplerGroup>();
+    for (size_t i = 0; i < desc.size(); ++i) {
+        auto& entry = vulkanSamplerGroup->descs[i];
+        if (desc[i].texture) {
+            entry = desc[i];
+        }
+    }
+}
+
+void VulkanDriverApi::BindSamplerGroup(uint8_t binding, SamplerGroupHandle sgh) {
+    mSamplerGroupBindings[binding] = sgh.As<VulkanSamplerGroup>();
+}
+
 TextureHandle VulkanDriverApi::GetColorAttachment(RenderTargetHandle rth,
                                                   uint32_t attachmentIndex) {
-    return rth.As<VulkanRenderTarget>()->color[attachmentIndex].texture;
+    Ref<VulkanRenderTarget> vulkanRenderTarget = rth.As<VulkanRenderTarget>();
+    return vulkanRenderTarget->color[attachmentIndex].texture;
 }
 
 ///////////////////////////  Private Functions  ///////////////////////////////////
