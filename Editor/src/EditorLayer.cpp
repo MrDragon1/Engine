@@ -30,7 +30,6 @@ namespace Ethereal {
 EditorLayer::EditorLayer() : Layer("EditorLayer") {}
 
 void EditorLayer::OnAttach() {
-    EditorResource::Init();
     mPanelManager = CreateScope<PanelManager>();
 
     mPanelManager->AddPanel<SceneHierarchyPanel>(PanelCategory::View, SCENE_HIERARCHY_PANEL_ID,
@@ -53,7 +52,7 @@ void EditorLayer::OnAttach() {
     OpenScene("assets/scenes/meta.EScene");
 }
 
-void EditorLayer::OnDetach() { EditorResource::Shutdown(); }
+void EditorLayer::OnDetach() {}
 
 void EditorLayer::OnUpdate(TimeStamp ts) {
     mPanelManager->OnUpdate(ts);
