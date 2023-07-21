@@ -41,6 +41,9 @@ void RenderSystem::Init() {
     mMaterialPreviewRenderPass = Ref<MaterialPreviewRenderPass>::Create();
     mMaterialPreviewRenderPass->Init(mWidth, mHeight);
 
+    mTestRenderPass = Ref<TestRenderPass>::Create();
+    mTestRenderPass->Init(mWidth, mHeight);
+
     // Must after mEnvironmentMapRenderPass Init
     // mBuildinData->Environment =
     // AssetManager::GetAsset<Environment>("skyboxs/Newport_Loft_Ref.hdr");
@@ -55,6 +58,8 @@ void RenderSystem::Draw(TimeStamp ts) {
 
     auto api = GlobalContext::GetDriverApi();
     mMainImage = api->GetColorAttachment(mMainCameraRenderPass->mRenderTarget, 0);
+
+    mTestRenderPass->Draw();
 
     // mCSMRenderPass->Draw();
     // mMainCameraRenderPass->Draw();

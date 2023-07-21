@@ -43,6 +43,7 @@ void EnvironmentMapRenderPass::Init(uint32_t width, uint32_t height) {
     mSamplerGroupDesc = SamplerGroupDescriptor(1);
 
     mParams.flags.clearMask = TargetBufferFlags::COLOR0;
+    mParams.viewport = Viewport(0, 0, width, height);
 }
 
 void EnvironmentMapRenderPass::Draw() {
@@ -86,7 +87,8 @@ void EnvironmentMapRenderPass::Draw() {
         api->UpdateSamplerGroup(mSamplerGroup, mSamplerGroupDesc);
         api->BindSamplerGroup(0, mSamplerGroup);
 
-        api->Draw(mCube->GetMeshSource()->GetRenderPrimitive(), mEquirectangularToCubeMapPipeline);
+        // api->Draw(mCube->GetMeshSource()->GetRenderPrimitive(),
+        // mEquirectangularToCubeMapPipeline);
     }
 
     api->EndRenderPass();
@@ -113,7 +115,7 @@ void EnvironmentMapRenderPass::Draw() {
 
         api->UpdateSamplerGroup(mSamplerGroup, mSamplerGroupDesc);
         api->BindSamplerGroup(0, mSamplerGroup);
-        api->Draw(mCube->GetMeshSource()->GetRenderPrimitive(), mConvolutionPipeline);
+        // api->Draw(mCube->GetMeshSource()->GetRenderPrimitive(), mConvolutionPipeline);
     }
 
     // Generate Reflection CubeMap
@@ -152,7 +154,7 @@ void EnvironmentMapRenderPass::Draw() {
 
             api->UpdateSamplerGroup(mSamplerGroup, mSamplerGroupDesc);
             api->BindSamplerGroup(0, mSamplerGroup);
-            api->Draw(mCube->GetMeshSource()->GetRenderPrimitive(), mPrefilterPipeline);
+            // api->Draw(mCube->GetMeshSource()->GetRenderPrimitive(), mPrefilterPipeline);
         }
         api->EndRenderPass();
     }
@@ -160,5 +162,6 @@ void EnvironmentMapRenderPass::Draw() {
 
 void EnvironmentMapRenderPass::OnResize(uint32_t width, uint32_t height) {
     ET_CORE_INFO("EnvironmentMapRenderPass::OnResize");
+    mParams.viewport = Viewport(0, 0, width, height);
 }
 }  // namespace Ethereal

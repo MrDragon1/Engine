@@ -11,6 +11,7 @@ class VulkanBuffer : public RefCounted {
 
     void Clear();
     void LoadData(const BufferDescriptor& bd, uint32_t byteOffset);
+    VkBuffer GetBuffer() const { return mGpuBuffer; }
 
    private:
     Ref<VulkanContext> mContext;

@@ -378,6 +378,30 @@ struct DepthRange {
     float far_ = 1.0f;
 };
 
+//! blending equation function
+enum class BlendEquation : uint8_t {
+    ADD,               //!< the fragment is added to the color buffer
+    SUBTRACT,          //!< the fragment is subtracted from the color buffer
+    REVERSE_SUBTRACT,  //!< the color buffer is subtracted from the fragment
+    MIN,               //!< the min between the fragment and color buffer
+    MAX                //!< the max between the fragment and color buffer
+};
+
+//! blending function
+enum class BlendFunction : uint8_t {
+    ZERO,                 //!< f(src, dst) = 0
+    ONE,                  //!< f(src, dst) = 1
+    SRC_COLOR,            //!< f(src, dst) = src
+    ONE_MINUS_SRC_COLOR,  //!< f(src, dst) = 1-src
+    DST_COLOR,            //!< f(src, dst) = dst
+    ONE_MINUS_DST_COLOR,  //!< f(src, dst) = 1-dst
+    SRC_ALPHA,            //!< f(src, dst) = src.a
+    ONE_MINUS_SRC_ALPHA,  //!< f(src, dst) = 1-src.a
+    DST_ALPHA,            //!< f(src, dst) = dst.a
+    ONE_MINUS_DST_ALPHA,  //!< f(src, dst) = 1-dst.a
+    SRC_ALPHA_SATURATE    //!< f(src, dst) = (1,1,1) * min(src.a, 1 - dst.a), 1
+};
+
 struct RenderPassParams {
     RenderPassFlags flags;
     Viewport viewport{};

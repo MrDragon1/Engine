@@ -14,6 +14,7 @@
 #include <queue>
 #include <map>
 #include <stack>
+#include <bitset>
 
 #include "Base/Log.h"
 #include "Base/Ref.h"

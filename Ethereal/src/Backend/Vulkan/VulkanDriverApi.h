@@ -5,9 +5,18 @@
 
 #include "Backend/Vulkan/VulkanSamplerCache.h"
 #include "Backend/Vulkan/VulkanFramebufferCache.h"
+#include "Backend/Vulkan/VulkanPipelineCache.h"
 
 namespace Ethereal {
 namespace Backend {
+struct VulkanRenderPass {
+    Ref<VulkanRenderTarget> renderTarget;
+    VkRenderPass renderPass;
+    RenderPassParams params;
+    VkCommandBuffer commandBuffer;
+    int currentSubpass;
+};
+
 class VulkanDriverApi : public DriverApi {
    public:
     VulkanDriverApi();
@@ -49,9 +58,9 @@ class VulkanDriverApi : public DriverApi {
     virtual void DestroyTexture(Ref<Texture> handle) {}
     virtual void DestroyRenderTarget(Ref<RenderTarget> handle) {}
 
-    virtual void Draw(Ref<RenderPrimitive> rph, PipelineState pipeline) {}
+    virtual void Draw(Ref<RenderPrimitive> rph, PipelineState pipeline);
     virtual void BeginRenderPass(RenderTargetHandle rth, const RenderPassParams& params) override;
-    virtual void EndRenderPass() {}
+    virtual void EndRenderPass() override;
 
     virtual void SetVertexBufferObject(Ref<VertexBuffer> vbh, uint32_t index,
                                        Ref<BufferObject> boh) override;
@@ -90,10 +99,12 @@ class VulkanDriverApi : public DriverApi {
    private:
     Ref<VulkanContext> mContext;
 
+    VulkanRenderPass mCurrentRenderPass;
     std::array<Ref<VulkanSamplerGroup>, SAMPLER_BINDING_COUNT> mSamplerGroupBindings;
 
     Ref<VulkanSamplerCache> mSamplerCache;
     Ref<VulkanFramebufferCache> mFramebufferCache;
+    Ref<VulkanPipelineCache> mPipelineCache;
 };
 }  // namespace Backend
 }  // namespace Ethereal

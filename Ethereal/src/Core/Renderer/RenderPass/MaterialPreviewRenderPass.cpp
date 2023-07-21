@@ -26,7 +26,7 @@ void MaterialPreviewRenderPass::Init(uint32_t width, uint32_t height) {
 
 void MaterialPreviewRenderPass::Draw() {
     if (!mPipeline.program) {
-        ET_CORE_WARN("Material not set!");
+        // ET_CORE_WARN("Material not set!");
         return;
     }
 

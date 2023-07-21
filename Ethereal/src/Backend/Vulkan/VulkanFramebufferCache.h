@@ -31,12 +31,35 @@ class VulkanFramebufferCache : public RefCounted {
         bool operator()(const RenderPassKey& k1, const RenderPassKey& k2) const;
     };
 
+    struct alignas(8) FramebufferKey {
+        VkRenderPass renderPass;                                 // 8 bytes
+        uint16_t width;                                          // 2 bytes
+        uint16_t height;                                         // 2 bytes
+        uint16_t layers;                                         // 2 bytes
+        uint16_t samples;                                        // 2 bytes
+        VkImageView color[MAX_SUPPORTED_RENDER_TARGET_COUNT];    // 64 bytes
+        VkImageView resolve[MAX_SUPPORTED_RENDER_TARGET_COUNT];  // 64 bytes
+        VkImageView depth;                                       // 8 bytes
+    };
+    struct FramebufferVal {
+        VkFramebuffer framebuffer;
+    };
+    static_assert(sizeof(VkRenderPass) == 8, "VkRenderPass has unexpected size.");
+    static_assert(sizeof(VkImageView) == 8, "VkImageView has unexpected size.");
+    static_assert(sizeof(FramebufferKey) == 152, "FboKey has unexpected size.");
+    using FboKeyHashFn = Ethereal::Math::Hash::MurmurHashFn<FramebufferKey>;
+    struct FboKeyEqualFn {
+        bool operator()(const FramebufferKey& k1, const FramebufferKey& k2) const;
+    };
+
     void Init(VkDevice device);
     VkRenderPass GetRenderPass(RenderPassKey config);
+    VkFramebuffer GetFramebuffer(FramebufferKey config);
 
    private:
     VkDevice mDevice;
     unordered_map<RenderPassKey, RenderPassVal, RenderPassHash, RenderPassEq> mRenderPassCache;
+    unordered_map<FramebufferKey, FramebufferVal, FboKeyHashFn, FboKeyEqualFn> mFramebufferCache;
 };
 }  // namespace Backend
 }  // namespace Ethereal

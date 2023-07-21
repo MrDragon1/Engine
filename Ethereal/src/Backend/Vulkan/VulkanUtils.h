@@ -334,6 +334,111 @@ static VkFormat GetVkFormatLinear(VkFormat format) {
     return format;
 }
 
+static VkFormat GetVkFormat(ElementType type, bool normalized, bool integer) {
+    if (normalized) {
+        switch (type) {
+            // Single Component Types
+            case ElementType::BYTE:
+                return VK_FORMAT_R8_SNORM;
+            case ElementType::UBYTE:
+                return VK_FORMAT_R8_UNORM;
+            case ElementType::SHORT:
+                return VK_FORMAT_R16_SNORM;
+            case ElementType::USHORT:
+                return VK_FORMAT_R16_UNORM;
+            // Two Component Types
+            case ElementType::BYTE2:
+                return VK_FORMAT_R8G8_SNORM;
+            case ElementType::UBYTE2:
+                return VK_FORMAT_R8G8_UNORM;
+            case ElementType::SHORT2:
+                return VK_FORMAT_R16G16_SNORM;
+            case ElementType::USHORT2:
+                return VK_FORMAT_R16G16_UNORM;
+            // Three Component Types
+            case ElementType::BYTE3:
+                return VK_FORMAT_R8G8B8_SNORM;  // NOT MINSPEC
+            case ElementType::UBYTE3:
+                return VK_FORMAT_R8G8B8_UNORM;  // NOT MINSPEC
+            case ElementType::SHORT3:
+                return VK_FORMAT_R16G16B16_SNORM;  // NOT MINSPEC
+            case ElementType::USHORT3:
+                return VK_FORMAT_R16G16B16_UNORM;  // NOT MINSPEC
+            // Four Component Types
+            case ElementType::BYTE4:
+                return VK_FORMAT_R8G8B8A8_SNORM;
+            case ElementType::UBYTE4:
+                return VK_FORMAT_R8G8B8A8_UNORM;
+            case ElementType::SHORT4:
+                return VK_FORMAT_R16G16B16A16_SNORM;
+            case ElementType::USHORT4:
+                return VK_FORMAT_R16G16B16A16_UNORM;
+            default:
+                ET_CORE_ASSERT(false, "Normalized format does not exist.");
+                return VK_FORMAT_UNDEFINED;
+        }
+    }
+    switch (type) {
+        // Single Component Types
+        case ElementType::BYTE:
+            return integer ? VK_FORMAT_R8_SINT : VK_FORMAT_R8_SSCALED;
+        case ElementType::UBYTE:
+            return integer ? VK_FORMAT_R8_UINT : VK_FORMAT_R8_USCALED;
+        case ElementType::SHORT:
+            return integer ? VK_FORMAT_R16_SINT : VK_FORMAT_R16_SSCALED;
+        case ElementType::USHORT:
+            return integer ? VK_FORMAT_R16_UINT : VK_FORMAT_R16_USCALED;
+        // case ElementType::HALF:
+        //      return VK_FORMAT_R16_SFLOAT;
+        case ElementType::INT:
+            return VK_FORMAT_R32_SINT;
+        case ElementType::UINT:
+            return VK_FORMAT_R32_UINT;
+        case ElementType::FLOAT:
+            return VK_FORMAT_R32_SFLOAT;
+        // Two Component Types
+        case ElementType::BYTE2:
+            return integer ? VK_FORMAT_R8G8_SINT : VK_FORMAT_R8G8_SSCALED;
+        case ElementType::UBYTE2:
+            return integer ? VK_FORMAT_R8G8_UINT : VK_FORMAT_R8G8_USCALED;
+        case ElementType::SHORT2:
+            return integer ? VK_FORMAT_R16G16_SINT : VK_FORMAT_R16G16_SSCALED;
+        case ElementType::USHORT2:
+            return integer ? VK_FORMAT_R16G16_UINT : VK_FORMAT_R16G16_USCALED;
+        // case ElementType::HALF2:
+        //     return VK_FORMAT_R16G16_SFLOAT;
+        case ElementType::FLOAT2:
+            return VK_FORMAT_R32G32_SFLOAT;
+        // Three Component Types
+        case ElementType::BYTE3:
+            return VK_FORMAT_R8G8B8_SINT;  // NOT MINSPEC
+        case ElementType::UBYTE3:
+            return VK_FORMAT_R8G8B8_UINT;  // NOT MINSPEC
+        case ElementType::SHORT3:
+            return VK_FORMAT_R16G16B16_SINT;  // NOT MINSPEC
+        case ElementType::USHORT3:
+            return VK_FORMAT_R16G16B16_UINT;  // NOT MINSPEC
+        // case ElementType::HALF3:
+        //     return VK_FORMAT_R16G16B16_SFLOAT;  // NOT MINSPEC
+        case ElementType::FLOAT3:
+            return VK_FORMAT_R32G32B32_SFLOAT;
+        // Four Component Types
+        case ElementType::BYTE4:
+            return integer ? VK_FORMAT_R8G8B8A8_SINT : VK_FORMAT_R8G8B8A8_SSCALED;
+        case ElementType::UBYTE4:
+            return integer ? VK_FORMAT_R8G8B8A8_UINT : VK_FORMAT_R8G8B8A8_USCALED;
+        case ElementType::SHORT4:
+            return integer ? VK_FORMAT_R16G16B16A16_SINT : VK_FORMAT_R16G16B16A16_SSCALED;
+        case ElementType::USHORT4:
+            return integer ? VK_FORMAT_R16G16B16A16_UINT : VK_FORMAT_R16G16B16A16_USCALED;
+        // case ElementType::HALF4:
+        //     return VK_FORMAT_R16G16B16A16_SFLOAT;
+        case ElementType::FLOAT4:
+            return VK_FORMAT_R32G32B32A32_SFLOAT;
+    }
+    return VK_FORMAT_UNDEFINED;
+}
+
 static VkFormat GetVkFormat(PixelDataFormat format, PixelDataType type) {
 #define CONVERT(FORMAT, TYPE, VK) \
     if (PixelDataFormat::FORMAT == format && PixelDataType::TYPE == type) return VK_FORMAT_##VK;

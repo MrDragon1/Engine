@@ -11,6 +11,7 @@
 #include "Core/Renderer/RenderPass/MaterialPreviewRenderPass.h"
 #include "Core/Scene/Scene.h"
 
+#include "Core/Renderer/RenderPass/TestRenderPass.h"
 // For test backend
 #include "Uniform/TypedUniform.h"
 #include "Uniform/UibGenerator.h"
@@ -54,8 +55,9 @@ class RenderSystem : public RefCounted {
     Ref<EnvironmentMapRenderPass> mEnvironmentMapRenderPass;
     Ref<BloomRenderPass> mBloomRenderPass;
     Ref<CSMRenderPass> mCSMRenderPass;
-
     Ref<MaterialPreviewRenderPass> mMaterialPreviewRenderPass;
+
+    Ref<TestRenderPass> mTestRenderPass;
 
     Ref<Environment> mEnvironment;
     Ref<Texture> mMainImage;

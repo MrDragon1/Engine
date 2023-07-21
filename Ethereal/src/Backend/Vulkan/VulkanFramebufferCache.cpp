@@ -17,6 +17,21 @@ bool VulkanFramebufferCache::RenderPassEq::operator()(const RenderPassKey& k1,
     return true;
 }
 
+bool VulkanFramebufferCache::FboKeyEqualFn::operator()(const FramebufferKey& k1,
+                                                       const FramebufferKey& k2) const {
+    if (k1.renderPass != k2.renderPass) return false;
+    if (k1.width != k2.width) return false;
+    if (k1.height != k2.height) return false;
+    if (k1.layers != k2.layers) return false;
+    if (k1.samples != k2.samples) return false;
+    if (k1.depth != k2.depth) return false;
+    for (int i = 0; i < MAX_SUPPORTED_RENDER_TARGET_COUNT; i++) {
+        if (k1.color[i] != k2.color[i]) return false;
+        if (k1.resolve[i] != k2.resolve[i]) return false;
+    }
+    return true;
+}
+
 void VulkanFramebufferCache::Init(VkDevice device) { mDevice = device; }
 
 VkRenderPass VulkanFramebufferCache::GetRenderPass(RenderPassKey config) {
@@ -138,6 +153,44 @@ VkRenderPass VulkanFramebufferCache::GetRenderPass(RenderPassKey config) {
     mRenderPassCache[config] = {renderPass};
 
     return renderPass;
+}
+
+VkFramebuffer VulkanFramebufferCache::GetFramebuffer(FramebufferKey config) {
+    auto iter = mFramebufferCache.find(config);
+    if (iter != mFramebufferCache.end()) {
+        return iter->second.framebuffer;
+    }
+
+    VkImageView
+        attachments[MAX_SUPPORTED_RENDER_TARGET_COUNT + MAX_SUPPORTED_RENDER_TARGET_COUNT + 1];
+    uint32_t attachmentCount = 0;
+    for (VkImageView attachment : config.color) {
+        if (attachment) {
+            attachments[attachmentCount++] = attachment;
+        }
+    }
+    for (VkImageView attachment : config.resolve) {
+        if (attachment) {
+            attachments[attachmentCount++] = attachment;
+        }
+    }
+    if (config.depth) {
+        attachments[attachmentCount++] = config.depth;
+    }
+
+    VkFramebuffer framebuffer;
+    VkFramebufferCreateInfo framebufferInfo{.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
+                                            .renderPass = config.renderPass,
+                                            .attachmentCount = attachmentCount,
+                                            .pAttachments = attachments,
+                                            .width = config.width,
+                                            .height = config.height,
+                                            .layers = config.layers};
+    VkResult error = vkCreateFramebuffer(mDevice, &framebufferInfo, nullptr, &framebuffer);
+    ET_CORE_ASSERT(!error, "Unable to create framebuffer.");
+    mFramebufferCache[config] = {framebuffer};
+
+    return framebuffer;
 }
 
 }  // namespace Backend

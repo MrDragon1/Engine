@@ -18,6 +18,9 @@ void VulkanDriverApi::Init() {
 
     mFramebufferCache = Ref<VulkanFramebufferCache>::Create();
     mFramebufferCache->Init(mContext->mDevice->GetDevice());
+
+    mPipelineCache = Ref<VulkanPipelineCache>::Create();
+    mPipelineCache->Init(mContext->mDevice->GetDevice());
 }
 
 void VulkanDriverApi::Clean() { mContext->Clean(); }
@@ -157,13 +160,82 @@ Ref<RenderTarget> VulkanDriverApi::CreateRenderTarget(TargetBufferFlags targets,
     return rt;
 }
 
+void VulkanDriverApi::Draw(Ref<RenderPrimitive> rph, PipelineState pipeline) {
+    VulkanPipelineCache::VertexArray varray = {};
+    VkBuffer buffers[MAX_VERTEX_ATTRIBUTE_COUNT] = {};
+    VkDeviceSize offsets[MAX_VERTEX_ATTRIBUTE_COUNT] = {};
+
+    // For each attribute, append to each of the above lists.
+    const uint32_t bufferCount = rph->vertexBuffer->attributes.size();
+    for (uint32_t attribIndex = 0; attribIndex < bufferCount; attribIndex++) {
+        Attribute attrib = rph->vertexBuffer->attributes[attribIndex];
+
+        const bool isInteger = attrib.flags & Attribute::FLAG_INTEGER_TARGET;
+        const bool isNormalized = attrib.flags & Attribute::FLAG_NORMALIZED;
+
+        VkFormat vkformat = VulkanUtils::GetVkFormat(attrib.type, isNormalized, isInteger);
+        if (attrib.buffer == Attribute::BUFFER_UNUSED) {
+            vkformat = isInteger ? VK_FORMAT_R8G8B8A8_UINT : VK_FORMAT_R8G8B8A8_SNORM;
+            attrib = rph->vertexBuffer->attributes[0];
+        }
+
+        Ref<VulkanBuffer> buffer =
+            rph->vertexBuffer.As<VulkanVertexBuffer>()->buffers[attrib.buffer];
+
+        if (buffer == nullptr) {
+            return;
+        }
+
+        buffers[attribIndex] = buffer->GetBuffer();
+        offsets[attribIndex] = attrib.offset;
+        varray.attributes[attribIndex] = {
+            .location = attribIndex,  // matches the GLSL layout specifier
+            .binding = attribIndex,   // matches the position within vkCmdBindVertexBuffers
+            .format = vkformat,
+        };
+        varray.buffers[attribIndex] = {
+            .binding = attribIndex,
+            .stride = attrib.stride,
+        };
+    }
+
+    mPipelineCache->BindProgram(pipeline.program);
+    mPipelineCache->BindRasterState(pipeline.rasterState);
+    mPipelineCache->BindRenderPass(mCurrentRenderPass.renderPass, 0);
+    mPipelineCache->BindVertexArrays(varray);
+
+    Viewport viewport = mCurrentRenderPass.params.viewport;
+    mPipelineCache->BindScissor(
+        mCurrentRenderPass.commandBuffer,
+        VkRect2D{.offset = {0, 0},
+                 .extent = {uint32_t(viewport.width), uint32_t(viewport.height)}});
+
+    mPipelineCache->BindPipeline(mCurrentRenderPass.commandBuffer);
+
+    // Bind the vertex buffers.
+    vkCmdBindVertexBuffers(mCurrentRenderPass.commandBuffer, 0, bufferCount, buffers, offsets);
+
+    // Bind the index buffer.
+    if (rph->indexBuffer) {
+        Ref<VulkanIndexBuffer> indexBuffer = rph->indexBuffer.As<VulkanIndexBuffer>();
+        vkCmdBindIndexBuffer(mCurrentRenderPass.commandBuffer, indexBuffer->buffer->GetBuffer(), 0,
+                             VK_INDEX_TYPE_UINT32);
+    }
+    const uint32_t indexCount = rph->count;
+    const uint32_t firstIndex = rph->offset / rph->indexBuffer->elementSize;
+    const int32_t vertexOffset = 0;
+    const uint32_t firstInstId = 0;
+    vkCmdDrawIndexed(mCurrentRenderPass.commandBuffer, indexCount, 1, firstIndex, vertexOffset,
+                     firstInstId);
+}
+
 void VulkanDriverApi::BeginRenderPass(RenderTargetHandle rth, const RenderPassParams& params) {
     Ref<VulkanRenderTarget> rt = rth.As<VulkanRenderTarget>();
     const VkExtent2D extent = rt->GetExtent();
 
     VulkanAttachment depth = rt->GetDepth();
 
-    VkCommandBuffer const cmdbuffer = mContext->mDevice->GetCommandBuffer(true);
+    mCurrentRenderPass.commandBuffer = mContext->mDevice->GetCommandBuffer(true);
 
     for (uint8_t samplerGroupIdx = 0; samplerGroupIdx < SAMPLER_BINDING_COUNT; samplerGroupIdx++) {
         Ref<VulkanSamplerGroup> vksb = mSamplerGroupBindings[samplerGroupIdx];
@@ -185,7 +257,8 @@ void VulkanDriverApi::BeginRenderPass(RenderTargetHandle rth, const RenderPassPa
                     .baseArrayLayer = 0,
                     .layerCount = texture->depth,
                 };
-                texture->TransitionLayout(cmdbuffer, VulkanLayout::DEPTH_SAMPLER, subresources);
+                texture->TransitionLayout(mCurrentRenderPass.commandBuffer,
+                                          VulkanLayout::DEPTH_SAMPLER, subresources);
                 break;
             }
         }
@@ -197,7 +270,7 @@ void VulkanDriverApi::BeginRenderPass(RenderTargetHandle rth, const RenderPassPa
 
     if (depth.texture) {
         if (currentDepthLayout != renderPassDepthLayout) {
-            depth.texture->TransitionLayout(cmdbuffer, renderPassDepthLayout,
+            depth.texture->TransitionLayout(mCurrentRenderPass.commandBuffer, renderPassDepthLayout,
                                             depth.GetSubresourceRange(VK_IMAGE_ASPECT_DEPTH_BIT));
             currentDepthLayout = renderPassDepthLayout;
         }
@@ -219,7 +292,7 @@ void VulkanDriverApi::BeginRenderPass(RenderTargetHandle rth, const RenderPassPa
             rpkey.colorFormat[i] = info.GetFormat();
             if (info.texture->GetPrimaryImageLayout() != VulkanLayout::COLOR_ATTACHMENT) {
                 info.texture.As<VulkanTexture>()->TransitionLayout(
-                    cmdbuffer, VulkanLayout::COLOR_ATTACHMENT,
+                    mCurrentRenderPass.commandBuffer, VulkanLayout::COLOR_ATTACHMENT,
                     info.GetSubresourceRange(VK_IMAGE_ASPECT_COLOR_BIT));
             }
         } else {
@@ -228,6 +301,88 @@ void VulkanDriverApi::BeginRenderPass(RenderTargetHandle rth, const RenderPassPa
     }
 
     VkRenderPass renderPass = mFramebufferCache->GetRenderPass(rpkey);
+    // mPipelineCache->BindRenderPass(renderPass);
+
+    VulkanFramebufferCache::FramebufferKey fbkey{
+        .renderPass = renderPass,
+        .width = (uint16_t)extent.width,
+        .height = (uint16_t)extent.height,
+        .layers = 1,
+        .samples = 1,
+    };
+
+    for (int i = 0; i < MAX_SUPPORTED_RENDER_TARGET_COUNT; i++) {
+        if (!rt->GetColor(i).texture) {
+            fbkey.color[i] = VK_NULL_HANDLE;
+            fbkey.resolve[i] = VK_NULL_HANDLE;
+        } else if (fbkey.samples == 1) {
+            fbkey.color[i] = rt->GetColor(i).GetImageView(VK_IMAGE_ASPECT_COLOR_BIT);
+            fbkey.resolve[i] = VK_NULL_HANDLE;
+        }
+    }
+    if (depth.texture) {
+        fbkey.depth = depth.GetImageView(VK_IMAGE_ASPECT_DEPTH_BIT);
+    }
+    VkFramebuffer vkfb = mFramebufferCache->GetFramebuffer(fbkey);
+
+    VkRenderPassBeginInfo renderPassInfo{
+        .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
+        .renderPass = renderPass,
+        .framebuffer = vkfb,
+
+        // The renderArea field constrains the LoadOp, but scissoring does not.
+        // Therefore, we do not set the scissor rect here, we only need it in draw().
+        .renderArea = {.offset = {}, .extent = extent}};
+
+    VkClearValue
+        clearValues[MAX_SUPPORTED_RENDER_TARGET_COUNT + MAX_SUPPORTED_RENDER_TARGET_COUNT + 1] = {};
+    if (params.flags.clearMask != TargetBufferFlags::NONE) {
+        // NOTE: clearValues must be populated in the same order as the attachments array in
+        // VulkanFboCache::getFramebuffer. Values must be provided regardless of whether Vulkan is
+        // actually clearing that particular target.
+        for (int i = 0; i < MAX_SUPPORTED_RENDER_TARGET_COUNT; i++) {
+            if (fbkey.color[i]) {
+                VkClearValue& clearValue = clearValues[renderPassInfo.clearValueCount++];
+                clearValue.color.float32[0] = params.clearColor.x;
+                clearValue.color.float32[1] = params.clearColor.y;
+                clearValue.color.float32[2] = params.clearColor.z;
+                clearValue.color.float32[3] = params.clearColor.w;
+            }
+        }
+
+        if (fbkey.depth) {
+            VkClearValue& clearValue = clearValues[renderPassInfo.clearValueCount++];
+            clearValue.depthStencil = {(float)params.clearDepth, 0};
+        }
+        renderPassInfo.pClearValues = &clearValues[0];
+    }
+
+    vkCmdBeginRenderPass(mCurrentRenderPass.commandBuffer, &renderPassInfo,
+                         VK_SUBPASS_CONTENTS_INLINE);
+
+    VkViewport viewport = {.x = (float)params.viewport.left,
+                           .y = (float)params.viewport.bottom,
+                           .width = (float)params.viewport.width,
+                           .height = (float)params.viewport.height,
+                           .minDepth = params.depthRange.near_,
+                           .maxDepth = params.depthRange.far_};
+
+    vkCmdSetViewport(mCurrentRenderPass.commandBuffer, 0, 1, &viewport);
+
+    mCurrentRenderPass.renderTarget = rt;
+    mCurrentRenderPass.renderPass = renderPassInfo.renderPass;
+    mCurrentRenderPass.params = params;
+    mCurrentRenderPass.currentSubpass = 0;
+}
+
+void VulkanDriverApi::EndRenderPass() {
+    vkCmdEndRenderPass(mCurrentRenderPass.commandBuffer);
+
+    mContext->mDevice->FlushCommandBuffer(mCurrentRenderPass.commandBuffer);
+    Ref<VulkanRenderTarget> rt = mCurrentRenderPass.renderTarget;
+
+    mCurrentRenderPass.renderTarget = nullptr;
+    mCurrentRenderPass.renderPass = VK_NULL_HANDLE;
 }
 
 void VulkanDriverApi::SetVertexBufferObject(Ref<VertexBuffer> vbh, uint32_t index,

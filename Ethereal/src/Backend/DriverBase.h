@@ -8,7 +8,6 @@ struct Texture;
 struct SamplerGroup;
 struct VertexBuffer;
 struct IndexBuffer;
-struct VertexArray;
 struct RenderPrimitive;
 struct Program;
 struct RenderTarget;
@@ -19,7 +18,6 @@ using SamplerGroupHandle = Ref<SamplerGroup>;
 using BufferObjectHandle = Ref<BufferObject>;
 using VertexBufferHandle = Ref<VertexBuffer>;
 using IndexBufferHandle = Ref<IndexBuffer>;
-using VertexArrayHandle = Ref<VertexArray>;
 using RenderPrimitiveHandle = Ref<RenderPrimitive>;
 using ProgramHandle = Ref<Program>;
 using RenderTargetHandle = Ref<RenderTarget>;
@@ -119,7 +117,7 @@ struct TargetBufferInfo {
     uint32_t level = 0;
 
     // for cubemaps and 3D textures. See TextureCubemapFace for the face->layer mapping
-    uint32_t layer = 0xffffffff;
+    uint32_t layer = 0;
 };
 using MRT = std::array<TargetBufferInfo, MAX_SUPPORTED_RENDER_TARGET_COUNT>;
 

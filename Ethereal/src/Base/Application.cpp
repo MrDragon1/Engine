@@ -61,9 +61,9 @@ void Application::Run() {
         TimeStamp timestep = time - mLastFrameTime;
         mLastFrameTime = time;
 
-        // if (!mMinimized) {
-        //     for (Ref<Layer> layer : mLayerStack) layer->OnUpdate(timestep);
-        // }
+        if (!mMinimized) {
+            for (Ref<Layer> layer : mLayerStack) layer->OnUpdate(timestep);
+        }
 
         GlobalContext::GetDriverApi()->BeginFrame();
         mImGuiLayer->Begin();
