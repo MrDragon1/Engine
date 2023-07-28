@@ -39,9 +39,11 @@ void TestRenderPass::Draw() {
     const auto& meshTransformMap = mDrawLists.MeshTransformMap;
 
     auto cube = RenderResource::Cube;
+    uniformManager->UpdateScene();
 
     api->BeginRenderPass(mRenderTarget, mParams);
-
+    uniformManager->Commit();
+    uniformManager->Bind();
     api->Draw(cube->GetMeshSource()->GetRenderPrimitive(), mStaticMeshPipeline);
 
     api->EndRenderPass();

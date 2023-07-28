@@ -50,14 +50,14 @@ void RenderSystem::Init() {
 
     auto api = GlobalContext::GetDriverApi();
 
-    mMainImage = api->GetColorAttachment(mMainCameraRenderPass->mRenderTarget, 0);
+    mMainImage = api->GetColorAttachment(mTestRenderPass->mRenderTarget, 0);
 }
 
 void RenderSystem::Draw(TimeStamp ts) {
     LoadProjectSettings();
 
     auto api = GlobalContext::GetDriverApi();
-    mMainImage = api->GetColorAttachment(mMainCameraRenderPass->mRenderTarget, 0);
+    mMainImage = api->GetColorAttachment(mTestRenderPass->mRenderTarget, 0);
 
     mTestRenderPass->Draw();
 

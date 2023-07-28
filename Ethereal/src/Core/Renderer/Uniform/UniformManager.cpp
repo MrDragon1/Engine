@@ -184,13 +184,14 @@ void UniformManager::Commit() {
 
 void UniformManager::Bind() {
     // TODO:manage binding points
-    mApi->BindUniformBuffer(0, mViewUB);
-    mApi->BindUniformBuffer(1, mShadowUB);
-    mApi->BindUniformBuffer(2, mLightUB);
-    mApi->BindUniformBuffer(3, mRenderPrimitiveUB);
-    mApi->BindUniformBuffer(4, mRenderPrimitiveBoneUB);
 
-    mApi->BindSamplerGroup(0, mSamplerGroup);
+    mApi->BindUniformBuffer(1, mViewUB);
+    //mApi->BindUniformBuffer(1, mShadowUB);
+    //mApi->BindUniformBuffer(2, mLightUB);
+    //mApi->BindUniformBuffer(3, mRenderPrimitiveUB);
+    //mApi->BindUniformBuffer(4, mRenderPrimitiveBoneUB);
+
+    //mApi->BindSamplerGroup(0, mSamplerGroup);
 }
 
 }  // namespace Ethereal

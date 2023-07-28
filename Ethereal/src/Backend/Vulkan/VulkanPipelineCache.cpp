@@ -19,9 +19,68 @@ bool VulkanPipelineCache::PipelineEqual::operator()(const PipelineKey& k1,
     return 0 == memcmp((const void*)&k1, (const void*)&k2, sizeof(k1));
 }
 
+bool VulkanPipelineCache::DescEqual::operator()(const DescriptorKey& k1,
+                                                const DescriptorKey& k2) const {
+    for (uint32_t i = 0; i < UBUFFER_BINDING_COUNT; i++) {
+        if (k1.uniformBuffers[i] != k2.uniformBuffers[i] ||
+            k1.uniformBufferOffsets[i] != k2.uniformBufferOffsets[i] ||
+            k1.uniformBufferSizes[i] != k2.uniformBufferSizes[i]) {
+            return false;
+        }
+    }
+    for (uint32_t i = 0; i < SAMPLER_BINDING_COUNT; i++) {
+        if (k1.samplers[i].sampler != k2.samplers[i].sampler ||
+            k1.samplers[i].imageView != k2.samplers[i].imageView ||
+            k1.samplers[i].imageLayout != k2.samplers[i].imageLayout) {
+            return false;
+        }
+    }
+    for (uint32_t i = 0; i < TARGET_BINDING_COUNT; i++) {
+        if (k1.inputAttachments[i].imageView != k2.inputAttachments[i].imageView ||
+            k1.inputAttachments[i].imageLayout != k2.inputAttachments[i].imageLayout) {
+            return false;
+        }
+    }
+    return true;
+}
+
+
+ VulkanPipelineCache::VulkanPipelineCache() {
+    mDummyBufferWriteInfo.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    mDummyBufferWriteInfo.pNext = nullptr;
+    mDummyBufferWriteInfo.dstArrayElement = 0;
+    mDummyBufferWriteInfo.descriptorCount = 1;
+    mDummyBufferWriteInfo.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    mDummyBufferWriteInfo.pImageInfo = nullptr;
+    mDummyBufferWriteInfo.pBufferInfo = &mDummyBufferInfo;
+    mDummyBufferWriteInfo.pTexelBufferView = nullptr;
+
+    mDummyTargetInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    mDummyTargetWriteInfo.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    mDummyTargetWriteInfo.pNext = nullptr;
+    mDummyTargetWriteInfo.dstArrayElement = 0;
+    mDummyTargetWriteInfo.descriptorCount = 1;
+    mDummyTargetWriteInfo.descriptorType = VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT;
+    mDummyTargetWriteInfo.pImageInfo = &mDummyTargetInfo;
+    mDummyTargetWriteInfo.pBufferInfo = nullptr;
+    mDummyTargetWriteInfo.pTexelBufferView = nullptr;
+ }
+
 void VulkanPipelineCache::Init(VkDevice device) {
     mDevice = device;
-    BindTopology(VK_PRIMITIVE_TOPOLOGY_LINE_LIST);
+    CreateDescriptorPool(mDescriptorPoolSize);
+
+    VkBufferCreateInfo bufferInfo{
+        .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
+        .size = 16,
+        .usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+    };
+    VulkanAllocator::AllocateBuffer(bufferInfo, VMA_MEMORY_USAGE_GPU_ONLY, mDummyBuffer);
+
+    mDummyBufferInfo.buffer = mDummyBuffer;
+    mDummyBufferInfo.range = bufferInfo.size;
+
+    BindTopology(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
 }
 
 void VulkanPipelineCache::BindProgram(Ref<VulkanProgram> program) {
@@ -75,6 +134,23 @@ void VulkanPipelineCache::BindPipeline(VkCommandBuffer cmdbuffer) {
     VkPipeline pipeline = GetOrCreatePipeline();
 
     vkCmdBindPipeline(cmdbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
+}
+
+void VulkanPipelineCache::BindDescriptors(VkCommandBuffer cmdbuffer) {
+    auto key = mCurrentDescriptorKey;
+    auto it = mDescriptorSetsCache.find(key);
+    DescriptorVal* cache = nullptr;
+    if (it != mDescriptorSetsCache.end()) {
+        cache = &it->second;
+    } else {
+        cache = CreateDescriptorSets();
+    }
+
+    ET_CORE_ASSERT(cache, "Unable to load DescriptorSets for this pipeline!")
+
+    vkCmdBindDescriptorSets(
+        cmdbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, GetOrCreatePipelineLayout()->layout, 0,
+        VulkanPipelineCache::DESCRIPTOR_TYPE_COUNT, cache->handles.data(), 0, nullptr);
 }
 
 VkPipeline VulkanPipelineCache::GetOrCreatePipeline() {
@@ -146,7 +222,7 @@ VkPipeline VulkanPipelineCache::GetOrCreatePipeline() {
 
     VkGraphicsPipelineCreateInfo pipelineCreateInfo = {};
     pipelineCreateInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
-    pipelineCreateInfo.layout = GetOrCreatePipelineLayout();
+    pipelineCreateInfo.layout = GetOrCreatePipelineLayout()->layout;
     pipelineCreateInfo.renderPass = mCurrentPipelineKey.renderPass;
     pipelineCreateInfo.subpass = mCurrentPipelineKey.subpassIndex;
     pipelineCreateInfo.stageCount = hasFragmentShader ? SHADER_MODULE_COUNT : 1;
@@ -233,11 +309,11 @@ VkPipeline VulkanPipelineCache::GetOrCreatePipeline() {
     return pipelineVal.handle;
 }
 
-VkPipelineLayout VulkanPipelineCache::GetOrCreatePipelineLayout() {
+VulkanPipelineCache::PipelineLayoutVal* VulkanPipelineCache::GetOrCreatePipelineLayout() {
     auto key = mCurrentPipelineKey.layout;
     auto it = mPipelineLayoutCache.find(key);
     if (it != mPipelineLayoutCache.end()) {
-        return it->second.layout;
+        return &it->second;
     }
 
     PipelineLayoutVal cacheEntry = {};
@@ -295,7 +371,145 @@ VkPipelineLayout VulkanPipelineCache::GetOrCreatePipelineLayout() {
         return nullptr;
     }
     mPipelineLayoutCache.emplace(mCurrentPipelineKey.layout, cacheEntry);
-    return cacheEntry.layout;
+    return &mPipelineLayoutCache[mCurrentPipelineKey.layout];
+}
+
+
+void VulkanPipelineCache::BindUniformBuffer(uint32_t bindingIndex, VkBuffer uniformBuffer,
+                                            VkDeviceSize offset /*= 0*/,
+                                            VkDeviceSize size /*= VK_WHOLE_SIZE*/) {
+    ET_CORE_ASSERT(bindingIndex < UBUFFER_BINDING_COUNT,
+                   "Uniform bindings overflow: index = %d, capacity = %d.", bindingIndex,
+                   UBUFFER_BINDING_COUNT)
+    auto& key = mCurrentDescriptorKey;
+    key.uniformBuffers[bindingIndex] = uniformBuffer;
+
+    key.uniformBufferOffsets[bindingIndex] = offset;
+    key.uniformBufferSizes[bindingIndex] = size;
+}
+
+void VulkanPipelineCache::UnBindUniformBuffer(VkBuffer uniformBuffer) {
+    auto& key = mCurrentDescriptorKey;
+    for (uint32_t bindingIndex = 0u; bindingIndex < UBUFFER_BINDING_COUNT; ++bindingIndex) {
+        if (key.uniformBuffers[bindingIndex] == uniformBuffer) {
+            key.uniformBuffers[bindingIndex] = {};
+            key.uniformBufferSizes[bindingIndex] = {};
+            key.uniformBufferOffsets[bindingIndex] = {};
+        }
+    }
+}
+
+
+VulkanPipelineCache::DescriptorVal* VulkanPipelineCache::CreateDescriptorSets() {
+    PipelineLayoutVal* pipelineLayoutCache = GetOrCreatePipelineLayout();
+
+    DescriptorVal cache = {.pipelineLayout = mCurrentPipelineKey.layout};
+
+    // Create descriptor sets in mCurrentDescriptorKey
+    VkDescriptorSetAllocateInfo allocInfo = {};
+    allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+    allocInfo.descriptorPool = mDescriptorPool;
+    allocInfo.descriptorSetCount = DESCRIPTOR_TYPE_COUNT;
+    allocInfo.pSetLayouts = pipelineLayoutCache->descriptorSetLayouts.data();
+    VkResult error = vkAllocateDescriptorSets(mDevice, &allocInfo, cache.handles.data());
+    ET_CORE_ASSERT(error == VK_SUCCESS);
+    
+
+
+    // Rewrite every binding in the new descriptor sets.
+    VkDescriptorBufferInfo descriptorBuffers[UBUFFER_BINDING_COUNT];
+    VkDescriptorImageInfo descriptorSamplers[SAMPLER_BINDING_COUNT];
+    VkDescriptorImageInfo descriptorInputAttachments[TARGET_BINDING_COUNT];
+    VkWriteDescriptorSet
+        descriptorWrites[UBUFFER_BINDING_COUNT + SAMPLER_BINDING_COUNT + TARGET_BINDING_COUNT];
+    uint32_t nwrites = 0;
+    VkWriteDescriptorSet* writes = descriptorWrites;
+    nwrites = 0;
+    for (uint32_t binding = 0; binding < UBUFFER_BINDING_COUNT; binding++) {
+        VkWriteDescriptorSet& writeInfo = writes[nwrites++];
+        if (mCurrentDescriptorKey.uniformBuffers[binding]) {
+            VkDescriptorBufferInfo& bufferInfo = descriptorBuffers[binding];
+            bufferInfo.buffer = mCurrentDescriptorKey.uniformBuffers[binding];
+            bufferInfo.offset = mCurrentDescriptorKey.uniformBufferOffsets[binding];
+            bufferInfo.range = mCurrentDescriptorKey.uniformBufferSizes[binding];
+ 
+            writeInfo.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+            writeInfo.pNext = nullptr;
+            writeInfo.dstArrayElement = 0;
+            writeInfo.descriptorCount = 1;
+            writeInfo.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+            writeInfo.pImageInfo = nullptr;
+            writeInfo.pBufferInfo = &bufferInfo;
+            writeInfo.pTexelBufferView = nullptr;
+        } else {
+            writeInfo = mDummyBufferWriteInfo;
+            ET_CORE_ASSERT(mDummyBufferWriteInfo.pBufferInfo->buffer);
+        }
+        ET_CORE_ASSERT(writeInfo.pBufferInfo->buffer);
+        writeInfo.dstSet = cache.handles[0];
+        writeInfo.dstBinding = binding;
+    }
+    for (uint32_t binding = 0; binding < SAMPLER_BINDING_COUNT; binding++) {
+        if (mCurrentDescriptorKey.samplers[binding].sampler) {
+            VkWriteDescriptorSet& writeInfo = writes[nwrites++];
+            VkDescriptorImageInfo& imageInfo = descriptorSamplers[binding];
+            imageInfo = mCurrentDescriptorKey.samplers[binding];
+            writeInfo.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+            writeInfo.pNext = nullptr;
+            writeInfo.dstArrayElement = 0;
+            writeInfo.descriptorCount = 1;
+            writeInfo.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+            writeInfo.pImageInfo = &imageInfo;
+            writeInfo.pBufferInfo = nullptr;
+            writeInfo.pTexelBufferView = nullptr;
+            writeInfo.dstSet = cache.handles[1];
+            writeInfo.dstBinding = binding;
+        }
+    }
+    for (uint32_t binding = 0; binding < TARGET_BINDING_COUNT; binding++) {
+        VkWriteDescriptorSet& writeInfo = writes[nwrites++];
+        if (mCurrentDescriptorKey.inputAttachments[binding].imageView) {
+            VkDescriptorImageInfo& imageInfo = descriptorInputAttachments[binding];
+            imageInfo = mCurrentDescriptorKey.inputAttachments[binding];
+            writeInfo.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+            writeInfo.pNext = nullptr;
+            writeInfo.dstArrayElement = 0;
+            writeInfo.descriptorCount = 1;
+            writeInfo.descriptorType = VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT;
+            writeInfo.pImageInfo = &imageInfo;
+            writeInfo.pBufferInfo = nullptr;
+            writeInfo.pTexelBufferView = nullptr;
+        } else {
+            writeInfo = mDummyTargetWriteInfo;
+            //ET_CORE_ASSERT(mDummyTargetInfo.imageView);
+        }
+        writeInfo.dstSet = cache.handles[2];
+        writeInfo.dstBinding = binding;
+    }
+    vkUpdateDescriptorSets(mDevice, nwrites, writes, 0, nullptr);
+
+    mDescriptorSetsCache[mCurrentDescriptorKey] = cache;
+    return &mDescriptorSetsCache[mCurrentDescriptorKey];
+}
+
+
+void VulkanPipelineCache::CreateDescriptorPool(uint32_t size) {
+    VkDescriptorPoolSize poolSizes[DESCRIPTOR_TYPE_COUNT] = {};
+    VkDescriptorPoolCreateInfo poolInfo{.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,
+                                        .pNext = nullptr,
+                                        .flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT,
+                                        .maxSets = size * DESCRIPTOR_TYPE_COUNT,
+                                        .poolSizeCount = DESCRIPTOR_TYPE_COUNT,
+                                        .pPoolSizes = poolSizes};
+    poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    poolSizes[0].descriptorCount = poolInfo.maxSets * UBUFFER_BINDING_COUNT;
+    poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    poolSizes[1].descriptorCount = poolInfo.maxSets * SAMPLER_BINDING_COUNT;
+    poolSizes[2].type = VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT;
+    poolSizes[2].descriptorCount = poolInfo.maxSets * TARGET_BINDING_COUNT;
+
+    const  VkResult result = vkCreateDescriptorPool(mDevice, &poolInfo, nullptr, &mDescriptorPool);
+    ET_CORE_ASSERT(result == VK_SUCCESS);
 }
 
 }  // namespace Backend

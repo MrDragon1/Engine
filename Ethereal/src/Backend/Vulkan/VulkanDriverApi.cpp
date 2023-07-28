@@ -203,6 +203,7 @@ void VulkanDriverApi::Draw(Ref<RenderPrimitive> rph, PipelineState pipeline) {
     mPipelineCache->BindRasterState(pipeline.rasterState);
     mPipelineCache->BindRenderPass(mCurrentRenderPass.renderPass, 0);
     mPipelineCache->BindVertexArrays(varray);
+    mPipelineCache->BindDescriptors(mCurrentRenderPass.commandBuffer);
 
     Viewport viewport = mCurrentRenderPass.params.viewport;
     mPipelineCache->BindScissor(
@@ -424,6 +425,13 @@ void VulkanDriverApi::UpdateSamplerGroup(SamplerGroupHandle sgh, SamplerGroupDes
 
 void VulkanDriverApi::BindSamplerGroup(uint8_t binding, SamplerGroupHandle sgh) {
     mSamplerGroupBindings[binding] = sgh.As<VulkanSamplerGroup>();
+}
+
+void VulkanDriverApi::BindUniformBuffer(uint8_t binding, BufferObjectHandle boh) {
+    Ref<VulkanBufferObject> bo = boh.As<VulkanBufferObject>();
+    const VkDeviceSize offset = 0;
+    const VkDeviceSize size = bo->byteCount;
+    mPipelineCache->BindUniformBuffer((uint32_t)binding, bo->buffer->GetBuffer(), offset, size);
 }
 
 TextureID VulkanDriverApi::GetTextueID(TextureHandle th) {

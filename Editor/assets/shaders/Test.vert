@@ -8,7 +8,7 @@ layout(location = 1) out vec2 v_TexCoord;
 
 void main()
 {
-    v_LocalPos = a_Position;
+    v_LocalPos = a_Position*0.5;
     v_TexCoord = a_TexCoord;
-    gl_Position = a_Position;
+    gl_Position = a_Position*0.5;
 }

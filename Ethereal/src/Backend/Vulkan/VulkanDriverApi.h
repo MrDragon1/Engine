@@ -73,7 +73,7 @@ class VulkanDriverApi : public DriverApi {
                                 uint32_t depth, const PixelBufferDescriptor& desc) override;
     virtual void UpdateSamplerGroup(SamplerGroupHandle sgh, SamplerGroupDescriptor& desc) override;
     virtual void BindSamplerGroup(uint8_t binding, SamplerGroupHandle sgh) override;
-    virtual void BindUniformBuffer(uint8_t binding, BufferObjectHandle boh){};
+    virtual void BindUniformBuffer(uint8_t binding, BufferObjectHandle boh) override;
 
     virtual void GenerateMipmaps(TextureHandle th) {}
     virtual void SetRenderTargetAttachment(RenderTargetHandle rth, TargetBufferInfo const& info,
