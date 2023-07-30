@@ -1,6 +1,7 @@
 #version 460 core
 
 layout(location = 0) out vec4 FragColor;
+layout(location = 1) out int EntityID;
 layout(location = 0) in vec4 v_LocalPos;
 layout(location = 1) in vec2 v_TexCoord;
 
@@ -22,11 +23,9 @@ layout (std140, set=0, binding = 1) uniform Data {
     bool FogFromIBL;
 }uData;
 
-
-
-
 void main()
 {
     // FragColor = vec4(texture(tex,v_TexCoord).rgba);
-    FragColor = vec4(uData.FogColor.xyz,1.0);
+    FragColor = vec4(v_LocalPos.xyz,1.0);
+    EntityID = 2;
 }

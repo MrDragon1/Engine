@@ -44,8 +44,7 @@ bool VulkanPipelineCache::DescEqual::operator()(const DescriptorKey& k1,
     return true;
 }
 
-
- VulkanPipelineCache::VulkanPipelineCache() {
+VulkanPipelineCache::VulkanPipelineCache() {
     mDummyBufferWriteInfo.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
     mDummyBufferWriteInfo.pNext = nullptr;
     mDummyBufferWriteInfo.dstArrayElement = 0;
@@ -64,7 +63,7 @@ bool VulkanPipelineCache::DescEqual::operator()(const DescriptorKey& k1,
     mDummyTargetWriteInfo.pImageInfo = &mDummyTargetInfo;
     mDummyTargetWriteInfo.pBufferInfo = nullptr;
     mDummyTargetWriteInfo.pTexelBufferView = nullptr;
- }
+}
 
 void VulkanPipelineCache::Init(VkDevice device) {
     mDevice = device;
@@ -94,8 +93,8 @@ void VulkanPipelineCache::BindRenderPass(VkRenderPass renderPass, uint16_t subpa
 }
 
 void VulkanPipelineCache::BindRasterState(const RasterState& rasterState) {
-    mCurrentPipelineKey.rasterState.cullMode = VK_CULL_MODE_BACK_BIT;
-    mCurrentPipelineKey.rasterState.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
+    mCurrentPipelineKey.rasterState.cullMode = VK_CULL_MODE_NONE;
+    mCurrentPipelineKey.rasterState.frontFace = VK_FRONT_FACE_CLOCKWISE;
     mCurrentPipelineKey.rasterState.depthBiasEnable = VK_FALSE;
     mCurrentPipelineKey.rasterState.blendEnable = VK_FALSE;
     mCurrentPipelineKey.rasterState.depthWriteEnable =
@@ -112,6 +111,10 @@ void VulkanPipelineCache::BindRasterState(const RasterState& rasterState) {
     mCurrentPipelineKey.rasterState.colorBlendOp = BlendEquation::ADD;
     mCurrentPipelineKey.rasterState.alphaBlendOp = BlendEquation::ADD;
     mCurrentPipelineKey.rasterState.depthCompareOp = rasterState.depthFunc;
+
+    mCurrentPipelineKey.rasterState.colorWriteMask =
+        VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT |
+        VK_COLOR_COMPONENT_A_BIT;
 }
 
 void VulkanPipelineCache::BindTopology(VkPrimitiveTopology topology) {
@@ -274,7 +277,7 @@ VkPipeline VulkanPipelineCache::GetOrCreatePipeline() {
     vkDs.depthBoundsTestEnable = VK_FALSE;
     vkDs.stencilTestEnable = VK_FALSE;
     vkDs.minDepthBounds = 0.0f;
-    vkDs.maxDepthBounds = 0.0f;
+    vkDs.maxDepthBounds = 1.0f;
 
     pipelineCreateInfo.pColorBlendState = &colorBlendState;
     pipelineCreateInfo.pViewportState = &viewportState;
@@ -374,7 +377,6 @@ VulkanPipelineCache::PipelineLayoutVal* VulkanPipelineCache::GetOrCreatePipeline
     return &mPipelineLayoutCache[mCurrentPipelineKey.layout];
 }
 
-
 void VulkanPipelineCache::BindUniformBuffer(uint32_t bindingIndex, VkBuffer uniformBuffer,
                                             VkDeviceSize offset /*= 0*/,
                                             VkDeviceSize size /*= VK_WHOLE_SIZE*/) {
@@ -399,7 +401,6 @@ void VulkanPipelineCache::UnBindUniformBuffer(VkBuffer uniformBuffer) {
     }
 }
 
-
 VulkanPipelineCache::DescriptorVal* VulkanPipelineCache::CreateDescriptorSets() {
     PipelineLayoutVal* pipelineLayoutCache = GetOrCreatePipelineLayout();
 
@@ -413,8 +414,6 @@ VulkanPipelineCache::DescriptorVal* VulkanPipelineCache::CreateDescriptorSets() 
     allocInfo.pSetLayouts = pipelineLayoutCache->descriptorSetLayouts.data();
     VkResult error = vkAllocateDescriptorSets(mDevice, &allocInfo, cache.handles.data());
     ET_CORE_ASSERT(error == VK_SUCCESS);
-    
-
 
     // Rewrite every binding in the new descriptor sets.
     VkDescriptorBufferInfo descriptorBuffers[UBUFFER_BINDING_COUNT];
@@ -432,7 +431,7 @@ VulkanPipelineCache::DescriptorVal* VulkanPipelineCache::CreateDescriptorSets() 
             bufferInfo.buffer = mCurrentDescriptorKey.uniformBuffers[binding];
             bufferInfo.offset = mCurrentDescriptorKey.uniformBufferOffsets[binding];
             bufferInfo.range = mCurrentDescriptorKey.uniformBufferSizes[binding];
- 
+
             writeInfo.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
             writeInfo.pNext = nullptr;
             writeInfo.dstArrayElement = 0;
@@ -466,32 +465,31 @@ VulkanPipelineCache::DescriptorVal* VulkanPipelineCache::CreateDescriptorSets() 
             writeInfo.dstBinding = binding;
         }
     }
-    for (uint32_t binding = 0; binding < TARGET_BINDING_COUNT; binding++) {
-        VkWriteDescriptorSet& writeInfo = writes[nwrites++];
-        if (mCurrentDescriptorKey.inputAttachments[binding].imageView) {
-            VkDescriptorImageInfo& imageInfo = descriptorInputAttachments[binding];
-            imageInfo = mCurrentDescriptorKey.inputAttachments[binding];
-            writeInfo.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-            writeInfo.pNext = nullptr;
-            writeInfo.dstArrayElement = 0;
-            writeInfo.descriptorCount = 1;
-            writeInfo.descriptorType = VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT;
-            writeInfo.pImageInfo = &imageInfo;
-            writeInfo.pBufferInfo = nullptr;
-            writeInfo.pTexelBufferView = nullptr;
-        } else {
-            writeInfo = mDummyTargetWriteInfo;
-            //ET_CORE_ASSERT(mDummyTargetInfo.imageView);
-        }
-        writeInfo.dstSet = cache.handles[2];
-        writeInfo.dstBinding = binding;
-    }
+    // for (uint32_t binding = 0; binding < TARGET_BINDING_COUNT; binding++) {
+    //     VkWriteDescriptorSet& writeInfo = writes[nwrites++];
+    //     if (mCurrentDescriptorKey.inputAttachments[binding].imageView) {
+    //         VkDescriptorImageInfo& imageInfo = descriptorInputAttachments[binding];
+    //         imageInfo = mCurrentDescriptorKey.inputAttachments[binding];
+    //         writeInfo.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    //         writeInfo.pNext = nullptr;
+    //         writeInfo.dstArrayElement = 0;
+    //         writeInfo.descriptorCount = 1;
+    //         writeInfo.descriptorType = VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT;
+    //         writeInfo.pImageInfo = &imageInfo;
+    //         writeInfo.pBufferInfo = nullptr;
+    //         writeInfo.pTexelBufferView = nullptr;
+    //     } else {
+    //         writeInfo = mDummyTargetWriteInfo;
+    //         //ET_CORE_ASSERT(mDummyTargetInfo.imageView);
+    //     }
+    //     writeInfo.dstSet = cache.handles[2];
+    //     writeInfo.dstBinding = binding;
+    // }
     vkUpdateDescriptorSets(mDevice, nwrites, writes, 0, nullptr);
 
     mDescriptorSetsCache[mCurrentDescriptorKey] = cache;
     return &mDescriptorSetsCache[mCurrentDescriptorKey];
 }
-
 
 void VulkanPipelineCache::CreateDescriptorPool(uint32_t size) {
     VkDescriptorPoolSize poolSizes[DESCRIPTOR_TYPE_COUNT] = {};
@@ -508,7 +506,7 @@ void VulkanPipelineCache::CreateDescriptorPool(uint32_t size) {
     poolSizes[2].type = VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT;
     poolSizes[2].descriptorCount = poolInfo.maxSets * TARGET_BINDING_COUNT;
 
-    const  VkResult result = vkCreateDescriptorPool(mDevice, &poolInfo, nullptr, &mDescriptorPool);
+    const VkResult result = vkCreateDescriptorPool(mDevice, &poolInfo, nullptr, &mDescriptorPool);
     ET_CORE_ASSERT(result == VK_SUCCESS);
 }
 

@@ -101,6 +101,7 @@ class VulkanDriverApi : public DriverApi {
 
     VulkanRenderPass mCurrentRenderPass;
     std::array<Ref<VulkanSamplerGroup>, SAMPLER_BINDING_COUNT> mSamplerGroupBindings;
+    std::array<Ref<VulkanBufferObject>, UNIFORM_BINDING_COUNT> mUniformBufferBindings;
 
     Ref<VulkanSamplerCache> mSamplerCache;
     Ref<VulkanFramebufferCache> mFramebufferCache;

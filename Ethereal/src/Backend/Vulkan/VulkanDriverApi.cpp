@@ -353,7 +353,7 @@ void VulkanDriverApi::BeginRenderPass(RenderTargetHandle rth, const RenderPassPa
 
         if (fbkey.depth) {
             VkClearValue& clearValue = clearValues[renderPassInfo.clearValueCount++];
-            clearValue.depthStencil = {(float)params.clearDepth, 0};
+            clearValue.depthStencil = {(float)params.clearDepth, params.clearStencil};
         }
         renderPassInfo.pClearValues = &clearValues[0];
     }

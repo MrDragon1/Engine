@@ -11,7 +11,7 @@ void TestRenderPass::Init(uint32_t width, uint32_t height) {
     mStaticMeshPipeline.program = api->CreateProgram("TEST", source);
 
     auto usage = TextureUsage::COLOR_ATTACHMENT | TextureUsage::SAMPLEABLE;
-    auto hdrTex = api->CreateTexture(1, width, height, 1, TextureFormat::R16G16B16A16_HDR, usage,
+    auto hdrTex = api->CreateTexture(1, width, height, 1, TextureFormat::R8G8B8A8_UNORM, usage,
                                      TextureType::TEXTURE_2D);
     auto entityIdTex = api->CreateTexture(1, width, height, 1, TextureFormat::R32_INTEGER, usage,
                                           TextureType::TEXTURE_2D);
@@ -30,7 +30,8 @@ void TestRenderPass::Init(uint32_t width, uint32_t height) {
 }
 
 void TestRenderPass::Draw() {
-    mParams.clearColor = {0.1, 1.0, 0.1, 1.0};
+    mParams.clearColor = {0.3, 0.3, 0.3, 1.0};
+    mParams.clearDepth = 1.0f;
     auto uniformManager = GlobalContext::GetUniformManager();
     auto api = GlobalContext::GetDriverApi();
 
@@ -42,7 +43,7 @@ void TestRenderPass::Draw() {
     uniformManager->UpdateScene();
 
     api->BeginRenderPass(mRenderTarget, mParams);
-    uniformManager->Commit();
+    uniformManager->Commit();  // TODO: should use the same command buffer as api->BeginRenderPass
     uniformManager->Bind();
     api->Draw(cube->GetMeshSource()->GetRenderPrimitive(), mStaticMeshPipeline);
 
