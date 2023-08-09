@@ -3,6 +3,8 @@
 #include "Backend/Vulkan/VulkanTexture.h"
 #include "Backend/Vulkan/VulkanBuffer.h"
 #include "backends/imgui_impl_vulkan.h"
+
+#include "Utils/ShaderUtils.h"
 namespace Ethereal {
 namespace Backend {
 VulkanDriverApi::VulkanDriverApi() { Init(); }
@@ -91,7 +93,20 @@ Ref<Program> VulkanDriverApi::CreateProgram(std::string_view name, ShaderSource 
 
 Ref<Program> VulkanDriverApi::CreateProgram(std::string_view name, ShaderSourceString source) {
     ET_CORE_WARN("Not support string shader source, please compile to shadersource first.");
-    return nullptr;
+    ShaderSource binarySource;
+    Utils::SpirvUtils::Init();
+    for (auto [type, value] : source) {
+        vector<uint32_t> binary;
+        bool res = Utils::SpirvUtils::GLSL2SPV(value, type, binary);
+        if (res) {
+            binarySource[type].resize(binary.size() * sizeof(uint32_t));
+            memcpy(binarySource[type].data(), binary.data(), binary.size() * sizeof(uint32_t));
+        } else {
+            ET_CORE_ERROR("Compile shader failed.");
+        }
+    }
+    Utils::SpirvUtils::Shutdown();
+    return CreateProgram(name, binarySource);
 }
 
 Ref<RenderTarget> VulkanDriverApi::CreateRenderTarget(TargetBufferFlags targets, uint32_t width,

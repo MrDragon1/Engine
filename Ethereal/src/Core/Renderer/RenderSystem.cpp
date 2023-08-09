@@ -98,7 +98,7 @@ int RenderSystem::GetMousePicking(int x, int y) {
 TextureID RenderSystem::DrawMaterialPreview(MaterialCorePtr mat, uint32_t width, uint32_t height) {
     mMaterialPreviewRenderPass->OnResize(width, height);
     mMaterialPreviewRenderPass->SetMaterial(mat);
-    mMaterialPreviewRenderPass->Draw();
+    // mMaterialPreviewRenderPass->Draw();
     return GlobalContext::GetDriverApi()->GetTextueID(mMaterialPreviewRenderPass->GetMainImage());
 }
 
