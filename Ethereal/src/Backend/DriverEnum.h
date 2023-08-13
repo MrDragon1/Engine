@@ -38,6 +38,8 @@ enum class TextureFormat : uint16_t {
     R8,
     R16,
     R16G16B16A16_HDR,
+    R32G32B32A32_HDR,
+    R32G32B32_HDR,
     R16G16B16_HDR,
 };
 
@@ -417,6 +419,8 @@ struct RasterState {
     bool EnableDepthWrite = true;
     bool EnableDepthTest = true;
     DepthFunc depthFunc = DepthFunc::L;
+    uint8_t colorTargetCount = 1;
+    uint8_t rasterizationSamples = 1;
 };
 
 }  // namespace Ethereal

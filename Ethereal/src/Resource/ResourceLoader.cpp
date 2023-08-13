@@ -96,10 +96,10 @@ Ref<Texture> ResourceLoader::LoadTexture(const std::string& path, bool flip) {
         TextureFormat textureFormat;
         if (hdr) {
             if (channels == 4) {
-                textureFormat = TextureFormat::R16G16B16A16_HDR;
+                textureFormat = TextureFormat::R32G32B32A32_HDR;
                 dataFormat = PixelDataFormat::RGBA;
             } else if (channels == 3) {
-                textureFormat = TextureFormat::R16G16B16_HDR;
+                textureFormat = TextureFormat::R32G32B32_HDR;
                 dataFormat = PixelDataFormat::RGB;
             }
 

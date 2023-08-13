@@ -2,7 +2,7 @@
 
 layout(location = 0) in vec3 a_Position;
 
-layout(std140, binding = 0) uniform Config{
+layout(std140, set = 0, binding = 0) uniform Config{
         mat4 Projection; 
         mat4 View;
         float Roughness; 

@@ -75,7 +75,7 @@ class VulkanPipelineCache : public RefCounted {
         VkDescriptorImageInfo samplers[SAMPLER_BINDING_COUNT];
         VkDescriptorImageInfo inputAttachments[TARGET_BINDING_COUNT];
         uint64_t uniformBufferOffsets[UBUFFER_BINDING_COUNT];
-        uint64_t uniformBufferSizes[UBUFFER_BINDING_COUNT];          
+        uint64_t uniformBufferSizes[UBUFFER_BINDING_COUNT];
     };
     using DescHashFn = Math::Hash::MurmurHashFn<DescriptorKey>;
     struct DescriptorVal {
@@ -85,10 +85,6 @@ class VulkanPipelineCache : public RefCounted {
     struct DescEqual {
         bool operator()(const DescriptorKey& k1, const DescriptorKey& k2) const;
     };
-
-
-
-
 
     VulkanPipelineCache();
     void Init(VkDevice device);
@@ -104,14 +100,19 @@ class VulkanPipelineCache : public RefCounted {
 
     VkPipeline GetOrCreatePipeline();
     PipelineLayoutVal* GetOrCreatePipelineLayout();
-    
+
     void BindUniformBuffer(uint32_t bindingIndex, VkBuffer uniformBuffer, VkDeviceSize offset = 0,
                            VkDeviceSize size = VK_WHOLE_SIZE);
     void UnBindUniformBuffer(VkBuffer uniformBuffer);
 
+    void BindSampler(uint32_t bindingIndex, VkSampler sampler, VkImageView imageView,
+                     VkImageLayout imageLayout);
+    void UnBindSampler(VkSampler sampler);
+
    private:
     DescriptorVal* CreateDescriptorSets();
     void CreateDescriptorPool(uint32_t size);
+
    private:
     VkDevice mDevice;
     DescriptorKey mCurrentDescriptorKey{};

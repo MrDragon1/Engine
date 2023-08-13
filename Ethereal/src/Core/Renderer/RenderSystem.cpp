@@ -45,8 +45,7 @@ void RenderSystem::Init() {
     mTestRenderPass->Init(mWidth, mHeight);
 
     // Must after mEnvironmentMapRenderPass Init
-    // mBuildinData->Environment =
-    // AssetManager::GetAsset<Environment>("skyboxs/Newport_Loft_Ref.hdr");
+    mBuildinData->Environment = AssetManager::GetAsset<Environment>("skyboxs/Newport_Loft_Ref.hdr");
 
     auto api = GlobalContext::GetDriverApi();
 

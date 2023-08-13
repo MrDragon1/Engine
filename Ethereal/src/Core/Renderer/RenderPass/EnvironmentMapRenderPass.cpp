@@ -1,36 +1,56 @@
 #include "EnvironmentMapRenderPass.h"
 
-#include "Ethereal/src/Base/GlobalContext.h"
+#include "Base/GlobalContext.h"
+
+#include "Utils/StringUtils.h"
 namespace Ethereal {
 void EnvironmentMapRenderPass::Init(uint32_t width, uint32_t height) {
     auto api = GlobalContext::GetDriverApi();
-    ShaderSource source;
-    source[ShaderType::VERTEX] = EQUIRECTANGULARTOCUBEMAP_VERT;
-    source[ShaderType::FRAGMENT] = EQUIRECTANGULARTOCUBEMAP_FRAG;
+
+    ShaderSourceString source;
+    source[ShaderType::VERTEX] =
+        Utils::ReadFileAndSkipBOM("assets/shaders/IBL/EquirectangularToCubeMap.vert");
+    source[ShaderType::FRAGMENT] =
+        Utils::ReadFileAndSkipBOM("assets/shaders/IBL/EquirectangularToCubeMap.frag");
     mEquirectangularToCubeMapPipeline.program =
         api->CreateProgram("EQUIRECTANGULARTOCUBEMAP", source);
-    source[ShaderType::VERTEX] = PREFILTER_VERT;
-    source[ShaderType::FRAGMENT] = PREFILTER_FRAG;
+    source[ShaderType::VERTEX] = Utils::ReadFileAndSkipBOM("assets/shaders/IBL/Prefilter.vert");
+    source[ShaderType::FRAGMENT] = Utils::ReadFileAndSkipBOM("assets/shaders/IBL/Prefilter.frag");
     mPrefilterPipeline.program = api->CreateProgram("PREFILTER", source);
-    source[ShaderType::VERTEX] = IRRADIANCECONVOLUTION_VERT;
-    source[ShaderType::FRAGMENT] = IRRADIANCECONVOLUTION_FRAG;
+
+    source[ShaderType::VERTEX] =
+        Utils::ReadFileAndSkipBOM("assets/shaders/IBL/IrradianceConvolution.vert");
+    source[ShaderType::FRAGMENT] =
+        Utils::ReadFileAndSkipBOM("assets/shaders/IBL/IrradianceConvolution.frag");
     mConvolutionPipeline.program = api->CreateProgram("IRRADIANCECONVOLUTION", source);
+
+    // ShaderSource source;
+    // source[ShaderType::VERTEX] = EQUIRECTANGULARTOCUBEMAP_VERT;
+    // source[ShaderType::FRAGMENT] = EQUIRECTANGULARTOCUBEMAP_FRAG;
+    // mEquirectangularToCubeMapPipeline.program =
+    //     api->CreateProgram("EQUIRECTANGULARTOCUBEMAP", source);
+    // source[ShaderType::VERTEX] = PREFILTER_VERT;
+    // source[ShaderType::FRAGMENT] = PREFILTER_FRAG;
+    // mPrefilterPipeline.program = api->CreateProgram("PREFILTER", source);
+    // source[ShaderType::VERTEX] = IRRADIANCECONVOLUTION_VERT;
+    // source[ShaderType::FRAGMENT] = IRRADIANCECONVOLUTION_FRAG;
+    // mConvolutionPipeline.program = api->CreateProgram("IRRADIANCECONVOLUTION", source);
 
     auto usage = TextureUsage::COLOR_ATTACHMENT | TextureUsage::SAMPLEABLE;
 
-    auto dummyTex = api->CreateTexture(1, width, height, 1, TextureFormat::R16G16B16A16_HDR, usage,
+    auto dummyTex = api->CreateTexture(1, width, height, 1, TextureFormat::R32G32B32A32_HDR, usage,
                                        TextureType::TEXTURE_2D);
     mRenderTarget =
         api->CreateRenderTarget(TargetBufferFlags::COLOR0, width, height, {dummyTex}, {}, {});
 
     mCube = RenderResource::Cube;
 
-    mEnvironmentCubeMap = api->CreateTexture(1, 32, 32, 6, TextureFormat::R16G16B16A16_HDR, usage,
+    mEnvironmentCubeMap = api->CreateTexture(1, 32, 32, 6, TextureFormat::R32G32B32A32_HDR, usage,
                                              TextureType::TEXTURE_CUBEMAP);
-    mReflectionCubeMap = api->CreateTexture(10, 512, 512, 6, TextureFormat::R16G16B16A16_HDR, usage,
+    mReflectionCubeMap = api->CreateTexture(10, 512, 512, 6, TextureFormat::R32G32B32A32_HDR, usage,
                                             TextureType::TEXTURE_CUBEMAP);
     api->GenerateMipmaps(mReflectionCubeMap);
-    mTextureCube = api->CreateTexture(1, 512, 512, 6, TextureFormat::R16G16B16A16_HDR, usage,
+    mTextureCube = api->CreateTexture(1, 512, 512, 6, TextureFormat::R32G32B32A32_HDR, usage,
                                       TextureType::TEXTURE_CUBEMAP);
 
     mEquirectangularToCubeMapPipeline.rasterState.depthFunc = RasterState::DepthFunc::LE;
@@ -44,6 +64,10 @@ void EnvironmentMapRenderPass::Init(uint32_t width, uint32_t height) {
 
     mParams.flags.clearMask = TargetBufferFlags::COLOR0;
     mParams.viewport = Viewport(0, 0, width, height);
+
+    mEquirectangularToCubeMapPipeline.rasterState.colorTargetCount = 1;
+    mPrefilterPipeline.rasterState.colorTargetCount = 1;
+    mConvolutionPipeline.rasterState.colorTargetCount = 1;
 }
 
 void EnvironmentMapRenderPass::Draw() {
@@ -63,9 +87,6 @@ void EnvironmentMapRenderPass::Draw() {
     auto api = GlobalContext::GetDriverApi();
     auto uniformManager = GlobalContext::GetUniformManager();
 
-    api->SetRenderTargetAttachment(mRenderTarget, {.handle = mTextureCube, .level = 0, .layer = 0},
-                                   TargetBufferFlags::COLOR0);
-    api->BeginRenderPass(mRenderTarget, mParams);
     auto& s = mUniformInterfaceBuffer.Edit();
     // Generate Environment CubeMap
     s.ProjectionMatrix = captureProjection;
@@ -81,22 +102,18 @@ void EnvironmentMapRenderPass::Draw() {
                                        {.handle = mTextureCube, .level = 0, .layer = i},
                                        TargetBufferFlags::COLOR0);
 
+        api->BeginRenderPass(mRenderTarget, mParams);
         api->UpdateBufferObject(mUniformBuffer, mUniformInterfaceBuffer.ToBufferDescriptor(), 0);
         api->BindUniformBuffer(0, mUniformBuffer);
 
         api->UpdateSamplerGroup(mSamplerGroup, mSamplerGroupDesc);
         api->BindSamplerGroup(0, mSamplerGroup);
 
-        // api->Draw(mCube->GetMeshSource()->GetRenderPrimitive(),
-        // mEquirectangularToCubeMapPipeline);
+        api->Draw(mCube->GetMeshSource()->GetRenderPrimitive(), mEquirectangularToCubeMapPipeline);
+
+        api->EndRenderPass();
     }
 
-    api->EndRenderPass();
-
-    api->SetRenderTargetAttachment(mRenderTarget,
-                                   {.handle = mEnvironmentCubeMap, .level = 0, .layer = 0},
-                                   TargetBufferFlags::COLOR0);
-    api->BeginRenderPass(mRenderTarget, mParams);
     // Convolution
     for (uint16_t i = 0; i < 6; i++) {
         mSamplerGroupDesc[0] = SamplerDescriptor{
@@ -109,18 +126,19 @@ void EnvironmentMapRenderPass::Draw() {
         api->SetRenderTargetAttachment(mRenderTarget,
                                        {.handle = mEnvironmentCubeMap, .level = 0, .layer = i},
                                        TargetBufferFlags::COLOR0);
-
+        api->BeginRenderPass(mRenderTarget, mParams);
         api->UpdateBufferObject(mUniformBuffer, mUniformInterfaceBuffer.ToBufferDescriptor(), 0);
         api->BindUniformBuffer(0, mUniformBuffer);
 
         api->UpdateSamplerGroup(mSamplerGroup, mSamplerGroupDesc);
         api->BindSamplerGroup(0, mSamplerGroup);
-        // api->Draw(mCube->GetMeshSource()->GetRenderPrimitive(), mConvolutionPipeline);
+        api->Draw(mCube->GetMeshSource()->GetRenderPrimitive(), mConvolutionPipeline);
+
+        api->EndRenderPass();
     }
 
     // Generate Reflection CubeMap
     // here, we reuse the mTextureCube
-    api->EndRenderPass();
 
     // Generate Pre-filter CubeMap
     unsigned int maxMipLevels = 10;
@@ -132,10 +150,6 @@ void EnvironmentMapRenderPass::Draw() {
 
         s.Roughness = roughness;
 
-        api->SetRenderTargetAttachment(mRenderTarget,
-                                       {.handle = mReflectionCubeMap, .level = mip, .layer = 0},
-                                       TargetBufferFlags::COLOR0);
-        api->BeginRenderPass(mRenderTarget, mParams);
         for (uint32_t i = 0; i < 6; i++) {
             mSamplerGroupDesc[0] = SamplerDescriptor{
                 .texture = mTextureCube,
@@ -147,16 +161,16 @@ void EnvironmentMapRenderPass::Draw() {
             api->SetRenderTargetAttachment(mRenderTarget,
                                            {.handle = mReflectionCubeMap, .level = mip, .layer = i},
                                            TargetBufferFlags::COLOR0);
-
+            api->BeginRenderPass(mRenderTarget, mParams);
             api->UpdateBufferObject(mUniformBuffer, mUniformInterfaceBuffer.ToBufferDescriptor(),
                                     0);
             api->BindUniformBuffer(0, mUniformBuffer);
 
             api->UpdateSamplerGroup(mSamplerGroup, mSamplerGroupDesc);
             api->BindSamplerGroup(0, mSamplerGroup);
-            // api->Draw(mCube->GetMeshSource()->GetRenderPrimitive(), mPrefilterPipeline);
+            api->Draw(mCube->GetMeshSource()->GetRenderPrimitive(), mPrefilterPipeline);
+            api->EndRenderPass();
         }
-        api->EndRenderPass();
     }
 }
 

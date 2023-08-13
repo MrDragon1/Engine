@@ -92,7 +92,6 @@ Ref<Program> VulkanDriverApi::CreateProgram(std::string_view name, ShaderSource 
 }
 
 Ref<Program> VulkanDriverApi::CreateProgram(std::string_view name, ShaderSourceString source) {
-    ET_CORE_WARN("Not support string shader source, please compile to shadersource first.");
     ShaderSource binarySource;
     Utils::SpirvUtils::Init();
     for (auto [type, value] : source) {
@@ -102,7 +101,7 @@ Ref<Program> VulkanDriverApi::CreateProgram(std::string_view name, ShaderSourceS
             binarySource[type].resize(binary.size() * sizeof(uint32_t));
             memcpy(binarySource[type].data(), binary.data(), binary.size() * sizeof(uint32_t));
         } else {
-            ET_CORE_ERROR("Compile shader failed.");
+            ET_CORE_ERROR("Compile shader {} failed.", name);
         }
     }
     Utils::SpirvUtils::Shutdown();
@@ -439,7 +438,20 @@ void VulkanDriverApi::UpdateSamplerGroup(SamplerGroupHandle sgh, SamplerGroupDes
 }
 
 void VulkanDriverApi::BindSamplerGroup(uint8_t binding, SamplerGroupHandle sgh) {
-    mSamplerGroupBindings[binding] = sgh.As<VulkanSamplerGroup>();
+    Ref<VulkanSamplerGroup> sg = sgh.As<VulkanSamplerGroup>();
+    mSamplerGroupBindings[binding] = sg;
+    // FIX: the param binding conflict with the binding info in sgh.
+    // the binding info in param should be removed, since we always use the set=1 for texture
+    // sampler
+    for (const auto& desc : sg->descs) {
+        VkSampler sampler = mSamplerCache->GetSampler(desc.params);
+
+        Ref<VulkanTexture> texture = desc.texture.As<VulkanTexture>();
+
+        mPipelineCache->BindSampler(
+            (uint32_t)desc.binding, sampler, texture->GetPrimaryImageView(),
+            VulkanUtils::GetVkImageLayout(texture->GetPrimaryImageLayout()));
+    }
 }
 
 void VulkanDriverApi::BindUniformBuffer(uint8_t binding, BufferObjectHandle boh) {
@@ -447,6 +459,35 @@ void VulkanDriverApi::BindUniformBuffer(uint8_t binding, BufferObjectHandle boh)
     const VkDeviceSize offset = 0;
     const VkDeviceSize size = bo->byteCount;
     mPipelineCache->BindUniformBuffer((uint32_t)binding, bo->buffer->GetBuffer(), offset, size);
+}
+
+void VulkanDriverApi::SetRenderTargetAttachment(RenderTargetHandle rth,
+                                                TargetBufferInfo const& info,
+                                                TargetBufferFlags flag) {
+    Ref<VulkanRenderTarget> rt = rth.As<VulkanRenderTarget>();
+    // This will resize the render target
+    auto valueForLevel = [](size_t level, size_t value) {
+        return std::max(size_t(1), value >> level);
+    };
+    rt->width = valueForLevel(info.level, info.handle->width);
+    rt->height = valueForLevel(info.level, info.handle->height);
+
+    if (any(flag & TargetBufferFlags::COLOR_ALL)) {
+        const size_t maxDrawBuffers = MAX_SUPPORTED_RENDER_TARGET_COUNT;
+        for (size_t i = 0; i < maxDrawBuffers; i++) {
+            if (any(flag & getTargetBufferFlagsAt(i))) {
+                rt->color[i] = {info.handle, info.level, info.layer};
+            }
+        }
+    }
+    if ((flag & TargetBufferFlags::DEPTH_AND_STENCIL) == TargetBufferFlags::DEPTH_AND_STENCIL) {
+        ET_CORE_ASSERT(false, "Not supported update stencil&depth framebuffer yet");
+    }
+    if (any(flag & TargetBufferFlags::DEPTH)) {
+    }
+
+    if (any(flag & TargetBufferFlags::STENCIL)) {
+    }
 }
 
 TextureID VulkanDriverApi::GetTextueID(TextureHandle th) {

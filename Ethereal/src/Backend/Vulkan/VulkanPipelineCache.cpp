@@ -106,8 +106,8 @@ void VulkanPipelineCache::BindRasterState(const RasterState& rasterState) {
     mCurrentPipelineKey.rasterState.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
     mCurrentPipelineKey.rasterState.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
 
-    mCurrentPipelineKey.rasterState.rasterizationSamples = 1;
-    mCurrentPipelineKey.rasterState.colorTargetCount = 2;
+    mCurrentPipelineKey.rasterState.rasterizationSamples = rasterState.rasterizationSamples;
+    mCurrentPipelineKey.rasterState.colorTargetCount = rasterState.colorTargetCount;
     mCurrentPipelineKey.rasterState.colorBlendOp = BlendEquation::ADD;
     mCurrentPipelineKey.rasterState.alphaBlendOp = BlendEquation::ADD;
     mCurrentPipelineKey.rasterState.depthCompareOp = rasterState.depthFunc;
@@ -399,6 +399,17 @@ void VulkanPipelineCache::UnBindUniformBuffer(VkBuffer uniformBuffer) {
             key.uniformBufferOffsets[bindingIndex] = {};
         }
     }
+}
+
+void VulkanPipelineCache::BindSampler(uint32_t bindingIndex, VkSampler sampler,
+                                      VkImageView imageView, VkImageLayout imageLayout) {
+    ET_CORE_ASSERT(bindingIndex < SAMPLER_BINDING_COUNT, "Sampler binding index out of range.");
+    auto& key = mCurrentDescriptorKey;
+    VkDescriptorImageInfo info{};
+    info.sampler = sampler;
+    info.imageView = imageView;
+    info.imageLayout = imageLayout;
+    key.samplers[bindingIndex] = info;
 }
 
 VulkanPipelineCache::DescriptorVal* VulkanPipelineCache::CreateDescriptorSets() {

@@ -53,7 +53,7 @@ struct VulkanAttachment {
     VkFormat GetFormat();
     VulkanLayout GetLayout();
     VkExtent2D GetExtent2D();
-    VkImageView GetImageView(VkImageAspectFlags aspect);
+    VkImageView GetImageView(VkImageAspectFlags aspect = VK_IMAGE_ASPECT_COLOR_BIT);
     VkImageSubresourceRange GetSubresourceRange(VkImageAspectFlags aspect);
 };
 struct VulkanRenderTarget : public RenderTarget {

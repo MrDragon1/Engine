@@ -28,6 +28,8 @@ void TestRenderPass::Init(uint32_t width, uint32_t height) {
     mParams.viewport = {0, 0, width, height};
     mParams.flags.clearMask =
         TargetBufferFlags::COLOR0 | TargetBufferFlags::COLOR1 | TargetBufferFlags::DEPTH;
+    mStaticMeshPipeline.rasterState.colorTargetCount = 2;
+    mStaticMeshPipeline.rasterState.rasterizationSamples = 1;
 }
 
 void TestRenderPass::Draw() {
@@ -57,7 +59,7 @@ void TestRenderPass::OnResize(uint32_t width, uint32_t height) {
     api->DestroyRenderTarget(mRenderTarget);
 
     auto usage = TextureUsage::COLOR_ATTACHMENT | TextureUsage::SAMPLEABLE;
-    auto hdrTex = api->CreateTexture(1, width, height, 1, TextureFormat::R16G16B16A16_HDR, usage,
+    auto hdrTex = api->CreateTexture(1, width, height, 1, TextureFormat::R32G32B32A32_HDR, usage,
                                      TextureType::TEXTURE_2D);
     auto entityIdTex = api->CreateTexture(1, width, height, 1, TextureFormat::R32_INTEGER, usage,
                                           TextureType::TEXTURE_2D);

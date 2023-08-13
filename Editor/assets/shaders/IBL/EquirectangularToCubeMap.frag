@@ -3,7 +3,7 @@
 layout(location = 0) out vec4 CubeMap0;
 
 layout(location = 0) in vec3 v_WorldPos;
-layout(binding = 0) uniform sampler2D u_EquirectangularMap0;
+layout(set = 1, binding = 0) uniform sampler2D u_EquirectangularMap0;
 
 const vec2 invAtan = vec2(0.1591, 0.3183);
 vec2 SampleSphericalMap(vec3 v)

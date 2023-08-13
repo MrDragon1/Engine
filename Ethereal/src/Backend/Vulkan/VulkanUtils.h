@@ -202,8 +202,10 @@ static VkFormat ResolveTextureFormat(const TextureFormat& format) {
         case TextureFormat::R32G32_FLOAT:
             return VK_FORMAT_R32G32_SFLOAT;
         case TextureFormat::R32G32B32_FLOAT:
+        case TextureFormat::R32G32B32_HDR:
             return VK_FORMAT_R32G32B32_SFLOAT;
         case TextureFormat::R32G32B32A32_FLOAT:
+        case TextureFormat::R32G32B32A32_HDR:
             return VK_FORMAT_R32G32B32A32_SFLOAT;
         case TextureFormat::R32_INTEGER:
             return VK_FORMAT_R32_UINT;
@@ -211,10 +213,14 @@ static VkFormat ResolveTextureFormat(const TextureFormat& format) {
             return VK_FORMAT_D32_SFLOAT;
         case TextureFormat::R16:
             return VK_FORMAT_R16_UNORM;
-        case TextureFormat::R16G16B16A16_HDR:
+        case TextureFormat::R16G16B16A16_HDR: {
+            ET_CORE_WARN("R16G16B16A16_HDR has some bugs, recommand to use R32G32B32A32_HDR");
             return VK_FORMAT_R16G16B16A16_SFLOAT;
-        case TextureFormat::R16G16B16_HDR:
+        }
+        case TextureFormat::R16G16B16_HDR: {
+            ET_CORE_WARN("R16G16B16_HDR has some bugs, recommand to use R32G32B32_HDR");
             return VK_FORMAT_R16G16B16_SFLOAT;
+        }
     }
 }
 
