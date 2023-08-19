@@ -38,6 +38,7 @@ struct VulkanProgram : public Program {
     VulkanProgram(Ref<VulkanContext> context, std::string_view name, ShaderSource source);
     VkShaderModule vertexShaderModule;
     VkShaderModule fragmentShaderModule;
+    VkShaderModule geometryShaderModule;
     VkSpecializationInfo* specializationInfos = nullptr;
 
    private:

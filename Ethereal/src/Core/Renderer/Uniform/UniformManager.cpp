@@ -5,23 +5,23 @@
 namespace Ethereal {
 void UniformManager::Init() {
     mViewUB = mApi->CreateBufferObject(mViewUib.GetSize(), BufferObjectBinding::UNIFORM,
-                                       BufferUsage::STATIC);
+                                       BufferUsage::DYNAMIC);
     mApi->UpdateBufferObject(mViewUB, mViewUib.ToBufferDescriptor(), 0);
 
     mShadowUB = mApi->CreateBufferObject(mShadowUib.GetSize(), BufferObjectBinding::UNIFORM,
-                                         BufferUsage::STATIC);
+                                         BufferUsage::DYNAMIC);
     mApi->UpdateBufferObject(mShadowUB, mShadowUib.ToBufferDescriptor(), 0);
 
     mLightUB = mApi->CreateBufferObject(mLightUib.GetSize(), BufferObjectBinding::UNIFORM,
-                                        BufferUsage::STATIC);
+                                        BufferUsage::DYNAMIC);
     mApi->UpdateBufferObject(mLightUB, mLightUib.ToBufferDescriptor(), 0);
 
     mRenderPrimitiveUB = mApi->CreateBufferObject(
-        mRenderPrimitiveUib.GetSize(), BufferObjectBinding::UNIFORM, BufferUsage::STATIC);
+        mRenderPrimitiveUib.GetSize(), BufferObjectBinding::UNIFORM, BufferUsage::DYNAMIC);
     mApi->UpdateBufferObject(mRenderPrimitiveUB, mRenderPrimitiveUib.ToBufferDescriptor(), 0);
 
     mRenderPrimitiveBoneUB = mApi->CreateBufferObject(
-        mRenderPrimitiveBoneUib.GetSize(), BufferObjectBinding::UNIFORM, BufferUsage::STATIC);
+        mRenderPrimitiveBoneUib.GetSize(), BufferObjectBinding::UNIFORM, BufferUsage::DYNAMIC);
     mApi->UpdateBufferObject(mRenderPrimitiveBoneUB, mRenderPrimitiveBoneUib.ToBufferDescriptor(),
                              0);
 
@@ -155,8 +155,9 @@ void UniformManager::UpdateMaterial(Ref<MaterialAsset> mat) {
     };
 }
 
-void UniformManager::UpdateRenderPrimitive(RenderPrimitiveParam param) {
-    auto& s = mRenderPrimitiveUib.Edit();
+void UniformManager::UpdateRenderPrimitive(RenderPrimitiveParam param, uint32_t index) {
+    ET_CORE_ASSERT(index < MAX_UNIFORM_BUFFER_PER_DRAWCALL, "Index out of range");
+    auto& s = mRenderPrimitiveUib.Edit(index);
     s.ModelMatrix = param.ModelMatrix;
 }
 
@@ -182,16 +183,19 @@ void UniformManager::Commit() {
     mApi->UpdateSamplerGroup(mSamplerGroup, mSamplerGroupDesc);
 }
 
-void UniformManager::Bind() {
+void UniformManager::Bind(uint32_t index) {
     // TODO:manage binding points
+    mApi->BindUniformBuffer(0, mViewUB);
+    mApi->BindUniformBuffer(1, mShadowUB);
+    mApi->BindUniformBuffer(2, mLightUB);
 
-    mApi->BindUniformBuffer(1, mViewUB);
-    //mApi->BindUniformBuffer(1, mShadowUB);
-    //mApi->BindUniformBuffer(2, mLightUB);
-    //mApi->BindUniformBuffer(3, mRenderPrimitiveUB);
-    //mApi->BindUniformBuffer(4, mRenderPrimitiveBoneUB);
+    uint32_t size = mRenderPrimitiveUib.GetItemSize();
+    uint32_t offset = index * size;
+    mApi->BindUniformBuffer(3, mRenderPrimitiveUB, offset, size);
 
-    //mApi->BindSamplerGroup(0, mSamplerGroup);
+    mApi->BindUniformBuffer(4, mRenderPrimitiveBoneUB);
+
+    mApi->BindSamplerGroup(0, mSamplerGroup);
 }
 
 }  // namespace Ethereal

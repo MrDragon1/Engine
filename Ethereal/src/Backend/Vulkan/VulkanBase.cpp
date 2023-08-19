@@ -68,6 +68,8 @@ VulkanProgram::VulkanProgram(Ref<VulkanContext> context, std::string_view name, 
             vertexShaderModule = shaderModule;
         } else if (kv.first == ShaderType::FRAGMENT) {
             fragmentShaderModule = shaderModule;
+        } else if (kv.first == ShaderType::GEOMETRY) {
+            geometryShaderModule = shaderModule;
         }
     }
 }

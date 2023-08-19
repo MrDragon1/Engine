@@ -1,5 +1,5 @@
 #version 460 core
-
+#extension GL_KHR_vulkan_glsl : enable
 layout(location = 0) in vec4 a_Position;
 layout(location = 1) in vec2 a_TexCoord;
 

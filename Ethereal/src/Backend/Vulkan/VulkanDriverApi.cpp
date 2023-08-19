@@ -251,7 +251,7 @@ void VulkanDriverApi::BeginRenderPass(RenderTargetHandle rth, const RenderPassPa
     VulkanAttachment depth = rt->GetDepth();
 
     mCurrentRenderPass.commandBuffer = mContext->mDevice->GetCommandBuffer(true);
-
+    mCurrentRenderPass.isRecording = true;
     for (uint8_t samplerGroupIdx = 0; samplerGroupIdx < SAMPLER_BINDING_COUNT; samplerGroupIdx++) {
         Ref<VulkanSamplerGroup> vksb = mSamplerGroupBindings[samplerGroupIdx];
         if (!vksb) {
@@ -392,7 +392,7 @@ void VulkanDriverApi::BeginRenderPass(RenderTargetHandle rth, const RenderPassPa
 
 void VulkanDriverApi::EndRenderPass() {
     vkCmdEndRenderPass(mCurrentRenderPass.commandBuffer);
-
+    mCurrentRenderPass.isRecording = false;
     mContext->mDevice->FlushCommandBuffer(mCurrentRenderPass.commandBuffer);
     Ref<VulkanRenderTarget> rt = mCurrentRenderPass.renderTarget;
 
@@ -447,18 +447,19 @@ void VulkanDriverApi::BindSamplerGroup(uint8_t binding, SamplerGroupHandle sgh) 
         VkSampler sampler = mSamplerCache->GetSampler(desc.params);
 
         Ref<VulkanTexture> texture = desc.texture.As<VulkanTexture>();
-
+        if (!texture) continue;
         mPipelineCache->BindSampler(
             (uint32_t)desc.binding, sampler, texture->GetPrimaryImageView(),
             VulkanUtils::GetVkImageLayout(texture->GetPrimaryImageLayout()));
     }
 }
 
-void VulkanDriverApi::BindUniformBuffer(uint8_t binding, BufferObjectHandle boh) {
+void VulkanDriverApi::BindUniformBuffer(uint8_t binding, BufferObjectHandle boh, uint32_t offset,
+                                        uint32_t size) {
     Ref<VulkanBufferObject> bo = boh.As<VulkanBufferObject>();
-    const VkDeviceSize offset = 0;
-    const VkDeviceSize size = bo->byteCount;
-    mPipelineCache->BindUniformBuffer((uint32_t)binding, bo->buffer->GetBuffer(), offset, size);
+    const VkDeviceSize voffset = offset;
+    const VkDeviceSize vsize = size ? size : bo->byteCount;
+    mPipelineCache->BindUniformBuffer((uint32_t)binding, bo->buffer->GetBuffer(), voffset, vsize);
 }
 
 void VulkanDriverApi::SetRenderTargetAttachment(RenderTargetHandle rth,

@@ -68,7 +68,8 @@ class DriverApi : public RefCounted {
                                 uint32_t depth, const PixelBufferDescriptor& desc) = 0;
     virtual void UpdateSamplerGroup(SamplerGroupHandle sgh, SamplerGroupDescriptor& desc) = 0;
     virtual void BindSamplerGroup(uint8_t binding, SamplerGroupHandle sgh) = 0;
-    virtual void BindUniformBuffer(uint8_t binding, BufferObjectHandle boh) = 0;
+    virtual void BindUniformBuffer(uint8_t binding, BufferObjectHandle boh, uint32_t offset = 0,
+                                   uint32_t size = 0) = 0;
 
     virtual void GenerateMipmaps(TextureHandle th) = 0;
     virtual void SetRenderTargetAttachment(RenderTargetHandle rth, TargetBufferInfo const& info,

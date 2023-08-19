@@ -39,8 +39,8 @@ class VulkanPipelineCache : public RefCounted {
         size_t operator()(const PipelineLayoutKey& key) const;
     };
     static constexpr uint32_t DESCRIPTOR_TYPE_COUNT = 3;
-    static constexpr uint32_t UBUFFER_BINDING_COUNT = 2;
-    static constexpr uint32_t TARGET_BINDING_COUNT = 2;
+    static constexpr uint32_t UBUFFER_BINDING_COUNT = 15u;
+    static constexpr uint32_t TARGET_BINDING_COUNT = 32u;
 
     struct PipelineLayoutVal {
         VkPipelineLayout layout;

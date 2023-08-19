@@ -22,9 +22,10 @@ bool VulkanPipelineCache::PipelineEqual::operator()(const PipelineKey& k1,
 bool VulkanPipelineCache::DescEqual::operator()(const DescriptorKey& k1,
                                                 const DescriptorKey& k2) const {
     for (uint32_t i = 0; i < UBUFFER_BINDING_COUNT; i++) {
-        if (k1.uniformBuffers[i] != k2.uniformBuffers[i] ||
-            k1.uniformBufferOffsets[i] != k2.uniformBufferOffsets[i] ||
-            k1.uniformBufferSizes[i] != k2.uniformBufferSizes[i]) {
+        if (k1.uniformBuffers[i] != k2.uniformBuffers[i]
+            //||k1.uniformBufferOffsets[i] != k2.uniformBufferOffsets[i] ||
+            // k1.uniformBufferSizes[i] != k2.uniformBufferSizes[i]
+        ) {
             return false;
         }
     }
@@ -49,7 +50,7 @@ VulkanPipelineCache::VulkanPipelineCache() {
     mDummyBufferWriteInfo.pNext = nullptr;
     mDummyBufferWriteInfo.dstArrayElement = 0;
     mDummyBufferWriteInfo.descriptorCount = 1;
-    mDummyBufferWriteInfo.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    mDummyBufferWriteInfo.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
     mDummyBufferWriteInfo.pImageInfo = nullptr;
     mDummyBufferWriteInfo.pBufferInfo = &mDummyBufferInfo;
     mDummyBufferWriteInfo.pTexelBufferView = nullptr;
@@ -151,9 +152,14 @@ void VulkanPipelineCache::BindDescriptors(VkCommandBuffer cmdbuffer) {
 
     ET_CORE_ASSERT(cache, "Unable to load DescriptorSets for this pipeline!")
 
-    vkCmdBindDescriptorSets(
-        cmdbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, GetOrCreatePipelineLayout()->layout, 0,
-        VulkanPipelineCache::DESCRIPTOR_TYPE_COUNT, cache->handles.data(), 0, nullptr);
+    std::array<uint32_t, UBUFFER_BINDING_COUNT> offsets = {0};
+    for (int i = 0; i < UBUFFER_BINDING_COUNT; i++)
+        offsets[i] = (uint32_t)key.uniformBufferOffsets[i];
+
+    vkCmdBindDescriptorSets(cmdbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
+                            GetOrCreatePipelineLayout()->layout, 0,
+                            VulkanPipelineCache::DESCRIPTOR_TYPE_COUNT, cache->handles.data(),
+                            UBUFFER_BINDING_COUNT, offsets.data());
 }
 
 VkPipeline VulkanPipelineCache::GetOrCreatePipeline() {
@@ -327,7 +333,7 @@ VulkanPipelineCache::PipelineLayoutVal* VulkanPipelineCache::GetOrCreatePipeline
 
     // First create the descriptor set layout for UBO's.
     VkDescriptorSetLayoutBinding ubindings[UBUFFER_BINDING_COUNT];
-    binding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    binding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
     for (uint32_t i = 0; i < UBUFFER_BINDING_COUNT; i++) {
         binding.binding = i;
         ubindings[i] = binding;
@@ -447,7 +453,7 @@ VulkanPipelineCache::DescriptorVal* VulkanPipelineCache::CreateDescriptorSets() 
             writeInfo.pNext = nullptr;
             writeInfo.dstArrayElement = 0;
             writeInfo.descriptorCount = 1;
-            writeInfo.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+            writeInfo.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
             writeInfo.pImageInfo = nullptr;
             writeInfo.pBufferInfo = &bufferInfo;
             writeInfo.pTexelBufferView = nullptr;
@@ -510,7 +516,7 @@ void VulkanPipelineCache::CreateDescriptorPool(uint32_t size) {
                                         .maxSets = size * DESCRIPTOR_TYPE_COUNT,
                                         .poolSizeCount = DESCRIPTOR_TYPE_COUNT,
                                         .pPoolSizes = poolSizes};
-    poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
     poolSizes[0].descriptorCount = poolInfo.maxSets * UBUFFER_BINDING_COUNT;
     poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
     poolSizes[1].descriptorCount = poolInfo.maxSets * SAMPLER_BINDING_COUNT;

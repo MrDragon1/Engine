@@ -5,7 +5,7 @@
 namespace Ethereal {
 static constexpr size_t MAX_SUPPORTED_RENDER_TARGET_COUNT = 8u;
 static constexpr size_t MAX_VERTEX_ATTRIBUTE_COUNT = 16u;
-static constexpr size_t SAMPLER_BINDING_COUNT = 4u;
+static constexpr size_t SAMPLER_BINDING_COUNT = 32u;
 static constexpr size_t UNIFORM_BINDING_COUNT = 16u;
 
 enum class BackendType : uint8_t {
@@ -410,7 +410,7 @@ struct RenderPassParams {
     Viewport viewport{};
     DepthRange depthRange{};
     Vector4 clearColor = {0, 0, 0, 1};
-    float clearDepth = 0.0;
+    float clearDepth = 1.0;
     uint32_t clearStencil = 0;
 };
 

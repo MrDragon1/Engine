@@ -13,7 +13,7 @@ class UibGenerator {
     static BufferInterfaceBlock const& GetLightUib() noexcept;
 };
 
-struct ViewUib {
+struct alignas(64) ViewUib {
     static constexpr std::string_view _name{"ViewUniform"};
 
     Vector3 CameraPosition;
@@ -46,7 +46,7 @@ struct ViewUib {
     uint32_t FogFromIBL = false;
 };
 
-struct RenderPrimitiveUib {
+struct alignas(64) RenderPrimitiveUib {
     static constexpr std::string_view _name{"RenderPrimitiveUniform"};
     Matrix4 ModelMatrix;
     Vector4 Albedo;
@@ -57,12 +57,12 @@ struct RenderPrimitiveUib {
     int UseMap;  // 1<<1: Albedo 1<<2: Normal 1<<3: Metallic 1<<4: Roughness 1<<5: Occlusion
 };
 
-struct RenderPrimitiveBoneUib {
+struct alignas(64) RenderPrimitiveBoneUib {
     static constexpr std::string_view _name{"RenderPrimitiveBoneUniform"};
     Matrix4 BoneTransform[100];  // same size with shader
 };
 
-struct LightUib {
+struct alignas(64) LightUib {
     static constexpr std::string_view _name{"LightUniform"};
     Vector3 Direction;
     float ShadowAmount;
@@ -70,7 +70,7 @@ struct LightUib {
     float Multiplier;
 };
 
-struct ShadowUib {
+struct alignas(64) ShadowUib {
     static constexpr std::string_view _name{"ShadowUniform"};
 
     // TODO: A little waste of memory, but it's ok for now.

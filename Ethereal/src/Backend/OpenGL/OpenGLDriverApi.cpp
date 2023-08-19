@@ -477,11 +477,13 @@ void OpenGLDriverApi::BindSamplerGroup(uint8_t binding, Ref<SamplerGroup> sgh) {
     mSamplerGroupBindings[binding] = sgh.As<GLSamplerGroup>();
 }
 
-void OpenGLDriverApi::BindUniformBuffer(uint8_t binding, BufferObjectHandle boh) {
+void OpenGLDriverApi::BindUniformBuffer(uint8_t binding, BufferObjectHandle boh, uint32_t offset,
+                                        uint32_t size) {
     Ref<GLBufferObject> bo = boh.As<GLBufferObject>();
     ET_CORE_ASSERT(bo->gl.binding = GL_UNIFORM_BUFFER,
                    "BufferObjectHandle's binding point must be GL_UNIFORM_BUFFER");
-    glBindBufferRange(bo->gl.binding, GLuint(binding), bo->gl.id, 0, bo->byteCount);
+    glBindBufferRange(bo->gl.binding, GLuint(binding), bo->gl.id, offset,
+                      size ? size : bo->byteCount);
 }
 
 TextureID OpenGLDriverApi::GetTextueID(TextureHandle th) {

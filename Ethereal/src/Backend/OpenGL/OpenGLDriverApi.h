@@ -150,7 +150,8 @@ class OpenGLDriverApi : public DriverApi {
                         const PixelBufferDescriptor& desc) override;
     void UpdateSamplerGroup(SamplerGroupHandle sgh, SamplerGroupDescriptor& desc) override;
     void BindSamplerGroup(uint8_t binding, Ref<SamplerGroup> sgh) override;
-    void BindUniformBuffer(uint8_t binding, BufferObjectHandle boh) override;
+    void BindUniformBuffer(uint8_t binding, BufferObjectHandle boh, uint32_t offset = 0,
+                           uint32_t size = 0) override;
 
     void GenerateMipmaps(TextureHandle th) override;
     void SetRenderTargetAttachment(RenderTargetHandle rth, TargetBufferInfo const& info,

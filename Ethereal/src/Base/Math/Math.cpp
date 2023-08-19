@@ -223,6 +223,8 @@ Matrix4 Perspective(float fovy, float aspect, float zNear, float zFar) {
     Result[2][2] = -(zFar + zNear) / (zFar - zNear);
     Result[2][3] = -static_cast<float>(1);
     Result[3][2] = -(static_cast<float>(2) * zFar * zNear) / (zFar - zNear);
+
+    // Result[1][1] *= -1;
     return Result;
 }
 
