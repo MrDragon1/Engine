@@ -446,7 +446,9 @@ VulkanPipelineCache::DescriptorVal* VulkanPipelineCache::CreateDescriptorSets() 
         if (mCurrentDescriptorKey.uniformBuffers[binding]) {
             VkDescriptorBufferInfo& bufferInfo = descriptorBuffers[binding];
             bufferInfo.buffer = mCurrentDescriptorKey.uniformBuffers[binding];
-            bufferInfo.offset = mCurrentDescriptorKey.uniformBufferOffsets[binding];
+            // Since we are using dynamic uniform buffers, we don't need to specify the offset.
+            // The offset will be specified in the draw call when vkCmdBindDescriptorSets() called.
+            bufferInfo.offset = 0;  // mCurrentDescriptorKey.uniformBufferOffsets[binding];
             bufferInfo.range = mCurrentDescriptorKey.uniformBufferSizes[binding];
 
             writeInfo.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;

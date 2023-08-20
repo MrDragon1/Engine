@@ -13,7 +13,7 @@ class UibGenerator {
     static BufferInterfaceBlock const& GetLightUib() noexcept;
 };
 
-struct alignas(64) ViewUib {
+struct ViewUib {
     static constexpr std::string_view _name{"ViewUniform"};
 
     Vector3 CameraPosition;
@@ -44,9 +44,12 @@ struct alignas(64) ViewUib {
     float FogScatteringSize;
     uint32_t FogEnable = false;
     uint32_t FogFromIBL = false;
-};
 
-struct alignas(64) RenderPrimitiveUib {
+    Vector4 padding2[2];
+};
+static_assert(sizeof(ViewUib) % 64 == 0);
+
+struct RenderPrimitiveUib {
     static constexpr std::string_view _name{"RenderPrimitiveUniform"};
     Matrix4 ModelMatrix;
     Vector4 Albedo;
@@ -55,22 +58,29 @@ struct alignas(64) RenderPrimitiveUib {
     float Occlusion;
     float Emisstion;
     int UseMap;  // 1<<1: Albedo 1<<2: Normal 1<<3: Metallic 1<<4: Roughness 1<<5: Occlusion
-};
 
-struct alignas(64) RenderPrimitiveBoneUib {
+    Vector3 padding;
+    Vector4 padding2;
+};
+static_assert(sizeof(RenderPrimitiveUib) % 64 == 0);
+
+struct RenderPrimitiveBoneUib {
     static constexpr std::string_view _name{"RenderPrimitiveBoneUniform"};
     Matrix4 BoneTransform[100];  // same size with shader
 };
+static_assert(sizeof(RenderPrimitiveBoneUib) % 64 == 0);
 
-struct alignas(64) LightUib {
+struct LightUib {
     static constexpr std::string_view _name{"LightUniform"};
     Vector3 Direction;
     float ShadowAmount;
     Vector3 Radiance;
     float Multiplier;
+    Vector4 padding[2];
 };
+static_assert(sizeof(LightUib) % 64 == 0);
 
-struct alignas(64) ShadowUib {
+struct ShadowUib {
     static constexpr std::string_view _name{"ShadowUniform"};
 
     // TODO: A little waste of memory, but it's ok for now.
@@ -78,9 +88,10 @@ struct alignas(64) ShadowUib {
     Vector4 CascadeSplits[16];
     Matrix4 DirLightMatrices[16];
     uint32_t CascadeCount = 4;
-    float padding1, padding2, padding3;
+    Vector3 padding;
+    Vector4 padding2[3];
 };
-
+static_assert(sizeof(ShadowUib) % 64 == 0);
 // struct DirectionalLight {
 //     Vector3 Direction = Math::Normalize(Vector3(-0.352, 0.270, -0.452));
 //     float ShadowAmount;

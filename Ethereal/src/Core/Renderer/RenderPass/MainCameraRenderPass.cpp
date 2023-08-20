@@ -84,7 +84,7 @@ void MainCameraRenderPass::Draw() {
                 Project::GetConfigManager().sUniformManagerConfig.EditorParam.EntityID =
                     mk.EntityID;
 
-                uniformManager->UpdateMaterial(material);
+                uniformManager->UpdateMaterial(material, drawIndex);
                 uniformManager->UpdateEditor();
                 uniformManager->UpdateRenderPrimitive(
                     {.ModelMatrix = meshTransformMap.at(mk).Transforms[0].Transform}, drawIndex);

@@ -114,8 +114,8 @@ void UniformManager::UpdateLight() {
     s.ShadowAmount = param.ShadowAmount;
 }
 
-void UniformManager::UpdateMaterial(Ref<MaterialAsset> mat) {
-    auto& s = mRenderPrimitiveUib.Edit();
+void UniformManager::UpdateMaterial(Ref<MaterialAsset> mat, uint32_t index) {
+    auto& s = mRenderPrimitiveUib.Edit(index);
     s.Albedo = Vector4(mat->GetAlbedoColor(), 1);
     s.Emisstion = mat->GetEmission();
     s.Metallic = mat->GetMetalness();

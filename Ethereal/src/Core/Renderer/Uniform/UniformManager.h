@@ -57,7 +57,7 @@ class UniformManager : public RefCounted {
     void UpdateEditor();
     void UpdateScene();
     void UpdateLight();
-    void UpdateMaterial(Ref<MaterialAsset> mat);
+    void UpdateMaterial(Ref<MaterialAsset> mat, uint32_t index = 0);
     void UpdateRenderPrimitive(RenderPrimitiveParam param, uint32_t index = 0);
     void UpdateBone();
 

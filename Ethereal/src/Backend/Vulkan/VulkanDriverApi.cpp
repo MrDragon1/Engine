@@ -238,7 +238,7 @@ void VulkanDriverApi::Draw(Ref<RenderPrimitive> rph, PipelineState pipeline) {
     }
     const uint32_t indexCount = rph->count;
     const uint32_t firstIndex = rph->offset / rph->indexBuffer->elementSize;
-    const int32_t vertexOffset = 0;
+    const int32_t vertexOffset = rph->minIndex;
     const uint32_t firstInstId = 0;
     vkCmdDrawIndexed(mCurrentRenderPass.commandBuffer, indexCount, 1, firstIndex, vertexOffset,
                      firstInstId);
