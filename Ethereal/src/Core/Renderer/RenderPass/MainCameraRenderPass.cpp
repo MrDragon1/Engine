@@ -16,7 +16,7 @@ void MainCameraRenderPass::Init(uint32_t width, uint32_t height) {
 
     source[ShaderType::VERTEX] = Utils::ReadFileAndSkipBOM("assets/shaders/Skybox.vert");
     source[ShaderType::FRAGMENT] = Utils::ReadFileAndSkipBOM("assets/shaders/Skybox.frag");
-    // mSkyboxPipeline.program = api->CreateProgram("SKYBOX", source);
+    mSkyboxPipeline.program = api->CreateProgram("SKYBOX", source);
     mSkyboxPipeline.rasterState.depthFunc = RasterState::DepthFunc::LE;
 
     auto usage = TextureUsage::COLOR_ATTACHMENT | TextureUsage::SAMPLEABLE;
@@ -153,9 +153,9 @@ void MainCameraRenderPass::Draw() {
     //    }
     //}
 
-    //// Draw Skybox
-    // uniformManager->Bind();
-    // api->Draw(RenderResource::Cube->GetMeshSource()->GetRenderPrimitive(), mSkyboxPipeline);
+    // Draw Skybox
+    uniformManager->Bind();
+    api->Draw(RenderResource::Cube->GetMeshSource()->GetRenderPrimitive(), mSkyboxPipeline);
 
     api->EndRenderPass();
 }

@@ -63,7 +63,7 @@ void EnvironmentMapRenderPass::Init(uint32_t width, uint32_t height) {
     mSamplerGroupDesc = SamplerGroupDescriptor(1);
 
     mParams.flags.clearMask = TargetBufferFlags::COLOR0;
-    mParams.viewport = Viewport(0, 0, width, height);
+    mParams.viewport = Viewport(0, 0, 0, 0);
 
     mEquirectangularToCubeMapPipeline.rasterState.colorTargetCount = 1;
     mPrefilterPipeline.rasterState.colorTargetCount = 1;
@@ -176,6 +176,5 @@ void EnvironmentMapRenderPass::Draw() {
 
 void EnvironmentMapRenderPass::OnResize(uint32_t width, uint32_t height) {
     ET_CORE_INFO("EnvironmentMapRenderPass::OnResize");
-    mParams.viewport = Viewport(0, 0, width, height);
 }
 }  // namespace Ethereal

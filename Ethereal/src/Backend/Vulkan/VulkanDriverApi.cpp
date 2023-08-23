@@ -220,6 +220,7 @@ void VulkanDriverApi::Draw(Ref<RenderPrimitive> rph, PipelineState pipeline) {
     mPipelineCache->BindDescriptors(mCurrentRenderPass.commandBuffer);
 
     Viewport viewport = mCurrentRenderPass.params.viewport;
+
     mPipelineCache->BindScissor(
         mCurrentRenderPass.commandBuffer,
         VkRect2D{.offset = {0, 0},
@@ -381,6 +382,11 @@ void VulkanDriverApi::BeginRenderPass(RenderTargetHandle rth, const RenderPassPa
                            .height = (float)params.viewport.height,
                            .minDepth = params.depthRange.near_,
                            .maxDepth = params.depthRange.far_};
+    if (params.viewport.width == 0 && params.viewport.height == 0) {
+        viewport.width = (float)rth->width;
+        viewport.height = (float)rth->height;
+    } else if (rth->width != params.viewport.width || rth->height != params.viewport.height)
+        ET_CORE_WARN("The viewport is not the same size as the render target.");
 
     vkCmdSetViewport(mCurrentRenderPass.commandBuffer, 0, 1, &viewport);
 
@@ -388,6 +394,11 @@ void VulkanDriverApi::BeginRenderPass(RenderTargetHandle rth, const RenderPassPa
     mCurrentRenderPass.renderPass = renderPassInfo.renderPass;
     mCurrentRenderPass.params = params;
     mCurrentRenderPass.currentSubpass = 0;
+
+    if (params.viewport.width == 0 && params.viewport.height == 0) {
+        mCurrentRenderPass.params.viewport.width = (float)rth->width;
+        mCurrentRenderPass.params.viewport.height = (float)rth->height;
+    }
 }
 
 void VulkanDriverApi::EndRenderPass() {
