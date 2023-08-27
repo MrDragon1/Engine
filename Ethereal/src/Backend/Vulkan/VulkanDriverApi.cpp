@@ -123,6 +123,7 @@ Ref<RenderTarget> VulkanDriverApi::CreateRenderTarget(TargetBufferFlags targets,
                 .texture = color[i].handle,
                 .level = color[i].level,
                 .layer = color[i].layer,
+                .layerCount = color[i].layerCount,
             };
             VkExtent2D extent = colorTargets[i].GetExtent2D();
             tmin[0] = std::min(tmin[0], extent.width);
@@ -139,6 +140,7 @@ Ref<RenderTarget> VulkanDriverApi::CreateRenderTarget(TargetBufferFlags targets,
             .texture = depth.handle,
             .level = depth.level,
             .layer = depth.layer,
+            .layerCount = depth.layerCount,
         };
         VkExtent2D extent = depthStencil[0].GetExtent2D();
         tmin[0] = std::min(tmin[0], extent.width);
@@ -153,6 +155,7 @@ Ref<RenderTarget> VulkanDriverApi::CreateRenderTarget(TargetBufferFlags targets,
             .texture = stencil.handle,
             .level = stencil.level,
             .layer = stencil.layer,
+            .layerCount = stencil.layerCount,
         };
         VkExtent2D extent = depthStencil[1].GetExtent2D();
         tmin[0] = std::min(tmin[0], extent.width);
@@ -172,7 +175,7 @@ Ref<RenderTarget> VulkanDriverApi::CreateRenderTarget(TargetBufferFlags targets,
         Ref<VulkanRenderTarget>::Create(mContext, width, height, colorTargets, depthStencil);
 
     return rt;
-}
+}  // namespace Backend
 
 void VulkanDriverApi::Draw(Ref<RenderPrimitive> rph, PipelineState pipeline) {
     VulkanPipelineCache::VertexArray varray = {};
@@ -334,10 +337,12 @@ void VulkanDriverApi::BeginRenderPass(RenderTargetHandle rth, const RenderPassPa
         } else if (fbkey.samples == 1) {
             fbkey.color[i] = rt->GetColor(i).GetImageView(VK_IMAGE_ASPECT_COLOR_BIT);
             fbkey.resolve[i] = VK_NULL_HANDLE;
+            fbkey.layers = std::max(fbkey.layers, (uint16_t)rt->GetColor(i).layerCount);
         }
     }
     if (depth.texture) {
         fbkey.depth = depth.GetImageView(VK_IMAGE_ASPECT_DEPTH_BIT);
+        fbkey.layers = std::max(fbkey.layers, (uint16_t)depth.layerCount);
     }
     VkFramebuffer vkfb = mFramebufferCache->GetFramebuffer(fbkey);
 

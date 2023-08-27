@@ -60,7 +60,7 @@ void RenderSystem::Draw(TimeStamp ts) {
 
     // mTestRenderPass->Draw();
 
-    // mCSMRenderPass->Draw();
+    mCSMRenderPass->Draw();
     mMainCameraRenderPass->Draw();
 
     // For postprocessing

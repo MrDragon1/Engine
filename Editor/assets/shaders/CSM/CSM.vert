@@ -1,6 +1,10 @@
 #version 460 core
-layout(location = 0) in vec3 a_Position;
+
+#extension GL_KHR_vulkan_glsl : enable
 #extension GL_GOOGLE_include_directive : enable
+
+layout(location = 0) in vec3 a_Position;
+
 layout(std140, set=0, binding = 0) uniform View
 {
     vec3 CameraPosition;

@@ -7,7 +7,7 @@ namespace Ethereal {
 namespace Backend {
 class VulkanPipelineCache : public RefCounted {
    public:
-    static constexpr uint32_t SHADER_MODULE_COUNT = 2;
+    static constexpr uint32_t SHADER_MODULE_COUNT = 3;
     static constexpr uint32_t VERTEX_ATTRIBUTE_COUNT = MAX_VERTEX_ATTRIBUTE_COUNT;
     struct VertexArray {
         VkVertexInputAttributeDescription attributes[VERTEX_ATTRIBUTE_COUNT];
@@ -51,15 +51,16 @@ class VulkanPipelineCache : public RefCounted {
     };
 
     struct PipelineKey {
-        VkShaderModule shaders[SHADER_MODULE_COUNT];                                 //  16  : 0
-        VkRenderPass renderPass;                                                     //  8   : 16
-        uint16_t topology;                                                           //  2   : 24
-        uint16_t subpassIndex;                                                       //  2   : 26
-        VkVertexInputAttributeDescription vertexAttributes[VERTEX_ATTRIBUTE_COUNT];  //  128 : 28
-        VkVertexInputBindingDescription vertexBuffers[VERTEX_ATTRIBUTE_COUNT];       //  128 : 156
-        VulkanRasterState rasterState;                                               //  16  : 284
-        uint32_t padding;                                                            //  4   : 300
-        PipelineLayoutKey layout;                                                    // 16   : 304
+        VkShaderModule shaders[SHADER_MODULE_COUNT];
+        VkShaderModule padding0;
+        VkRenderPass renderPass;
+        uint16_t topology;
+        uint16_t subpassIndex;
+        VkVertexInputAttributeDescription vertexAttributes[VERTEX_ATTRIBUTE_COUNT];
+        VkVertexInputBindingDescription vertexBuffers[VERTEX_ATTRIBUTE_COUNT];
+        VulkanRasterState rasterState;
+        uint32_t padding;
+        PipelineLayoutKey layout;
     };
 
     using PipelineHashFn = Math::Hash::MurmurHashFn<PipelineKey>;

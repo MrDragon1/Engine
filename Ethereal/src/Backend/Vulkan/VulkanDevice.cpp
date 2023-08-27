@@ -199,6 +199,10 @@ void VulkanDevice::Init(VkInstance instance) {
     deviceCreateInfo.enabledExtensionCount = static_cast<uint32_t>(deviceExtensions.size());
     deviceCreateInfo.ppEnabledExtensionNames = deviceExtensions.data();
 
+    VkPhysicalDeviceFeatures deviceFeatures{};
+    deviceFeatures.geometryShader = VK_TRUE;
+    deviceCreateInfo.pEnabledFeatures = &deviceFeatures;
+
     if (vkCreateDevice(mPhysicalDevice->mPhysicalDevice, &deviceCreateInfo, nullptr, &mDevice) !=
         VK_SUCCESS) {
         throw std::runtime_error("Failed to create logical device!");

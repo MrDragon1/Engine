@@ -1,8 +1,11 @@
 #version 460 core
+
+#extension GL_KHR_vulkan_glsl : enable
+#extension GL_GOOGLE_include_directive : enable
+
 layout(triangles, invocations = 5) in;
 layout(triangle_strip, max_vertices = 3) out;
 
-#extension GL_GOOGLE_include_directive : enable
 layout(std140, set=0, binding = 0) uniform View
 {
     vec3 CameraPosition;
@@ -66,6 +69,7 @@ layout(std140, set=0, binding = 4) uniform RenderPrimitiveBone
 {
     mat4 BoneTransform[100];
 } u_RenderPrimitiveBone;
+
 void main()
 {
     for (int i = 0; i < 3; ++i)

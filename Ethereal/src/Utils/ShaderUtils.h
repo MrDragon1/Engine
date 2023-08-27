@@ -115,6 +115,8 @@ class SpirvUtils {
                 return EShLangVertex;
             case ShaderType::FRAGMENT:
                 return EShLangFragment;
+            case ShaderType::GEOMETRY:
+                return EShLangGeometry;
             default:
                 return EShLangVertex;
         }

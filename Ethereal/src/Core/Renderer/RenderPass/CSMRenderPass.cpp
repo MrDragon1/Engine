@@ -9,7 +9,7 @@ void CSMRenderPass::Init(uint32_t width, uint32_t height) {
     source[ShaderType::VERTEX] = Utils::ReadFileAndSkipBOM("assets/shaders/CSM/CSM.vert");
     source[ShaderType::GEOMETRY] = Utils::ReadFileAndSkipBOM("assets/shaders/CSM/CSM.geom");
     source[ShaderType::FRAGMENT] = Utils::ReadFileAndSkipBOM("assets/shaders/CSM/CSM.frag");
-    // mPipelineState.program = api->CreateProgram("CSM", source);
+    mPipelineState.program = api->CreateProgram("CSM", source);
 
     Project::GetConfigManager().sCSMConfig.ShadowMap = api->CreateTexture(
         1, Project::GetConfigManager().sCSMConfig.ShadowMapSize,
@@ -17,14 +17,18 @@ void CSMRenderPass::Init(uint32_t width, uint32_t height) {
         Project::GetConfigManager().sCSMConfig.CascadeCount + 1, TextureFormat::DEPTH,
         TextureUsage::DEFAULT | TextureUsage::DEPTH_ATTACHMENT, TextureType::TEXTURE_2D_ARRAY);
 
+    TargetBufferInfo depthInfo{};
+    depthInfo.handle = Project::GetConfigManager().sCSMConfig.ShadowMap;
+    depthInfo.layerCount = depthInfo.handle->depth;
+
     mRenderTarget = api->CreateRenderTarget(
         TargetBufferFlags::DEPTH, Project::GetConfigManager().sCSMConfig.ShadowMapSize,
-        Project::GetConfigManager().sCSMConfig.ShadowMapSize, {},
-        {Project::GetConfigManager().sCSMConfig.ShadowMap}, {});
+        Project::GetConfigManager().sCSMConfig.ShadowMapSize, {}, depthInfo, {});
 
     mParams.clearColor = {0, 0, 0, 0};
     mPipelineState.rasterState.depthFunc = RasterState::DepthFunc::L;
-    mParams.viewport = {0, 0, width, height};
+    mParams.viewport = {0, 0, Project::GetConfigManager().sCSMConfig.ShadowMapSize,
+                        Project::GetConfigManager().sCSMConfig.ShadowMapSize};
     mParams.flags.clearMask = TargetBufferFlags::DEPTH;
     mPipelineState.rasterState.colorTargetCount = 0;
     mPipelineState.rasterState.rasterizationSamples = 1;
@@ -36,7 +40,7 @@ void CSMRenderPass::Draw() {
     const auto& staticMeshDrawList = mDrawLists.StaticMeshDrawList;
     const auto& meshDrawList = mDrawLists.MeshDrawList;
     const auto& meshTransformMap = mDrawLists.MeshTransformMap;
-
+    uint32_t drawIndex = 0;
     auto count = Project::GetConfigManager().sCSMConfig.CascadeCount;
     auto& splits = Project::GetConfigManager().sCSMConfig.CascadeSplits;
     for (int i = 0; i < count; i++) {
@@ -56,15 +60,17 @@ void CSMRenderPass::Draw() {
             Submesh& submesh = ms->GetSubmeshes()[dc.SubmeshIndex];
 
             uniformManager->UpdateRenderPrimitive(
-                {.ModelMatrix = meshTransformMap.at(mk).Transforms[0].Transform});
+                {.ModelMatrix = meshTransformMap.at(mk).Transforms[0].Transform}, drawIndex);
             uniformManager->Commit();
-            uniformManager->Bind();
+            uniformManager->Bind(drawIndex);
             // RenderCommand::DrawIndexed(ms->GetVertexArray(), submesh.IndexCount,
             // reinterpret_cast<void*>(submesh.BaseIndex * sizeof(uint32_t)),
             //                            submesh.BaseVertex);
 
             // api->Draw(ms->GetRenderPrimitive(), mPipelineState);
             api->Draw(ms->GetSubMeshRenderPrimitive(dc.SubmeshIndex), mPipelineState);
+
+            drawIndex++;
         }
     }
 

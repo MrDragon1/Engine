@@ -36,9 +36,9 @@ struct VulkanRenderPrimitive : public RenderPrimitive {
 
 struct VulkanProgram : public Program {
     VulkanProgram(Ref<VulkanContext> context, std::string_view name, ShaderSource source);
-    VkShaderModule vertexShaderModule;
-    VkShaderModule fragmentShaderModule;
-    VkShaderModule geometryShaderModule;
+    VkShaderModule vertexShaderModule = VK_NULL_HANDLE;
+    VkShaderModule fragmentShaderModule = VK_NULL_HANDLE;
+    VkShaderModule geometryShaderModule = VK_NULL_HANDLE;
     VkSpecializationInfo* specializationInfos = nullptr;
 
    private:
@@ -49,6 +49,7 @@ struct VulkanAttachment {
     Ref<VulkanTexture> texture;
     uint32_t level = 0;
     uint32_t layer = 0;
+    uint32_t layerCount = 1;
 
     VkImage GetImage();
     VkFormat GetFormat();

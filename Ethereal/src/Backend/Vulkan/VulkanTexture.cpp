@@ -232,8 +232,11 @@ VkImageAspectFlags VulkanTexture::GetImageAspect() const {
 
 VkImageView VulkanTexture::GetAttachmentView(VkImageSubresourceRange range) {
     range.levelCount = 1;
-    range.layerCount = 1;
-    return GetImageView(range, VK_IMAGE_VIEW_TYPE_2D, {});
+    // range.layerCount = 1;
+    if (range.layerCount == 1) {
+        return GetImageView(range, VK_IMAGE_VIEW_TYPE_2D, {});
+    } else
+        return GetImageView(range, VulkanUtils::GetViewType(type), {});
 }
 
 }  // namespace Backend

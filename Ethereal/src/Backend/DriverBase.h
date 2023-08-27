@@ -118,6 +118,8 @@ struct TargetBufferInfo {
 
     // for cubemaps and 3D textures. See TextureCubemapFace for the face->layer mapping
     uint32_t layer = 0;
+
+    uint32_t layerCount = 1;
 };
 using MRT = std::array<TargetBufferInfo, MAX_SUPPORTED_RENDER_TARGET_COUNT>;
 

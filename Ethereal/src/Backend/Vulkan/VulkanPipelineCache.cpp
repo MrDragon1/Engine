@@ -86,6 +86,7 @@ void VulkanPipelineCache::Init(VkDevice device) {
 void VulkanPipelineCache::BindProgram(Ref<VulkanProgram> program) {
     mCurrentPipelineKey.shaders[0] = program->vertexShaderModule;
     mCurrentPipelineKey.shaders[1] = program->fragmentShaderModule;
+    mCurrentPipelineKey.shaders[2] = program->geometryShaderModule;
 }
 
 void VulkanPipelineCache::BindRenderPass(VkRenderPass renderPass, uint16_t subpassIndex) {
@@ -180,6 +181,11 @@ VkPipeline VulkanPipelineCache::GetOrCreatePipeline() {
     shaderStages[1].module = key.shaders[1];
     shaderStages[1].pName = "main";
 
+    shaderStages[2].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+    shaderStages[2].stage = VK_SHADER_STAGE_GEOMETRY_BIT;
+    shaderStages[2].module = key.shaders[2];
+    shaderStages[2].pName = "main";
+
     VkPipelineColorBlendAttachmentState colorBlendAttachments[MAX_SUPPORTED_RENDER_TARGET_COUNT];
     VkPipelineColorBlendStateCreateInfo colorBlendState;
     colorBlendState = VkPipelineColorBlendStateCreateInfo{};
@@ -228,13 +234,15 @@ VkPipeline VulkanPipelineCache::GetOrCreatePipeline() {
     dynamicState.dynamicStateCount = 2;
 
     const bool hasFragmentShader = shaderStages[1].module != VK_NULL_HANDLE;
+    const bool hasGeometryShader = shaderStages[2].module != VK_NULL_HANDLE;
+    const int stageCount = hasGeometryShader ? (hasFragmentShader ? SHADER_MODULE_COUNT : 1) : 2;
 
     VkGraphicsPipelineCreateInfo pipelineCreateInfo = {};
     pipelineCreateInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
     pipelineCreateInfo.layout = GetOrCreatePipelineLayout()->layout;
     pipelineCreateInfo.renderPass = mCurrentPipelineKey.renderPass;
     pipelineCreateInfo.subpass = mCurrentPipelineKey.subpassIndex;
-    pipelineCreateInfo.stageCount = hasFragmentShader ? SHADER_MODULE_COUNT : 1;
+    pipelineCreateInfo.stageCount = stageCount;
     pipelineCreateInfo.pStages = shaderStages;
     pipelineCreateInfo.pVertexInputState = &vertexInputState;
     pipelineCreateInfo.pInputAssemblyState = &inputAssemblyState;
