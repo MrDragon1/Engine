@@ -66,7 +66,7 @@ void MainCameraRenderPass::Draw() {
     {
         // CSM
 
-        // uniformManager->UpdateShadow(Project::GetConfigManager().sCSMConfig.ShadowMap);
+        uniformManager->UpdateShadow(Project::GetConfigManager().sCSMConfig.ShadowMap);
 
         // Draw Static Mesh
         if (!staticMeshDrawList.empty()) {
