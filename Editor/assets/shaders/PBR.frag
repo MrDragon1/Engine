@@ -579,7 +579,6 @@ float ShadowSample_PCSS(const bool DIRECTIONAL,
     highp vec2 texelSize = vec2(1.0) / size;
     highp vec3 position = shadowPosition.xyz * (1.0 / shadowPosition.w);
 
-    position = position * 0.5 + 0.5;
     // We need to use the shadow receiver plane depth bias to combat shadow acne due to the
     // large kernel.
     highp vec2 dz_duv = computeReceiverPlaneDepthBias(position);
@@ -866,9 +865,9 @@ vec3 surfaceShading(float occlusion) {
 
 void evaluateDirectionalLight(inout vec3 color) {
     float visibility = ShadowCalculation();
-//    uint cascade = getShadowCascade();
-//    highp vec4 shadowPosition = getCascadeLightSpacePosition(cascade);
-//    visibility = 1.0 - shadow(true, u_ShadowMap, cascade, shadowPosition, 0.0f);
+    // uint cascade = getShadowCascade();
+    // highp vec4 shadowPosition = getCascadeLightSpacePosition(cascade);
+    // visibility = 1.0 - shadow(true, u_ShadowMap, cascade, shadowPosition, 0.0f);
  
     if (visibility <= 0.0) {
         return;

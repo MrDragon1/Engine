@@ -486,9 +486,17 @@ void OpenGLDriverApi::BindUniformBuffer(uint8_t binding, BufferObjectHandle boh,
                       size ? size : bo->byteCount);
 }
 
-TextureID OpenGLDriverApi::GetTextueID(TextureHandle th) {
+TextureID OpenGLDriverApi::GetTextureID(TextureHandle th) {
     Ref<GLTexture> t = th.As<GLTexture>();
     return (TextureID)(intptr_t)(t->gl.id);
+}
+
+TextureID OpenGLDriverApi::GetSubTextureID(TextureHandle th, uint32_t layer /*= 0*/,
+                                           uint32_t level /*= 0*/) {
+    Ref<GLTexture> subtex = CreateTexture(1, th->width, th->height, 1, th->format,
+                                          TextureUsage::DEFAULT, TextureType::TEXTURE_2D);
+    GetSubTexture(th, layer, subtex);
+    return GetTextureID(subtex);
 }
 
 void OpenGLDriverApi::GetSubTexture(TextureHandle th, uint32_t layer, TextureHandle dsth) {

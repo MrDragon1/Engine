@@ -533,7 +533,7 @@ void EditorLayer::UI_Toolbar() {
     ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size * 0.5f));
 
     auto api = GlobalContext::GetDriverApi();
-    if (ImGui::ImageButton((ImTextureID)(api->GetTextueID(icon)), ImVec2(size, size), ImVec2(0, 0),
+    if (ImGui::ImageButton((ImTextureID)(api->GetTextureID(icon)), ImVec2(size, size), ImVec2(0, 0),
                            ImVec2(1, 1), 0)) {
         if (mSceneState == SceneState::Edit) {
             OnScenePlay();

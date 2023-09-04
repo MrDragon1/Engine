@@ -507,7 +507,7 @@ void VulkanDriverApi::SetRenderTargetAttachment(RenderTargetHandle rth,
     }
 }
 
-TextureID VulkanDriverApi::GetTextueID(TextureHandle th) {
+TextureID VulkanDriverApi::GetTextureID(TextureHandle th) {
     Ref<VulkanTexture> vulkanTexture = th.As<VulkanTexture>();
 
     if (vulkanTexture->textureid == (TextureID)INVALID_UINT32) {
@@ -522,6 +522,33 @@ TextureID VulkanDriverApi::GetTextueID(TextureHandle th) {
             VulkanUtils::GetVkImageLayout(vulkanTexture->GetPrimaryImageLayout()));
     }
     return vulkanTexture->textureid;
+}
+
+TextureID VulkanDriverApi::GetSubTextureID(TextureHandle th, uint32_t layer /*= 0*/,
+                                           uint32_t level /*= 0*/) {
+    Ref<VulkanTexture> vulkanTexture = th.As<VulkanTexture>();
+
+    VkImageSubresourceRange range{};
+    range.aspectMask = vulkanTexture->GetImageAspect();
+    range.baseArrayLayer = layer;
+    range.baseMipLevel = level;
+    range.layerCount = 1;
+    range.levelCount = 1;
+    auto texid = vulkanTexture->GetTextureID(range, VK_IMAGE_VIEW_TYPE_2D, {});
+    if (texid == (TextureID)INVALID_UINT32) {
+        auto imageview = vulkanTexture->GetImageView(range, VK_IMAGE_VIEW_TYPE_2D, {});
+        if (!imageview) {
+            ET_CORE_WARN("Texture has no imageview!");
+            return 0;
+        }
+        SamplerParams params = SamplerParams::Default();
+        auto id = (TextureID)ImGui_ImplVulkan_AddTexture(
+            mSamplerCache->GetSampler(params), imageview,
+            VulkanUtils::GetVkImageLayout(vulkanTexture->GetPrimaryImageLayout()));
+        vulkanTexture->SetSubTextureID(range, id);
+        texid = id;
+    }
+    return texid;
 }
 
 TextureHandle VulkanDriverApi::GetColorAttachment(RenderTargetHandle rth,

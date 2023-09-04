@@ -80,14 +80,18 @@ class VulkanDriverApi : public DriverApi {
     virtual void GenerateMipmaps(TextureHandle th) {}
     virtual void SetRenderTargetAttachment(RenderTargetHandle rth, TargetBufferInfo const& info,
                                            TargetBufferFlags flag) override;
-    virtual TextureID GetTextueID(TextureHandle th) override;
-    virtual void GetSubTexture(TextureHandle th, uint32_t layer, TextureHandle dst) {}
+    virtual TextureID GetTextureID(TextureHandle th) override;
+
+    virtual TextureID GetSubTextureID(TextureHandle th, uint32_t layer = 0,
+                                      uint32_t level = 0) override;
+
     virtual int ReadPixel(RenderTargetHandle rth, uint32_t attachmentIndex, uint32_t xoffset,
                           uint32_t yoffset) {
         return 0;
     }
     virtual TextureHandle GetColorAttachment(RenderTargetHandle rth,
                                              uint32_t attachmentIndex) override;
+    // TODO: should remove three functions below
     virtual void Clear() {}
     virtual uint32_t UseProgram(ProgramHandle program) { return 0; }
     virtual void BindUniform(ProgramHandle program, const string& name, ValueBasePtr value) {}

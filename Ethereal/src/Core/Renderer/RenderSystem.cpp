@@ -83,11 +83,11 @@ void RenderSystem::OnResize() {
 }
 
 TextureID RenderSystem::GetMainImage() {
-    return GlobalContext::GetDriverApi()->GetTextueID(mMainImage);
+    return GlobalContext::GetDriverApi()->GetTextureID(mMainImage);
 }
 
 TextureID RenderSystem::GetSkyboxImage() {
-    return GlobalContext::GetDriverApi()->GetTextueID(mEnvironmentMapRenderPass->mInputTexture);
+    return GlobalContext::GetDriverApi()->GetTextureID(mEnvironmentMapRenderPass->mInputTexture);
 };
 
 int RenderSystem::GetMousePicking(int x, int y) {
@@ -98,7 +98,7 @@ TextureID RenderSystem::DrawMaterialPreview(MaterialCorePtr mat, uint32_t width,
     mMaterialPreviewRenderPass->OnResize(width, height);
     mMaterialPreviewRenderPass->SetMaterial(mat);
     // mMaterialPreviewRenderPass->Draw();
-    return GlobalContext::GetDriverApi()->GetTextueID(mMaterialPreviewRenderPass->GetMainImage());
+    return GlobalContext::GetDriverApi()->GetTextureID(mMaterialPreviewRenderPass->GetMainImage());
 }
 
 void RenderSystem::SubmitStaticMesh(Ref<StaticMesh> staticMesh, Ref<MaterialTable> materialTable,

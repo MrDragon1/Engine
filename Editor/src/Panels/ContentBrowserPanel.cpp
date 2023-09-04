@@ -60,10 +60,10 @@ void ContentBrowserPanel::OnImGuiRender(bool& isOpen) {
             bool press = false;
             if (Utils::IsImageFormat(path.string())) {
                 Ref<Texture> img = AssetManager::GetAsset<Texture>(path.string()).As<Texture>();
-                press = ImGui::ImageButton(api->GetTextueID(img), {thumbnailSize, thumbnailSize},
+                press = ImGui::ImageButton(api->GetTextureID(img), {thumbnailSize, thumbnailSize},
                                            {0, 1}, {1, 0});
             } else
-                press = ImGui::ImageButton(api->GetTextueID(icon), {thumbnailSize, thumbnailSize},
+                press = ImGui::ImageButton(api->GetTextureID(icon), {thumbnailSize, thumbnailSize},
                                            {0, 1}, {1, 0});
 
             if (press) {

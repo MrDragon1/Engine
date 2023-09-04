@@ -148,7 +148,7 @@ void MaterialEditPanel::RenderMaterial(size_t materialIndex, Ref<MaterialAsset> 
             bool hasAlbedoMap = albedoMap && !albedoMap.EqualsObject(RenderResource::WhiteTexture);
 
             ImVec2 textureCursorPos = ImGui::GetCursorPos();
-            ImGui::Image(api->GetTextueID(albedoMap), ImVec2(64, 64));
+            ImGui::Image(api->GetTextureID(albedoMap), ImVec2(64, 64));
 
             if (ImGui::BeginDragDropTarget()) {
                 if (const ImGuiPayload* payload =
@@ -170,7 +170,7 @@ void MaterialEditPanel::RenderMaterial(size_t materialIndex, Ref<MaterialAsset> 
                     ImGui::BeginTooltip();
                     ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
                     ImGui::PopTextWrapPos();
-                    ImGui::Image(api->GetTextueID(albedoMap), ImVec2(384, 384));
+                    ImGui::Image(api->GetTextureID(albedoMap), ImVec2(384, 384));
                     ImGui::EndTooltip();
                 }
 
@@ -224,7 +224,7 @@ void MaterialEditPanel::RenderMaterial(size_t materialIndex, Ref<MaterialAsset> 
 
                 ImVec2 textureCursorPos = ImGui::GetCursorPos();
 
-                ImGui::Image(api->GetTextueID(normalMap), ImVec2(64, 64));
+                ImGui::Image(api->GetTextureID(normalMap), ImVec2(64, 64));
 
                 if (ImGui::BeginDragDropTarget()) {
                     auto payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM");
@@ -248,7 +248,7 @@ void MaterialEditPanel::RenderMaterial(size_t materialIndex, Ref<MaterialAsset> 
                         ImGui::BeginTooltip();
                         ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
                         ImGui::PopTextWrapPos();
-                        ImGui::Image(api->GetTextueID(normalMap), ImVec2(384, 384));
+                        ImGui::Image(api->GetTextureID(normalMap), ImVec2(384, 384));
                         ImGui::EndTooltip();
                     }
 
@@ -292,7 +292,7 @@ void MaterialEditPanel::RenderMaterial(size_t materialIndex, Ref<MaterialAsset> 
 
                 ImVec2 textureCursorPos = ImGui::GetCursorPos();
 
-                ImGui::Image(api->GetTextueID(metalnessMap), ImVec2(64, 64));
+                ImGui::Image(api->GetTextureID(metalnessMap), ImVec2(64, 64));
 
                 if (ImGui::BeginDragDropTarget()) {
                     auto payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM");
@@ -315,7 +315,7 @@ void MaterialEditPanel::RenderMaterial(size_t materialIndex, Ref<MaterialAsset> 
                         ImGui::BeginTooltip();
                         ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
                         ImGui::PopTextWrapPos();
-                        ImGui::Image(api->GetTextueID(metalnessMap), ImVec2(384, 384));
+                        ImGui::Image(api->GetTextureID(metalnessMap), ImVec2(384, 384));
                         ImGui::EndTooltip();
                     }
 
@@ -363,7 +363,7 @@ void MaterialEditPanel::RenderMaterial(size_t materialIndex, Ref<MaterialAsset> 
 
                 ImVec2 textureCursorPos = ImGui::GetCursorPos();
 
-                ImGui::Image(api->GetTextueID(roughnessMap), ImVec2(64, 64));
+                ImGui::Image(api->GetTextureID(roughnessMap), ImVec2(64, 64));
 
                 if (ImGui::BeginDragDropTarget()) {
                     auto payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM");
@@ -386,7 +386,7 @@ void MaterialEditPanel::RenderMaterial(size_t materialIndex, Ref<MaterialAsset> 
                         ImGui::BeginTooltip();
                         ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
                         ImGui::PopTextWrapPos();
-                        ImGui::Image(api->GetTextueID(roughnessMap), ImVec2(384, 384));
+                        ImGui::Image(api->GetTextureID(roughnessMap), ImVec2(384, 384));
                         ImGui::EndTooltip();
                     }
 
@@ -432,7 +432,7 @@ void MaterialEditPanel::RenderMaterial(size_t materialIndex, Ref<MaterialAsset> 
 
                 ImVec2 textureCursorPos = ImGui::GetCursorPos();
 
-                ImGui::Image(api->GetTextueID(occlusionMap), ImVec2(64, 64));
+                ImGui::Image(api->GetTextureID(occlusionMap), ImVec2(64, 64));
 
                 if (ImGui::BeginDragDropTarget()) {
                     auto payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM");
@@ -455,7 +455,7 @@ void MaterialEditPanel::RenderMaterial(size_t materialIndex, Ref<MaterialAsset> 
                         ImGui::BeginTooltip();
                         ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
                         ImGui::PopTextWrapPos();
-                        ImGui::Image(api->GetTextueID(occlusionMap), ImVec2(384, 384));
+                        ImGui::Image(api->GetTextureID(occlusionMap), ImVec2(384, 384));
                         ImGui::EndTooltip();
                     }
 

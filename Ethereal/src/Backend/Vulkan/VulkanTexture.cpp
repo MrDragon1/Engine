@@ -85,7 +85,7 @@ VulkanTexture::VulkanTexture(Ref<VulkanContext> context, uint32_t width, uint32_
 VulkanTexture::~VulkanTexture() {
     VulkanAllocator::DestroyImage(mImage, mAllocation);
     for (auto entry : mCachedImageViews) {
-        vkDestroyImageView(mContext->mDevice->GetDevice(), entry.second, nullptr);
+        vkDestroyImageView(mContext->mDevice->GetDevice(), entry.second.view, nullptr);
     }
 }
 
@@ -93,7 +93,7 @@ VkImageView VulkanTexture::GetImageView(VkImageSubresourceRange range, VkImageVi
                                         VkComponentMapping swizzle) {
     auto iter = mCachedImageViews.find(range);
     if (iter != mCachedImageViews.end()) {
-        return iter->second;
+        return iter->second.view;
     }
     VkImageViewCreateInfo viewInfo = {
         .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
@@ -109,6 +109,15 @@ VkImageView VulkanTexture::GetImageView(VkImageSubresourceRange range, VkImageVi
     vkCreateImageView(mContext->mDevice->GetDevice(), &viewInfo, nullptr, &imageView);
     mCachedImageViews.emplace(range, imageView);
     return imageView;
+}
+
+TextureID VulkanTexture::GetTextureID(VkImageSubresourceRange range, VkImageViewType viewType,
+                                      VkComponentMapping swizzle) {
+    auto iter = mCachedImageViews.find(range);
+    if (iter != mCachedImageViews.end()) {
+        return iter->second.id;
+    }
+    return (TextureID)INVALID_UINT32;
 }
 
 void VulkanTexture::UpdateData(const PixelBufferDescriptor& data, uint32_t width, uint32_t height,

@@ -15,6 +15,9 @@ class VulkanTexture : public Texture {
     VkImageView GetImageView(VkImageSubresourceRange range, VkImageViewType viewType,
                              VkComponentMapping swizzle);
 
+    TextureID GetTextureID(VkImageSubresourceRange range, VkImageViewType viewType,
+                           VkComponentMapping swizzle);
+
     void UpdateData(const PixelBufferDescriptor& data, uint32_t width, uint32_t height,
                     uint32_t depth, uint32_t xoffset, uint32_t yoffset, uint32_t zoffset,
                     uint32_t miplevel);
@@ -24,7 +27,7 @@ class VulkanTexture : public Texture {
     void TransitionLayout(VkCommandBuffer buffer, VulkanLayout newLayout,
                           VkImageSubresourceRange range);
 
-    VkImageView GetPrimaryImageView() const { return mCachedImageViews.at(mPrimaryViewRange); }
+    VkImageView GetPrimaryImageView() const { return mCachedImageViews.at(mPrimaryViewRange).view; }
     VulkanLayout GetPrimaryImageLayout() {
         return GetLayout(mPrimaryViewRange.baseArrayLayer, mPrimaryViewRange.baseMipLevel);
     }
@@ -34,12 +37,25 @@ class VulkanTexture : public Texture {
     VkImageView GetAttachmentView(VkImageSubresourceRange);
     VkFormat GetVkFormat() { return mVkFormat; }
 
+    void SetSubTextureID(VkImageSubresourceRange range, TextureID id) {
+        if (mCachedImageViews.find(range) != mCachedImageViews.end())
+            mCachedImageViews[range].id = id;
+        else
+            ET_CORE_WARN("Unknown texture range!");
+    }
+
+    struct SubTextureVal {
+        VkImageView view;
+        TextureID id;
+    };
+
    private:
     VkImage mImage;
     VmaAllocation mAllocation;
 
     VkImageSubresourceRange mPrimaryViewRange;
-    std::map<VkImageSubresourceRange, VkImageView> mCachedImageViews;
+    std::map<VkImageSubresourceRange, SubTextureVal> mCachedImageViews;
+
     std::map<uint32_t, VulkanLayout> mSubresourceLayouts;
     VkFormat mVkFormat;
     Ref<VulkanContext> mContext;
