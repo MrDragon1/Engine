@@ -6,9 +6,9 @@ namespace Ethereal {
 void CSMRenderPass::Init(uint32_t width, uint32_t height) {
     auto api = GlobalContext::GetDriverApi();
     ShaderSourceString source;
-    source[ShaderType::VERTEX] = Utils::ReadFileAndSkipBOM("assets/shaders/CSM/CSM.vert");
-    source[ShaderType::GEOMETRY] = Utils::ReadFileAndSkipBOM("assets/shaders/CSM/CSM.geom");
-    source[ShaderType::FRAGMENT] = Utils::ReadFileAndSkipBOM("assets/shaders/CSM/CSM.frag");
+    source[ShaderType::VERTEX] = Utils::LoadShader("assets/shaders/CSM/CSM.vert");
+    source[ShaderType::GEOMETRY] = Utils::LoadShader("assets/shaders/CSM/CSM.geom");
+    source[ShaderType::FRAGMENT] = Utils::LoadShader("assets/shaders/CSM/CSM.frag");
     mPipelineState.program = api->CreateProgram("CSM", source);
 
     Project::GetConfigManager().sCSMConfig.ShadowMap = api->CreateTexture(

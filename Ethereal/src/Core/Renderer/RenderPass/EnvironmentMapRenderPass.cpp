@@ -9,19 +9,18 @@ void EnvironmentMapRenderPass::Init(uint32_t width, uint32_t height) {
 
     ShaderSourceString source;
     source[ShaderType::VERTEX] =
-        Utils::ReadFileAndSkipBOM("assets/shaders/IBL/EquirectangularToCubeMap.vert");
+        Utils::LoadShader("assets/shaders/IBL/EquirectangularToCubeMap.vert");
     source[ShaderType::FRAGMENT] =
-        Utils::ReadFileAndSkipBOM("assets/shaders/IBL/EquirectangularToCubeMap.frag");
+        Utils::LoadShader("assets/shaders/IBL/EquirectangularToCubeMap.frag");
     mEquirectangularToCubeMapPipeline.program =
         api->CreateProgram("EQUIRECTANGULARTOCUBEMAP", source);
-    source[ShaderType::VERTEX] = Utils::ReadFileAndSkipBOM("assets/shaders/IBL/Prefilter.vert");
-    source[ShaderType::FRAGMENT] = Utils::ReadFileAndSkipBOM("assets/shaders/IBL/Prefilter.frag");
+    source[ShaderType::VERTEX] = Utils::LoadShader("assets/shaders/IBL/Prefilter.vert");
+    source[ShaderType::FRAGMENT] = Utils::LoadShader("assets/shaders/IBL/Prefilter.frag");
     mPrefilterPipeline.program = api->CreateProgram("PREFILTER", source);
 
-    source[ShaderType::VERTEX] =
-        Utils::ReadFileAndSkipBOM("assets/shaders/IBL/IrradianceConvolution.vert");
+    source[ShaderType::VERTEX] = Utils::LoadShader("assets/shaders/IBL/IrradianceConvolution.vert");
     source[ShaderType::FRAGMENT] =
-        Utils::ReadFileAndSkipBOM("assets/shaders/IBL/IrradianceConvolution.frag");
+        Utils::LoadShader("assets/shaders/IBL/IrradianceConvolution.frag");
     mConvolutionPipeline.program = api->CreateProgram("IRRADIANCECONVOLUTION", source);
 
     // ShaderSource source;

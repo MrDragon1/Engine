@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <iomanip>
 #include <regex>
+#include <string>
 
 namespace Ethereal::Utils {
 
@@ -204,6 +205,29 @@ void ReplaceIdentifier(string& source, StringMap map) {
                 break;
         }
     }
+}
+
+std::string LoadShader(const std::filesystem::path& filepath) {
+    std::string source = ReadFileAndSkipBOM(filepath);
+
+    std::regex regex("#include \"(.+)\"");
+    StringMap replace;
+    std::smatch matches;
+    while (std::regex_search(source, matches, regex)) {
+        std::string include = matches[1];
+
+        std::string key = "#include \"" + include + "\"";
+        std::filesystem::path path = "assets/shaders/Include/" + include;
+        std::string value = ReadFileAndSkipBOM(path.string());
+
+        for (string::size_type pos(0); pos != string::npos; pos += value.length()) {
+            if ((pos = source.find(key, pos)) != string::npos) {
+                source.replace(pos, key.length(), value);
+            } else
+                break;
+        }
+    }
+    return source;
 }
 
 }  // namespace Ethereal::Utils

@@ -7,8 +7,8 @@ namespace Ethereal {
 void TestRenderPass::Init(uint32_t width, uint32_t height) {
     auto api = GlobalContext::GetDriverApi();
     ShaderSourceString source;
-    source[ShaderType::VERTEX] = Utils::ReadFileAndSkipBOM("assets/shaders/Test.vert");
-    source[ShaderType::FRAGMENT] = Utils::ReadFileAndSkipBOM("assets/shaders/Test.frag");
+    source[ShaderType::VERTEX] = Utils::LoadShader("assets/shaders/Test.vert");
+    source[ShaderType::FRAGMENT] = Utils::LoadShader("assets/shaders/Test.frag");
     mStaticMeshPipeline.program = api->CreateProgram("TEST", source);
 
     auto usage = TextureUsage::COLOR_ATTACHMENT | TextureUsage::SAMPLEABLE;

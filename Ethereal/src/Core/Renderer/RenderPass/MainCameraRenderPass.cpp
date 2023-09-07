@@ -6,16 +6,16 @@ namespace Ethereal {
 void MainCameraRenderPass::Init(uint32_t width, uint32_t height) {
     auto api = GlobalContext::GetDriverApi();
     ShaderSourceString source;
-    source[ShaderType::VERTEX] = Utils::ReadFileAndSkipBOM("assets/shaders/PBR.vert");
-    source[ShaderType::FRAGMENT] = Utils::ReadFileAndSkipBOM("assets/shaders/PBR.frag");
+    source[ShaderType::VERTEX] = Utils::LoadShader("assets/shaders/PBR.vert");
+    source[ShaderType::FRAGMENT] = Utils::LoadShader("assets/shaders/PBR.frag");
     mStaticMeshPipeline.program = api->CreateProgram("PBR", source);
 
-    source[ShaderType::VERTEX] = Utils::ReadFileAndSkipBOM("assets/shaders/PBRAnim.vert");
-    source[ShaderType::FRAGMENT] = Utils::ReadFileAndSkipBOM("assets/shaders/PBRAnim.frag");
+    source[ShaderType::VERTEX] = Utils::LoadShader("assets/shaders/PBRAnim.vert");
+    source[ShaderType::FRAGMENT] = Utils::LoadShader("assets/shaders/PBRAnim.frag");
     // mMeshPipeline.program = api->CreateProgram("PBRANIM", source);
 
-    source[ShaderType::VERTEX] = Utils::ReadFileAndSkipBOM("assets/shaders/Skybox.vert");
-    source[ShaderType::FRAGMENT] = Utils::ReadFileAndSkipBOM("assets/shaders/Skybox.frag");
+    source[ShaderType::VERTEX] = Utils::LoadShader("assets/shaders/Skybox.vert");
+    source[ShaderType::FRAGMENT] = Utils::LoadShader("assets/shaders/Skybox.frag");
     mSkyboxPipeline.program = api->CreateProgram("SKYBOX", source);
     mSkyboxPipeline.rasterState.depthFunc = RasterState::DepthFunc::LE;
 
