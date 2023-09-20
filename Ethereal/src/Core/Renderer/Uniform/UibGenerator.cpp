@@ -21,8 +21,7 @@ BufferInterfaceBlock const& UibGenerator::GetViewUib() noexcept {
                                                     {"InverseViewMatrix", 0, Type::MAT4, Precision::HIGH},
                                                     {"FarPlane", 0, Type::FLOAT, Precision::HIGH},
                                                     {"NearPlane", 0, Type::FLOAT, Precision::HIGH},
-                                                    {"EntityID", 0, Type::UINT, Precision::HIGH},
-                                                    {"padding", 0, Type::FLOAT, Precision::HIGH},
+                                                    {"padding", 0, Type::FLOAT2, Precision::HIGH},
                                                     // Fog
                                                     {"FogColor", 0, Type::FLOAT4, Precision::HIGH},
                                                     {"FogStart", 0, Type::FLOAT, Precision::HIGH},
@@ -70,6 +69,7 @@ BufferInterfaceBlock const& UibGenerator::GetRenderPrimitiveUib() noexcept {
                                                     {"Occlusion", 0, Type::FLOAT, Precision::HIGH},
                                                     {"Emisstion", 0, Type::FLOAT, Precision::HIGH},
                                                     {"UseMap", 0, Type::UINT, Precision::HIGH},
+                                                    {"EntityID", 0, Type::INT, Precision::HIGH},
                                                 })
                                                 .Build();
     return uib;

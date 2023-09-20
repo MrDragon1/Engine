@@ -3,6 +3,7 @@
 #include "Backend/Vulkan/VulkanUtils.h"
 #include "Backend/Vulkan/VulkanContext.h"
 #include "Backend/BufferDescriptor.h"
+#include "Backend/Vulkan/VulkanAllocator.h"
 namespace Ethereal {
 namespace Backend {
 
@@ -36,6 +37,7 @@ class VulkanTexture : public Texture {
     VkImageSubresourceRange GetPrimaryRange() { return mPrimaryViewRange; }
     VkImageView GetAttachmentView(VkImageSubresourceRange);
     VkFormat GetVkFormat() { return mVkFormat; }
+    VmaAllocation GetAllocation() { return mAllocation; }
 
     void SetSubTextureID(VkImageSubresourceRange range, TextureID id) {
         if (mCachedImageViews.find(range) != mCachedImageViews.end())

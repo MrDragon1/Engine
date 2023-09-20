@@ -73,9 +73,9 @@ void UniformManager::UpdateShadow(TextureHandle ShadowMap) {
     };
 }
 
-void UniformManager::UpdateEditor() {
+void UniformManager::UpdateEditor(uint32_t index) {
     auto& param = Project::GetConfigManager().sUniformManagerConfig.EditorParam;
-    auto& s = mViewUib.Edit();
+    auto& s = mRenderPrimitiveUib.Edit(index);
     s.EntityID = param.EntityID;
 }
 

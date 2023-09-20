@@ -61,7 +61,9 @@ std::filesystem::path AssetManager::GetRelativePath(const std::filesystem::path&
     return relativePath;
 }
 
-AssetHandle AssetManager::GetAssetHandleFromFilePath(const std::filesystem::path& filepath) { return GetMetadata(filepath).Handle; }
+AssetHandle AssetManager::GetAssetHandleFromFilePath(const std::filesystem::path& filepath) {
+    return GetMetadata(filepath).Handle;
+}
 
 AssetType AssetManager::GetAssetTypeFromExtension(const std::string& extension) {
     std::string ext = extension;
@@ -71,9 +73,13 @@ AssetType AssetManager::GetAssetTypeFromExtension(const std::string& extension) 
     return sAssetExtensionMap.at(ext.c_str());
 }
 
-AssetType AssetManager::GetAssetTypeFromPath(const std::filesystem::path& path) { return GetAssetTypeFromExtension(path.extension().string()); }
+AssetType AssetManager::GetAssetTypeFromPath(const std::filesystem::path& path) {
+    return GetAssetTypeFromExtension(path.extension().string());
+}
 
-Ref<Texture> AssetManager::GetAssetIconFromExtension(const std::string& extension) { return GetAssetIcon(GetAssetTypeFromExtension(extension)); }
+Ref<Texture> AssetManager::GetAssetIconFromExtension(const std::string& extension) {
+    return GetAssetIcon(GetAssetTypeFromExtension(extension));
+}
 
 void AssetManager::LoadAssetRegistry() {
     // TODO:
@@ -108,12 +114,14 @@ void AssetManager::LoadAssetRegistry() {
         if (metadata.Type == AssetType::None) continue;
 
         if (!FileSystem::Exists(AssetManager::GetFileSystemPath(metadata))) {
-            ET_CORE_WARN("[AssetManager] Missing asset '{0}' detected in registry file", metadata.FilePath.string());
+            ET_CORE_WARN("[AssetManager] Missing asset '{0}' detected in registry file",
+                         metadata.FilePath.string());
             continue;
         }
 
         if (metadata.Handle == 0) {
-            ET_CORE_WARN("[AssetManager] AssetHandle for {0} is 0, this shouldn't happen.", metadata.FilePath.string());
+            ET_CORE_WARN("[AssetManager] AssetHandle for {0} is 0, this shouldn't happen.",
+                         metadata.FilePath.string());
             continue;
         }
 
@@ -176,7 +184,7 @@ void AssetManager::ReloadAssets() {
 }
 
 void AssetManager::WriteRegistryToFile() {
-    // Sort assets by UUID to make project managment easier
+    // Sort assets by UUID to make project management easier
     struct AssetRegistryEntry {
         std::string FilePath;
         AssetType Type;

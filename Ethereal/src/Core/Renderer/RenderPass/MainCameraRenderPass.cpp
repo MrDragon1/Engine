@@ -85,10 +85,9 @@ void MainCameraRenderPass::Draw() {
                     mk.EntityID;
 
                 uniformManager->UpdateMaterial(material, drawIndex);
-                uniformManager->UpdateEditor();
+                uniformManager->UpdateEditor(drawIndex);
                 uniformManager->UpdateRenderPrimitive(
                     {.ModelMatrix = meshTransformMap.at(mk).Transforms[0].Transform}, drawIndex);
-                // TODO: should not update ViewUib here ( UpdateEditor() will cause this problem )
                 uniformManager->Commit();
                 uniformManager->Bind(drawIndex);
 

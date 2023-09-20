@@ -551,6 +551,60 @@ TextureID VulkanDriverApi::GetSubTextureID(TextureHandle th, uint32_t layer /*= 
     return texid;
 }
 
+int VulkanDriverApi::ReadPixel(RenderTargetHandle rth, uint32_t attachmentIndex, uint32_t xoffset,
+                               uint32_t yoffset) {
+    Ref<VulkanRenderTarget> vulkanRenderTarget = rth.As<VulkanRenderTarget>();
+    VulkanAttachment attachment = vulkanRenderTarget->GetColor(attachmentIndex);
+    Ref<VulkanTexture> texture = attachment.texture.As<VulkanTexture>();
+
+    
+    
+    VkBuffer buffer;
+    VkBufferCreateInfo bufferInfo{.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
+                                  .size = texture->width * texture->height * 4,
+                                  .usage = VK_BUFFER_USAGE_TRANSFER_DST_BIT};
+
+    VmaAllocation bufferAlloc =
+        VulkanAllocator::AllocateBuffer(bufferInfo, VMA_MEMORY_USAGE_CPU_ONLY, buffer);
+
+    VkImageSubresourceLayers subResource{};
+    subResource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    subResource.mipLevel = attachment.level;
+    subResource.baseArrayLayer = attachment.layer;
+    subResource.layerCount = 1;
+
+    VkOffset3D offset{};
+    offset.x = xoffset;
+    offset.y = yoffset;
+    offset.z = 0;
+
+    VkExtent3D extent{};
+    extent.width = 1;
+    extent.height = 1;
+    extent.depth = 1;
+
+    // ¿½±´ÃüÁî
+    VkBufferImageCopy region;
+    region.bufferOffset = 0;
+    region.bufferRowLength = 0;
+    region.bufferImageHeight = 0;
+    region.imageSubresource = subResource;
+    region.imageOffset = offset;
+    region.imageExtent = extent;
+
+    auto cmd = mContext->mDevice->GetCommandBuffer(true);
+    texture->TransitionLayout(cmd, VulkanLayout::TRANSFER_SRC, texture->GetPrimaryRange());
+    vkCmdCopyImageToBuffer(cmd, texture->GetVkImage(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, buffer, 1, &region);
+    //vkEndCommandBuffer(cmd);
+    mContext->mDevice->FlushCommandBuffer(cmd);
+
+    void* data = VulkanAllocator::MapMemory<void>(bufferAlloc);
+
+
+    VulkanAllocator::UnmapMemory(bufferAlloc);
+    return *(int*)data;
+}
+
 TextureHandle VulkanDriverApi::GetColorAttachment(RenderTargetHandle rth,
                                                   uint32_t attachmentIndex) {
     Ref<VulkanRenderTarget> vulkanRenderTarget = rth.As<VulkanRenderTarget>();

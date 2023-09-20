@@ -54,7 +54,7 @@ class UniformManager : public RefCounted {
     void UpdateFog();
     void UpdateCamera();
     void UpdateShadow(TextureHandle ShadowMap);
-    void UpdateEditor();
+    void UpdateEditor(uint32_t index = 0);
     void UpdateScene();
     void UpdateLight();
     void UpdateMaterial(Ref<MaterialAsset> mat, uint32_t index = 0);

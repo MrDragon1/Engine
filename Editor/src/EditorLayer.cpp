@@ -197,8 +197,10 @@ void EditorLayer::OnImGuiRender() {
 
     ImGui::Begin("Stats");
     std::string name = "None";
+ 
     if (mHoveredEntity) name = mHoveredEntity.GetName();
-    ImGui::Text("Hovered Entity: %s", name.c_str());
+    
+    ImGui::Text("Hovered Entity: %s (%d)", name.c_str(), (uint32_t)mHoveredEntity);
 
     // TODO: fix this
     // const char* drawModeStrings[] = {"FILLED", "LINE", "POINT"};

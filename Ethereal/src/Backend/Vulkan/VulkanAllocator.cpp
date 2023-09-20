@@ -38,7 +38,6 @@ VmaAllocation VulkanAllocator::AllocateImage(VkImageCreateInfo imageCreateInfo,
     vmaCreateImage(sData->Allocator, &imageCreateInfo, &allocCreateInfo, &outImage, &allocation,
                    nullptr);
 
-    // TODO: Tracking
     VmaAllocationInfo allocInfo;
     vmaGetAllocationInfo(sData->Allocator, allocation, &allocInfo);
     { sData->TotalAllocatedBytes += allocInfo.size; }

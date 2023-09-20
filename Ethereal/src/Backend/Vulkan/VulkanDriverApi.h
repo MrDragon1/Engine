@@ -86,9 +86,8 @@ class VulkanDriverApi : public DriverApi {
                                       uint32_t level = 0) override;
 
     virtual int ReadPixel(RenderTargetHandle rth, uint32_t attachmentIndex, uint32_t xoffset,
-                          uint32_t yoffset) {
-        return 0;
-    }
+                          uint32_t yoffset) override;
+
     virtual TextureHandle GetColorAttachment(RenderTargetHandle rth,
                                              uint32_t attachmentIndex) override;
     // TODO: should remove three functions below
