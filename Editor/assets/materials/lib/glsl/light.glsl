@@ -1,3 +1,21 @@
+
+// vec3 mx_environment_radiance(vec3 N, vec3 V, float roughness, vec3 color){
+//     float NoV = dot(N,V);
+//     NoV = clamp(NoV, 0.0, 1.0);
+// 
+//     vec3 Lr = 2.0 * NoV * N - V;
+//     vec3 F0 = mix(vec3(0.04), color, metallic);
+// 
+//     int envRadianceTexLevels = textureQueryLevels(u_IrradianceMap);
+//     vec3 specularIrradiance = textureLod(u_PrefilterMap, Lr, (roughness) * envRadianceTexLevels).rgb;
+//     vec2 specularBRDF = texture(u_BRDFLUT, vec2(NoV, 1.0 - roughness)).rg;
+//     return specularIrradiance * (F0 * specularBRDF.x + specularBRDF.y);
+// }
+// 
+// vec3 mx_environment_irradiance(vec3 N){
+//     return texture(u_IrradianceMap, N).rgb;
+// }
+
 void mx_directional_light(LightData light, vec3 position, out lightshader result)
 {
     result.direction = light.direction;

@@ -8,7 +8,6 @@ struct Texture;
 struct SamplerGroup;
 struct VertexBuffer;
 struct IndexBuffer;
-struct VertexArray;
 struct RenderPrimitive;
 struct Program;
 struct RenderTarget;
@@ -19,13 +18,12 @@ using SamplerGroupHandle = Ref<SamplerGroup>;
 using BufferObjectHandle = Ref<BufferObject>;
 using VertexBufferHandle = Ref<VertexBuffer>;
 using IndexBufferHandle = Ref<IndexBuffer>;
-using VertexArrayHandle = Ref<VertexArray>;
 using RenderPrimitiveHandle = Ref<RenderPrimitive>;
 using ProgramHandle = Ref<Program>;
 using RenderTargetHandle = Ref<RenderTarget>;
 
 static constexpr uint32_t INVALID_UINT32 = 0xffffffff;
-
+using TextureID = void*;
 struct Texture : public Asset {
     uint32_t width;
     uint32_t height;
@@ -35,6 +33,7 @@ struct Texture : public Asset {
     TextureFormat format;
     TextureUsage usage;
     TextureType type;
+    TextureID textureid = (TextureID)INVALID_UINT32;
     Texture(uint32_t width, uint32_t height, uint32_t depth, uint32_t levels, TextureFormat format,
             TextureUsage usage, TextureType type)
         : width(width),
@@ -118,17 +117,15 @@ struct TargetBufferInfo {
     uint32_t level = 0;
 
     // for cubemaps and 3D textures. See TextureCubemapFace for the face->layer mapping
-    uint32_t layer = 0xffffffff;
+    uint32_t layer = 0;
+
+    uint32_t layerCount = 1;
 };
 using MRT = std::array<TargetBufferInfo, MAX_SUPPORTED_RENDER_TARGET_COUNT>;
 
 struct RenderTarget : public RefCounted {
     uint32_t width{};
     uint32_t height{};
-    Ref<Texture> color[MAX_SUPPORTED_RENDER_TARGET_COUNT];
-    Ref<Texture> depth;
-    Ref<Texture> stencil;
-    TargetBufferFlags targets = {};
 
     RenderTarget() noexcept = default;
     RenderTarget(uint32_t w, uint32_t h) : width(w), height(h) {}

@@ -24,6 +24,7 @@ ContentBrowserPanel::ContentBrowserPanel() : mCurrentDirectory(Project::GetAsset
 void ContentBrowserPanel::OnEvent(Event& event) {}
 
 void ContentBrowserPanel::OnImGuiRender(bool& isOpen) {
+    ET_PROFILE_FUNC();
     auto api = GlobalContext::GetDriverApi();
     ImGui::Begin("Content Browser", &isOpen);
     if (mCurrentDirectory != Project::GetAssetDirectory()) {
@@ -60,11 +61,11 @@ void ContentBrowserPanel::OnImGuiRender(bool& isOpen) {
             bool press = false;
             if (Utils::IsImageFormat(path.string())) {
                 Ref<Texture> img = AssetManager::GetAsset<Texture>(path.string()).As<Texture>();
-                press = ImGui::ImageButton((ImTextureID)(intptr_t)api->GetTextueID(img),
-                                           {thumbnailSize, thumbnailSize}, {0, 1}, {1, 0});
+                press = ImGui::ImageButton(api->GetTextureID(img), {thumbnailSize, thumbnailSize},
+                                           {0, 1}, {1, 0});
             } else
-                press = ImGui::ImageButton((ImTextureID)(intptr_t)api->GetTextueID(icon),
-                                           {thumbnailSize, thumbnailSize}, {0, 1}, {1, 0});
+                press = ImGui::ImageButton(api->GetTextureID(icon), {thumbnailSize, thumbnailSize},
+                                           {0, 1}, {1, 0});
 
             if (press) {
                 mSelectedDirectory = directoryEntry.path();

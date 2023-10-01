@@ -4,7 +4,7 @@
 #include "Base/TimeStamp.h"
 namespace Ethereal {
 
-class Layer {
+class Layer : public RefCounted {
    public:
     Layer(const std::string& name = "Layer");
     virtual ~Layer();

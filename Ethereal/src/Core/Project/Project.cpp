@@ -3,26 +3,27 @@
 
 #include "Core/Asset/AssetManager.h"
 #include "Core/Renderer/RenderResource.h"
-namespace Ethereal
-{
+namespace Ethereal {
 
-    Project::Project() {}
+Project::Project() {}
 
-    Project::~Project() {}
+Project::~Project() {}
 
-    void Project::SetActive(Ref<Project> project) {
-        if (sActiveProject) {
-            RenderResource::Shutdown();
-            AssetManager::Shutdown();
-        }
-
-        sActiveProject = project;
-        if (sActiveProject) {
-            AssetManager::Init();
-            RenderResource::Init();
-        }
+void Project::SetActive(Ref<Project> project) {
+    if (sActiveProject) {
+        EditorResource::Shutdown();
+        RenderResource::Shutdown();
+        AssetManager::Shutdown();
     }
 
-    void Project::OnDeserialized() {}
+    sActiveProject = project;
+    if (sActiveProject) {
+        AssetManager::Init();
+        RenderResource::Init();
+        EditorResource::Init();
+    }
+}
+
+void Project::OnDeserialized() {}
 
 }  // namespace Ethereal

@@ -233,7 +233,7 @@ Ref<RenderTarget> OpenGLDriverApi::CreateRenderTarget(TargetBufferFlags targets,
     Ref<GLRenderTarget> rt = Ref<GLRenderTarget>::Create(width, height);
     glGenFramebuffers(1, &rt->gl.id);
     glBindFramebuffer(GL_FRAMEBUFFER, rt->gl.id);
-    rt->targets = targets;
+    rt->gl.targets = targets;
     rt->width = width;
     rt->height = height;
     if (any(targets & TargetBufferFlags::COLOR_ALL)) {
@@ -252,7 +252,7 @@ Ref<RenderTarget> OpenGLDriverApi::CreateRenderTarget(TargetBufferFlags targets,
     if ((targets & TargetBufferFlags::DEPTH_AND_STENCIL) == TargetBufferFlags::DEPTH_AND_STENCIL) {
         ET_CORE_ASSERT(!stencil.handle || stencil.handle == depth.handle, "");
 
-        if (any(rt->depth->usage & TextureUsage::SAMPLEABLE) ||
+        if (any(rt->gl.depth->usage & TextureUsage::SAMPLEABLE) ||
             (!depth.handle && !stencil.handle)) {
             // special case: depth & stencil requested, and both provided as the same texture
             // special case: depth & stencil requested, but both not provided
@@ -477,16 +477,26 @@ void OpenGLDriverApi::BindSamplerGroup(uint8_t binding, Ref<SamplerGroup> sgh) {
     mSamplerGroupBindings[binding] = sgh.As<GLSamplerGroup>();
 }
 
-void OpenGLDriverApi::BindUniformBuffer(uint8_t binding, BufferObjectHandle boh) {
+void OpenGLDriverApi::BindUniformBuffer(uint8_t binding, BufferObjectHandle boh, uint32_t offset,
+                                        uint32_t size) {
     Ref<GLBufferObject> bo = boh.As<GLBufferObject>();
     ET_CORE_ASSERT(bo->gl.binding = GL_UNIFORM_BUFFER,
                    "BufferObjectHandle's binding point must be GL_UNIFORM_BUFFER");
-    glBindBufferRange(bo->gl.binding, GLuint(binding), bo->gl.id, 0, bo->byteCount);
+    glBindBufferRange(bo->gl.binding, GLuint(binding), bo->gl.id, offset,
+                      size ? size : bo->byteCount);
 }
 
-uint32_t OpenGLDriverApi::GetTextueID(TextureHandle th) {
+TextureID OpenGLDriverApi::GetTextureID(TextureHandle th) {
     Ref<GLTexture> t = th.As<GLTexture>();
-    return t->gl.id;
+    return (TextureID)(intptr_t)(t->gl.id);
+}
+
+TextureID OpenGLDriverApi::GetSubTextureID(TextureHandle th, uint32_t layer /*= 0*/,
+                                           uint32_t level /*= 0*/) {
+    Ref<GLTexture> subtex = CreateTexture(1, th->width, th->height, 1, th->format,
+                                          TextureUsage::DEFAULT, TextureType::TEXTURE_2D);
+    GetSubTexture(th, layer, subtex);
+    return GetTextureID(subtex);
 }
 
 void OpenGLDriverApi::GetSubTexture(TextureHandle th, uint32_t layer, TextureHandle dsth) {
@@ -509,6 +519,11 @@ int OpenGLDriverApi::ReadPixel(RenderTargetHandle rth, uint32_t attachmentIndex,
     glReadPixels(xoffset, yoffset, 1, 1, GL_RED_INTEGER, GL_INT, &pixelData);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     return pixelData;
+}
+
+TextureHandle OpenGLDriverApi::GetColorAttachment(RenderTargetHandle rth,
+                                                  uint32_t attachmentIndex) {
+    return rth.As<GLRenderTarget>()->gl.color[attachmentIndex];
 }
 
 void OpenGLDriverApi::Clear() { glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); }
@@ -681,24 +696,24 @@ void OpenGLDriverApi::UpdateFrameBufferTexture(Ref<GLRenderTarget> rt, TargetBuf
         case GL_COLOR_ATTACHMENT7: {
             static_assert(MAX_SUPPORTED_RENDER_TARGET_COUNT == 8);
             resolveFlags = getTargetBufferFlagsAt(attachment - GL_COLOR_ATTACHMENT0);
-            rt->color[attachment - GL_COLOR_ATTACHMENT0] = info.handle;
+            rt->gl.color[attachment - GL_COLOR_ATTACHMENT0] = info.handle;
             break;
         }
         case GL_DEPTH_ATTACHMENT: {
             resolveFlags = TargetBufferFlags::DEPTH;
-            rt->depth = info.handle;
+            rt->gl.depth = info.handle;
             break;
         }
         case GL_STENCIL_ATTACHMENT: {
             resolveFlags = TargetBufferFlags::STENCIL;
-            rt->stencil = info.handle;
+            rt->gl.stencil = info.handle;
             break;
         }
         case GL_DEPTH_STENCIL_ATTACHMENT: {
             resolveFlags = TargetBufferFlags::DEPTH;
             resolveFlags |= TargetBufferFlags::STENCIL;
-            rt->depth = info.handle;
-            rt->stencil = info.handle;
+            rt->gl.depth = info.handle;
+            rt->gl.stencil = info.handle;
             break;
         }
         default:

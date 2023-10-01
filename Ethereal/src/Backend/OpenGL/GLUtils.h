@@ -10,7 +10,8 @@ static GLenum ResolveTextureFormat(const TextureFormat& format) {
     // mInternalFormat: https://www.khronos.org/opengl/wiki/Texture_Storage
 
     // mDataFormat: https://docs.gl/gl4/glTexSubImage2D
-    // Only: GL_RED, GL_RG, GL_RGB, GL_BGR, GL_RGBA, GL_BGRA, GL_DEPTH_COMPONENT, and GL_STENCIL_INDEX.
+    // Only: GL_RED, GL_RG, GL_RGB, GL_BGR, GL_RGBA, GL_BGRA, GL_DEPTH_COMPONENT, and
+    // GL_STENCIL_INDEX.
     switch (format) {
         case TextureFormat::R8G8B8_UNORM:
             return GL_RGB8;
@@ -38,6 +39,10 @@ static GLenum ResolveTextureFormat(const TextureFormat& format) {
             return GL_RGBA16F;  // Convert to RGBA
         case TextureFormat::R16G16B16_HDR:
             return GL_RGB16F;  // Convert to RGBA
+        case TextureFormat::R32G32B32A32_HDR:
+            return GL_RGBA32F;  // Convert to RGBA
+        case TextureFormat::R32G32B32_HDR:
+            return GL_RGB32F;  // Convert to RGBA
         default:
             ET_CORE_ASSERT("Invalid Texture Format!");
             return GL_NONE;
@@ -216,7 +221,9 @@ static GLuint ResolveElementTypeCount(const ElementType& type) {
             return 0;
     }
 }
-static GLenum ResolveNormalize(bool normalized) { return GLboolean(normalized ? GL_TRUE : GL_FALSE); }
+static GLenum ResolveNormalize(bool normalized) {
+    return GLboolean(normalized ? GL_TRUE : GL_FALSE);
+}
 static GLenum ResolveShaderType(const ShaderType& type) {
     switch (type) {
         case ShaderType::VERTEX:
@@ -299,7 +306,9 @@ static GLenum ResolveSamplerCompareFunc(const SamplerCompareFunc& func) noexcept
             return GL_NONE;
     }
 }
-static GLenum ResolveDepthFunc(const SamplerCompareFunc& func) { return ResolveSamplerCompareFunc(func); }
+static GLenum ResolveDepthFunc(const SamplerCompareFunc& func) {
+    return ResolveSamplerCompareFunc(func);
+}
 }  // namespace GLUtils
 }  // namespace Backend
 }  // namespace Ethereal

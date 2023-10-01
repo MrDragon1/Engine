@@ -4,15 +4,20 @@
 
 #include "Base/Event/Event.h"
 #include "Utils/EngineMarco.h"
-
+#include "Backend/DriverEnum.h"
 namespace Ethereal {
+
+static void GLFWErrorCallback(int error, const char* description) {
+    ET_ERROR("GLFW Error ({0}): {1}", error, description);
+}
 
 struct WindowProps {
     std::string Title;
     uint32_t Width;
     uint32_t Height;
 
-    WindowProps(const std::string& title = "Engine", unsigned int width = 1280, unsigned int height = 720)
+    WindowProps(const std::string& title = "Engine", unsigned int width = 1280,
+                unsigned int height = 720)
         : Title(title), Width(width), Height(height) {}
 };
 
@@ -34,7 +39,11 @@ class Window {
     virtual bool IsVSync() const = 0;
 
     virtual void* GetNativeWindow() const = 0;
-    static Scope<Window> Create(const WindowProps& props = WindowProps());
+    static Scope<Window> Create(BackendType backendconst, const WindowProps& props = WindowProps());
+    inline static bool sGLFWInitialized = false;
+
+    // vulkan only
+    virtual void GetRequiredExtensions(std::vector<const char*>& extensions){};
 };
 
 }  // namespace Ethereal

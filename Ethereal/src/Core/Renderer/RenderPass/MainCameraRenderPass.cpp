@@ -1,26 +1,26 @@
 #include "MainCameraRenderPass.h"
 
 #include <Base/GlobalContext.h>
-
+#include "Utils/StringUtils.h"
 namespace Ethereal {
 void MainCameraRenderPass::Init(uint32_t width, uint32_t height) {
     auto api = GlobalContext::GetDriverApi();
-    ShaderSource source;
-    source[ShaderType::VERTEX] = PBR_VERT;
-    source[ShaderType::FRAGMENT] = PBR_FRAG;
+    ShaderSourceString source;
+    source[ShaderType::VERTEX] = Utils::LoadShader("assets/shaders/PBR.vert");
+    source[ShaderType::FRAGMENT] = Utils::LoadShader("assets/shaders/PBR.frag");
     mStaticMeshPipeline.program = api->CreateProgram("PBR", source);
 
-    source[ShaderType::VERTEX] = PBRANIM_VERT;
-    source[ShaderType::FRAGMENT] = PBRANIM_FRAG;
-    mMeshPipeline.program = api->CreateProgram("PBRANIM", source);
+    source[ShaderType::VERTEX] = Utils::LoadShader("assets/shaders/PBRAnim.vert");
+    source[ShaderType::FRAGMENT] = Utils::LoadShader("assets/shaders/PBRAnim.frag");
+    // mMeshPipeline.program = api->CreateProgram("PBRANIM", source);
 
-    source[ShaderType::VERTEX] = SKYBOX_VERT;
-    source[ShaderType::FRAGMENT] = SKYBOX_FRAG;
+    source[ShaderType::VERTEX] = Utils::LoadShader("assets/shaders/Skybox.vert");
+    source[ShaderType::FRAGMENT] = Utils::LoadShader("assets/shaders/Skybox.frag");
     mSkyboxPipeline.program = api->CreateProgram("SKYBOX", source);
     mSkyboxPipeline.rasterState.depthFunc = RasterState::DepthFunc::LE;
 
     auto usage = TextureUsage::COLOR_ATTACHMENT | TextureUsage::SAMPLEABLE;
-    auto hdrTex = api->CreateTexture(1, width, height, 1, TextureFormat::R16G16B16A16_HDR, usage,
+    auto hdrTex = api->CreateTexture(1, width, height, 1, TextureFormat::R32G32B32A32_HDR, usage,
                                      TextureType::TEXTURE_2D);
     auto entityIdTex = api->CreateTexture(1, width, height, 1, TextureFormat::R32_INTEGER, usage,
                                           TextureType::TEXTURE_2D);
@@ -32,13 +32,27 @@ void MainCameraRenderPass::Init(uint32_t width, uint32_t height) {
     mRenderTarget = api->CreateRenderTarget(
         TargetBufferFlags::COLOR0 | TargetBufferFlags::COLOR1 | TargetBufferFlags::DEPTH, width,
         height, mrt, {depthTex}, {});
+    mParams.viewport = {0, 0, width, height};
+    mParams.flags.clearMask =
+        TargetBufferFlags::COLOR0 | TargetBufferFlags::COLOR1 | TargetBufferFlags::DEPTH;
+
+    mStaticMeshPipeline.rasterState.colorTargetCount = 2;
+    mStaticMeshPipeline.rasterState.rasterizationSamples = 1;
+
+    mMeshPipeline.rasterState.colorTargetCount = 2;
+    mMeshPipeline.rasterState.rasterizationSamples = 1;
+
+    mSkyboxPipeline.rasterState.colorTargetCount = 2;
+    mSkyboxPipeline.rasterState.rasterizationSamples = 1;
 }
 
 void MainCameraRenderPass::Draw() {
+    ET_PROFILE_FUNC();
     mParams.clearColor = {0.1, 0.1, 0.1, 1.0};
+    mParams.clearDepth = 1.0f;
     auto uniformManager = GlobalContext::GetUniformManager();
     auto api = GlobalContext::GetDriverApi();
-
+    uint32_t drawIndex = 0;
     /*************************************************************************/
 
     // Clear our entity ID attachment to -1
@@ -71,73 +85,73 @@ void MainCameraRenderPass::Draw() {
                 Project::GetConfigManager().sUniformManagerConfig.EditorParam.EntityID =
                     mk.EntityID;
 
-                uniformManager->UpdateMaterial(material);
-                uniformManager->UpdateEditor();
+                uniformManager->UpdateMaterial(material, drawIndex);
+                uniformManager->UpdateEditor(drawIndex);
                 uniformManager->UpdateRenderPrimitive(
-                    {.ModelMatrix = meshTransformMap.at(mk).Transforms[0].Transform});
-                // TODO: should not update ViewUib here ( UpdateEditor() will cause this problem )
+                    {.ModelMatrix = meshTransformMap.at(mk).Transforms[0].Transform}, drawIndex);
                 uniformManager->Commit();
-                uniformManager->Bind();
+                uniformManager->Bind(drawIndex);
 
                 // RenderCommand::DrawIndexed(ms->GetVertexArray(), submesh.IndexCount,
                 // reinterpret_cast<void*>(submesh.BaseIndex * sizeof(uint32_t)),
                 //                            submesh.BaseVertex);
 
                 api->Draw(ms->GetSubMeshRenderPrimitive(dc.SubmeshIndex), mStaticMeshPipeline);
+                drawIndex++;
             }
         }
     }
 
-    // Draw Mesh
-    {
-        // CSM
-        uniformManager->UpdateShadow(Project::GetConfigManager().sCSMConfig.ShadowMap);
+    //// Draw Mesh
+    //{
+    //    // CSM
+    //    uniformManager->UpdateShadow(Project::GetConfigManager().sCSMConfig.ShadowMap);
 
-        // Draw
-        if (!meshDrawList.empty()) {
-            for (auto& [mk, dc] : meshDrawList) {
-                Ref<MeshSource> ms = dc.Mesh->GetMeshSource();
+    //    // Draw
+    //    if (!meshDrawList.empty()) {
+    //        for (auto& [mk, dc] : meshDrawList) {
+    //            Ref<MeshSource> ms = dc.Mesh->GetMeshSource();
 
-                Ref<Animator> animator = ms->GetAnimator();
-                auto boneMatrices = animator->GetFinalBoneMatrices();
-                BoneParam& param = Project::GetConfigManager().sUniformManagerConfig.BoneParam;
-                for (const auto& [id, m] : boneMatrices) {
-                    if (id >= 100) {
-                        ET_CORE_WARN("Only support 100 bones!");
-                        continue;
-                    }
-                    param.BoneTransform[id] = m;
-                }
+    //            Ref<Animator> animator = ms->GetAnimator();
+    //            auto boneMatrices = animator->GetFinalBoneMatrices();
+    //            BoneParam& param = Project::GetConfigManager().sUniformManagerConfig.BoneParam;
+    //            for (const auto& [id, m] : boneMatrices) {
+    //                if (id >= 100) {
+    //                    ET_CORE_WARN("Only support 100 bones!");
+    //                    continue;
+    //                }
+    //                param.BoneTransform[id] = m;
+    //            }
 
-                Ref<MaterialTable> mt = dc.MaterialTable;
-                const auto& meshMaterialTable = dc.Mesh->GetMaterials();
-                Submesh& submesh = ms->GetSubmeshes()[dc.SubmeshIndex];
-                auto materialIndex = submesh.MaterialIndex;
+    //            Ref<MaterialTable> mt = dc.MaterialTable;
+    //            const auto& meshMaterialTable = dc.Mesh->GetMaterials();
+    //            Submesh& submesh = ms->GetSubmeshes()[dc.SubmeshIndex];
+    //            auto materialIndex = submesh.MaterialIndex;
 
-                Ref<MaterialAsset> material = mt->HasMaterial(materialIndex)
-                                                  ? mt->GetMaterial(materialIndex)
-                                                  : meshMaterialTable->GetMaterial(materialIndex);
+    //            Ref<MaterialAsset> material = mt->HasMaterial(materialIndex)
+    //                                              ? mt->GetMaterial(materialIndex)
+    //                                              : meshMaterialTable->GetMaterial(materialIndex);
 
-                Project::GetConfigManager().sUniformManagerConfig.EditorParam.EntityID =
-                    mk.EntityID;
+    //            Project::GetConfigManager().sUniformManagerConfig.EditorParam.EntityID =
+    //                mk.EntityID;
 
-                uniformManager->UpdateBone();
-                uniformManager->UpdateMaterial(material);
-                uniformManager->UpdateEditor();
-                uniformManager->UpdateRenderPrimitive(
-                    {.ModelMatrix = meshTransformMap.at(mk).Transforms[0].Transform});
-                // TODO: should not update ViewUib here ( UpdateEditor() will cause this problem )
-                uniformManager->Commit();
-                uniformManager->Bind();
+    //            uniformManager->UpdateBone();
+    //            uniformManager->UpdateMaterial(material);
+    //            uniformManager->UpdateEditor();
+    //            uniformManager->UpdateRenderPrimitive(
+    //                {.ModelMatrix = meshTransformMap.at(mk).Transforms[0].Transform});
+    //            // TODO: should not update ViewUib here ( UpdateEditor() will cause this problem )
+    //            uniformManager->Commit();
+    //            uniformManager->Bind();
 
-                api->Draw(ms->GetSubMeshRenderPrimitive(dc.SubmeshIndex), mMeshPipeline);
+    //            api->Draw(ms->GetSubMeshRenderPrimitive(dc.SubmeshIndex), mMeshPipeline);
 
-                // RenderCommand::DrawIndexed(ms->GetVertexArray(), submesh.IndexCount,
-                // reinterpret_cast<void*>(submesh.BaseIndex * sizeof(uint32_t)),
-                //                            submesh.BaseVertex);
-            }
-        }
-    }
+    //            // RenderCommand::DrawIndexed(ms->GetVertexArray(), submesh.IndexCount,
+    //            // reinterpret_cast<void*>(submesh.BaseIndex * sizeof(uint32_t)),
+    //            //                            submesh.BaseVertex);
+    //        }
+    //    }
+    //}
 
     // Draw Skybox
     uniformManager->Bind();
@@ -152,7 +166,7 @@ void MainCameraRenderPass::OnResize(uint32_t width, uint32_t height) {
     api->DestroyRenderTarget(mRenderTarget);
 
     auto usage = TextureUsage::COLOR_ATTACHMENT | TextureUsage::SAMPLEABLE;
-    auto hdrTex = api->CreateTexture(1, width, height, 1, TextureFormat::R16G16B16A16_HDR, usage,
+    auto hdrTex = api->CreateTexture(1, width, height, 1, TextureFormat::R32G32B32A32_HDR, usage,
                                      TextureType::TEXTURE_2D);
     auto entityIdTex = api->CreateTexture(1, width, height, 1, TextureFormat::R32_INTEGER, usage,
                                           TextureType::TEXTURE_2D);
@@ -164,6 +178,7 @@ void MainCameraRenderPass::OnResize(uint32_t width, uint32_t height) {
     mRenderTarget = api->CreateRenderTarget(
         TargetBufferFlags::COLOR0 | TargetBufferFlags::COLOR1 | TargetBufferFlags::DEPTH, width,
         height, mrt, {depthTex}, {});
+    mParams.viewport = {0, 0, width, height};
 }
 
 int MainCameraRenderPass::GetMousePicking(int x, int y) {

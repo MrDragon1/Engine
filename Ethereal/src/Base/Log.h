@@ -6,6 +6,8 @@
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include "glm/gtx/string_cast.hpp"
+
+#include "Base/Profiler.h"
 namespace Ethereal {
 class Log {
    public:

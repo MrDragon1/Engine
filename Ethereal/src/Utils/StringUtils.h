@@ -27,7 +27,7 @@ std::string ToUpper(const std::string_view& string);
 std::string BytesToString(uint64_t bytes);
 
 int SkipBOM(std::istream& in);
-
+std::string LoadShader(const std::filesystem::path& filepath);
 std::string ReadFileAndSkipBOM(const std::filesystem::path& filepath);
 void ReplaceIdentifier(string& source, StringMap map);
 template <class... Durations, class DurationIn>

@@ -23,6 +23,7 @@ void SceneHierarchyPanel::SetSceneContext(const Ref<Scene>& scene) { mContext = 
 void SceneHierarchyPanel::OnEvent(Event& event) {}
 
 void SceneHierarchyPanel::OnImGuiRender(bool& isOpen) {
+    ET_PROFILE_FUNC();
     sActiveSelectionContext = mSelectionContext;
 
     ShowHierarchy();
@@ -133,8 +134,7 @@ void SceneHierarchyPanel::ShowInspector() {
                          ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll);
         ImGui::SameLine(ImGui::GetWindowWidth() - 30.0f);
         auto icon = EditorResource::PlusIcon;
-        if (UI::ImageButton("InspectorPlusIcon", (ImTextureID)(intptr_t)(api->GetTextueID(icon)),
-                            ImVec2(20.0f, 20.0f))) {
+        if (UI::ImageButton("InspectorPlusIcon", (api->GetTextureID(icon)), ImVec2(20.0f, 20.0f))) {
             ImGui::OpenPopup("InspectorADDComponent");
         }
 
@@ -271,8 +271,7 @@ void SceneHierarchyPanel::ShowHierarchy() {
                     UI::ScopedColorStack style(ImGuiCol_Border, IM_COL32(0, 0, 0, 0),
                                                ImGuiCol_Button, IM_COL32(0, 0, 0, 0));
                     if (UI::ImageButton(("VisibleIcon" + std::to_string(node->ChildIdx)).c_str(),
-                                        (ImTextureID)(intptr_t)(api->GetTextueID(icon)),
-                                        ImVec2(text_height, text_height),
+                                        (api->GetTextureID(icon)), ImVec2(text_height, text_height),
                                         ImU32(IM_COL32(196, 196, 196, 255)),
                                         ImU32(IM_COL32(255, 255, 255, 255)),
                                         ImU32(IM_COL32(255, 255, 255, 255)))) {

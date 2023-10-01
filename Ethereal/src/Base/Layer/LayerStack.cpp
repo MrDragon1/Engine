@@ -6,17 +6,17 @@ namespace Ethereal {
 LayerStack::LayerStack() {}
 
 LayerStack::~LayerStack() {
-    for (Layer* layer : mLayers) delete layer;
+    for (Ref<Layer> layer : mLayers) layer.Reset();
 }
 
-void LayerStack::PushLayer(Layer* layer) {
+void LayerStack::PushLayer(Ref<Layer> layer) {
     mLayers.emplace(mLayers.begin() + mLayerInsertIndex, layer);
     mLayerInsertIndex++;
 }
 
-void LayerStack::PushOverlay(Layer* overlay) { mLayers.emplace_back(overlay); }
+void LayerStack::PushOverlay(Ref<Layer> overlay) { mLayers.emplace_back(overlay); }
 
-void LayerStack::PopLayer(Layer* layer) {
+void LayerStack::PopLayer(Ref<Layer> layer) {
     auto it = std::find(mLayers.begin(), mLayers.end(), layer);
     if (it != mLayers.end()) {
         mLayers.erase(it);
@@ -24,7 +24,7 @@ void LayerStack::PopLayer(Layer* layer) {
     }
 }
 
-void LayerStack::PopOverlay(Layer* overlay) {
+void LayerStack::PopOverlay(Ref<Layer> overlay) {
     auto it = std::find(mLayers.begin(), mLayers.end(), overlay);
     if (it != mLayers.end()) mLayers.erase(it);
 }

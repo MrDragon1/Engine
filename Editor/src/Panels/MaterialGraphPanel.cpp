@@ -31,6 +31,7 @@ MaterialGraphPanel::~MaterialGraphPanel() {
 }
 
 void MaterialGraphPanel::OnImGuiRender(bool& isOpen) {
+    ET_PROFILE_FUNC();
     ImGui::SetNextWindowSize(ImVec2(200.0f, 300.0f), ImGuiCond_Appearing);
     ImGui::Begin("Material Graph Editor", nullptr);
 
@@ -60,7 +61,7 @@ void MaterialGraphPanel::OnImGuiRender(bool& isOpen) {
         auto cursorTopLeft = ImGui::GetCursorScreenPos();
         auto api = GlobalContext::GetDriverApi();
         auto bg = EditorResource::MaterialGraphHeaderBG;
-        BlueprintNodeBuilder builder((ImTextureID)api->GetTextueID(bg), bg->width, bg->height);
+        BlueprintNodeBuilder builder((ImTextureID)api->GetTextureID(bg), bg->width, bg->height);
 
         for (auto& [id, node] : mCurrentGraph->GetNodes()) {
             if (node->mType != NodeType::Blueprint && node->mType != NodeType::Simple) continue;

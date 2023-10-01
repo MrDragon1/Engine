@@ -1,10 +1,10 @@
 #version 460 core
+
+#extension GL_KHR_vulkan_glsl : enable
 #extension GL_GOOGLE_include_directive : enable
 #include "Common.glslh"
 #include "PBR.glslh"
 #include "ShadowMapping.glslh"
-
-
 layout(location = 0) out vec4 FragColor;
 layout(location = 1) out int EntityID;
 
@@ -12,18 +12,18 @@ layout(location = 0) in vec3 v_WorldPos;
 layout(location = 1) in vec3 v_Normal;
 layout(location = 2) in vec2 v_TexCoord;
 
-layout(binding = 10) uniform sampler2D u_AlbedoMap;
-layout(binding = 11) uniform sampler2D u_NormalMap;
-layout(binding = 12) uniform sampler2D u_MetallicMap;
-layout(binding = 13) uniform sampler2D u_RoughnessMap;
-layout(binding = 14) uniform sampler2D u_OcclusionMap;
+layout(set=1,binding = 10) uniform sampler2D u_AlbedoMap;
+layout(set=1,binding = 11) uniform sampler2D u_NormalMap;
+layout(set=1,binding = 12) uniform sampler2D u_MetallicMap;
+layout(set=1,binding = 13) uniform sampler2D u_RoughnessMap;
+layout(set=1,binding = 14) uniform sampler2D u_OcclusionMap;
 
 // IBL
-layout(binding = 15) uniform sampler2D u_BRDFLUT;
-layout(binding = 17) uniform samplerCube u_IrradianceMap;
-layout(binding = 16) uniform samplerCube u_PrefilterMap;
+layout(set=1,binding = 15) uniform sampler2D u_BRDFLUT;
+layout(set=1,binding = 17) uniform samplerCube u_IrradianceMap;
+layout(set=1,binding = 16) uniform samplerCube u_PrefilterMap;
 
-layout(binding = 18) uniform sampler2DArray u_ShadowMap;
+layout(set=1,binding = 18) uniform sampler2DArray u_ShadowMap;
 
 
 // Used in PBR shader
@@ -137,12 +137,16 @@ highp vec4 getCascadeLightSpacePosition(uint cascade) {
     highp vec3 p = v_WorldPos;
     highp float cosTheta = saturate(dot(m_Params.Normal, u_Light.Direction));
     highp float sinTheta = sqrt(1.0 - cosTheta * cosTheta);
-    p += m_Params.Normal * (sinTheta * 0.02);
+    // p += m_Params.Normal * (sinTheta * 0.02);
 
-    vec4 fragPosLightSpace = u_Shadow.DirLightMatrices[cascade] * vec4(p, 1.0);
-    // perform perspective divide
-    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+    const mat4 biasMat = mat4( 
+	    0.5, 0.0, 0.0, 0.0,
+	    0.0, 0.5, 0.0, 0.0,
+	    0.0, 0.0, 1.0, 0.0,
+	    0.5, 0.5, 0.0, 1.0 
+    );
 
+    vec4 fragPosLightSpace = (biasMat * u_Shadow.DirLightMatrices[cascade]) * vec4(p, 1.0);
     return fragPosLightSpace;
 }
 
@@ -155,10 +159,18 @@ float ShadowCalculation()
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
 
     float bias = max(0.001 * (1.0 - dot(m_Params.Normal, u_Light.Direction)), 0.000);
-    float shadowMapDepth = texture(u_ShadowMap, vec3(projCoords.xy * 0.5 + 0.5, layer)).r;
+// float shadow = 1.0;
+// if ( projCoords.z > -1.0 && projCoords.z < 1.0 ) {
+// 	   float dist = texture(u_ShadowMap, vec3(projCoords.st, layer)).r;
+// 	   if (dist < projCoords.z - bias) {
+// 	        shadow = 0.3;
+// 	   }
+// }
+// 
+// return shadow;
 
-    return step(projCoords.z * 0.5 + 0.5, shadowMapDepth + bias);
-
+    float shadowMapDepth = texture(u_ShadowMap, vec3(projCoords.xy, layer)).r;
+    return step(projCoords.z, shadowMapDepth + bias);
     //    // get depth of current fragment from light's perspective
     //    float currentDepth = projCoords.z;
     //
@@ -246,11 +258,11 @@ vec3 surfaceShading(float occlusion) {
 }
 
 void evaluateDirectionalLight(inout vec3 color) {
-    float visibility = 1.0;
-    uint cascade = getShadowCascade();
-    highp vec4 shadowPosition = getCascadeLightSpacePosition(cascade);
-    visibility = 1.0 - shadow(true, u_ShadowMap, cascade, shadowPosition, 0.0f);
-
+    float visibility = ShadowCalculation();
+    // uint cascade = getShadowCascade();
+    // highp vec4 shadowPosition = getCascadeLightSpacePosition(cascade);
+    // visibility = 1.0 - shadow(true, u_ShadowMap, cascade, shadowPosition, 0.0f);
+ 
     if (visibility <= 0.0) {
         return;
     }
@@ -321,6 +333,5 @@ void main()
     FragColor = evaluateMaterial();
 
     if(u_View.FogEnable) FragColor = fog(FragColor, v_WorldPos - u_View.CameraPosition);
-
-    EntityID = u_View.EntityID;
+    EntityID = u_RenderPrimitive.EntityID;
 }

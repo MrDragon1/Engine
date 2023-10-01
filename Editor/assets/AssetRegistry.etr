@@ -98,6 +98,9 @@ Assets:
   - Handle: 3067973634919230891
     FilePath: meshes\source\Sphere.gltf
     Type: MeshSource
+  - Handle: 3156073191469575792
+    FilePath: scenes\empty.EScene
+    Type: Scene
   - Handle: 3175861458021737417
     FilePath: meshes\vampire\Vampire_MAT.EMaterial
     Type: Material

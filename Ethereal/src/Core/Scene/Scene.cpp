@@ -31,7 +31,8 @@ Scene::Scene() {}
 Scene::~Scene() {}
 
 template <typename Component>
-static void CopyComponent(entt::registry& dst, entt::registry& src, const std::unordered_map<UUID, entt::entity>& enttMap) {
+static void CopyComponent(entt::registry& dst, entt::registry& src,
+                          const std::unordered_map<UUID, entt::entity>& enttMap) {
     auto view = src.view<Component>();
     for (auto e : view) {
         UUID uuid = src.get<IDComponent>(e).ID;
@@ -45,7 +46,8 @@ static void CopyComponent(entt::registry& dst, entt::registry& src, const std::u
 
 template <typename Component>
 static void CopyComponentIfExists(Entity dst, Entity src) {
-    if (src.HasComponent<Component>()) dst.AddOrReplaceComponent<Component>(src.GetComponent<Component>());
+    if (src.HasComponent<Component>())
+        dst.AddOrReplaceComponent<Component>(src.GetComponent<Component>());
 }
 
 Ref<Scene> Scene::Copy(Ref<Scene> other) {
@@ -183,17 +185,19 @@ void Scene::OnUpdateRuntime(TimeStamp ts) {
 
     if (mainCamera) {
         //            RenderSceneData renderSceneData;
-        //            renderSceneData.ViewProjectionMatrix = mainCamera->GetProjection() * Math::Inverse(cameraTransform);
-        //            renderSceneData.ViewMatrix = Math::Inverse(cameraTransform);
-        //            renderSceneData.ProjectionMatrix = mainCamera->GetProjection();
-        //            renderSceneData.CameraPosition = cameraPosition;
-        //            if (!m_Environment) mEnvironment = GlobalContext::GetRenderSystem().GetDefaultEnvironment();
+        //            renderSceneData.ViewProjectionMatrix = mainCamera->GetProjection() *
+        //            Math::Inverse(cameraTransform); renderSceneData.ViewMatrix =
+        //            Math::Inverse(cameraTransform); renderSceneData.ProjectionMatrix =
+        //            mainCamera->GetProjection(); renderSceneData.CameraPosition = cameraPosition;
+        //            if (!m_Environment) mEnvironment =
+        //            GlobalContext::GetRenderSystem().GetDefaultEnvironment();
         //            renderSceneData.Environment = mEnvironment;
         //            SubmitRenderScene(renderSceneData);
     }
 }
 
 void Scene::OnUpdateEditor(TimeStamp ts) {
+    ET_PROFILE_FUNC();
     if (!mEnvironment) mEnvironment = GlobalContext::GetRenderSystem().GetDefaultEnvironment();
     SceneParam& sp = Project::GetConfigManager().sUniformManagerConfig.SceneParam;
     sp.Environment = mEnvironment;
@@ -211,27 +215,32 @@ void Scene::OnUpdateEditor(TimeStamp ts) {
 }
 
 void Scene::SubmitRenderScene() {
+    ET_PROFILE_FUNC();
     GlobalContext::GetRenderSystem().SubmitRenderSceneData();
 
     auto staticMeshView = mRegistry.view<TransformComponent, StaticMeshComponent>();
     for (auto entity : staticMeshView) {
-        const auto [transformComponent, staticMeshComponent] = staticMeshView.get<TransformComponent, StaticMeshComponent>(entity);
+        const auto [transformComponent, staticMeshComponent] =
+            staticMeshView.get<TransformComponent, StaticMeshComponent>(entity);
         auto staticMesh = AssetManager::GetAsset<StaticMesh>(staticMeshComponent.StaticMeshHandle);
         if (staticMesh && !staticMesh->IsFlagSet(AssetFlag::Missing)) {
             Entity e = Entity(entity, this);
             Matrix4 transform = transformComponent.getMatrix();  // GetWorldSpaceTransformMatrix(e);
-            GlobalContext::GetRenderSystem().SubmitStaticMesh(staticMesh, staticMeshComponent.materialTable, (uint32_t)e, transform);
+            GlobalContext::GetRenderSystem().SubmitStaticMesh(
+                staticMesh, staticMeshComponent.materialTable, (uint32_t)e, transform);
         }
     }
 
     auto meshView = mRegistry.view<TransformComponent, MeshComponent>();
     for (auto entity : meshView) {
-        const auto [transformComponent, meshComponent] = meshView.get<TransformComponent, MeshComponent>(entity);
+        const auto [transformComponent, meshComponent] =
+            meshView.get<TransformComponent, MeshComponent>(entity);
         auto mesh = AssetManager::GetAsset<Mesh>(meshComponent.MeshHandle);
         if (mesh && !mesh->IsFlagSet(AssetFlag::Missing)) {
             Entity e = Entity(entity, this);
             Matrix4 transform = transformComponent.getMatrix();  // GetWorldSpaceTransformMatrix(e);
-            GlobalContext::GetRenderSystem().SubmitMesh(mesh, meshComponent.materialTable, (uint32_t)e, transform);
+            GlobalContext::GetRenderSystem().SubmitMesh(mesh, meshComponent.materialTable,
+                                                        (uint32_t)e, transform);
         }
     }
 
@@ -255,7 +264,8 @@ void Scene::DuplicateEntity(Entity entity) {
 
 void Scene::OnRuntimeStart() {
     mPhysicsWorld = new b2World({0.0f, -9.8f});
-    mRegistry.view<Rigidbody2DComponent, TransformComponent>().each([&](const auto e, auto& rb2d, auto& tranform) {
+    mRegistry.view<Rigidbody2DComponent, TransformComponent>().each([&](const auto e, auto& rb2d,
+                                                                        auto& tranform) {
         Entity entity{e, this};
         b2BodyDef bodyDef;
         bodyDef.type = Rigidbody2DTypeToBox2DBody(rb2d.Type);
@@ -296,7 +306,8 @@ void Scene::OnViewportResize(uint32_t width, uint32_t height) {
     auto view = mRegistry.view<CameraComponent>();
     for (auto entity : view) {
         auto& cameraComponent = view.get<CameraComponent>(entity);
-        if (!cameraComponent.Camera.FixedAspectRatio) cameraComponent.SceneCamera.SetViewportSize(width, height);
+        if (!cameraComponent.Camera.FixedAspectRatio)
+            cameraComponent.SceneCamera.SetViewportSize(width, height);
     }
 }
 
@@ -410,10 +421,13 @@ void Scene::OnComponentAdded<CameraComponent>(Entity entity, CameraComponent& co
     component.SceneCamera.SetViewportSize(mViewportWidth, mViewportHeight);
 }
 template <>
-void Scene::OnComponentAdded<BasicPropertyComponent>(Entity entity, BasicPropertyComponent& component) {}
+void Scene::OnComponentAdded<BasicPropertyComponent>(Entity entity,
+                                                     BasicPropertyComponent& component) {}
 template <>
-void Scene::OnComponentAdded<BoxCollider2DComponent>(Entity entity, BoxCollider2DComponent& component) {}
+void Scene::OnComponentAdded<BoxCollider2DComponent>(Entity entity,
+                                                     BoxCollider2DComponent& component) {}
 template <>
-void Scene::OnComponentAdded<Rigidbody2DComponent>(Entity entity, Rigidbody2DComponent& component) {}
+void Scene::OnComponentAdded<Rigidbody2DComponent>(Entity entity, Rigidbody2DComponent& component) {
+}
 
 }  // namespace Ethereal

@@ -10,10 +10,11 @@ class TypedUniform {
         return mBuffer[i];
     }
 
-    T& Edit() noexcept { return ItemAt(0); }
+    T& Edit(size_t i = 0) noexcept { return ItemAt(i); }
 
     // size of the uniform buffer in bytes
     size_t GetSize() const noexcept { return sizeof(T) * N; }
+    size_t GetItemSize() const noexcept { return sizeof(T); }
 
     // return if any uniform has been changed
     bool IsDirty() const noexcept { return mSomethingDirty; }
@@ -23,7 +24,9 @@ class TypedUniform {
 
     // helper functions
 
-    BufferDescriptor ToBufferDescriptor() const noexcept { return ToBufferDescriptor(0, GetSize()); }
+    BufferDescriptor ToBufferDescriptor() const noexcept {
+        return ToBufferDescriptor(0, GetSize());
+    }
 
     // copy the UBO data and cleans the dirty bits
     BufferDescriptor ToBufferDescriptor(size_t offset, size_t size) const noexcept {

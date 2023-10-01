@@ -336,9 +336,9 @@ static bool ComponentHeader(const char* label, ImGuiTreeNodeFlags flags = ImGuiT
         ScopedColorStack style(ImGuiCol_Border, IM_COL32(0, 0, 0, 0), ImGuiCol_Button,
                                IM_COL32(0, 0, 0, 0));
         UI::ImageButton((cc + "AssetIcon").c_str(),
-                        (ImTextureID)(intptr_t)GlobalContext::GetDriverApi()->GetTextueID(icon),
-                        ImVec2(16.0f, 16.0f), ImU32(IM_COL32(196, 196, 196, 255)),
-                        ImU32(IM_COL32(196, 196, 196, 255)), ImU32(IM_COL32(196, 196, 196, 255)));
+                        GlobalContext::GetDriverApi()->GetTextureID(icon), ImVec2(16.0f, 16.0f),
+                        ImU32(IM_COL32(196, 196, 196, 255)), ImU32(IM_COL32(196, 196, 196, 255)),
+                        ImU32(IM_COL32(196, 196, 196, 255)));
 
         ShiftCursorY(-2.0f);
     }
@@ -352,7 +352,7 @@ static bool ComponentHeader(const char* label, ImGuiTreeNodeFlags flags = ImGuiT
         ScopedColorStack style(ImGuiCol_Border, IM_COL32(0, 0, 0, 0), ImGuiCol_Button,
                                IM_COL32(0, 0, 0, 0));
         if (UI::ImageButton((cc + "MenuDotsIcon").c_str(),
-                            (ImTextureID)(intptr_t)GlobalContext::GetDriverApi()->GetTextueID(icon),
+                            GlobalContext::GetDriverApi()->GetTextureID(icon),
                             ImVec2(16.0f, 16.0f))) {
             // TODO: Open context menu
         }
@@ -411,8 +411,7 @@ static bool DragDropBar(const char* id_label, const char* type_label, AssetHandl
         ShiftCursorY(2.0f);
         ScopedColorStack style(ImGuiCol_Border, IM_COL32(0, 0, 0, 0), ImGuiCol_Button,
                                IM_COL32(0, 0, 0, 0), ImGuiCol_ButtonHovered, IM_COL32(0, 0, 0, 0));
-        if (UI::ImageButton(id_label,
-                            (ImTextureID)(intptr_t)GlobalContext::GetDriverApi()->GetTextueID(icon),
+        if (UI::ImageButton(id_label, GlobalContext::GetDriverApi()->GetTextureID(icon),
                             ImVec2(16.0f, 16.0f))) {
             // TODO: Open component select menu
         }
@@ -473,13 +472,12 @@ static bool ListHeader(const char* label, std::vector<AssetHandle>& payloads, As
                     ShiftCursorY(2.0f);
                     ScopedColorStack style(ImGuiCol_Border, IM_COL32(0, 0, 0, 0), ImGuiCol_Button,
                                            IM_COL32(0, 0, 0, 0));
-                    if (UI::ImageButton(
-                            (cc + "BurgerMenuIcon " + std::to_string(i)).c_str(),
-                            (ImTextureID)(intptr_t)GlobalContext::GetDriverApi()->GetTextueID(
-                                EditorResource::BurgerMenuIcon),
-                            ImVec2(16.0f, 16.0f), ImU32(IM_COL32(196, 196, 196, 255)),
-                            ImU32(IM_COL32(196, 196, 196, 255)),
-                            ImU32(IM_COL32(196, 196, 196, 255)))) {
+                    if (UI::ImageButton((cc + "BurgerMenuIcon " + std::to_string(i)).c_str(),
+                                        GlobalContext::GetDriverApi()->GetTextureID(
+                                            EditorResource::BurgerMenuIcon),
+                                        ImVec2(16.0f, 16.0f), ImU32(IM_COL32(196, 196, 196, 255)),
+                                        ImU32(IM_COL32(196, 196, 196, 255)),
+                                        ImU32(IM_COL32(196, 196, 196, 255)))) {
                         //                                ET_CORE_INFO("BurgerMenuIcon Pressed");
                     }
 
@@ -501,7 +499,7 @@ static bool ListHeader(const char* label, std::vector<AssetHandle>& payloads, As
         UI::ShiftCursorY(-4.0f);
         auto icon = EditorResource::PlusIcon;
         if (UI::ImageButton((cc + "PlusIcon").c_str(),
-                            (ImTextureID)(intptr_t)GlobalContext::GetDriverApi()->GetTextueID(icon),
+                            GlobalContext::GetDriverApi()->GetTextureID(icon),
                             ImVec2(16.0f, 16.0f))) {
             // TODO:: Add global default material
             payloads.push_back(AssetHandle(9102962350420186113));
@@ -509,7 +507,7 @@ static bool ListHeader(const char* label, std::vector<AssetHandle>& payloads, As
         ImGui::SameLine(0.0f, 5.0f);
         icon = EditorResource::MinusIcon;
         if (UI::ImageButton((cc + "MinusIcon").c_str(),
-                            (ImTextureID)(intptr_t)GlobalContext::GetDriverApi()->GetTextueID(icon),
+                            GlobalContext::GetDriverApi()->GetTextureID(icon),
                             ImVec2(16.0f, 16.0f))) {
             payloads.pop_back();
         }

@@ -41,55 +41,41 @@ void RenderSystem::Init() {
     mMaterialPreviewRenderPass = Ref<MaterialPreviewRenderPass>::Create();
     mMaterialPreviewRenderPass->Init(mWidth, mHeight);
 
+    mTestRenderPass = Ref<TestRenderPass>::Create();
+    mTestRenderPass->Init(mWidth, mHeight);
+
     // Must after mEnvironmentMapRenderPass Init
     mBuildinData->Environment = AssetManager::GetAsset<Environment>("skyboxs/Newport_Loft_Ref.hdr");
 
-    mMainImage = mMainCameraRenderPass->mRenderTarget->color[0];
+    auto api = GlobalContext::GetDriverApi();
+
+    mMainImage = api->GetColorAttachment(mMainCameraRenderPass->mRenderTarget, 0);
 }
 
 void RenderSystem::Draw(TimeStamp ts) {
+    ET_PROFILE_FUNC();
     LoadProjectSettings();
-    // mMainCameraRenderPass->mFramebuffer->Bind();
-    // RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1});
-    // RenderCommand::Clear();
-    mMainImage = mMainCameraRenderPass->mRenderTarget->color[0];
-    mCSMRenderPass->Draw();
 
+    auto api = GlobalContext::GetDriverApi();
+    mMainImage = api->GetColorAttachment(mMainCameraRenderPass->mRenderTarget, 0);
+
+    // mTestRenderPass->Draw();
+
+    mCSMRenderPass->Draw();
     mMainCameraRenderPass->Draw();
 
-    // mMainCameraRenderPass->mFramebuffer->Unbind();
-    // mMainImage = mMainCameraRenderPass->mFramebuffer->GetColorAttachment(0);
-
-    //// mShadowMapRenderPass->SetLightPosition();
-    // mCSMRenderPass->Draw();
-
-    //// mShadowMapRenderPass->Draw();
-    //// mShadowMapRenderPass->mFramebuffer->GetDepthAttachment()->Bind(5);
-
-    // mMainCameraRenderPass->SetCSMData(mCSMRenderPass->GetData());
-    //// TODO: Radiance and Irradiance may used as reversed wrongly in shader!!!
-    // mEnvironment->RadianceMap->Bind(17);
-    // mEnvironment->IrradianceMap->Bind(16);
-    // RenderResource::BRDFLutTexture->Bind(15);
-    // mMainCameraRenderPass->Draw();
-
-    //// TODO : make skybox render pass a subpass of main camera render pass
-    // mMainCameraRenderPass->mFramebuffer->Bind();
-    // mEnvironment->IrradianceMap->Bind(0);
-    // mSkyboxRenderPass->Draw();
-    // mMainCameraRenderPass->mFramebuffer->Unbind();
-
     // For postprocessing
-    if (Project::GetConfigManager().sBloomConfig.Enabled) {
-        mBloomRenderPass->SetMainImage(mMainImage);
-        mBloomRenderPass->Draw();
+    // if (Project::GetConfigManager().sBloomConfig.Enabled) {
+    //    mBloomRenderPass->SetMainImage(mMainImage);
+    //    mBloomRenderPass->Draw();
 
-        mMainImage = mBloomRenderPass->GetBloomImage();
-    }
+    //    mMainImage = mBloomRenderPass->GetBloomImage();
+    //}
 
     mDrawLists->MeshTransformMap.clear();
     mDrawLists->StaticMeshDrawList.clear();
     mDrawLists->MeshDrawList.clear();
+
 }
 
 void RenderSystem::OnResize() {
@@ -98,23 +84,23 @@ void RenderSystem::OnResize() {
     mMainCameraRenderPass->OnResize(mWidth, mHeight);
 }
 
-uint64_t RenderSystem::GetMainImage() {
-    return GlobalContext::GetDriverApi()->GetTextueID(mMainImage);
+TextureID RenderSystem::GetMainImage() {
+    return GlobalContext::GetDriverApi()->GetTextureID(mMainImage);
 }
 
-uint64_t RenderSystem::GetSkyboxImage() {
-    return GlobalContext::GetDriverApi()->GetTextueID(mEnvironmentMapRenderPass->mInputTexture);
+TextureID RenderSystem::GetSkyboxImage() {
+    return GlobalContext::GetDriverApi()->GetTextureID(mEnvironmentMapRenderPass->mInputTexture);
 };
 
 int RenderSystem::GetMousePicking(int x, int y) {
     return mMainCameraRenderPass->GetMousePicking(x, y);
 }
 
-uint64_t RenderSystem::DrawMaterialPreview(MaterialCorePtr mat, uint32_t width, uint32_t height) {
+TextureID RenderSystem::DrawMaterialPreview(MaterialCorePtr mat, uint32_t width, uint32_t height) {
     mMaterialPreviewRenderPass->OnResize(width, height);
     mMaterialPreviewRenderPass->SetMaterial(mat);
-    mMaterialPreviewRenderPass->Draw();
-    return GlobalContext::GetDriverApi()->GetTextueID(mMaterialPreviewRenderPass->GetMainImage());
+    // mMaterialPreviewRenderPass->Draw();
+    return GlobalContext::GetDriverApi()->GetTextureID(mMaterialPreviewRenderPass->GetMainImage());
 }
 
 void RenderSystem::SubmitStaticMesh(Ref<StaticMesh> staticMesh, Ref<MaterialTable> materialTable,

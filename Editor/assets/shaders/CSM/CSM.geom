@@ -1,8 +1,11 @@
 #version 460 core
+
+#extension GL_KHR_vulkan_glsl : enable
+#extension GL_GOOGLE_include_directive : enable
+
 layout(triangles, invocations = 5) in;
 layout(triangle_strip, max_vertices = 3) out;
 
-#extension GL_GOOGLE_include_directive : enable
 #include "Common.glslh"
 
 void main()

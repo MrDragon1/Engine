@@ -14,7 +14,7 @@ void MaterialPreviewRenderPass::Init(uint32_t width, uint32_t height) {
     mSkyboxPipeline.rasterState.depthFunc = RasterState::DepthFunc::LE;
 
     auto usage = TextureUsage::COLOR_ATTACHMENT | TextureUsage::SAMPLEABLE;
-    auto hdrTex = api->CreateTexture(1, width, height, 1, TextureFormat::R16G16B16A16_HDR, usage,
+    auto hdrTex = api->CreateTexture(1, width, height, 1, TextureFormat::R32G32B32A32_HDR, usage,
                                      TextureType::TEXTURE_2D);
     auto depthTex = api->CreateTexture(1, width, height, 1, TextureFormat::DEPTH,
                                        TextureUsage::DEPTH_ATTACHMENT, TextureType::TEXTURE_2D);
@@ -26,7 +26,7 @@ void MaterialPreviewRenderPass::Init(uint32_t width, uint32_t height) {
 
 void MaterialPreviewRenderPass::Draw() {
     if (!mPipeline.program) {
-        ET_CORE_WARN("Material not set!");
+        // ET_CORE_WARN("Material not set!");
         return;
     }
 
@@ -114,7 +114,7 @@ void MaterialPreviewRenderPass::OnResize(uint32_t width, uint32_t height) {
     api->DestroyRenderTarget(mRenderTarget);
 
     auto usage = TextureUsage::COLOR_ATTACHMENT | TextureUsage::SAMPLEABLE;
-    auto hdrTex = api->CreateTexture(1, width, height, 1, TextureFormat::R16G16B16A16_HDR, usage,
+    auto hdrTex = api->CreateTexture(1, width, height, 1, TextureFormat::R32G32B32A32_HDR, usage,
                                      TextureType::TEXTURE_2D);
     auto depthTex = api->CreateTexture(1, width, height, 1, TextureFormat::DEPTH,
                                        TextureUsage::DEPTH_ATTACHMENT, TextureType::TEXTURE_2D);
@@ -127,6 +127,11 @@ void MaterialPreviewRenderPass::OnResize(uint32_t width, uint32_t height) {
 void MaterialPreviewRenderPass::SetMaterial(MaterialCorePtr mat) {
     mMaterial = mat;
     mPipeline.program = mat->GetProgram();
+}
+
+TextureHandle MaterialPreviewRenderPass::GetMainImage() {
+    auto api = GlobalContext::GetDriverApi();
+    return api->GetColorAttachment(mRenderTarget, 0);
 }
 
 }  // namespace Ethereal

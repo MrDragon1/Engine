@@ -6,6 +6,7 @@
 #include "UniformBuffer.h"
 namespace Ethereal {
 using ValueBasePtr = Ref<class ValueBase>;
+
 namespace Backend {
 /*
  * DriverApi aggregates the hardware operations that support by OpenGL & Vulkan. Only this class can
@@ -22,6 +23,9 @@ class DriverApi : public RefCounted {
      * The function below is provided to Driver
      */
    public:
+    virtual void BeginFrame() = 0;
+    virtual void EndFrame() = 0;
+
     virtual void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) = 0;
 
     virtual Ref<Texture> CreateTexture(uint8_t levels, uint32_t width, uint32_t height,
@@ -64,16 +68,18 @@ class DriverApi : public RefCounted {
                                 uint32_t depth, const PixelBufferDescriptor& desc) = 0;
     virtual void UpdateSamplerGroup(SamplerGroupHandle sgh, SamplerGroupDescriptor& desc) = 0;
     virtual void BindSamplerGroup(uint8_t binding, SamplerGroupHandle sgh) = 0;
-    virtual void BindUniformBuffer(uint8_t binding, BufferObjectHandle boh) = 0;
+    virtual void BindUniformBuffer(uint8_t binding, BufferObjectHandle boh, uint32_t offset = 0,
+                                   uint32_t size = 0) = 0;
 
     virtual void GenerateMipmaps(TextureHandle th) = 0;
     virtual void SetRenderTargetAttachment(RenderTargetHandle rth, TargetBufferInfo const& info,
                                            TargetBufferFlags flag) = 0;
-    virtual uint32_t GetTextueID(TextureHandle th) = 0;
-    virtual void GetSubTexture(TextureHandle th, uint32_t layer, TextureHandle dst) = 0;
+    virtual TextureID GetTextureID(TextureHandle th) = 0;
+    virtual TextureID GetSubTextureID(TextureHandle th, uint32_t layer, uint32_t level) = 0;
+
     virtual int ReadPixel(RenderTargetHandle rth, uint32_t attachmentIndex, uint32_t xoffset,
                           uint32_t yoffset) = 0;
-
+    virtual TextureHandle GetColorAttachment(RenderTargetHandle rth, uint32_t attachmentIndex) = 0;
     virtual void Clear() = 0;
     virtual uint32_t UseProgram(ProgramHandle program) = 0;
     virtual void BindUniform(ProgramHandle program, const string& name, ValueBasePtr value) = 0;

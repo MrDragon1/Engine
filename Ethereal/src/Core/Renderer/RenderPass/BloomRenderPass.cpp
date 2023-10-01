@@ -9,8 +9,10 @@ void BloomRenderPass::Init(uint32_t width, uint32_t height) {
 
     auto api = GlobalContext::GetDriverApi();
     auto usage = TextureUsage::COLOR_ATTACHMENT | TextureUsage::SAMPLEABLE;
-    auto hdrTex = api->CreateTexture(1, width, height, 1, TextureFormat::R16G16B16A16_HDR, usage, TextureType::TEXTURE_2D);
-    mRenderTarget = api->CreateRenderTarget(TargetBufferFlags::COLOR0, width, height, {hdrTex}, {}, {});
+    auto hdrTex = api->CreateTexture(1, width, height, 1, TextureFormat::R32G32B32A32_HDR, usage,
+                                     TextureType::TEXTURE_2D);
+    mRenderTarget =
+        api->CreateRenderTarget(TargetBufferFlags::COLOR0, width, height, {hdrTex}, {}, {});
 
     ShaderSource source;
     source[ShaderType::VERTEX] = BRIGHT_VERT;
@@ -25,7 +27,8 @@ void BloomRenderPass::Init(uint32_t width, uint32_t height) {
     source[ShaderType::FRAGMENT] = MERGE_FRAG;
     mMergePipeline.program = api->CreateProgram("MERGE", source);
 
-    mUniformBuffer = api->CreateBufferObject(mUniformInterfaceBuffer.GetSize(), BufferObjectBinding::UNIFORM, BufferUsage::STATIC);
+    mUniformBuffer = api->CreateBufferObject(mUniformInterfaceBuffer.GetSize(),
+                                             BufferObjectBinding::UNIFORM, BufferUsage::STATIC);
     api->UpdateBufferObject(mUniformBuffer, mUniformInterfaceBuffer.ToBufferDescriptor(), 0);
 
     mSamplerGroup = api->CreateSamplerGroup(3);
@@ -54,14 +57,17 @@ void BloomRenderPass::Draw() {
         s.Threshold = 0.0;
         /*
          * Notice that we are not initialize .level and .layer,
-         * otherwise, the backend will take this texture as image2D, not sampler2D in shader (like we do in blur image stage below)
+         * otherwise, the backend will take this texture as image2D, not sampler2D in shader (like
+         * we do in blur image stage below)
          */
         mSamplerGroupDesc[0] = SamplerDescriptor{
             .texture = mMainImage,
             .params = SamplerParams::Default(),
             .binding = 0,
         };
-        api->SetRenderTargetAttachment(mRenderTarget, {.handle = mBrightAreaImage, .level = 0, .layer = 0}, TargetBufferFlags::COLOR0);
+        api->SetRenderTargetAttachment(mRenderTarget,
+                                       {.handle = mBrightAreaImage, .level = 0, .layer = 0},
+                                       TargetBufferFlags::COLOR0);
 
         api->UpdateBufferObject(mUniformBuffer, mUniformInterfaceBuffer.ToBufferDescriptor(), 0);
         api->BindUniformBuffer(0, mUniformBuffer);
@@ -124,7 +130,8 @@ void BloomRenderPass::Draw() {
                 .layer = 0,
             };
 
-            api->UpdateBufferObject(mUniformBuffer, mUniformInterfaceBuffer.ToBufferDescriptor(), 0);
+            api->UpdateBufferObject(mUniformBuffer, mUniformInterfaceBuffer.ToBufferDescriptor(),
+                                    0);
             api->BindUniformBuffer(0, mUniformBuffer);
 
             api->UpdateSamplerGroup(mSamplerGroup, mSamplerGroupDesc);
@@ -196,7 +203,8 @@ void BloomRenderPass::Draw() {
                 .layer = 0,
             };
 
-            api->UpdateBufferObject(mUniformBuffer, mUniformInterfaceBuffer.ToBufferDescriptor(), 0);
+            api->UpdateBufferObject(mUniformBuffer, mUniformInterfaceBuffer.ToBufferDescriptor(),
+                                    0);
             api->BindUniformBuffer(0, mUniformBuffer);
 
             api->UpdateSamplerGroup(mSamplerGroup, mSamplerGroupDesc);
@@ -221,7 +229,9 @@ void BloomRenderPass::Draw() {
             .binding = 1,
         };
 
-        api->SetRenderTargetAttachment(mRenderTarget, {.handle = mBloomImage, .level = 0, .layer = 0}, TargetBufferFlags::COLOR0);
+        api->SetRenderTargetAttachment(mRenderTarget,
+                                       {.handle = mBloomImage, .level = 0, .layer = 0},
+                                       TargetBufferFlags::COLOR0);
         api->UpdateBufferObject(mUniformBuffer, mUniformInterfaceBuffer.ToBufferDescriptor(), 0);
         api->BindUniformBuffer(0, mUniformBuffer);
 
@@ -242,18 +252,26 @@ void BloomRenderPass::Invalidate(uint32_t width, uint32_t height) {
 
     auto api = GlobalContext::GetDriverApi();
     auto usage = TextureUsage::COLOR_ATTACHMENT | TextureUsage::SAMPLEABLE;
-    auto hdrTex = api->CreateTexture(1, width, height, 1, TextureFormat::R16G16B16A16_HDR, usage, TextureType::TEXTURE_2D);
+    auto hdrTex = api->CreateTexture(1, width, height, 1, TextureFormat::R32G32B32A32_HDR, usage,
+                                     TextureType::TEXTURE_2D);
 
-    mBrightAreaImage = api->CreateTexture(1, width, height, 1, TextureFormat::R16G16B16A16_HDR, usage, TextureType::TEXTURE_2D);
-    mBloomImage = api->CreateTexture(1, width, height, 1, TextureFormat::R16G16B16A16_HDR, usage, TextureType::TEXTURE_2D);
+    mBrightAreaImage = api->CreateTexture(1, width, height, 1, TextureFormat::R32G32B32A32_HDR,
+                                          usage, TextureType::TEXTURE_2D);
+    mBloomImage = api->CreateTexture(1, width, height, 1, TextureFormat::R32G32B32A32_HDR, usage,
+                                     TextureType::TEXTURE_2D);
 
-    mUpSampledImage = api->CreateTexture(mMipLevels, width, height, 1, TextureFormat::R16G16B16A16_HDR, usage, TextureType::TEXTURE_2D);
+    mUpSampledImage =
+        api->CreateTexture(mMipLevels, width, height, 1, TextureFormat::R32G32B32A32_HDR, usage,
+                           TextureType::TEXTURE_2D);
     api->GenerateMipmaps(mUpSampledImage);
 
-    mDownSampledImage = api->CreateTexture(mMipLevels, width, height, 1, TextureFormat::R16G16B16A16_HDR, usage, TextureType::TEXTURE_2D);
+    mDownSampledImage =
+        api->CreateTexture(mMipLevels, width, height, 1, TextureFormat::R32G32B32A32_HDR, usage,
+                           TextureType::TEXTURE_2D);
     api->GenerateMipmaps(mDownSampledImage);
 
     // This will resize the render target
-    api->SetRenderTargetAttachment(mRenderTarget, {.handle = mBloomImage, .level = 0, .layer = 0}, TargetBufferFlags::COLOR0);
+    api->SetRenderTargetAttachment(mRenderTarget, {.handle = mBloomImage, .level = 0, .layer = 0},
+                                   TargetBufferFlags::COLOR0);
 }
 }  // namespace Ethereal

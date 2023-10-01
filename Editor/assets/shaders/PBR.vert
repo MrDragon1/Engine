@@ -1,8 +1,7 @@
 #version 460 core
-
+#extension GL_KHR_vulkan_glsl : enable
 #extension GL_GOOGLE_include_directive : enable
 #include "Common.glslh"
-
 layout(location = 0) in vec3 a_Position;
 layout(location = 1) in vec3 a_Normal;
 layout(location = 2) in vec3 a_Tangent;

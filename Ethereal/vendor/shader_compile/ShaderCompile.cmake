@@ -20,7 +20,7 @@ function(compile_shader SHADERS TARGET_NAME SHADER_INCLUDE_FOLDER GENERATED_DIR 
         set(SPV_FILE "${EngineRuntimeDir}/${GENERATED_DIR}/spv/${SHADER_NAME}.spv")
         set(CPP_FILE "${EngineRuntimeDir}/${GENERATED_DIR}/cpp/${HEADER_NAME}.h")
 
-        execute_process(COMMAND ${GLSLANG_BIN} -I${SHADER_INCLUDE_FOLDER} -V100 -o ${SPV_FILE} ${SHADER} --target-env opengl
+        execute_process(COMMAND ${GLSLANG_BIN} -I${SHADER_INCLUDE_FOLDER} -V100 -o ${SPV_FILE} ${SHADER} --target-env spirv1.3
                 WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
                 TIMEOUT 3
                 RESULT_VARIABLE result_var

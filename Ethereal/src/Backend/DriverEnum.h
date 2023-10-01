@@ -5,18 +5,23 @@
 namespace Ethereal {
 static constexpr size_t MAX_SUPPORTED_RENDER_TARGET_COUNT = 8u;
 static constexpr size_t MAX_VERTEX_ATTRIBUTE_COUNT = 16u;
+static constexpr size_t SAMPLER_BINDING_COUNT = 32u;
+static constexpr size_t UNIFORM_BINDING_COUNT = 16u;
 
 enum class BackendType : uint8_t {
     NONE = 0,
     OPENGL = 1,
+    VULKAN = 2,
 };
 
 enum class TextureUsage : uint8_t {
     NONE = 0x1 << 0,
     COLOR_ATTACHMENT = 0x1 << 1,
     DEPTH_ATTACHMENT = 0x1 << 2,
-    SAMPLEABLE = 0x1 << 3,
-    UPLOADABLE = 0x1 << 4,
+    STENCIL_ATTACHMENT = 0x1 << 3,
+    SAMPLEABLE = 0x1 << 4,
+    UPLOADABLE = 0x1 << 5,
+    SUBPASS_INPUT = 0x1 << 6,
     DEFAULT = SAMPLEABLE | UPLOADABLE,
 };
 
@@ -33,6 +38,8 @@ enum class TextureFormat : uint16_t {
     R8,
     R16,
     R16G16B16A16_HDR,
+    R32G32B32A32_HDR,
+    R32G32B32_HDR,
     R16G16B16_HDR,
 };
 
@@ -252,26 +259,28 @@ struct SamplerParams {
         params.compareFunc = SamplerCompareFunc::LE;
         return params;
     }
+    union {
+        struct {
+            SamplerMagFilter filterMag : 1;
+            SamplerMinFilter filterMin : 3;
+            SamplerWrapMode wrapS : 2;
+            SamplerWrapMode wrapT : 2;
 
-    SamplerMagFilter filterMag : 1;
-    SamplerMinFilter filterMin : 3;
-    SamplerWrapMode wrapS : 2;
-    SamplerWrapMode wrapT : 2;
-    SamplerWrapMode wrapR : 2;
-    uint8_t anisotropyLog2 : 3;
-    SamplerCompareMode compareMode : 1;
-    SamplerCompareFunc compareFunc : 3;
-};
+            SamplerWrapMode wrapR : 2;
+            uint8_t anisotropyLog2 : 3;
+            SamplerCompareMode compareMode : 1;
+            uint8_t padding0 : 2;
 
-struct RenderPassParams {
-    Vector4 clearColor = {0, 0, 0, 1};
-};
+            SamplerCompareFunc compareFunc : 3;
+            uint8_t padding1 : 5;
 
-struct RasterState {
-    using DepthFunc = SamplerCompareFunc;
-    bool EnableDepthWrite = true;
-    bool EnableDepthTest = true;
-    DepthFunc depthFunc = DepthFunc::L;
+            uint8_t padding2 : 8;
+        };
+        uint32_t u;
+    };
+
+   private:
+    friend inline bool operator<(SamplerParams lhs, SamplerParams rhs) { return lhs.u < rhs.u; }
 };
 
 enum class TargetBufferFlags : uint32_t {
@@ -335,6 +344,85 @@ enum class Precision : uint8_t {
     HIGH,
     DEFAULT,
 };
+
+struct RenderPassFlags {
+    /**
+     * bitmask indicating which buffers to clear at the beginning of a render pass.
+     * This implies discard.
+     */
+    TargetBufferFlags clearMask;
+
+    /**
+     * bitmask indicating which buffers to discard at the beginning of a render pass.
+     * Discarded buffers have uninitialized content, they must be entirely drawn over or cleared.
+     */
+    TargetBufferFlags discardStart;
+
+    /**
+     * bitmask indicating which buffers to discard at the end of a render pass.
+     * Discarded buffers' content becomes invalid, they must not be read from again.
+     */
+    TargetBufferFlags discardEnd;
+};
+
+struct Viewport {
+    int32_t left;     //!< left coordinate in window space.
+    int32_t bottom;   //!< bottom coordinate in window space.
+    uint32_t width;   //!< width in pixels
+    uint32_t height;  //!< height in pixels
+    //! get the right coordinate in window space of the viewport
+    int32_t right() const noexcept { return left + int32_t(width); }
+    //! get the top coordinate in window space of the viewport
+    int32_t top() const noexcept { return bottom + int32_t(height); }
+};
+
+struct DepthRange {
+    float near_ = 0.0f;
+    float far_ = 1.0f;
+};
+
+//! blending equation function
+enum class BlendEquation : uint8_t {
+    ADD,               //!< the fragment is added to the color buffer
+    SUBTRACT,          //!< the fragment is subtracted from the color buffer
+    REVERSE_SUBTRACT,  //!< the color buffer is subtracted from the fragment
+    MIN,               //!< the min between the fragment and color buffer
+    MAX                //!< the max between the fragment and color buffer
+};
+
+//! blending function
+enum class BlendFunction : uint8_t {
+    ZERO,                 //!< f(src, dst) = 0
+    ONE,                  //!< f(src, dst) = 1
+    SRC_COLOR,            //!< f(src, dst) = src
+    ONE_MINUS_SRC_COLOR,  //!< f(src, dst) = 1-src
+    DST_COLOR,            //!< f(src, dst) = dst
+    ONE_MINUS_DST_COLOR,  //!< f(src, dst) = 1-dst
+    SRC_ALPHA,            //!< f(src, dst) = src.a
+    ONE_MINUS_SRC_ALPHA,  //!< f(src, dst) = 1-src.a
+    DST_ALPHA,            //!< f(src, dst) = dst.a
+    ONE_MINUS_DST_ALPHA,  //!< f(src, dst) = 1-dst.a
+    SRC_ALPHA_SATURATE    //!< f(src, dst) = (1,1,1) * min(src.a, 1 - dst.a), 1
+};
+
+struct RenderPassParams {
+    RenderPassFlags flags;
+    Viewport viewport{};
+    DepthRange depthRange{};
+    Vector4 clearColor = {0, 0, 0, 1};
+    float clearDepth = 1.0;
+    uint32_t clearStencil = 0;
+};
+
+struct RasterState {
+    using DepthFunc = SamplerCompareFunc;
+    bool EnableDepthWrite = true;
+    bool EnableDepthTest = true;
+    DepthFunc depthFunc = DepthFunc::L;
+    uint8_t colorTargetCount = 1;
+    uint8_t rasterizationSamples = 1;
+};
+
 }  // namespace Ethereal
 
 template <>

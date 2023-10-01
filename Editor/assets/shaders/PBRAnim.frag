@@ -322,5 +322,5 @@ void main()
 
     if(u_View.FogEnable) FragColor = fog(FragColor, v_WorldPos - u_View.CameraPosition);
 
-    EntityID = u_View.EntityID;
+    EntityID = u_RenderPrimitive.EntityID;
 }

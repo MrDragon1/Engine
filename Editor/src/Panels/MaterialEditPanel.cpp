@@ -17,35 +17,45 @@ void MaterialEditPanel::SetSceneContext(const Ref<Scene>& context) { mContext = 
 void MaterialEditPanel::OnEvent(Event& event){};
 
 void MaterialEditPanel::OnImGuiRender(bool& isOpen) {
+    ET_PROFILE_FUNC();
     mSelectedEntity = {};
     if (SelectionManager::GetSelectionCount(SelectionContext::Scene) > 0) {
-        mSelectedEntity = mContext->GetEntityWithUUID(SelectionManager::GetSelections(SelectionContext::Scene).front());
+        mSelectedEntity = mContext->GetEntityWithUUID(
+            SelectionManager::GetSelections(SelectionContext::Scene).front());
     }
 
     const bool hasValidEntity =
-        mSelectedEntity && (mSelectedEntity.HasComponent<StaticMeshComponent>() || mSelectedEntity.HasComponent<MeshComponent>());
+        mSelectedEntity && (mSelectedEntity.HasComponent<StaticMeshComponent>() ||
+                            mSelectedEntity.HasComponent<MeshComponent>());
     bool Open = isOpen;
     ImGui::SetNextWindowSize(ImVec2(200.0f, 300.0f), ImGuiCond_Appearing);
     if (ImGui::Begin("Materials", &Open) && hasValidEntity) {
-        const bool hasStaticMesh = mSelectedEntity.HasComponent<StaticMeshComponent>() &&
-                                   AssetManager::IsAssetHandleValid(mSelectedEntity.GetComponent<StaticMeshComponent>().StaticMeshHandle);
+        const bool hasStaticMesh =
+            mSelectedEntity.HasComponent<StaticMeshComponent>() &&
+            AssetManager::IsAssetHandleValid(
+                mSelectedEntity.GetComponent<StaticMeshComponent>().StaticMeshHandle);
         const bool hasMesh = mSelectedEntity.HasComponent<MeshComponent>() &&
-                             AssetManager::IsAssetHandleValid(mSelectedEntity.GetComponent<MeshComponent>().MeshHandle);
+                             AssetManager::IsAssetHandleValid(
+                                 mSelectedEntity.GetComponent<MeshComponent>().MeshHandle);
 
         if (hasStaticMesh) {
             Ref<MaterialTable> meshMaterialTable, componentMaterialTable;
 
             if (mSelectedEntity.HasComponent<StaticMeshComponent>()) {
-                const auto& staticMeshComponent = mSelectedEntity.GetComponent<StaticMeshComponent>();
+                const auto& staticMeshComponent =
+                    mSelectedEntity.GetComponent<StaticMeshComponent>();
                 componentMaterialTable = staticMeshComponent.materialTable;
-                auto mesh = AssetManager::GetAsset<StaticMesh>(staticMeshComponent.StaticMeshHandle);
+                auto mesh =
+                    AssetManager::GetAsset<StaticMesh>(staticMeshComponent.StaticMeshHandle);
                 if (mesh) meshMaterialTable = mesh->GetMaterials();
             }
 
             if (componentMaterialTable) {
                 if (meshMaterialTable) {
-                    if (componentMaterialTable->GetMaterialCount() < meshMaterialTable->GetMaterialCount())
-                        componentMaterialTable->SetMaterialCount(meshMaterialTable->GetMaterialCount());
+                    if (componentMaterialTable->GetMaterialCount() <
+                        meshMaterialTable->GetMaterialCount())
+                        componentMaterialTable->SetMaterialCount(
+                            meshMaterialTable->GetMaterialCount());
                 }
 
                 for (size_t i = 0; i < componentMaterialTable->GetMaterialCount(); i++) {
@@ -69,8 +79,10 @@ void MaterialEditPanel::OnImGuiRender(bool& isOpen) {
 
             if (componentMaterialTable) {
                 if (meshMaterialTable) {
-                    if (componentMaterialTable->GetMaterialCount() < meshMaterialTable->GetMaterialCount())
-                        componentMaterialTable->SetMaterialCount(meshMaterialTable->GetMaterialCount());
+                    if (componentMaterialTable->GetMaterialCount() <
+                        meshMaterialTable->GetMaterialCount())
+                        componentMaterialTable->SetMaterialCount(
+                            meshMaterialTable->GetMaterialCount());
                 }
 
                 for (size_t i = 0; i < componentMaterialTable->GetMaterialCount(); i++) {
@@ -96,7 +108,8 @@ void MaterialEditPanel::RenderMaterial(size_t materialIndex, Ref<MaterialAsset> 
     name = fmt::format("{0}", name);
 
     ImGuiTreeNodeFlags treeNodeFlags =
-        ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_FramePadding;
+        ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_SpanAvailWidth |
+        ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_FramePadding;
 
     if (materialIndex == 0) treeNodeFlags |= ImGuiTreeNodeFlags_DefaultOpen;
 
@@ -111,7 +124,9 @@ void MaterialEditPanel::RenderMaterial(size_t materialIndex, Ref<MaterialAsset> 
         // TODO: Simplify this
         MaterialDesc desc;
         materialAsset->Save(desc);
-        AssetManager::SaveAsset_Ref(AssetManager::GetFileSystemPathString(AssetManager::GetMetadata(materialAsset->Handle)), desc);
+        AssetManager::SaveAsset_Ref(
+            AssetManager::GetFileSystemPathString(AssetManager::GetMetadata(materialAsset->Handle)),
+            desc);
     }
 
     ImGui::PushID(name.c_str());
@@ -134,10 +149,11 @@ void MaterialEditPanel::RenderMaterial(size_t materialIndex, Ref<MaterialAsset> 
             bool hasAlbedoMap = albedoMap && !albedoMap.EqualsObject(RenderResource::WhiteTexture);
 
             ImVec2 textureCursorPos = ImGui::GetCursorPos();
-            ImGui::Image((ImTextureID)(intptr_t)api->GetTextueID(albedoMap), ImVec2(64, 64));
+            ImGui::Image(api->GetTextureID(albedoMap), ImVec2(64, 64));
 
             if (ImGui::BeginDragDropTarget()) {
-                if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
+                if (const ImGuiPayload* payload =
+                        ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
                     AssetHandle assetHandle = *((AssetHandle*)payload->Data);
                     Ref<Asset> asset = AssetManager::GetAsset<Asset>(assetHandle);
                     if (asset && asset->GetAssetType() == AssetType::Texture) {
@@ -155,7 +171,7 @@ void MaterialEditPanel::RenderMaterial(size_t materialIndex, Ref<MaterialAsset> 
                     ImGui::BeginTooltip();
                     ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
                     ImGui::PopTextWrapPos();
-                    ImGui::Image((ImTextureID)(intptr_t)api->GetTextueID(albedoMap), ImVec2(384, 384));
+                    ImGui::Image(api->GetTextureID(albedoMap), ImVec2(384, 384));
                     ImGui::EndTooltip();
                 }
 
@@ -180,13 +196,17 @@ void MaterialEditPanel::RenderMaterial(size_t materialIndex, Ref<MaterialAsset> 
 
             ImGui::BeginGroup();
             bool useAlbedoMap = material->IsUseAlbedoMap();
-            if (ImGui::Checkbox("Use##Albedo", &useAlbedoMap)) material->SetUseAlbedoMap(useAlbedoMap);
+            if (ImGui::Checkbox("Use##Albedo", &useAlbedoMap))
+                material->SetUseAlbedoMap(useAlbedoMap);
 
-            if (ImGui::ColorEdit3("Color##Albedo", Math::Ptr(albedoColor), ImGuiColorEditFlags_NoInputs)) material->SetAlbedoColor(albedoColor);
+            if (ImGui::ColorEdit3("Color##Albedo", Math::Ptr(albedoColor),
+                                  ImGuiColorEditFlags_NoInputs))
+                material->SetAlbedoColor(albedoColor);
             float& emissive = material->GetEmission();
 
             ImGui::SetNextItemWidth(100.0f);
-            if (ImGui::DragFloat("Emission", &emissive, 0.1f, 0.0f, 20.0f)) material->SetEmission(emissive);  // Maybe SliderFloat better?
+            if (ImGui::DragFloat("Emission", &emissive, 0.1f, 0.0f, 20.0f))
+                material->SetEmission(emissive);  // Maybe SliderFloat better?
 
             ImGui::EndGroup();
         }
@@ -200,11 +220,12 @@ void MaterialEditPanel::RenderMaterial(size_t materialIndex, Ref<MaterialAsset> 
                 bool useNormalMap = material->IsUseNormalMap();
                 Ref<Texture> normalMap = material->GetNormalMap();
 
-                bool hasNormalMap = normalMap && !normalMap.EqualsObject(RenderResource::WhiteTexture);
+                bool hasNormalMap =
+                    normalMap && !normalMap.EqualsObject(RenderResource::WhiteTexture);
 
                 ImVec2 textureCursorPos = ImGui::GetCursorPos();
 
-                ImGui::Image((ImTextureID)(intptr_t)api->GetTextueID(normalMap), ImVec2(64, 64));
+                ImGui::Image(api->GetTextureID(normalMap), ImVec2(64, 64));
 
                 if (ImGui::BeginDragDropTarget()) {
                     auto payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM");
@@ -228,7 +249,7 @@ void MaterialEditPanel::RenderMaterial(size_t materialIndex, Ref<MaterialAsset> 
                         ImGui::BeginTooltip();
                         ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
                         ImGui::PopTextWrapPos();
-                        ImGui::Image((ImTextureID)(intptr_t)api->GetTextueID(normalMap), ImVec2(384, 384));
+                        ImGui::Image(api->GetTextureID(normalMap), ImVec2(384, 384));
                         ImGui::EndTooltip();
                     }
 
@@ -254,7 +275,8 @@ void MaterialEditPanel::RenderMaterial(size_t materialIndex, Ref<MaterialAsset> 
                 ImGui::PopStyleVar();
                 ImGui::SetCursorPos(properCursorPos);
 
-                if (ImGui::Checkbox("Use##NormalMap", &useNormalMap)) material->SetUseNormalMap(useNormalMap);
+                if (ImGui::Checkbox("Use##NormalMap", &useNormalMap))
+                    material->SetUseNormalMap(useNormalMap);
                 ImGui::SetCursorPos(nextRowCursorPos);
             }
         }
@@ -266,11 +288,12 @@ void MaterialEditPanel::RenderMaterial(size_t materialIndex, Ref<MaterialAsset> 
                 float& metalnessValue = material->GetMetalness();
                 Ref<Texture> metalnessMap = material->GetMetalnessMap();
 
-                bool hasMetalnessMap = metalnessMap && !metalnessMap.EqualsObject(RenderResource::WhiteTexture);
+                bool hasMetalnessMap =
+                    metalnessMap && !metalnessMap.EqualsObject(RenderResource::WhiteTexture);
 
                 ImVec2 textureCursorPos = ImGui::GetCursorPos();
 
-                ImGui::Image((ImTextureID)(intptr_t)api->GetTextueID(metalnessMap), ImVec2(64, 64));
+                ImGui::Image(api->GetTextureID(metalnessMap), ImVec2(64, 64));
 
                 if (ImGui::BeginDragDropTarget()) {
                     auto payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM");
@@ -293,7 +316,7 @@ void MaterialEditPanel::RenderMaterial(size_t materialIndex, Ref<MaterialAsset> 
                         ImGui::BeginTooltip();
                         ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
                         ImGui::PopTextWrapPos();
-                        ImGui::Image((ImTextureID)(intptr_t)api->GetTextueID(metalnessMap), ImVec2(384, 384));
+                        ImGui::Image(api->GetTextureID(metalnessMap), ImVec2(384, 384));
                         ImGui::EndTooltip();
                     }
 
@@ -319,9 +342,12 @@ void MaterialEditPanel::RenderMaterial(size_t materialIndex, Ref<MaterialAsset> 
 
                 ImGui::BeginGroup();
                 bool useMetallicMap = material->IsUseMetallicMap();
-                if (ImGui::Checkbox("Use##Metallic", &useMetallicMap)) material->SetUseMetalnessMap(useMetallicMap);
+                if (ImGui::Checkbox("Use##Metallic", &useMetallicMap))
+                    material->SetUseMetalnessMap(useMetallicMap);
                 ImGui::SetNextItemWidth(200.0f);
-                if (ImGui::SliderFloat("Metalness Value##MetalnessInput", &metalnessValue, 0.0f, 1.0f)) material->SetMetalness(metalnessValue);
+                if (ImGui::SliderFloat("Metalness Value##MetalnessInput", &metalnessValue, 0.0f,
+                                       1.0f))
+                    material->SetMetalness(metalnessValue);
                 ImGui::EndGroup();
             }
         }
@@ -333,11 +359,12 @@ void MaterialEditPanel::RenderMaterial(size_t materialIndex, Ref<MaterialAsset> 
                 float& roughnessValue = material->GetRoughness();
                 Ref<Texture> roughnessMap = material->GetRoughnessMap();
 
-                bool hasRoughnessMap = roughnessMap && !roughnessMap.EqualsObject(RenderResource::WhiteTexture);
+                bool hasRoughnessMap =
+                    roughnessMap && !roughnessMap.EqualsObject(RenderResource::WhiteTexture);
 
                 ImVec2 textureCursorPos = ImGui::GetCursorPos();
 
-                ImGui::Image((ImTextureID)(intptr_t)api->GetTextueID(roughnessMap), ImVec2(64, 64));
+                ImGui::Image(api->GetTextureID(roughnessMap), ImVec2(64, 64));
 
                 if (ImGui::BeginDragDropTarget()) {
                     auto payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM");
@@ -360,7 +387,7 @@ void MaterialEditPanel::RenderMaterial(size_t materialIndex, Ref<MaterialAsset> 
                         ImGui::BeginTooltip();
                         ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
                         ImGui::PopTextWrapPos();
-                        ImGui::Image((ImTextureID)(intptr_t)api->GetTextueID(roughnessMap), ImVec2(384, 384));
+                        ImGui::Image(api->GetTextureID(roughnessMap), ImVec2(384, 384));
                         ImGui::EndTooltip();
                     }
 
@@ -385,9 +412,12 @@ void MaterialEditPanel::RenderMaterial(size_t materialIndex, Ref<MaterialAsset> 
                 ImGui::SetCursorPos(properCursorPos);
                 ImGui::BeginGroup();
                 bool useRoughnessMap = material->IsUseRoughnessMap();
-                if (ImGui::Checkbox("Use##Roughness", &useRoughnessMap)) material->SetUseRoughnessMap(useRoughnessMap);
+                if (ImGui::Checkbox("Use##Roughness", &useRoughnessMap))
+                    material->SetUseRoughnessMap(useRoughnessMap);
                 ImGui::SetNextItemWidth(200.0f);
-                if (ImGui::SliderFloat("Roughness Value##RoughnessInput", &roughnessValue, 0.0f, 1.0f)) material->SetRoughness(roughnessValue);
+                if (ImGui::SliderFloat("Roughness Value##RoughnessInput", &roughnessValue, 0.0f,
+                                       1.0f))
+                    material->SetRoughness(roughnessValue);
                 ImGui::EndGroup();
             }
         }
@@ -398,11 +428,12 @@ void MaterialEditPanel::RenderMaterial(size_t materialIndex, Ref<MaterialAsset> 
 
                 Ref<Texture> occlusionMap = material->GetOcclusionMap();
 
-                bool hasOcclusionMap = occlusionMap && !occlusionMap.EqualsObject(RenderResource::WhiteTexture);
+                bool hasOcclusionMap =
+                    occlusionMap && !occlusionMap.EqualsObject(RenderResource::WhiteTexture);
 
                 ImVec2 textureCursorPos = ImGui::GetCursorPos();
 
-                ImGui::Image((ImTextureID)(intptr_t)api->GetTextueID(occlusionMap), ImVec2(64, 64));
+                ImGui::Image(api->GetTextureID(occlusionMap), ImVec2(64, 64));
 
                 if (ImGui::BeginDragDropTarget()) {
                     auto payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM");
@@ -425,7 +456,7 @@ void MaterialEditPanel::RenderMaterial(size_t materialIndex, Ref<MaterialAsset> 
                         ImGui::BeginTooltip();
                         ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
                         ImGui::PopTextWrapPos();
-                        ImGui::Image((ImTextureID)(intptr_t)api->GetTextueID(occlusionMap), ImVec2(384, 384));
+                        ImGui::Image(api->GetTextureID(occlusionMap), ImVec2(384, 384));
                         ImGui::EndTooltip();
                     }
 
@@ -451,7 +482,8 @@ void MaterialEditPanel::RenderMaterial(size_t materialIndex, Ref<MaterialAsset> 
                 ImGui::BeginGroup();
                 ImGui::SetNextItemWidth(200.0f);
                 bool useOcclusionMap = material->IsUseOcclusionMap();
-                if (ImGui::Checkbox("Use##Occlusion", &useOcclusionMap)) material->SetUseOcclusionMap(useOcclusionMap);
+                if (ImGui::Checkbox("Use##Occlusion", &useOcclusionMap))
+                    material->SetUseOcclusionMap(useOcclusionMap);
                 ImGui::EndGroup();
             }
         }

@@ -7,7 +7,7 @@
 #include "UibGenerator.h"
 #include "Utils/BitmaskEnum.h"
 namespace Ethereal {
-
+constexpr uint32_t MAX_UNIFORM_BUFFER_PER_DRAWCALL = 100;
 struct CameraParam {
     Matrix4 ViewProjectionMatrix;
     Matrix4 InverseViewProjectionMatrix;
@@ -54,15 +54,15 @@ class UniformManager : public RefCounted {
     void UpdateFog();
     void UpdateCamera();
     void UpdateShadow(TextureHandle ShadowMap);
-    void UpdateEditor();
+    void UpdateEditor(uint32_t index = 0);
     void UpdateScene();
     void UpdateLight();
-    void UpdateMaterial(Ref<MaterialAsset> mat);
-    void UpdateRenderPrimitive(RenderPrimitiveParam param);
+    void UpdateMaterial(Ref<MaterialAsset> mat, uint32_t index = 0);
+    void UpdateRenderPrimitive(RenderPrimitiveParam param, uint32_t index = 0);
     void UpdateBone();
 
     void Commit();
-    void Bind();
+    void Bind(uint32_t index = 0);
 
    private:
     Ref<Backend::DriverApi> mApi;
@@ -70,7 +70,7 @@ class UniformManager : public RefCounted {
     TypedUniform<ViewUib> mViewUib;
     TypedUniform<ShadowUib> mShadowUib;
     TypedUniform<LightUib> mLightUib;
-    TypedUniform<RenderPrimitiveUib> mRenderPrimitiveUib;
+    TypedUniform<RenderPrimitiveUib, MAX_UNIFORM_BUFFER_PER_DRAWCALL> mRenderPrimitiveUib;
     TypedUniform<RenderPrimitiveBoneUib> mRenderPrimitiveBoneUib;
 
     Ref<BufferObject> mViewUB;

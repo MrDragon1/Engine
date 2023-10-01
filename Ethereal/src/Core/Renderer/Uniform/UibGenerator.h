@@ -29,10 +29,7 @@ struct ViewUib {
     Matrix4 InverseViewMatrix;
     float FarPlane;
     float NearPlane;
-
-    // Editor
-    uint32_t EntityID;
-    uint32_t padding;
+    uint32_t padding[2];
 
     // Fog
     Vector4 FogColor;
@@ -44,7 +41,10 @@ struct ViewUib {
     float FogScatteringSize;
     uint32_t FogEnable = false;
     uint32_t FogFromIBL = false;
+
+    Vector4 padding2[2];
 };
+static_assert(sizeof(ViewUib) % 64 == 0);
 
 struct RenderPrimitiveUib {
     static constexpr std::string_view _name{"RenderPrimitiveUniform"};
@@ -55,12 +55,18 @@ struct RenderPrimitiveUib {
     float Occlusion;
     float Emisstion;
     int UseMap;  // 1<<1: Albedo 1<<2: Normal 1<<3: Metallic 1<<4: Roughness 1<<5: Occlusion
+
+    int EntityID;
+    Vector2 padding;
+    Vector4 padding2;
 };
+static_assert(sizeof(RenderPrimitiveUib) % 64 == 0);
 
 struct RenderPrimitiveBoneUib {
     static constexpr std::string_view _name{"RenderPrimitiveBoneUniform"};
     Matrix4 BoneTransform[100];  // same size with shader
 };
+static_assert(sizeof(RenderPrimitiveBoneUib) % 64 == 0);
 
 struct LightUib {
     static constexpr std::string_view _name{"LightUniform"};
@@ -68,7 +74,9 @@ struct LightUib {
     float ShadowAmount;
     Vector3 Radiance;
     float Multiplier;
+    Vector4 padding[2];
 };
+static_assert(sizeof(LightUib) % 64 == 0);
 
 struct ShadowUib {
     static constexpr std::string_view _name{"ShadowUniform"};
@@ -78,9 +86,10 @@ struct ShadowUib {
     Vector4 CascadeSplits[16];
     Matrix4 DirLightMatrices[16];
     uint32_t CascadeCount = 4;
-    float padding1, padding2, padding3;
+    Vector3 padding;
+    Vector4 padding2[3];
 };
-
+static_assert(sizeof(ShadowUib) % 64 == 0);
 // struct DirectionalLight {
 //     Vector3 Direction = Math::Normalize(Vector3(-0.352, 0.270, -0.452));
 //     float ShadowAmount;

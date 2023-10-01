@@ -1,0 +1,36 @@
+Name: Meta
+Environment:
+  UUID: 10111825085121754573
+Entities:
+  - Name: ""
+    Components:
+      - TypeName: IDComponent
+        Context:
+          ID:
+            UUID: 13494185301621217084
+      - TypeName: BasicPropertyComponent
+        Context:
+          Tag: Plane
+          Visible: true
+      - TypeName: TransformComponent
+        Context:
+          Position:
+            x: 0
+            y: -0.837125719
+            z: 0
+          Scale:
+            x: 47.4189568
+            y: 47.4189568
+            z: 47.4189568
+          Rotation:
+            x: 0
+            y: 0
+            z: 0
+            w: 1
+      - TypeName: StaticMeshComponent
+        Context:
+          StaticMeshHandle:
+            UUID: 17546716981100183172
+          MaterialTableRaw:
+            Materials:
+              - UUID: 505821991061973240

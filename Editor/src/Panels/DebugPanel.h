@@ -10,6 +10,5 @@ class DebugPanel : public EditorPanel {
     void OnEvent(Event& event) override;
 
    private:
-    TextureHandle mCSMShadowMap;
 };
 }  // namespace Ethereal

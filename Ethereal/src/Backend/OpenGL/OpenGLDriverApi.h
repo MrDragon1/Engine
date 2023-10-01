@@ -100,11 +100,19 @@ struct GLProgram : public Program {
 struct GLRenderTarget : public RenderTarget {
     using RenderTarget::RenderTarget;
     struct {
+        Ref<Texture> color[MAX_SUPPORTED_RENDER_TARGET_COUNT];
+        Ref<Texture> depth;
+        Ref<Texture> stencil;
+        TargetBufferFlags targets = {};
+
         GLuint id;
     } gl;
 };
 
 class OpenGLDriverApi : public DriverApi {
+    void BeginFrame() override{};
+    void EndFrame() override{};
+
     void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) override;
     Ref<Texture> CreateTexture(uint8_t levels, uint32_t width, uint32_t height, uint32_t depth,
                                TextureFormat format, TextureUsage usage, TextureType type) override;
@@ -142,16 +150,22 @@ class OpenGLDriverApi : public DriverApi {
                         const PixelBufferDescriptor& desc) override;
     void UpdateSamplerGroup(SamplerGroupHandle sgh, SamplerGroupDescriptor& desc) override;
     void BindSamplerGroup(uint8_t binding, Ref<SamplerGroup> sgh) override;
-    void BindUniformBuffer(uint8_t binding, BufferObjectHandle boh) override;
+    void BindUniformBuffer(uint8_t binding, BufferObjectHandle boh, uint32_t offset = 0,
+                           uint32_t size = 0) override;
 
     void GenerateMipmaps(TextureHandle th) override;
     void SetRenderTargetAttachment(RenderTargetHandle rth, TargetBufferInfo const& info,
                                    TargetBufferFlags flag) override;
 
-    uint32_t GetTextueID(TextureHandle th) override;
-    void GetSubTexture(TextureHandle th, uint32_t layer, TextureHandle dst) override;
+    TextureID GetTextureID(TextureHandle th) override;
+    virtual TextureID GetSubTextureID(TextureHandle th, uint32_t layer = 0,
+                                      uint32_t level = 0) override;
+
     int ReadPixel(RenderTargetHandle rth, uint32_t attachmentIndex, uint32_t xoffset,
                   uint32_t yoffset) override;
+
+    virtual TextureHandle GetColorAttachment(RenderTargetHandle rth,
+                                             uint32_t attachmentIndex) override;
     void Clear() override;
 
     uint32_t UseProgram(ProgramHandle program) override;
@@ -168,6 +182,7 @@ class OpenGLDriverApi : public DriverApi {
     void UpdateFrameBufferTexture(Ref<GLRenderTarget> rt, TargetBufferInfo const& info,
                                   GLenum attachment);
     void SetRasterState(RasterState state);
+    void GetSubTexture(TextureHandle th, uint32_t layer, TextureHandle dst);
 };
 
 }  // namespace Backend

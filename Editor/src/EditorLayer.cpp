@@ -30,7 +30,6 @@ namespace Ethereal {
 EditorLayer::EditorLayer() : Layer("EditorLayer") {}
 
 void EditorLayer::OnAttach() {
-    EditorResource::Init();
     mPanelManager = CreateScope<PanelManager>();
 
     mPanelManager->AddPanel<SceneHierarchyPanel>(PanelCategory::View, SCENE_HIERARCHY_PANEL_ID,
@@ -53,11 +52,13 @@ void EditorLayer::OnAttach() {
     OpenScene("assets/scenes/meta.EScene");
 }
 
-void EditorLayer::OnDetach() { EditorResource::Shutdown(); }
+void EditorLayer::OnDetach() {}
 
 void EditorLayer::OnUpdate(TimeStamp ts) {
+    ET_PROFILE_FUNC();
+ 
     mPanelManager->OnUpdate(ts);
-
+    
     switch (mSceneState) {
         case SceneState::Play: {
             mRuntimeScene->OnUpdateRuntime(ts);
@@ -92,6 +93,7 @@ void EditorLayer::OnUpdate(TimeStamp ts) {
             break;
         }
     }
+    
     GlobalContext::GetRenderSystem().Draw(ts);
 
     if (mSceneState == SceneState::Edit) {
@@ -113,6 +115,7 @@ void EditorLayer::OnUpdate(TimeStamp ts) {
 }
 
 void EditorLayer::OnImGuiRender() {
+    ET_PROFILE_FUNC();
     // Note: Switch this to true to enable dockspace
     static bool dockspaceOpen = true;
     static bool opt_fullscreen_persistant = true;
@@ -198,8 +201,10 @@ void EditorLayer::OnImGuiRender() {
 
     ImGui::Begin("Stats");
     std::string name = "None";
+ 
     if (mHoveredEntity) name = mHoveredEntity.GetName();
-    ImGui::Text("Hovered Entity: %s", name.c_str());
+    ImGui::Text("FPS %.1f", GlobalContext::GetProperty().GetFPS());
+    ImGui::Text("Hovered Entity: %s (%d)", name.c_str(), (uint32_t)mHoveredEntity);
 
     // TODO: fix this
     // const char* drawModeStrings[] = {"FILLED", "LINE", "POINT"};
@@ -259,7 +264,7 @@ void EditorLayer::OnImGuiRender() {
             mCurrentScene->OnViewportResize((uint32_t)GlobalContext::GetViewportSize().x,
                                             (uint32_t)GlobalContext::GetViewportSize().y);
         }
-        uint64_t textureID = GlobalContext::GetRenderSystem().GetMainImage();
+        TextureID textureID = GlobalContext::GetRenderSystem().GetMainImage();
         // ET_CORE_INFO("texture ID {}", textureID);
         ImGui::Image(reinterpret_cast<void*>(textureID),
                      ImVec2{GlobalContext::GetViewportSize().x, GlobalContext::GetViewportSize().y},
@@ -534,8 +539,8 @@ void EditorLayer::UI_Toolbar() {
     ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size * 0.5f));
 
     auto api = GlobalContext::GetDriverApi();
-    if (ImGui::ImageButton((ImTextureID)(intptr_t)(api->GetTextueID(icon)), ImVec2(size, size),
-                           ImVec2(0, 0), ImVec2(1, 1), 0)) {
+    if (ImGui::ImageButton((ImTextureID)(api->GetTextureID(icon)), ImVec2(size, size), ImVec2(0, 0),
+                           ImVec2(1, 1), 0)) {
         if (mSceneState == SceneState::Edit) {
             OnScenePlay();
         } else {
