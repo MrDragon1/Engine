@@ -9,6 +9,24 @@
 #include "Core/Renderer/Uniform/UniformManager.h"
 #include "Core/Renderer/LightManager.h"
 namespace Ethereal {
+    struct Property {
+        std::vector<double> FPS;
+
+        void PushFPS(double delta) {
+			FPS.push_back(delta);
+			if (FPS.size() > 1) {
+				FPS.erase(FPS.begin());
+			}
+		}
+        double GetFPS() {
+			double sum = 0;
+			for (auto& fps : FPS) {
+				sum += fps;
+			}
+            return FPS.size() / sum;
+		}
+    };
+
 class GlobalContext final : public Singleton<GlobalContext> {
    public:
     GlobalContext();
@@ -29,7 +47,7 @@ class GlobalContext final : public Singleton<GlobalContext> {
 
     static Ref<UniformManager> GetUniformManager() { return mUniformManager; }
     static BackendType GetBackendType() { return mBackendType; }
-
+    static Property& GetProperty() { return mProperty; }
    private:
     static RenderSystem mRenderSystem;
     static Backend::Driver* mDriver;
@@ -37,5 +55,6 @@ class GlobalContext final : public Singleton<GlobalContext> {
     static LightManager mLightManager;
     static Vector2 mViewportSize;
     static BackendType mBackendType;
+    static Property mProperty;
 };
 }  // namespace Ethereal

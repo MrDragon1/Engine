@@ -57,19 +57,23 @@ void Application::OnEvent(Event& e) {
 
 void Application::Run() {
     while (mRunning) {
+        ET_PROFILE_FRAME("MainThread");
         float time = Time::GetTime();
         TimeStamp timestep = time - mLastFrameTime;
         mLastFrameTime = time;
-
+        GlobalContext::GetProperty().PushFPS(timestep);
         if (!mMinimized) {
             for (Ref<Layer> layer : mLayerStack) layer->OnUpdate(timestep);
         }
 
-        GlobalContext::GetDriverApi()->BeginFrame();
-        mImGuiLayer->Begin();
-        for (Ref<Layer> layer : mLayerStack) layer->OnImGuiRender();
-        mImGuiLayer->End();
-        GlobalContext::GetDriverApi()->EndFrame();
+        {
+            ET_PROFILE_FUNC("Render");
+            GlobalContext::GetDriverApi()->BeginFrame();
+            mImGuiLayer->Begin();
+            for (Ref<Layer> layer : mLayerStack) layer->OnImGuiRender();
+            mImGuiLayer->End();
+            GlobalContext::GetDriverApi()->EndFrame();
+        }
 
         mWindow->OnUpdate();
     }

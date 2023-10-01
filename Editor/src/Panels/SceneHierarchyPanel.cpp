@@ -23,6 +23,7 @@ void SceneHierarchyPanel::SetSceneContext(const Ref<Scene>& scene) { mContext = 
 void SceneHierarchyPanel::OnEvent(Event& event) {}
 
 void SceneHierarchyPanel::OnImGuiRender(bool& isOpen) {
+    ET_PROFILE_FUNC();
     sActiveSelectionContext = mSelectionContext;
 
     ShowHierarchy();

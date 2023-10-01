@@ -40,7 +40,7 @@ class VulkanPhysicalDevice : public RefCounted {
     bool IsExtensionSupported(const std::string& extensionName);
     uint32_t GetMemoryTypeIndex(uint32_t typeBits, VkMemoryPropertyFlags properties);
 
-    VkPhysicalDevice GetVulkanPhysicalDevice() { return mPhysicalDevice; }
+    VkPhysicalDevice& GetVulkanPhysicalDevice() { return mPhysicalDevice; }
     const QueueFamilyIndices& GetQueueFamilyIndices() { return mQueueFamilyIndices; }
 
     const VkPhysicalDeviceProperties& GetProperties() { return mProperties; }
@@ -79,13 +79,13 @@ class VulkanDevice : public RefCounted {
     void Clean();
 
     Ref<VulkanPhysicalDevice> GetPhysicalDevice() { return mPhysicalDevice; }
-    VkDevice GetDevice() { return mDevice; }
+    VkDevice& GetDevice() { return mDevice; }
 
-    VkCommandPool GetCommandPool() { return mCommandPool; }
-    VkCommandPool GetComputeCommandPool() { return mComputeCommandPool; }
+    VkCommandPool& GetCommandPool() { return mCommandPool; }
+    VkCommandPool& GetComputeCommandPool() { return mComputeCommandPool; }
 
-    VkQueue GetGraphicsQueue() { return mGraphicsQueue; }
-    VkQueue GetComputeQueue() { return mComputeQueue; }
+    VkQueue& GetGraphicsQueue() { return mGraphicsQueue; }
+    VkQueue& GetComputeQueue() { return mComputeQueue; }
 
     VkCommandBuffer CreateSecondaryCommandBuffer(const string& debugName);
 

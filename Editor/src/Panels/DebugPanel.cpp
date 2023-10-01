@@ -9,6 +9,7 @@ namespace Ethereal {
 DebugPanel::DebugPanel() {}
 
 void DebugPanel::OnImGuiRender(bool& isOpen) {
+    ET_PROFILE_FUNC();
     ImGui::Begin("Debug", &isOpen);
     bool open = UI::ComponentHeader("Cascade Shadow Map");
     static uint32_t CSMSelectLayer = 0;

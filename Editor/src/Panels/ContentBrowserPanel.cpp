@@ -24,6 +24,7 @@ ContentBrowserPanel::ContentBrowserPanel() : mCurrentDirectory(Project::GetAsset
 void ContentBrowserPanel::OnEvent(Event& event) {}
 
 void ContentBrowserPanel::OnImGuiRender(bool& isOpen) {
+    ET_PROFILE_FUNC();
     auto api = GlobalContext::GetDriverApi();
     ImGui::Begin("Content Browser", &isOpen);
     if (mCurrentDirectory != Project::GetAssetDirectory()) {

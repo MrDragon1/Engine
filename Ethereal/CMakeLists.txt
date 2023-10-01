@@ -81,5 +81,5 @@ target_include_directories(EtherealRuntime PUBLIC ${STB_INCLUDE_DIRS} ${VK_SDK_I
 target_link_libraries(EtherealRuntime PUBLIC glad::glad glm::glm glfw
         assimp::assimp EnTT::EnTT glfw
         spdlog::spdlog spdlog::spdlog_header_only yaml-cpp pugixml::pugixml 
-        imgui-docking-layout box2d::box2d ${VK_SDK_LIB} ${GLSLANG_LIB})
+        imgui-docking-layout box2d::box2d ${VK_SDK_LIB} ${GLSLANG_LIB} optick)
 

@@ -47,6 +47,7 @@ void MainCameraRenderPass::Init(uint32_t width, uint32_t height) {
 }
 
 void MainCameraRenderPass::Draw() {
+    ET_PROFILE_FUNC();
     mParams.clearColor = {0.1, 0.1, 0.1, 1.0};
     mParams.clearDepth = 1.0f;
     auto uniformManager = GlobalContext::GetUniformManager();

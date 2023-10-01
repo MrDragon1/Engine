@@ -55,8 +55,10 @@ void EditorLayer::OnAttach() {
 void EditorLayer::OnDetach() {}
 
 void EditorLayer::OnUpdate(TimeStamp ts) {
+    ET_PROFILE_FUNC();
+ 
     mPanelManager->OnUpdate(ts);
-
+    
     switch (mSceneState) {
         case SceneState::Play: {
             mRuntimeScene->OnUpdateRuntime(ts);
@@ -91,6 +93,7 @@ void EditorLayer::OnUpdate(TimeStamp ts) {
             break;
         }
     }
+    
     GlobalContext::GetRenderSystem().Draw(ts);
 
     if (mSceneState == SceneState::Edit) {
@@ -112,6 +115,7 @@ void EditorLayer::OnUpdate(TimeStamp ts) {
 }
 
 void EditorLayer::OnImGuiRender() {
+    ET_PROFILE_FUNC();
     // Note: Switch this to true to enable dockspace
     static bool dockspaceOpen = true;
     static bool opt_fullscreen_persistant = true;
@@ -199,7 +203,7 @@ void EditorLayer::OnImGuiRender() {
     std::string name = "None";
  
     if (mHoveredEntity) name = mHoveredEntity.GetName();
-    
+    ImGui::Text("FPS %.1f", GlobalContext::GetProperty().GetFPS());
     ImGui::Text("Hovered Entity: %s (%d)", name.c_str(), (uint32_t)mHoveredEntity);
 
     // TODO: fix this

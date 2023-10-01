@@ -17,6 +17,7 @@ void MaterialEditPanel::SetSceneContext(const Ref<Scene>& context) { mContext = 
 void MaterialEditPanel::OnEvent(Event& event){};
 
 void MaterialEditPanel::OnImGuiRender(bool& isOpen) {
+    ET_PROFILE_FUNC();
     mSelectedEntity = {};
     if (SelectionManager::GetSelectionCount(SelectionContext::Scene) > 0) {
         mSelectedEntity = mContext->GetEntityWithUUID(

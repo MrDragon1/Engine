@@ -53,6 +53,7 @@ void RenderSystem::Init() {
 }
 
 void RenderSystem::Draw(TimeStamp ts) {
+    ET_PROFILE_FUNC();
     LoadProjectSettings();
 
     auto api = GlobalContext::GetDriverApi();
@@ -74,6 +75,7 @@ void RenderSystem::Draw(TimeStamp ts) {
     mDrawLists->MeshTransformMap.clear();
     mDrawLists->StaticMeshDrawList.clear();
     mDrawLists->MeshDrawList.clear();
+
 }
 
 void RenderSystem::OnResize() {

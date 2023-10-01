@@ -31,6 +31,7 @@ MaterialGraphPanel::~MaterialGraphPanel() {
 }
 
 void MaterialGraphPanel::OnImGuiRender(bool& isOpen) {
+    ET_PROFILE_FUNC();
     ImGui::SetNextWindowSize(ImVec2(200.0f, 300.0f), ImGuiCond_Appearing);
     ImGui::Begin("Material Graph Editor", nullptr);
 

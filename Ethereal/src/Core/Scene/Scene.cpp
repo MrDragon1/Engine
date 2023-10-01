@@ -197,6 +197,7 @@ void Scene::OnUpdateRuntime(TimeStamp ts) {
 }
 
 void Scene::OnUpdateEditor(TimeStamp ts) {
+    ET_PROFILE_FUNC();
     if (!mEnvironment) mEnvironment = GlobalContext::GetRenderSystem().GetDefaultEnvironment();
     SceneParam& sp = Project::GetConfigManager().sUniformManagerConfig.SceneParam;
     sp.Environment = mEnvironment;
@@ -214,6 +215,7 @@ void Scene::OnUpdateEditor(TimeStamp ts) {
 }
 
 void Scene::SubmitRenderScene() {
+    ET_PROFILE_FUNC();
     GlobalContext::GetRenderSystem().SubmitRenderSceneData();
 
     auto staticMeshView = mRegistry.view<TransformComponent, StaticMeshComponent>();

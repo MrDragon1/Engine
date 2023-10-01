@@ -21,6 +21,9 @@ void VulkanBuffer::Clear() {
 }
 
 void VulkanBuffer::LoadData(const BufferDescriptor& bd, uint32_t byteOffset) {
+    // transfer data to gpu buffer
+    const VkCommandBuffer cmdbuffer = mContext->mDevice->GetCommandBuffer(true);
+
     // create staging buffer
     VkBuffer stageBuffer;
     VmaAllocation stageMemory;
@@ -38,8 +41,6 @@ void VulkanBuffer::LoadData(const BufferDescriptor& bd, uint32_t byteOffset) {
     memcpy(mappedData, bd.buffer, bd.size);
     VulkanAllocator::UnmapMemory(stageMemory);
 
-    // transfer data to gpu buffer
-    const VkCommandBuffer cmdbuffer = mContext->mDevice->GetCommandBuffer(true);
     VkBufferCopy region{.size = bd.size};
     vkCmdCopyBuffer(cmdbuffer, stageBuffer, mGpuBuffer, 1, &region);
 

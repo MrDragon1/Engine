@@ -35,6 +35,7 @@ void CSMRenderPass::Init(uint32_t width, uint32_t height) {
 }
 
 void CSMRenderPass::Draw() {
+    ET_PROFILE_FUNC();
     UpdateDistance();
     // Draw Shadow Map
     const auto& staticMeshDrawList = mDrawLists.StaticMeshDrawList;

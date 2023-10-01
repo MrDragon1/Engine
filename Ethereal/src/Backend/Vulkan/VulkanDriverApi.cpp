@@ -23,6 +23,15 @@ void VulkanDriverApi::Init() {
 
     mPipelineCache = Ref<VulkanPipelineCache>::Create();
     mPipelineCache->Init(mContext->mDevice->GetDevice());
+
+
+    uint32_t graphics = mContext->mDevice->GetPhysicalDevice()->GetQueueFamilyIndices().Graphics;
+    ET_PROFILE_GPU_INIT_VULKAN(
+        &mContext->mDevice->GetDevice(),
+        &mContext->mDevice->GetPhysicalDevice()->GetVulkanPhysicalDevice(),
+                            &mContext->mDevice->GetGraphicsQueue(), &graphics, 1, nullptr);
+    
+
 }
 
 void VulkanDriverApi::Clean() { mContext->Clean(); }
@@ -178,6 +187,7 @@ Ref<RenderTarget> VulkanDriverApi::CreateRenderTarget(TargetBufferFlags targets,
 }  // namespace Backend
 
 void VulkanDriverApi::Draw(Ref<RenderPrimitive> rph, PipelineState pipeline) {
+    ET_PROFILE_GPU_EVENT("Draw");
     VulkanPipelineCache::VertexArray varray = {};
     VkBuffer buffers[MAX_VERTEX_ATTRIBUTE_COUNT] = {};
     VkDeviceSize offsets[MAX_VERTEX_ATTRIBUTE_COUNT] = {};
@@ -256,6 +266,10 @@ void VulkanDriverApi::BeginRenderPass(RenderTargetHandle rth, const RenderPassPa
 
     mCurrentRenderPass.commandBuffer = mContext->mDevice->GetCommandBuffer(true);
     mCurrentRenderPass.isRecording = true;
+    ET_PROFILE_GPU_CONTEXT(mCurrentRenderPass.commandBuffer);
+    ET_PROFILE_GPU_EVENT("RenderPass");
+
+
     for (uint8_t samplerGroupIdx = 0; samplerGroupIdx < SAMPLER_BINDING_COUNT; samplerGroupIdx++) {
         Ref<VulkanSamplerGroup> vksb = mSamplerGroupBindings[samplerGroupIdx];
         if (!vksb) {
@@ -407,6 +421,7 @@ void VulkanDriverApi::BeginRenderPass(RenderTargetHandle rth, const RenderPassPa
 }
 
 void VulkanDriverApi::EndRenderPass() {
+    ET_PROFILE_GPU_EVENT("EndRenderPass");
     vkCmdEndRenderPass(mCurrentRenderPass.commandBuffer);
     mCurrentRenderPass.isRecording = false;
     mContext->mDevice->FlushCommandBuffer(mCurrentRenderPass.commandBuffer);
@@ -602,6 +617,8 @@ int VulkanDriverApi::ReadPixel(RenderTargetHandle rth, uint32_t attachmentIndex,
 
 
     VulkanAllocator::UnmapMemory(bufferAlloc);
+
+    VulkanAllocator::DestroyBuffer(buffer, bufferAlloc);
     return *(int*)data;
 }
 
