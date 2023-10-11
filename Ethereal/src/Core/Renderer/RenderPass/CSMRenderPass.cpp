@@ -62,19 +62,41 @@ void CSMRenderPass::Draw() {
 
             uniformManager->UpdateRenderPrimitive(
                 {.ModelMatrix = meshTransformMap.at(mk).Transforms[0].Transform}, drawIndex);
-            uniformManager->Commit();
+            // uniformManager->Commit();
             uniformManager->Bind(drawIndex);
-            // RenderCommand::DrawIndexed(ms->GetVertexArray(), submesh.IndexCount,
-            // reinterpret_cast<void*>(submesh.BaseIndex * sizeof(uint32_t)),
-            //                            submesh.BaseVertex);
-
-            // api->Draw(ms->GetRenderPrimitive(), mPipelineState);
+            
             api->Draw(ms->GetSubMeshRenderPrimitive(dc.SubmeshIndex), mPipelineState);
 
             drawIndex++;
         }
     }
+    // Draw Mesh
+    if (!meshDrawList.empty()) {
+        for (auto& [mk, dc] : meshDrawList) {
+            Ref<MeshSource> ms = dc.Mesh->GetMeshSource();
 
+            Ref<Animator> animator = ms->GetAnimator();
+            auto boneMatrices = animator->GetFinalBoneMatrices();
+            BoneParam& param = Project::GetConfigManager().sUniformManagerConfig.BoneParam;
+            for (const auto& [id, m] : boneMatrices) {
+                if (id >= 100) {
+                    ET_CORE_WARN("Only support 100 bones!");
+                    continue;
+                }
+                param.BoneTransform[id] = m;
+            }
+            uniformManager->UpdateBone(drawIndex);
+            uniformManager->UpdateRenderPrimitive(
+                {.ModelMatrix = meshTransformMap.at(mk).Transforms[0].Transform}, drawIndex);
+            // uniformManager->Commit();
+            uniformManager->Bind(drawIndex);
+
+            api->Draw(ms->GetSubMeshRenderPrimitive(dc.SubmeshIndex), mPipelineState);
+            drawIndex++;
+        }
+    }
+    
+    uniformManager->CommitBuffer();
     api->EndRenderPass();
 }
 

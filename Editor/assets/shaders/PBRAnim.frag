@@ -12,18 +12,18 @@ layout(location = 0) in vec3 v_WorldPos;
 layout(location = 1) in vec3 v_Normal;
 layout(location = 2) in vec2 v_TexCoord;
 
-layout(binding = 10) uniform sampler2D u_AlbedoMap;
-layout(binding = 11) uniform sampler2D u_NormalMap;
-layout(binding = 12) uniform sampler2D u_MetallicMap;
-layout(binding = 13) uniform sampler2D u_RoughnessMap;
-layout(binding = 14) uniform sampler2D u_OcclusionMap;
-
-// IBL
-layout(binding = 15) uniform sampler2D u_BRDFLUT;
-layout(binding = 17) uniform samplerCube u_IrradianceMap;
-layout(binding = 16) uniform samplerCube u_PrefilterMap;
-
-layout(binding = 18) uniform sampler2DArray u_ShadowMap;
+layout(set=1, binding = 10) uniform sampler2D u_AlbedoMap;
+layout(set=1, binding = 11) uniform sampler2D u_NormalMap;
+layout(set=1, binding = 12) uniform sampler2D u_MetallicMap;
+layout(set=1, binding = 13) uniform sampler2D u_RoughnessMap;
+layout(set=1, binding = 14) uniform sampler2D u_OcclusionMap;
+              
+// IBL        
+layout(set=1, binding = 15) uniform sampler2D u_BRDFLUT;
+layout(set=1, binding = 17) uniform samplerCube u_IrradianceMap;
+layout(set=1, binding = 16) uniform samplerCube u_PrefilterMap;
+              
+layout(set=1, binding = 18) uniform sampler2DArray u_ShadowMap;
 
 
 // Used in PBR shader

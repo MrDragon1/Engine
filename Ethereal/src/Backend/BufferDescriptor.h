@@ -5,10 +5,14 @@ namespace Ethereal {
 class BufferDescriptor {
    public:
     BufferDescriptor() = default;
-    BufferDescriptor(void* buffer, size_t size) : buffer(buffer), size(size) {}
+    BufferDescriptor(void* buffer, size_t size) : buffer(buffer), size(size), bNeedCleanup(false) {}
 
+    ~BufferDescriptor() { 
+        if(bNeedCleanup) delete[] buffer;
+    }
     size_t size = 0;
     void* buffer;
+    bool bNeedCleanup = true;
 
    private:
 };

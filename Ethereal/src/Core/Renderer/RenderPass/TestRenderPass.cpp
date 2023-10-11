@@ -46,7 +46,7 @@ void TestRenderPass::Draw() {
     uniformManager->UpdateScene();
 
     api->BeginRenderPass(mRenderTarget, mParams);
-    uniformManager->Commit();  // TODO: should use the same command buffer as api->BeginRenderPass
+    uniformManager->CommitBuffer();
     uniformManager->Bind();
     api->Draw(cube->GetMeshSource()->GetRenderPrimitive(), mStaticMeshPipeline);
 

@@ -370,6 +370,8 @@ static VkFormat GetVkFormat(ElementType type, bool normalized, bool integer) {
                 return VK_FORMAT_R16G16B16_SNORM;  // NOT MINSPEC
             case ElementType::USHORT3:
                 return VK_FORMAT_R16G16B16_UNORM;  // NOT MINSPEC
+            case ElementType::INT3:
+                return VK_FORMAT_R32G32B32_UINT;
             // Four Component Types
             case ElementType::BYTE4:
                 return VK_FORMAT_R8G8B8A8_SNORM;
@@ -379,6 +381,8 @@ static VkFormat GetVkFormat(ElementType type, bool normalized, bool integer) {
                 return VK_FORMAT_R16G16B16A16_SNORM;
             case ElementType::USHORT4:
                 return VK_FORMAT_R16G16B16A16_UNORM;
+            case ElementType::INT4:
+                return VK_FORMAT_R32G32B32A32_UINT;
             default:
                 ET_CORE_ASSERT(false, "Normalized format does not exist.");
                 return VK_FORMAT_UNDEFINED;
@@ -413,6 +417,10 @@ static VkFormat GetVkFormat(ElementType type, bool normalized, bool integer) {
             return integer ? VK_FORMAT_R16G16_UINT : VK_FORMAT_R16G16_USCALED;
         // case ElementType::HALF2:
         //     return VK_FORMAT_R16G16_SFLOAT;
+        case ElementType::INT2:
+            return VK_FORMAT_R32G32_SINT;
+        case ElementType::UINT2:
+            return VK_FORMAT_R32G32_UINT;
         case ElementType::FLOAT2:
             return VK_FORMAT_R32G32_SFLOAT;
         // Three Component Types
@@ -426,6 +434,10 @@ static VkFormat GetVkFormat(ElementType type, bool normalized, bool integer) {
             return VK_FORMAT_R16G16B16_UINT;  // NOT MINSPEC
         // case ElementType::HALF3:
         //     return VK_FORMAT_R16G16B16_SFLOAT;  // NOT MINSPEC
+        case ElementType::INT3:
+            return VK_FORMAT_R32G32B32_SINT;
+        case ElementType::UINT3:
+            return VK_FORMAT_R32G32B32_UINT;
         case ElementType::FLOAT3:
             return VK_FORMAT_R32G32B32_SFLOAT;
         // Four Component Types
@@ -439,6 +451,10 @@ static VkFormat GetVkFormat(ElementType type, bool normalized, bool integer) {
             return integer ? VK_FORMAT_R16G16B16A16_UINT : VK_FORMAT_R16G16B16A16_USCALED;
         // case ElementType::HALF4:
         //     return VK_FORMAT_R16G16B16A16_SFLOAT;
+        case ElementType::INT4:
+            return VK_FORMAT_R32G32B32A32_SINT;
+        case ElementType::UINT4:
+            return VK_FORMAT_R32G32B32A32_UINT;
         case ElementType::FLOAT4:
             return VK_FORMAT_R32G32B32A32_SFLOAT;
     }

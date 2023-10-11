@@ -75,7 +75,6 @@ void RenderSystem::Draw(TimeStamp ts) {
     mDrawLists->MeshTransformMap.clear();
     mDrawLists->StaticMeshDrawList.clear();
     mDrawLists->MeshDrawList.clear();
-
 }
 
 void RenderSystem::OnResize() {

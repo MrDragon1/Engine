@@ -1,7 +1,7 @@
 #version 460 core
+#extension GL_KHR_vulkan_glsl : enable
 #extension GL_GOOGLE_include_directive : enable
 #include "Common.glslh"
-
 layout(location = 0) in vec3 a_Position;
 layout(location = 1) in vec3 a_Normal;
 layout(location = 2) in vec3 a_Tangent;
@@ -21,7 +21,6 @@ void main()
     boneTransform += u_RenderPrimitiveBone.BoneTransform[a_BoneIDs[1]] * a_BoneWeights[1];
     boneTransform += u_RenderPrimitiveBone.BoneTransform[a_BoneIDs[2]] * a_BoneWeights[2];
     boneTransform += u_RenderPrimitiveBone.BoneTransform[a_BoneIDs[3]] * a_BoneWeights[3];
-
 
     v_TexCoord = a_TexCoord;
     v_WorldPos = vec3(u_RenderPrimitive.ModelMatrix * boneTransform * vec4(a_Position, 1.0));;

@@ -59,9 +59,10 @@ class UniformManager : public RefCounted {
     void UpdateLight();
     void UpdateMaterial(Ref<MaterialAsset> mat, uint32_t index = 0);
     void UpdateRenderPrimitive(RenderPrimitiveParam param, uint32_t index = 0);
-    void UpdateBone();
+    void UpdateBone(uint32_t index = 0);
 
-    void Commit();
+    void CommitBuffer();
+    void CommitSamplerGroup();
     void Bind(uint32_t index = 0);
 
    private:
@@ -71,7 +72,7 @@ class UniformManager : public RefCounted {
     TypedUniform<ShadowUib> mShadowUib;
     TypedUniform<LightUib> mLightUib;
     TypedUniform<RenderPrimitiveUib, MAX_UNIFORM_BUFFER_PER_DRAWCALL> mRenderPrimitiveUib;
-    TypedUniform<RenderPrimitiveBoneUib> mRenderPrimitiveBoneUib;
+    TypedUniform<RenderPrimitiveBoneUib, MAX_UNIFORM_BUFFER_PER_DRAWCALL> mRenderPrimitiveBoneUib;
 
     Ref<BufferObject> mViewUB;
     Ref<BufferObject> mShadowUB;

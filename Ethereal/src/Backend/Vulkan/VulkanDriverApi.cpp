@@ -442,6 +442,7 @@ void VulkanDriverApi::UpdateBufferObject(Ref<BufferObject> handle, BufferDescrip
                                          uint32_t byteOffset) {
     Ref<VulkanBufferObject> vulkanBuffer = handle.As<VulkanBufferObject>();
     vulkanBuffer->buffer->LoadData(bd, byteOffset);
+    
 }
 
 void VulkanDriverApi::UpdateIndexBuffer(Ref<IndexBuffer> handle, BufferDescriptor&& bd,

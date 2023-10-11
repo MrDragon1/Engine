@@ -161,15 +161,15 @@ void UniformManager::UpdateRenderPrimitive(RenderPrimitiveParam param, uint32_t 
     s.ModelMatrix = param.ModelMatrix;
 }
 
-void UniformManager::UpdateBone() {
+void UniformManager::UpdateBone(uint32_t index) {
     auto& param = Project::GetConfigManager().sUniformManagerConfig.BoneParam;
-    auto& s = mRenderPrimitiveBoneUib.Edit();
+    auto& s = mRenderPrimitiveBoneUib.Edit(index);
     for (int i = 0; i < 100; i++) {
         s.BoneTransform[i] = param.BoneTransform[i];
     }
 }
 
-void UniformManager::Commit() {
+void UniformManager::CommitBuffer() {
     if (mViewUib.IsDirty()) mApi->UpdateBufferObject(mViewUB, mViewUib.ToBufferDescriptor(), 0);
     if (mShadowUib.IsDirty())
         mApi->UpdateBufferObject(mShadowUB, mShadowUib.ToBufferDescriptor(), 0);
@@ -179,7 +179,9 @@ void UniformManager::Commit() {
     if (mRenderPrimitiveBoneUib.IsDirty())
         mApi->UpdateBufferObject(mRenderPrimitiveBoneUB,
                                  mRenderPrimitiveBoneUib.ToBufferDescriptor(), 0);
+}
 
+void UniformManager::CommitSamplerGroup() {
     mApi->UpdateSamplerGroup(mSamplerGroup, mSamplerGroupDesc);
 }
 
@@ -193,7 +195,9 @@ void UniformManager::Bind(uint32_t index) {
     uint32_t offset = index * size;
     mApi->BindUniformBuffer(3, mRenderPrimitiveUB, offset, size);
 
-    mApi->BindUniformBuffer(4, mRenderPrimitiveBoneUB);
+    size = mRenderPrimitiveBoneUib.GetItemSize();
+    offset = index * size;
+    mApi->BindUniformBuffer(4, mRenderPrimitiveBoneUB, offset, size);
 
     mApi->BindSamplerGroup(0, mSamplerGroup);
 }

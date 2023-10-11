@@ -12,7 +12,7 @@ void MainCameraRenderPass::Init(uint32_t width, uint32_t height) {
 
     source[ShaderType::VERTEX] = Utils::LoadShader("assets/shaders/PBRAnim.vert");
     source[ShaderType::FRAGMENT] = Utils::LoadShader("assets/shaders/PBRAnim.frag");
-    // mMeshPipeline.program = api->CreateProgram("PBRANIM", source);
+    mMeshPipeline.program = api->CreateProgram("PBRANIM", source);
 
     source[ShaderType::VERTEX] = Utils::LoadShader("assets/shaders/Skybox.vert");
     source[ShaderType::FRAGMENT] = Utils::LoadShader("assets/shaders/Skybox.frag");
@@ -89,12 +89,8 @@ void MainCameraRenderPass::Draw() {
                 uniformManager->UpdateEditor(drawIndex);
                 uniformManager->UpdateRenderPrimitive(
                     {.ModelMatrix = meshTransformMap.at(mk).Transforms[0].Transform}, drawIndex);
-                uniformManager->Commit();
+                uniformManager->CommitSamplerGroup();
                 uniformManager->Bind(drawIndex);
-
-                // RenderCommand::DrawIndexed(ms->GetVertexArray(), submesh.IndexCount,
-                // reinterpret_cast<void*>(submesh.BaseIndex * sizeof(uint32_t)),
-                //                            submesh.BaseVertex);
 
                 api->Draw(ms->GetSubMeshRenderPrimitive(dc.SubmeshIndex), mStaticMeshPipeline);
                 drawIndex++;
@@ -102,56 +98,54 @@ void MainCameraRenderPass::Draw() {
         }
     }
 
-    //// Draw Mesh
-    //{
-    //    // CSM
-    //    uniformManager->UpdateShadow(Project::GetConfigManager().sCSMConfig.ShadowMap);
+    // Draw Mesh
+    {
+        // CSM
+        uniformManager->UpdateShadow(Project::GetConfigManager().sCSMConfig.ShadowMap);
 
-    //    // Draw
-    //    if (!meshDrawList.empty()) {
-    //        for (auto& [mk, dc] : meshDrawList) {
-    //            Ref<MeshSource> ms = dc.Mesh->GetMeshSource();
+        // Draw
+        if (!meshDrawList.empty()) {
+            for (auto& [mk, dc] : meshDrawList) {
+                Ref<MeshSource> ms = dc.Mesh->GetMeshSource();
 
-    //            Ref<Animator> animator = ms->GetAnimator();
-    //            auto boneMatrices = animator->GetFinalBoneMatrices();
-    //            BoneParam& param = Project::GetConfigManager().sUniformManagerConfig.BoneParam;
-    //            for (const auto& [id, m] : boneMatrices) {
-    //                if (id >= 100) {
-    //                    ET_CORE_WARN("Only support 100 bones!");
-    //                    continue;
-    //                }
-    //                param.BoneTransform[id] = m;
-    //            }
+                Ref<Animator> animator = ms->GetAnimator();
+                auto boneMatrices = animator->GetFinalBoneMatrices();
+                BoneParam& param = Project::GetConfigManager().sUniformManagerConfig.BoneParam;
+                for (const auto& [id, m] : boneMatrices) {
+                    if (id >= 100) {
+                        ET_CORE_WARN("Only support 100 bones!");
+                        continue;
+                    }
+                    param.BoneTransform[id] = m;
+                }
 
-    //            Ref<MaterialTable> mt = dc.MaterialTable;
-    //            const auto& meshMaterialTable = dc.Mesh->GetMaterials();
-    //            Submesh& submesh = ms->GetSubmeshes()[dc.SubmeshIndex];
-    //            auto materialIndex = submesh.MaterialIndex;
+                Ref<MaterialTable> mt = dc.MaterialTable;
+                const auto& meshMaterialTable = dc.Mesh->GetMaterials();
+                Submesh& submesh = ms->GetSubmeshes()[dc.SubmeshIndex];
+                auto materialIndex = submesh.MaterialIndex;
 
-    //            Ref<MaterialAsset> material = mt->HasMaterial(materialIndex)
-    //                                              ? mt->GetMaterial(materialIndex)
-    //                                              : meshMaterialTable->GetMaterial(materialIndex);
+                Ref<MaterialAsset> material = mt->HasMaterial(materialIndex)
+                                                  ? mt->GetMaterial(materialIndex)
+                                                  : meshMaterialTable->GetMaterial(materialIndex);
 
-    //            Project::GetConfigManager().sUniformManagerConfig.EditorParam.EntityID =
-    //                mk.EntityID;
+                Project::GetConfigManager().sUniformManagerConfig.EditorParam.EntityID =
+                    mk.EntityID;
 
-    //            uniformManager->UpdateBone();
-    //            uniformManager->UpdateMaterial(material);
-    //            uniformManager->UpdateEditor();
-    //            uniformManager->UpdateRenderPrimitive(
-    //                {.ModelMatrix = meshTransformMap.at(mk).Transforms[0].Transform});
-    //            // TODO: should not update ViewUib here ( UpdateEditor() will cause this problem )
-    //            uniformManager->Commit();
-    //            uniformManager->Bind();
+                uniformManager->UpdateBone(drawIndex);
+                uniformManager->UpdateMaterial(material, drawIndex);
+                uniformManager->UpdateEditor(drawIndex);
+                uniformManager->UpdateRenderPrimitive(
+                    {.ModelMatrix = meshTransformMap.at(mk).Transforms[0].Transform}, drawIndex);
+                // uniformManager->Commit();
+                uniformManager->Bind(drawIndex);
 
-    //            api->Draw(ms->GetSubMeshRenderPrimitive(dc.SubmeshIndex), mMeshPipeline);
+                api->Draw(ms->GetSubMeshRenderPrimitive(dc.SubmeshIndex), mMeshPipeline);
+                drawIndex++;
+            }
+        }
+    }
 
-    //            // RenderCommand::DrawIndexed(ms->GetVertexArray(), submesh.IndexCount,
-    //            // reinterpret_cast<void*>(submesh.BaseIndex * sizeof(uint32_t)),
-    //            //                            submesh.BaseVertex);
-    //        }
-    //    }
-    //}
+    uniformManager->CommitBuffer();
 
     // Draw Skybox
     uniformManager->Bind();
