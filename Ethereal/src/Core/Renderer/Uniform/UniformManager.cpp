@@ -108,7 +108,7 @@ void UniformManager::UpdateScene() {
 void UniformManager::UpdateLight() {
     auto& param = Project::GetConfigManager().sUniformManagerConfig.LightParam;
     auto& s = mLightUib.Edit();
-    s.Direction = param.Direction;
+    s.Direction = param.GetDirection();
     s.Multiplier = param.Multiplier;
     s.Radiance = param.Radiance;
     s.ShadowAmount = param.ShadowAmount;

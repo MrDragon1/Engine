@@ -202,13 +202,14 @@ float Determinant(const Matrix4& m) {
 }
 
 Matrix4 Ortho(float left, float right, float bottom, float top, float zNear, float zFar) {
+    // TODO: vulkan depth [0,1], opengl depth [-1,1]
     Matrix4 Result(static_cast<float>(1));
     Result[0][0] = static_cast<float>(2) / (right - left);
     Result[1][1] = static_cast<float>(2) / (top - bottom);
-    Result[2][2] = -static_cast<float>(2) / (zFar - zNear);
+    Result[2][2] = -static_cast<float>(1) / (zFar - zNear);
     Result[3][0] = -(right + left) / (right - left);
     Result[3][1] = -(top + bottom) / (top - bottom);
-    Result[3][2] = -(zFar + zNear) / (zFar - zNear);
+    Result[3][2] = -(zNear) / (zFar - zNear);
     return Result;
 }
 

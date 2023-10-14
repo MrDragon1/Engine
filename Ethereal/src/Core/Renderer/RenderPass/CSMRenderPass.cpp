@@ -109,9 +109,9 @@ std::vector<Vector4> CSMRenderPass::GetFrustumCornersWorldSpace(const Matrix4& p
     const auto inv = Math::Inverse(projview);
 
     std::vector<Vector4> frustumCorners;
-    for (unsigned int x = 0; x < 2; ++x) {
+    for (unsigned int z = 0; z < 2; ++z) {
         for (unsigned int y = 0; y < 2; ++y) {
-            for (unsigned int z = 0; z < 2; ++z) {
+            for (unsigned int x = 0; x < 2; ++x) {
                 const Vector4 pt =
                     inv * Vector4(2.0f * x - 1.0f, 2.0f * y - 1.0f, 2.0f * z - 1.0f, 1.0f);
                 frustumCorners.push_back(pt / pt.w);
@@ -134,46 +134,58 @@ Matrix4 CSMRenderPass::GetLightSpaceMatrix(float nearPlane, float farPlane) {
     const auto corners =
         GetFrustumCornersWorldSpace(proj, Project::GetConfigManager().sCSMConfig.ViewMatrix);
 
+    //// refer to https://zhuanlan.zhihu.com/p/515385379 for more details
+    //// calculate the circumscribed circle of the frustum
+    //float a2 = pow(Math::Length(corners[3] - corners[0]),2);
+    //float b2 = pow(Math::Length(corners[7] - corners[4]),2);
+    //float len = farPlane - nearPlane;
+    //float x = len * 0.5f + (a2 - b2) / (8.0f * len); 
+
+    //float zCascadeDistance = len - x;
+
+    //Vector3 sphereCenterVS = Vector3(0.0f, 0.0f, nearPlane + zCascadeDistance);
+    //Vector3 sphereCenterWS =
+    //    Project::GetConfigManager().sUniformManagerConfig.MainCameraParam.CameraPosition +
+    //    Project::GetConfigManager().sUniformManagerConfig.MainCameraParam.ViewDirection *
+    //        sphereCenterVS.z;
+
+    //float sphereRadius = sqrtf(zCascadeDistance * zCascadeDistance + (a2 * 0.25f));
+
+    //Vector3 sceneCenter = Vector3::ZERO; // TODO: calculate the scene center
+    //float backDistance =  sphereRadius;
+
+    //const auto lightView = Math::LookAt(
+    //    sphereCenterWS +
+    //        Project::GetConfigManager().sUniformManagerConfig.LightParam.GetDirection() *
+    //            backDistance,
+    //    sphereCenterWS, Vector3(0.0f, 1.0f, 0.0f));
+
+
     Vector3 center = Vector3(0, 0, 0);
     for (const auto& v : corners) {
         center += Vector3(v.x, v.y, v.z);
     }
     center /= corners.size();
 
+    float radius = 0.0f;
+    for (uint32_t i = 0; i < 8; i++) {
+        float distance = Math::Length(corners[i] - center);
+        radius = radius > distance ? radius : distance;
+    }
+    radius = std::ceil(radius * 16.0f) / 16.0f;
+
+    Vector3 maxExtents = Vector3(radius);
+    Vector3 minExtents = -maxExtents;
+
     const auto lightView = Math::LookAt(
-        center + Project::GetConfigManager().sUniformManagerConfig.LightParam.Direction, center,
-        Vector3(0.0f, 1.0f, 0.0f));
+        center +
+            Project::GetConfigManager().sUniformManagerConfig.LightParam.GetDirection() *
+                     maxExtents.z,
+        center, Vector3(0.0f, 1.0f, 0.0f));
 
-    float minX = std::numeric_limits<float>::max();
-    float maxX = std::numeric_limits<float>::min();
-    float minY = std::numeric_limits<float>::max();
-    float maxY = std::numeric_limits<float>::min();
-    float minZ = std::numeric_limits<float>::max();
-    float maxZ = std::numeric_limits<float>::min();
-    for (const auto& v : corners) {
-        const auto trf = lightView * v;
-        minX = std::min(minX, trf.x);
-        maxX = std::max(maxX, trf.x);
-        minY = std::min(minY, trf.y);
-        maxY = std::max(maxY, trf.y);
-        minZ = std::min(minZ, trf.z);
-        maxZ = std::max(maxZ, trf.z);
-    }
-
-    // Tune this parameter according to the scene
-    constexpr float zMult = 10.0f;
-    if (minZ < 0) {
-        minZ *= zMult;
-    } else {
-        minZ /= zMult;
-    }
-    if (maxZ < 0) {
-        maxZ /= zMult;
-    } else {
-        maxZ *= zMult;
-    }
-
-    const Matrix4 lightProjection = Math::Ortho(minX, maxX, minY, maxY, minZ, maxZ);
+    // const Matrix4 lightProjection = Math::Ortho(-sphereRadius, sphereRadius, -sphereRadius, sphereRadius, 0.0f, backDistance * 2.0f);
+    const Matrix4 lightProjection = Math::Ortho(minExtents.x, maxExtents.x, minExtents.y,
+                                                maxExtents.y, 0.0f, maxExtents.z - minExtents.z);
 
     return lightProjection * lightView;
 }

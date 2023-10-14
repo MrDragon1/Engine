@@ -146,31 +146,24 @@ highp vec4 getCascadeLightSpacePosition(uint cascade) {
 	    0.5, 0.5, 0.0, 1.0 
     );
 
-    vec4 fragPosLightSpace = (biasMat * u_Shadow.DirLightMatrices[cascade]) * vec4(p, 1.0);
+    vec4 fragPosLightSpace = (u_Shadow.DirLightMatrices[cascade]) * vec4(p, 1.0);
     return fragPosLightSpace;
 }
 
 float ShadowCalculation()
 {
     uint layer = getShadowCascade();
-
     vec4 fragPosLightSpace = getCascadeLightSpacePosition(layer);
-    // perform perspective divide
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+    float pixelDepth = projCoords.z;
+
+    projCoords = projCoords * 0.5 + 0.5;
 
     float bias = max(0.001 * (1.0 - dot(m_Params.Normal, u_Light.Direction)), 0.000);
-// float shadow = 1.0;
-// if ( projCoords.z > -1.0 && projCoords.z < 1.0 ) {
-// 	   float dist = texture(u_ShadowMap, vec3(projCoords.st, layer)).r;
-// 	   if (dist < projCoords.z - bias) {
-// 	        shadow = 0.3;
-// 	   }
-// }
-// 
-// return shadow;
 
     float shadowMapDepth = texture(u_ShadowMap, vec3(projCoords.xy, layer)).r;
-    return step(projCoords.z, shadowMapDepth + bias);
+    return step(pixelDepth, shadowMapDepth + bias);
+
     //    // get depth of current fragment from light's perspective
     //    float currentDepth = projCoords.z;
     //
@@ -331,6 +324,25 @@ void main()
     m_Params.View = normalize(u_View.CameraPosition - v_WorldPos);
 
     FragColor = evaluateMaterial();
+
+    if (false){
+        uint layer = getShadowCascade();
+        if(layer == 0)
+            FragColor *= vec4(1.0, 0.0, 0.0, 1.0) + 0.6;
+	    else if(layer == 1)
+            FragColor *= vec4(0.0, 1.0, 0.0, 1.0) + 0.6;
+	    else if(layer == 2)
+            FragColor *= vec4(0.0, 0.0, 1.0, 1.0) + 0.6;
+	    else if(layer == 3)
+            FragColor *= vec4(1.0, 1.0, 0.0, 1.0) + 0.6;
+	    else if(layer == 4)
+            FragColor *= vec4(0.0, 1.0, 1.0, 1.0) + 0.6;
+	    else if(layer == 5)
+            FragColor *= vec4(1.0, 0.0, 1.0, 1.0) + 0.6;
+	    else 
+            FragColor *= 0;
+    }
+    
 
     if(u_View.FogEnable) FragColor = fog(FragColor, v_WorldPos - u_View.CameraPosition);
     EntityID = u_RenderPrimitive.EntityID;

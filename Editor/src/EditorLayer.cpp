@@ -82,6 +82,8 @@ void EditorLayer::OnUpdate(TimeStamp ts) {
             cp.InverseProjectionMatrix = Math::Inverse(mEditorCamera.GetProjection());
             cp.NearPlane = mEditorCamera.GetNearPlane();
             cp.FarPlane = mEditorCamera.GetFarPlane();
+            cp.ViewDirection = mEditorCamera.GetForwardDirection();
+            cp.CameraPosition = mEditorCamera.GetPosition();
 
             Project::GetConfigManager().sCSMConfig.NearPlane = mEditorCamera.GetNearPlane();
             Project::GetConfigManager().sCSMConfig.FarPlane = mEditorCamera.GetFarPlane();

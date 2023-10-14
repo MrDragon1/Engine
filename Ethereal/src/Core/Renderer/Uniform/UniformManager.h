@@ -18,6 +18,7 @@ struct CameraParam {
     float FarPlane;
     float NearPlane;
     Vector3 CameraPosition;
+    Vector3 ViewDirection;
 };
 
 struct EditorParam {
@@ -32,7 +33,8 @@ struct SceneParam {
 };
 
 struct LightParam {
-    Vector3 Direction = Math::Normalize(Vector3(-0.236, 0.056, -0.514));
+    Vector3 Direction = Math::Normalize(Vector3(0,1,-5));
+    Vector3 GetDirection() { return Math::Normalize(Direction); }
     float ShadowAmount;
     Vector3 Radiance = Vector3(1.0, 1.0, 1.0);
     float Multiplier = 1;
